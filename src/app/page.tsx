@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Barcode, Building2, CheckCircle2, ClipboardList, CreditCard, QrCode, ScanLine, ShieldCheck, UsersRound, WalletCards } from "lucide-react";
+import { Building2, CheckCircle2, CreditCard, ShieldCheck, UsersRound, WalletCards } from "lucide-react";
 import { ScanLoop } from "@/components/hero/ScanLoop";
 import { ContactForm } from "./contact-form";
 
@@ -29,7 +29,7 @@ const sections = [
   [WalletCards, "Worker tips + payouts", "Workers create tip payment links and QR cards. Owners review gross, configured fee, net, status, and paid/withdrawal flow."],
   [UsersRound, "Promotions + subscribers", "Promotion quote, audience size, bulk price, channel, schedule, and the 2-day anti-crowding rule are explicit in the UI."],
   [ShieldCheck, "Security + verification", "httpOnly session proxy, role-aware dashboard guard, refresh-once policy, backend rate-limit cooldown display, and barcode audit trails."],
-];
+] as const;
 
 export default function MarketingPage() {
   return (
@@ -97,10 +97,10 @@ export default function MarketingPage() {
       <section className="px-5 py-16 md:px-10 lg:px-16">
         <div className="grid gap-4 md:grid-cols-2">
           {sections.map(([Icon, title, description]) => (
-            <article key={title as string} className="border border-[var(--line)] bg-white/45 p-6">
+            <article key={title} className="border border-[var(--line)] bg-white/45 p-6">
               <Icon className="h-7 w-7 text-[var(--signal)]" />
-              <h3 className="mt-6 font-mono text-2xl font-black uppercase tracking-[-0.03em]">{title as string}</h3>
-              <p className="mt-3 text-sm leading-6 text-[var(--steel)]">{description as string}</p>
+              <h3 className="mt-6 font-mono text-2xl font-black uppercase tracking-[-0.03em]">{title}</h3>
+              <p className="mt-3 text-sm leading-6 text-[var(--steel)]">{description}</p>
             </article>
           ))}
         </div>
