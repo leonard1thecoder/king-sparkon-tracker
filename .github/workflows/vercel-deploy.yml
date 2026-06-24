@@ -5,28 +5,70 @@ on:
   push:
     branches: [main]
 
+env:
+  BUN_DOCKER_IMAGE: oven/bun:1
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-      - run: bun install --frozen-lockfile
-      - run: bun run lint
-      - run: bun run typecheck
-      - run: bun run test
-      - run: bun run build
+
+      - name: Validate frontend in Bun Docker image
+        run: |
+          docker run --rm --pull=always \
+            --user "$(id -u):$(id -g)" \
+            -e CI=true \
+            -e HOME=/tmp \
+            -v "${GITHUB_WORKSPACE}:/app" \
+            -w /app \
+            "${BUN_DOCKER_IMAGE}" \
+            sh -lc "bun install --no-save && bun run lint && bun run typecheck && bun run test && bun run build"
+
       - name: Deploy preview
         if: github.event_name == 'pull_request'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: bunx vercel deploy --token "$VERCEL_TOKEN" --yes
+        run: |
+          if [ -z "${VERCEL_TOKEN:-}" ] || [ -z "${VERCEL_ORG_ID:-}" ] || [ -z "${VERCEL_PROJECT_ID:-}" ]; then
+            echo "::warning::Skipping Vercel preview deploy because Vercel secrets are not configured."
+            exit 0
+          fi
+
+          docker run --rm --pull=always \
+            --user "$(id -u):$(id -g)" \
+            -e CI=true \
+            -e HOME=/tmp \
+            -e VERCEL_TOKEN \
+            -e VERCEL_ORG_ID \
+            -e VERCEL_PROJECT_ID \
+            -v "${GITHUB_WORKSPACE}:/app" \
+            -w /app \
+            "${BUN_DOCKER_IMAGE}" \
+            sh -lc 'bunx vercel deploy --token "$VERCEL_TOKEN" --yes --archive=tgz'
+
       - name: Deploy production
         if: github.event_name == 'push'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: bunx vercel deploy --prod --token "$VERCEL_TOKEN" --yes
+        run: |
+          if [ -z "${VERCEL_TOKEN:-}" ] || [ -z "${VERCEL_ORG_ID:-}" ] || [ -z "${VERCEL_PROJECT_ID:-}" ]; then
+            echo "::error::Vercel production deploy requires VERCEL_TOKEN, VERCEL_ORG_ID, and VERCEL_PROJECT_ID secrets."
+            exit 1
+          fi
+
+          docker run --rm --pull=always \
+            --user "$(id -u):$(id -g)" \
+            -e CI=true \
+            -e HOME=/tmp \
+            -e VERCEL_TOKEN \
+            -e VERCEL_ORG_ID \
+            -e VERCEL_PROJECT_ID \
+            -v "${GITHUB_WORKSPACE}:/app" \
+            -w /app \
+            "${BUN_DOCKER_IMAGE}" \
+            sh -lc 'bunx vercel deploy --prod --token "$VERCEL_TOKEN" --yes --archive=tgz'
