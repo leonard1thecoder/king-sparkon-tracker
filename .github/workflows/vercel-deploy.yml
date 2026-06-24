@@ -5,58 +5,30 @@ on:
   push:
     branches: [main]
 
-env:
-  BUN_DOCKER_IMAGE: oven/bun:1
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          show-progress: false
 
-      - name: Install dependencies in Bun Docker image
-        run: |
-          docker run --rm \
-            --user "$(id -u):$(id -g)" \
-            -e CI=true \
-            -e HOME=/tmp \
-            -v "${GITHUB_WORKSPACE}:/app" \
-            -w /app \
-            "${BUN_DOCKER_IMAGE}" \
-            sh -lc '
-              set -eu
+      - uses: oven-sh/setup-bun@v2
 
-              restore_lock() {
-                if [ -f /tmp/king-sparkon-bun.lock ]; then
-                  mv -f /tmp/king-sparkon-bun.lock bun.lock
-                fi
-              }
-              trap restore_lock EXIT
+      - name: Install dependencies
+        run: bun install
 
-              if ! bun install --frozen-lockfile; then
-                echo "::warning::bun.lock is out of sync with package.json. Falling back to bun install --no-save for CI validation. Regenerate and commit bun.lock later."
-                if [ -f bun.lock ]; then
-                  mv bun.lock /tmp/king-sparkon-bun.lock
-                fi
-                bun install --no-save
-              fi
-            '
+      - name: Lint
+        run: bun run lint
 
-      - name: Lint in Bun Docker image
-        run: |
-          docker run --rm --user "$(id -u):$(id -g)" -e CI=true -e HOME=/tmp -v "${GITHUB_WORKSPACE}:/app" -w /app "${BUN_DOCKER_IMAGE}" sh -lc 'bun run lint'
+      - name: Typecheck
+        run: bun run typecheck
 
-      - name: Typecheck in Bun Docker image
-        run: |
-          docker run --rm --user "$(id -u):$(id -g)" -e CI=true -e HOME=/tmp -v "${GITHUB_WORKSPACE}:/app" -w /app "${BUN_DOCKER_IMAGE}" sh -lc 'bun run typecheck'
+      - name: Test
+        run: bun run test
 
-      - name: Test in Bun Docker image
-        run: |
-          docker run --rm --user "$(id -u):$(id -g)" -e CI=true -e HOME=/tmp -v "${GITHUB_WORKSPACE}:/app" -w /app "${BUN_DOCKER_IMAGE}" sh -lc 'bun run test'
-
-      - name: Build in Bun Docker image
-        run: |
-          docker run --rm --user "$(id -u):$(id -g)" -e CI=true -e HOME=/tmp -v "${GITHUB_WORKSPACE}:/app" -w /app "${BUN_DOCKER_IMAGE}" sh -lc 'bun run build'
+      - name: Build
+        run: bun run build
 
       - name: Deploy preview
         if: github.event_name == 'pull_request'
@@ -70,17 +42,7 @@ jobs:
             exit 0
           fi
 
-          docker run --rm \
-            --user "$(id -u):$(id -g)" \
-            -e CI=true \
-            -e HOME=/tmp \
-            -e VERCEL_TOKEN \
-            -e VERCEL_ORG_ID \
-            -e VERCEL_PROJECT_ID \
-            -v "${GITHUB_WORKSPACE}:/app" \
-            -w /app \
-            "${BUN_DOCKER_IMAGE}" \
-            sh -lc 'bunx vercel deploy --token "$VERCEL_TOKEN" --yes --archive=tgz'
+          bunx vercel deploy --token "$VERCEL_TOKEN" --yes
 
       - name: Deploy production
         if: github.event_name == 'push'
@@ -94,14 +56,4 @@ jobs:
             exit 1
           fi
 
-          docker run --rm \
-            --user "$(id -u):$(id -g)" \
-            -e CI=true \
-            -e HOME=/tmp \
-            -e VERCEL_TOKEN \
-            -e VERCEL_ORG_ID \
-            -e VERCEL_PROJECT_ID \
-            -v "${GITHUB_WORKSPACE}:/app" \
-            -w /app \
-            "${BUN_DOCKER_IMAGE}" \
-            sh -lc 'bunx vercel deploy --prod --token "$VERCEL_TOKEN" --yes --archive=tgz'
+          bunx vercel deploy --prod --token "$VERCEL_TOKEN" --yes
