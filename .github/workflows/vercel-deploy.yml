@@ -14,9 +14,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate frontend in Bun Docker image
+      - name: Install dependencies in Bun Docker image
         run: |
-          docker run --rm --pull=always \
+          docker run --rm \
             --user "$(id -u):$(id -g)" \
             -e CI=true \
             -e HOME=/tmp \
@@ -40,12 +40,23 @@ jobs:
                 fi
                 bun install --no-save
               fi
-
-              bun run lint
-              bun run typecheck
-              bun run test
-              bun run build
             '
+
+      - name: Lint in Bun Docker image
+        run: |
+          docker run --rm --user "$(id -u):$(id -g)" -e CI=true -e HOME=/tmp -v "${GITHUB_WORKSPACE}:/app" -w /app "${BUN_DOCKER_IMAGE}" sh -lc 'bun run lint'
+
+      - name: Typecheck in Bun Docker image
+        run: |
+          docker run --rm --user "$(id -u):$(id -g)" -e CI=true -e HOME=/tmp -v "${GITHUB_WORKSPACE}:/app" -w /app "${BUN_DOCKER_IMAGE}" sh -lc 'bun run typecheck'
+
+      - name: Test in Bun Docker image
+        run: |
+          docker run --rm --user "$(id -u):$(id -g)" -e CI=true -e HOME=/tmp -v "${GITHUB_WORKSPACE}:/app" -w /app "${BUN_DOCKER_IMAGE}" sh -lc 'bun run test'
+
+      - name: Build in Bun Docker image
+        run: |
+          docker run --rm --user "$(id -u):$(id -g)" -e CI=true -e HOME=/tmp -v "${GITHUB_WORKSPACE}:/app" -w /app "${BUN_DOCKER_IMAGE}" sh -lc 'bun run build'
 
       - name: Deploy preview
         if: github.event_name == 'pull_request'
@@ -59,7 +70,7 @@ jobs:
             exit 0
           fi
 
-          docker run --rm --pull=always \
+          docker run --rm \
             --user "$(id -u):$(id -g)" \
             -e CI=true \
             -e HOME=/tmp \
@@ -83,7 +94,7 @@ jobs:
             exit 1
           fi
 
-          docker run --rm --pull=always \
+          docker run --rm \
             --user "$(id -u):$(id -g)" \
             -e CI=true \
             -e HOME=/tmp \
