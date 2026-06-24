@@ -12,9 +12,16 @@ export function BarcodeScanner({ onScan }: { onScan?: (value: string) => void })
   const [status, setStatus] = useState("IDLE");
 
   async function start() {
+    const videoElement = videoRef.current;
+
+    if (!videoElement) {
+      setStatus("CAMERA_NOT_READY");
+      return;
+    }
+
     setStatus("SCANNING");
     const reader = new BrowserMultiFormatReader();
-    controlsRef.current = await reader.decodeFromVideoDevice(undefined, videoRef.current, (result) => {
+    controlsRef.current = await reader.decodeFromVideoDevice(undefined, videoElement, (result) => {
       const value = result?.getText();
       if (value) {
         setLastScan(value);
