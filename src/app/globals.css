@@ -1,0 +1,431 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f4f6f8;
+  --foreground: #141a21;
+  --surface: #ffffff;
+  --surface-muted: #f9fafb;
+  --border-soft: #dfe3e8;
+  --brand: #00a76f;
+  --brand-hover: #007867;
+  --brand-soft: #e8fbf3;
+  --focus-ring: rgba(0, 167, 111, 0.2);
+  --shadow-soft: 0 18px 48px rgba(20, 26, 33, 0.09);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  text-rendering: geometricPrecision;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: #c8fad6;
+  color: #141a21;
+}
+
+input,
+button {
+  font: inherit;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+button:not(:disabled):hover,
+a[class*="inline-flex"]:hover {
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  box-shadow: none !important;
+}
+
+button,
+a[class*="inline-flex"] {
+  border-radius: 14px !important;
+}
+
+input:not([type="checkbox"]),
+select,
+textarea {
+  border-radius: 14px !important;
+}
+
+input:not([type="checkbox"]):hover,
+select:hover,
+textarea:hover {
+  border-color: #a9b9ae !important;
+  background-color: #f9fbfa !important;
+  color: #10201d !important;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 4px var(--focus-ring),
+    0 10px 24px rgba(18, 60, 51, 0.12);
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+
+thead tr {
+  background: #f9fafb;
+}
+
+thead th {
+  color: #637381;
+  white-space: nowrap;
+}
+
+thead th:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+thead th:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+tbody tr {
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: inset 0 0 0 1px rgba(223, 227, 232, 0.86);
+}
+
+tbody tr:hover {
+  background: #ffffff;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 167, 111, 0.18),
+    0 10px 26px rgba(20, 26, 33, 0.08);
+}
+
+tbody td:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+tbody td:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #eef0f2;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c4cdd5;
+  border: 2px solid #eef0f2;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #919eab;
+}
+
+.ks-dashboard {
+  background:
+    radial-gradient(circle at top right, rgba(71, 126, 112, 0.34), transparent 35%),
+    radial-gradient(circle at bottom left, rgba(153, 227, 158, 0.14), transparent 34%),
+    #000510;
+  color: #ffffff;
+}
+
+.ks-auth {
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 82% 18%, rgba(71, 126, 112, 0.42), transparent 34%),
+    radial-gradient(circle at 12% 86%, rgba(153, 227, 158, 0.18), transparent 30%),
+    #000510 !important;
+  color: #ffffff !important;
+}
+
+.ks-auth::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.08;
+  background-image:
+    linear-gradient(90deg, #99e39e 1px, transparent 1px),
+    linear-gradient(0deg, #1dc8cd 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+.ks-auth section > div > div {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(30, 34, 41, 0.78) !important;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.42) !important;
+  backdrop-filter: blur(22px);
+}
+
+.ks-auth aside {
+  background:
+    radial-gradient(circle at top right, rgba(71, 126, 112, 0.45), transparent 36%),
+    radial-gradient(circle at bottom left, rgba(153, 227, 158, 0.16), transparent 32%),
+    #000510 !important;
+}
+
+.ks-auth h1,
+.ks-auth h2 {
+  color: #ffffff !important;
+  letter-spacing: 0 !important;
+}
+
+.ks-auth p,
+.ks-auth label,
+.ks-auth span {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.ks-auth label > span:first-child {
+  color: rgba(255, 255, 255, 0.76) !important;
+}
+
+.ks-auth input:not([type="checkbox"]),
+.ks-auth select,
+.ks-auth textarea {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: #ffffff !important;
+}
+
+.ks-auth input::placeholder,
+.ks-auth textarea::placeholder {
+  color: rgba(255, 255, 255, 0.36) !important;
+}
+
+.ks-auth select option {
+  background: #1e2229;
+  color: #ffffff;
+}
+
+.ks-auth a {
+  color: #99e39e;
+}
+
+.ks-auth a[aria-label] {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+
+.ks-auth a[aria-label]:hover {
+  border-color: rgba(153, 227, 158, 0.7) !important;
+  background: rgba(153, 227, 158, 0.1) !important;
+  color: #99e39e !important;
+}
+
+.ks-dashboard,
+.ks-dashboard > *,
+.ks-dashboard main {
+  background-color: #000510 !important;
+  color: #ffffff !important;
+}
+
+.ks-dashboard aside {
+  background-color: rgba(30, 34, 41, 0.82) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 14px 0 42px rgba(0, 0, 0, 0.28) !important;
+  backdrop-filter: blur(18px);
+}
+
+.ks-dashboard header {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.ks-dashboard :is(section.rounded-lg, div.rounded-lg, div.rounded-xl).border {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(30, 34, 41, 0.72) !important;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(16px);
+}
+
+.ks-dashboard nav button {
+  border-radius: 12px !important;
+}
+
+.ks-dashboard nav button:hover {
+  background-color: rgba(153, 227, 158, 0.12) !important;
+  color: #99e39e !important;
+}
+
+.ks-dashboard nav button.text-white,
+.ks-dashboard [class*="bg-[#123c33]"],
+.ks-dashboard [class*="bg-[#237a5b]"] {
+  background-color: #00a76f !important;
+}
+
+.ks-dashboard [class*="hover:bg-[#0f4c3f]"]:hover,
+.ks-dashboard [class*="hover:bg-[#1b5b4a]"]:hover {
+  background-color: #007867 !important;
+}
+
+.ks-dashboard [class*="text-[#123c33]"],
+.ks-dashboard [class*="text-[#237a5b]"] {
+  color: #99e39e !important;
+}
+
+.ks-dashboard [class*="text-[#10201d]"] {
+  color: #ffffff !important;
+}
+
+.ks-dashboard [class*="text-[#61706a]"],
+.ks-dashboard [class*="text-[#66746f]"],
+.ks-dashboard [class*="text-[#7b8782]"],
+.ks-dashboard [class*="text-[#596862]"] {
+  color: rgba(216, 219, 219, 0.62) !important;
+}
+
+.ks-dashboard [class*="border-[#123c33]"] {
+  border-color: #00a76f !important;
+}
+
+.ks-dashboard [class*="bg-[#e9f5ef]"],
+.ks-dashboard [class*="bg-[#eefaf3]"] {
+  background-color: rgba(153, 227, 158, 0.12) !important;
+}
+
+.ks-dashboard [class*="bg-white"],
+.ks-dashboard [class*="bg-[#fbfaf6]"],
+.ks-dashboard [class*="bg-[#f5f3ec]"] {
+  background-color: rgba(30, 34, 41, 0.72) !important;
+}
+
+.ks-dashboard[class*="bg-white"],
+.ks-dashboard[class*="bg-[#fbfaf6]"],
+.ks-dashboard[class*="bg-[#f5f3ec]"],
+.ks-dashboard [class*="bg-[#fff"],
+.ks-dashboard [class*="bg-[#f9"],
+.ks-dashboard [class*="bg-[#f8"],
+.ks-dashboard [class*="bg-[#f7"],
+.ks-dashboard [class*="bg-[#f6"],
+.ks-dashboard [class*="bg-[#f5"],
+.ks-dashboard [class*="bg-[#f4"],
+.ks-dashboard [class*="bg-[#f3"],
+.ks-dashboard [class*="bg-[#f2"],
+.ks-dashboard [class*="bg-[#f1"],
+.ks-dashboard [class*="bg-[#f0"],
+.ks-dashboard [class*="bg-slate"],
+.ks-dashboard [class*="bg-gray"],
+.ks-dashboard [class*="bg-zinc"],
+.ks-dashboard [class*="bg-neutral"],
+.ks-dashboard [class*="bg-stone"] {
+  background-color: rgba(30, 34, 41, 0.72) !important;
+}
+
+.ks-dashboard [class*="border-[#df"],
+.ks-dashboard [class*="border-[#e"],
+.ks-dashboard [class*="border-gray"],
+.ks-dashboard [class*="border-slate"],
+.ks-dashboard [class*="border-zinc"],
+.ks-dashboard [class*="border-neutral"],
+.ks-dashboard [class*="border-stone"] {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.ks-dashboard [class*="shadow"] {
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24) !important;
+}
+
+.ks-dashboard table thead tr {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.ks-dashboard table tbody tr {
+  background: rgba(0, 5, 16, 0.52) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+}
+
+.ks-dashboard table tbody tr:hover {
+  background: rgba(30, 34, 41, 0.9) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(153, 227, 158, 0.2),
+    0 10px 26px rgba(0, 0, 0, 0.22) !important;
+}
+
+.ks-dashboard button,
+.ks-dashboard a[class*="inline-flex"] {
+  border-radius: 10px !important;
+}
+
+.ks-dashboard input:not([type="checkbox"]),
+.ks-dashboard select,
+.ks-dashboard textarea {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  background-color: rgba(0, 5, 16, 0.55) !important;
+  color: #ffffff !important;
+  border-radius: 10px !important;
+}
+
+.crypto-grid {
+  background-image:
+    linear-gradient(90deg, #99e39e 1px, transparent 1px),
+    linear-gradient(0deg, #1dc8cd 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+.ks-auth input:not([type="checkbox"]):hover,
+.ks-auth select:hover,
+.ks-auth textarea:hover,
+.ks-dashboard input:not([type="checkbox"]):hover,
+.ks-dashboard select:hover,
+.ks-dashboard textarea:hover,
+.crypto-screen input:not([type="checkbox"]):hover,
+.crypto-screen select:hover,
+.crypto-screen textarea:hover {
+  border-color: rgba(153, 227, 158, 0.45) !important;
+  background-color: rgba(0, 5, 16, 0.7) !important;
+  color: #ffffff !important;
+  caret-color: #99e39e !important;
+}
+
+.ks-dashboard input::placeholder,
+.ks-dashboard textarea::placeholder,
+.crypto-screen input::placeholder,
+.crypto-screen textarea::placeholder {
+  color: rgba(216, 219, 219, 0.42) !important;
+}
+
+.ks-dashboard select option,
+.crypto-screen select option {
+  background: #1e2229;
+  color: #ffffff;
+}
