@@ -1,3 +1,5 @@
+"use client";
+
 export function ScanLoop() {
   return (
     <div className="mx-auto w-full max-w-xl border border-white/15 bg-white/[0.03] p-5 text-white">
