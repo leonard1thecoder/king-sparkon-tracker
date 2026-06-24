@@ -1,86 +1,31 @@
-import Image from "next/image";
-import Link from "next/link";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { AUTH_COOKIE_NAME, backendBaseUrl } from "@/lib/backend-auth";
-import { normalizeUserRole } from "@/lib/roles";
+import { ACCESS_COOKIE_NAME, dashboardPathForSession, decodeJwtPayload } from "@/lib/auth/session";
+import { Button } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
   title: "Dashboard Session Check",
-  description:
-    "King Sparkon Tracker validates secure dashboard access for barcode inventory tracking, product operations, reports, audit logs, and billing.",
+  description: "King Sparkon Tracker validates secure dashboard access by role before opening a workspace.",
 };
-
-type CurrentUserResponse = {
-  privilege?: string;
-};
-
-function dashboardPathForPrivilege(privilege?: CurrentUserResponse["privilege"]) {
-  const role = normalizeUserRole(privilege);
-
-  if (role === "Worker") {
-    return "/dashboard/worker";
-  }
-
-  if (role === "Owner") {
-    return "/dashboard/owner";
-  }
-
-  return "/login";
-}
-
-async function currentUser(token: string) {
-  const response = await fetch(`${backendBaseUrl()}/api/users/me`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    return null;
-  }
-
-  return (await response.json().catch(() => null)) as CurrentUserResponse | null;
-}
 
 export default async function DashboardRedirectPage() {
-  const token = (await cookies()).get(AUTH_COOKIE_NAME)?.value;
+  const token = (await cookies()).get(ACCESS_COOKIE_NAME)?.value;
+  const claims = decodeJwtPayload(token);
 
-  if (!token) {
-    redirect("/login");
-  }
-
-  const user = await currentUser(token);
-
-  if (user?.privilege) {
-    redirect(dashboardPathForPrivilege(user.privilege));
+  if (claims) {
+    redirect(dashboardPathForSession(claims));
   }
 
   return (
-    <main className="crypto-screen relative flex min-h-screen items-center justify-center overflow-hidden bg-[#000510] px-5 text-white">
-      <div className="crypto-grid absolute inset-0 opacity-[0.08]" />
-      <div className="absolute -left-48 -bottom-40 h-[34rem] w-[34rem] rounded-full bg-gradient-to-br from-[#99e39e] to-[#1dc8cd] opacity-20 blur-[220px]" />
-      <section className="relative w-full max-w-md rounded-3xl border border-white/10 bg-[#1e2229]/72 p-7 text-center shadow-[0_24px_80px_rgba(0,0,0,0.4)] backdrop-blur-xl">
-        <Image
-          src="/king-sparkon-logo.png"
-          alt="King Sparkon Tracker logo"
-          width={220}
-          height={220}
-          priority
-          className="mx-auto h-auto w-[132px]"
-        />
-        <h1 className="mt-8 text-2xl font-semibold text-white">Dashboard session needs refresh</h1>
-        <p className="mt-3 text-sm leading-6 text-[#d8dbdb]/62">
-          Your secure cookie exists, but the backend did not return a role for it.
-        </p>
-        <Link
-          href="/login"
-          className="mt-6 inline-flex h-11 items-center justify-center rounded-lg border border-[#99e39e] px-4 text-sm font-semibold text-[#99e39e] transition hover:bg-[#99e39e] hover:text-[#000510]"
-        >
-          Back to login
-        </Link>
+    <main className="grid min-h-screen place-items-center bg-[var(--paper)] p-5 text-[var(--ink)]">
+      <section className="max-w-md border border-[var(--line)] bg-white/55 p-7 text-center shadow-[var(--shadow-ledger)]">
+        <div className="barcode-rule mx-auto mb-6 max-w-xs text-[var(--ink)]" />
+        <h1 className="font-mono text-2xl font-black uppercase tracking-[-0.03em]">Session role unavailable</h1>
+        <p className="mt-3 text-sm leading-6 text-[var(--steel)]">Sign in again so the dashboard guard can read Owner, Worker, Affiliate, or Admin role claims from the secure session.</p>
+        <a href="/login" className="mt-6 inline-flex">
+          <Button>Back to login</Button>
+        </a>
       </section>
     </main>
   );

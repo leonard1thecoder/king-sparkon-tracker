@@ -1,0 +1,72 @@
+import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
+import { backendError, type NormalizedBackendError } from "@/lib/utils/errors";
+import { retryAfterSecondsFromHeader } from "@/lib/utils/rate-limit";
+
+type RetriableConfig = InternalAxiosRequestConfig & { _refreshAttempted?: boolean };
+
+export const apiClient = axios.create({
+  baseURL: "/api/backend",
+  withCredentials: true,
+  headers: {
+    Accept: "application/json",
+  },
+});
+
+export function normalizeApiError(error: unknown): NormalizedBackendError {
+  if (!axios.isAxiosError(error)) {
+    return backendError({ message: error instanceof Error ? error.message : "Unexpected frontend error" });
+  }
+
+  const axiosError = error as AxiosError;
+  const response = axiosError.response;
+  const normalized = backendError(response?.data, response?.status);
+  const retryAfter = retryAfterSecondsFromHeader(response?.headers?.["retry-after"] as string | undefined);
+
+  if (!normalized.retryAfterSeconds && retryAfter) {
+    normalized.retryAfterSeconds = retryAfter;
+  }
+
+  return normalized;
+}
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError) => {
+    const normalized = normalizeApiError(error);
+    const config = error.config as RetriableConfig | undefined;
+
+    if (normalized.status === 401 && typeof window !== "undefined" && config && !config._refreshAttempted) {
+      config._refreshAttempted = true;
+
+      try {
+        await axios.post("/api/auth/refresh", {}, { withCredentials: true });
+        return apiClient(config);
+      } catch {
+        await axios.post("/api/auth/logout", {}, { withCredentials: true }).catch(() => undefined);
+        window.location.assign(`/login?next=${encodeURIComponent(window.location.pathname)}`);
+      }
+    }
+
+    return Promise.reject(normalized);
+  },
+);
+
+export async function apiGet<T>(path: string) {
+  const response = await apiClient.get<T>(path);
+  return response.data;
+}
+
+export async function apiPost<TResponse, TPayload = unknown>(path: string, payload?: TPayload) {
+  const response = await apiClient.post<TResponse>(path, payload);
+  return response.data;
+}
+
+export async function apiPatch<TResponse, TPayload = unknown>(path: string, payload?: TPayload) {
+  const response = await apiClient.patch<TResponse>(path, payload);
+  return response.data;
+}
+
+export async function apiDelete<TResponse>(path: string) {
+  const response = await apiClient.delete<TResponse>(path);
+  return response.data;
+}

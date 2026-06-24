@@ -1,32 +1,33 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetBrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://king-sparkon-tracker.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://king-sparkon-tracker.com"),
   title: {
-    default: "King Sparkon Tracker | Barcode Inventory Tracking SaaS",
+    default: "King Sparkon Tracker | Scan, Verify, Move Stock",
     template: "%s | King Sparkon Tracker",
   },
   description:
-    "King Sparkon Tracker is a barcode inventory tracking SaaS for product stock, barcode assignment, claims, worker activity, transactions, reports, audit logs, and billing.",
+    "A barcode and QR verification platform for product tracking, stock movement, worker tips, payouts, affiliate referrals, promotions, and audit-ready business operations.",
   keywords: [
-    "barcode inventory software",
-    "barcode product tracking",
-    "inventory tracking SaaS",
+    "barcode scanner platform",
+    "QR verification",
     "stock movement tracking",
-    "worker barcode scanning",
-    "returnable product claims",
+    "worker tips",
+    "product audit trail",
     "King Sparkon Tracker",
   ],
   icons: {
@@ -35,9 +36,9 @@ export const metadata: Metadata = {
     apple: "/king-sparkon-logo.png",
   },
   openGraph: {
-    title: "King Sparkon Tracker | Barcode Inventory Tracking SaaS",
+    title: "King Sparkon Tracker | Scan, Verify, Move Stock",
     description:
-      "Track every barcoded product from owner-created stock to worker scans, sales, claims, reports, audit logs, and billing.",
+      "Precision barcode operations for owners, workers, affiliates, admins, website payments, tips, payouts, and audit trails.",
     siteName: "King Sparkon Tracker",
     type: "website",
     images: [
@@ -49,13 +50,6 @@ export const metadata: Metadata = {
       },
     ],
   },
-  twitter: {
-    card: "summary",
-    title: "King Sparkon Tracker | Barcode Inventory Tracking SaaS",
-    description:
-      "A business-scoped barcode inventory tracking SaaS for products, workers, transactions, claims, reports, and billing.",
-    images: ["/king-sparkon-logo.png"],
-  },
 };
 
 export default function RootLayout({
@@ -64,10 +58,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
