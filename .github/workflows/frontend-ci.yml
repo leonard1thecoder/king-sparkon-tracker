@@ -5,14 +5,22 @@ on:
   push:
     branches: [main]
 
+env:
+  BUN_DOCKER_IMAGE: oven/bun:1
+
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-      - run: bun install --frozen-lockfile
-      - run: bun run lint
-      - run: bun run typecheck
-      - run: bun run test
-      - run: bun run build
+
+      - name: Validate frontend in Bun Docker image
+        run: |
+          docker run --rm --pull=always \
+            --user "$(id -u):$(id -g)" \
+            -e CI=true \
+            -e HOME=/tmp \
+            -v "${GITHUB_WORKSPACE}:/app" \
+            -w /app \
+            "${BUN_DOCKER_IMAGE}" \
+            sh -lc "bun install --no-save && bun run lint && bun run typecheck && bun run test && bun run build"
