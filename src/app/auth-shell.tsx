@@ -15,6 +15,8 @@ type AuthField = {
   autoComplete: string;
   defaultValue?: string;
   options?: Array<{ label: string; value: string }>;
+  icon?: string;
+  required?: boolean;
 };
 
 type AuthMode = "login" | "register" | "forgot" | "reset" | "resend";
@@ -36,11 +38,6 @@ type AuthShellProps = {
 };
 
 type AuthStatus = { tone: "success" | "error" | "info"; message: string };
-
-function fieldValue(formData: FormData, name: string) {
-  const value = formData.get(name);
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function payloadFromForm(formData: FormData) {
   const payload: Record<string, string> = {};
@@ -105,17 +102,19 @@ function successMessage(mode: AuthMode, responseBody: Record<string, unknown>) {
 }
 
 function FieldInput({ field }: { field: AuthField }) {
+  const required = field.required !== false;
+
   return (
     <label className="grid gap-2" htmlFor={field.name}>
       <span className="font-mono text-xs font-bold uppercase tracking-[0.1em] text-[var(--steel)]">{field.label}</span>
       {field.options ? (
-        <select id={field.name} name={field.name} defaultValue={field.defaultValue ?? field.options[0]?.value} required className="border border-[var(--line)] bg-white px-3 py-3 text-sm text-[var(--ink)]">
+        <select id={field.name} name={field.name} defaultValue={field.defaultValue ?? field.options[0]?.value} required={required} className="border border-[var(--line)] bg-white px-3 py-3 text-sm text-[var(--ink)]">
           {field.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
         </select>
       ) : field.type === "textarea" ? (
-        <textarea id={field.name} name={field.name} placeholder={field.placeholder} defaultValue={field.defaultValue} className="min-h-28 border border-[var(--line)] bg-white px-3 py-3 text-sm text-[var(--ink)]" />
+        <textarea id={field.name} name={field.name} placeholder={field.placeholder} defaultValue={field.defaultValue} required={required} className="min-h-28 border border-[var(--line)] bg-white px-3 py-3 text-sm text-[var(--ink)]" />
       ) : (
-        <input id={field.name} name={field.name} type={field.type} autoComplete={field.autoComplete} placeholder={field.placeholder} defaultValue={field.defaultValue} required className="border border-[var(--line)] bg-white px-3 py-3 text-sm text-[var(--ink)]" />
+        <input id={field.name} name={field.name} type={field.type} autoComplete={field.autoComplete} placeholder={field.placeholder} defaultValue={field.defaultValue} required={required} className="border border-[var(--line)] bg-white px-3 py-3 text-sm text-[var(--ink)]" />
       )}
     </label>
   );
