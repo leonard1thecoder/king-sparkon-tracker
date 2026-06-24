@@ -1,0 +1,11 @@
+:root {
+  --ink: #14161A;
+  --paper: #F1EFE6;
+  --signal: #FF4D2E;
+  --confirm: #1C7C54;
+  --steel: #5B6470;
+  --line: #D8D3C4;
+  --font-display: var(--font-jetbrains-mono);
+  --font-body: var(--font-inter);
+  --shadow-ledger: 0 18px 54px rgba(20, 22, 26, 0.12);
+}
