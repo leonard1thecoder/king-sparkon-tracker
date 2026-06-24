@@ -3,8 +3,7 @@ import { AuthShell } from "../auth-shell";
 
 export const metadata: Metadata = {
   title: "Register Barcode Inventory Workspace",
-  description:
-    "Create a King Sparkon Tracker owner account for barcode product tracking, stock control, worker scanning, reports, audit logs, and billing.",
+  description: "Create a King Sparkon Tracker owner account with business description, physical address, cellphone number, and optional affiliate code.",
 };
 
 const planNotes: Record<string, string> = {
@@ -27,7 +26,7 @@ export default async function RegisterPage({
       endpoint="/api/auth/register"
       eyebrow="Create account"
       title="Register your business workspace"
-      description="Create the owner account and business workspace for products, barcode capacity, workers, reports, claims, transactions, audit logs, and billing."
+      description="Create the owner account and business workspace for products, barcode capacity, workers, reports, claims, transactions, audit logs, and billing. Email verification is required before login when backend policy enforces it."
       submitLabel="Create account"
       footerText="Already have an account?"
       footerHref="/login"
@@ -36,38 +35,14 @@ export default async function RegisterPage({
       visualTitle="Launch a barcode inventory workspace."
       visualText="Each business gets protected product records, worker barcode assignment, stock movement, claims, reports, and audit history from the first sign-in."
       fields={[
-        {
-          name: "businessName",
-          label: "Business name",
-          type: "text",
-          placeholder: "King Retail Group",
-          autoComplete: "organization",
-          icon: "business",
-        },
-        {
-          name: "username",
-          label: "Username",
-          type: "text",
-          placeholder: "owner",
-          autoComplete: "username",
-          icon: "user",
-        },
-        {
-          name: "emailAddress",
-          label: "Email address",
-          type: "email",
-          placeholder: "owner@gmail.com",
-          autoComplete: "email",
-          icon: "email",
-        },
-        {
-          name: "password",
-          label: "Password",
-          type: "password",
-          placeholder: "Create a strong password",
-          autoComplete: "new-password",
-          icon: "lock",
-        },
+        { name: "businessName", label: "Business name", type: "text", placeholder: "Spark Store", autoComplete: "organization", icon: "business" },
+        { name: "businessDescription", label: "Business description", type: "textarea", placeholder: "Barcode-enabled retail store selling beverages and convenience products.", autoComplete: "off", icon: "business", required: false },
+        { name: "physicalAddress", label: "Physical address", type: "text", placeholder: "12 Main Road, Johannesburg", autoComplete: "street-address", icon: "business", required: false },
+        { name: "cellphoneNumber", label: "Cellphone number", type: "tel", placeholder: "+27821234567", autoComplete: "tel", icon: "business", required: false },
+        { name: "affiliateCode", label: "Affiliate code", type: "text", placeholder: "AFF-ALICE-1234", autoComplete: "off", icon: "key", required: false },
+        { name: "username", label: "Username", type: "text", placeholder: "owner", autoComplete: "username", icon: "user" },
+        { name: "emailAddress", label: "Email address", type: "email", placeholder: "owner@example.com", autoComplete: "email", icon: "email" },
+        { name: "password", label: "Password", type: "password", placeholder: "Create a strong password", autoComplete: "new-password", icon: "lock" },
         {
           name: "localizationCountry",
           label: "Localization country",
