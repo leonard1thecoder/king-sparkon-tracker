@@ -13,9 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          show-progress: false
 
       - name: Install dependencies in Bun Docker image
         run: |
+          set +e
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -e CI=true \
@@ -40,20 +43,46 @@ jobs:
                 fi
                 bun install --no-save
               fi
-            '
+            ' > install.log 2>&1
+          status=$?
+          tail -n 120 install.log
+          exit $status
 
       - name: Lint in Bun Docker image
         run: |
-          docker run --rm --user "$(id -u):$(id -g)" -e CI=true -e HOME=/tmp -v "${GITHUB_WORKSPACE}:/app" -w /app "${BUN_DOCKER_IMAGE}" sh -lc 'bun run lint'
+          set +e
+          docker run --rm --user "$(id -u):$(id -g)" -e CI=true -e HOME=/tmp -v "${GITHUB_WORKSPACE}:/app" -w /app "${BUN_DOCKER_IMAGE}" sh -lc 'bun run lint' > lint.log 2>&1
+          status=$?
+          tail -n 120 lint.log
+          exit $status
 
       - name: Typecheck in Bun Docker image
         run: |
-          docker run --rm --user "$(id -u):$(id -g)" -e CI=true -e HOME=/tmp -v "${GITHUB_WORKSPACE}:/app" -w /app "${BUN_DOCKER_IMAGE}" sh -lc 'bun run typecheck'
+          set +e
+          docker run --rm --user "$(id -u):$(id -g)" -e CI=true -e HOME=/tmp -v "${GITHUB_WORKSPACE}:/app" -w /app "${BUN_DOCKER_IMAGE}" sh -lc 'bun run typecheck' > typecheck.log 2>&1
+          status=$?
+          tail -n 200 typecheck.log
+          exit $status
 
       - name: Test in Bun Docker image
         run: |
-          docker run --rm --user "$(id -u):$(id -g)" -e CI=true -e HOME=/tmp -v "${GITHUB_WORKSPACE}:/app" -w /app "${BUN_DOCKER_IMAGE}" sh -lc 'bun run test'
+          set +e
+          docker run --rm --user "$(id -u):$(id -g)" -e CI=true -e HOME=/tmp -v "${GITHUB_WORKSPACE}:/app" -w /app "${BUN_DOCKER_IMAGE}" sh -lc 'bun run test' > test.log 2>&1
+          status=$?
+          tail -n 120 test.log
+          exit $status
 
       - name: Build in Bun Docker image
         run: |
-          docker run --rm --user "$(id -u):$(id -g)" -e CI=true -e HOME=/tmp -v "${GITHUB_WORKSPACE}:/app" -w /app "${BUN_DOCKER_IMAGE}" sh -lc 'bun run build'
+          set +e
+          docker run --rm --user "$(id -u):$(id -g)" -e CI=true -e HOME=/tmp -v "${GITHUB_WORKSPACE}:/app" -w /app "${BUN_DOCKER_IMAGE}" sh -lc 'bun run build' > build.log 2>&1
+          status=$?
+          tail -n 120 build.log
+          exit $status
+
+      - name: Upload frontend CI logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-ci-validation-logs
+          path: "*.log"
