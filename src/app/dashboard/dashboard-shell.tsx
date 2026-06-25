@@ -41,6 +41,12 @@ const activity = [
   ["TIP", "Worker QR tip", "Tip request created and assigned to owner review", "27 min ago", "confirm"],
 ] as const;
 
+const featureCards = [
+  [Building2, "Branch readiness", "Mobile-friendly stock views for warehouses, shelves, counters, and delivery points."],
+  [BarChart3, "Reporting clarity", "Inventory totals, scan movement, payment visibility, and audit signals stay grouped."],
+  [ScanLine, "Scanner-first UX", "The scan flow now has a real camera frame, manual fallback, and clear verification output."],
+] as const;
+
 export function DashboardShell({ role }: { role: Role }) {
   const copy = roleCopy[role];
 
@@ -90,11 +96,7 @@ export function DashboardShell({ role }: { role: Role }) {
         </div>
 
         <div className="grid gap-4 lg:grid-cols-3">
-          {[
-            [Building2, "Branch readiness", "Mobile-friendly stock views for warehouses, shelves, counters, and delivery points."],
-            [BarChart3, "Reporting clarity", "Inventory totals, scan movement, payment visibility, and audit signals stay grouped."],
-            [ScanLine, "Scanner-first UX", "The scan flow now has a real camera frame, manual fallback, and clear verification output."],
-          ].map(([Icon, title, description]) => (
+          {featureCards.map(([Icon, title, description]) => (
             <Card key={title} className="p-5">
               <Icon className="h-6 w-6 text-[var(--signal)]" />
               <h3 className="mt-5 text-xl font-black tracking-[-0.03em]">{title}</h3>
