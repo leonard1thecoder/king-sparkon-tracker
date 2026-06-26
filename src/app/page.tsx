@@ -6,8 +6,48 @@ import { ScanLoop } from "@/components/hero/ScanLoop";
 import { ContactForm } from "./contact-form";
 
 export const metadata: Metadata = {
-  title: "King Sparkon Tracker | Scan Smarter. Track Faster.",
-  description: "Professional barcode and QR inventory tracking for stock movement, scan verification, payments, tips, affiliate programs, pricing, reports, and audit-ready operations.",
+  title: "King Sparkon Tracker | Barcode Inventory, Tips, Affiliates & Payments",
+  description: "Premium barcode and QR inventory software for stock scanning, transactions, worker tips, affiliate programs, promotions, billing, reporting, and audit-ready business operations.",
+  keywords: [
+    "King Sparkon Tracker",
+    "barcode inventory software",
+    "QR stock tracking",
+    "worker tip QR codes",
+    "affiliate referral program",
+    "inventory dashboard",
+    "warehouse scanner app",
+    "South Africa barcode tracking",
+  ],
+  openGraph: {
+    title: "King Sparkon Tracker | Scan Smarter. Track Faster.",
+    description: "Barcode operations platform for inventory scanning, payments, tips, affiliates, reports, and audit-ready teams.",
+    type: "website",
+    siteName: "King Sparkon Tracker",
+    images: [{ url: "/king-sparkon-logo.png", width: 512, height: 512, alt: "King Sparkon Tracker barcode logo" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "King Sparkon Tracker | Barcode Inventory Platform",
+    description: "Scan, track, verify, promote, and report from one premium barcode operations dashboard.",
+    images: ["/king-sparkon-logo.png"],
+  },
+  alternates: {
+    canonical: "/",
+  },
+};
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "King Sparkon Tracker",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  description: "Barcode and QR operations platform for inventory tracking, stock movement, worker tips, affiliate referrals, promotions, billing, reports, and audit trails.",
+  offers: [
+    { "@type": "Offer", name: "Free Trial", price: "0", priceCurrency: "ZAR" },
+    { "@type": "Offer", name: "Plus", price: "880.00", priceCurrency: "ZAR" },
+    { "@type": "Offer", name: "Pro", price: "2300.00", priceCurrency: "ZAR" },
+  ],
 };
 
 const trustMetrics = [
@@ -65,7 +105,7 @@ const featurePillars = [
 
 const affiliateBenefits = [
   ["Referral links", "Affiliates get trackable links and QR previews they can share with businesses."],
-  ["Commission visibility", "Show referral performance, commission status, payout history, and business conversion quality."],
+  ["Commission visibility", "Display tiered commission rules: 18% for the first 3 months, 23% after 3 months, and 28% after 1 year."],
   ["Marketing assets", "Give partners campaign material, product explanations, and QR-ready promotion tools."],
   ["Growth channel", "Turn satisfied users, workers, and promoters into measurable acquisition partners."],
 ] as const;
@@ -74,61 +114,70 @@ const pricingPlans = [
   {
     name: "Free Trial",
     price: "R0",
-    caption: "14-day start",
+    caption: "14-day trial",
     highlight: false,
     description: "For a small team testing barcode tracking before committing to a paid plan.",
-    features: ["Up to 2 workers", "Basic product tracking", "Barcode scanning", "Owner dashboard", "Trial support"],
+    features: ["2 workers", "Unlimited products", "Unlimited barcode scanning", "Affiliate promo QR tracking", "Core owner dashboard"],
   },
   {
     name: "Plus",
-    price: "Stripe price",
-    caption: "Growing teams",
+    price: "R880",
+    caption: "Per month",
     highlight: true,
-    description: "For businesses that need more workers, cleaner stock visibility, and stronger daily operations.",
-    features: ["Up to 5 workers", "Inventory dashboard", "Transactions", "Promotions", "Reports"],
+    description: "For growing businesses that need more workers, clean inventory visibility, and stronger daily operations.",
+    features: ["5 workers", "Unlimited products", "Unlimited barcode scanning", "Affiliate promo QR tracking", "Transactions and reports"],
   },
   {
     name: "Pro",
-    price: "Stripe price",
-    caption: "Full operations",
+    price: "R2,300",
+    caption: "Per month",
     highlight: false,
-    description: "For businesses that need unlimited workers, tips, advanced reporting, and complete operational visibility.",
-    features: ["Unlimited workers", "Worker tips", "Advanced reporting", "AI analysis ready", "Worker clocker ready"],
+    description: "For businesses that need unlimited workers, tips, advanced analysis, and full operational visibility.",
+    features: ["Unlimited workers", "Worker tips platform", "Business Analysis AI", "Worker clocker", "Affiliate promo QR tracking"],
   },
 ] as const;
 
 export default function MarketingPage() {
   return (
     <main className="bg-[var(--paper)] text-[var(--ink)]">
-      <section className="relative overflow-hidden bg-[var(--ink)] text-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <section className="relative overflow-hidden bg-[var(--ink)] pt-24 text-white">
         <div className="absolute left-1/2 top-[-18rem] h-[42rem] w-[42rem] -translate-x-1/2 rounded-full bg-[var(--signal)]/10 blur-3xl" />
         <div className="absolute right-[-16rem] top-24 h-[34rem] w-[34rem] rounded-full bg-[var(--gold)]/10 blur-3xl" />
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent opacity-70" />
 
-        <nav className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-5 py-5 md:px-8">
-          <Link href="/" className="flex items-center gap-3">
-            <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker logo" width={48} height={48} className="rounded-[1.15rem] border border-white/15 bg-white/5 p-1" priority />
-            <div>
-              <p className="font-mono text-[0.65rem] font-bold uppercase tracking-[0.18em] text-[var(--gold)]">Barcode operations</p>
-              <p className="font-black uppercase tracking-[-0.02em]">King Sparkon Tracker</p>
-            </div>
-          </Link>
-          <div className="hidden items-center gap-6 text-sm font-semibold text-white/64 lg:flex">
-            <a href="#features" className="hover:text-white">Features</a>
-            <a href="#affiliate" className="hover:text-white">Affiliate</a>
-            <a href="#pricing" className="hover:text-white">Pricing</a>
-          </div>
-          <div className="hidden items-center gap-3 md:flex">
-            <Link href="/login" className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/15 px-4 text-sm font-bold text-white/80 hover:border-white/35 hover:text-white">
-              Login terminal
+        <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[rgba(7,17,31,0.82)] shadow-[0_18px_60px_rgba(0,0,0,0.22)] backdrop-blur-xl">
+          <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-8" aria-label="Primary navigation">
+            <Link href="/" className="flex items-center gap-3" aria-label="King Sparkon Tracker home">
+              <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker barcode logo" width={46} height={46} className="rounded-[1.15rem] border border-white/15 bg-white/5 p-1" priority />
+              <div>
+                <p className="font-mono text-[0.62rem] font-bold uppercase tracking-[0.18em] text-[var(--gold)]">Barcode operations</p>
+                <p className="font-black uppercase tracking-[-0.02em]">King Sparkon Tracker</p>
+              </div>
             </Link>
-            <Link href="/register" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-4 text-sm font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]">
-              Register business <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </nav>
 
-        <div className="relative z-10 mx-auto grid max-w-7xl gap-10 px-5 pb-16 pt-8 md:px-8 lg:grid-cols-[1.02fr_0.98fr] lg:pb-24 lg:pt-16">
+            <div className="hidden items-center gap-6 text-sm font-semibold text-white/64 lg:flex">
+              <a href="#features" className="hover:text-white">Features</a>
+              <a href="#affiliate" className="hover:text-white">Affiliate Program</a>
+              <a href="#pricing" className="hover:text-white">Pricing</a>
+              <a href="#contact" className="hover:text-white">Contact</a>
+            </div>
+
+            <div className="hidden items-center gap-3 md:flex">
+              <Link href="/register-affiliate" className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--gold)]/50 px-4 text-sm font-bold text-[var(--gold)] hover:border-[var(--gold)] hover:bg-[var(--gold)] hover:text-[var(--ink)]">
+                Affiliate Program
+              </Link>
+              <Link href="/login" className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/15 px-4 text-sm font-bold text-white/80 hover:border-white/35 hover:text-white">
+                Login terminal
+              </Link>
+              <Link href="/register" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-4 text-sm font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]">
+                Register business <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </nav>
+        </header>
+
+        <div className="relative z-10 mx-auto grid max-w-7xl gap-12 px-5 pb-16 pt-8 md:px-8 lg:grid-cols-[1.02fr_0.98fr] lg:pb-24 lg:pt-16">
           <div className="flex flex-col justify-center">
             <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/12 bg-white/[0.05] px-3 py-2 font-mono text-[0.68rem] font-bold uppercase tracking-[0.16em] text-white/70 shadow-[var(--shadow-soft)] backdrop-blur">
               <span className="h-2 w-2 rounded-full bg-[var(--confirm)]" /> Live scan verification
@@ -137,7 +186,7 @@ export default function MarketingPage() {
               Scan smarter. Track faster.
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-white/70">
-              Real-time barcode tracking for modern teams. Monitor inventory movement, reduce errors, manage tips and referrals, and keep stock visible from one premium operations dashboard.
+              Premium barcode inventory software for businesses that need scanning, stock movement, worker tips, affiliate referrals, payments, promotions, and audit-ready reporting in one dashboard.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link href="/dashboard/worker/scan" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]">
@@ -185,12 +234,12 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      <section id="features" className="px-5 py-16 md:px-8 lg:py-24">
+      <section id="features" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto max-w-3xl text-center">
             <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">02 / complete platform</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Every major feature explained clearly.</h2>
-            <p className="mt-4 text-sm leading-7 text-[var(--steel)] md:text-base">The landing page must sell the real product: inventory, scanning, payments, worker tips, promotions, affiliates, reports, and security.</p>
+            <p className="mt-4 text-sm leading-7 text-[var(--steel)] md:text-base">Inventory, scanning, payments, worker tips, promotions, affiliates, reports, and security are presented as one professional operations platform.</p>
           </div>
 
           <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -214,15 +263,18 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      <section id="affiliate" className="bg-[var(--ink)] px-5 py-16 text-white md:px-8 lg:py-24">
+      <section id="affiliate" className="scroll-mt-28 bg-[var(--ink)] px-5 py-16 text-white md:px-8 lg:py-24">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div>
             <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">03 / affiliate program</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Turn promoters into a measurable growth channel.</h2>
-            <p className="mt-5 text-sm leading-7 text-white/65 md:text-base">Affiliates should not feel like an afterthought. Give them referral links, QR previews, commission visibility, payout tracking, and assets that help them sell the platform properly.</p>
+            <p className="mt-5 text-sm leading-7 text-white/65 md:text-base">Affiliates get referral links, QR previews, commission visibility, payout tracking, and marketing assets that help them introduce businesses to barcode tracking.</p>
+            <Link href="/register-affiliate" className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--gold)] px-6 font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] hover:bg-white">
+              Join Affiliate Program <ArrowRight className="h-4 w-4" />
+            </Link>
             <div className="mt-8 rounded-[2rem] border border-white/10 bg-white/[0.05] p-5 shadow-[var(--shadow-depth)]">
               <div className="barcode-rule text-white" />
-              <p className="mt-4 text-sm leading-7 text-white/60">Best for promoters, resellers, field agents, worker networks, and local business partners who can introduce stores to barcode tracking.</p>
+              <p className="mt-4 text-sm leading-7 text-white/60">Commission tiers from backend: 18% for the first 3 months, 23% after 3 months, and 28% after 1 year.</p>
             </div>
           </div>
 
@@ -238,13 +290,13 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      <section id="pricing" className="px-5 py-16 md:px-8 lg:py-24">
+      <section id="pricing" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div className="max-w-3xl">
-              <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">04 / pricing model</p>
-              <h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Clear plans for real business growth.</h2>
-              <p className="mt-4 text-sm leading-7 text-[var(--steel)] md:text-base">Prices are managed by Stripe/backend billing, but the landing page now communicates the model: trial, growing team, and full operations.</p>
+              <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">04 / backend pricing model</p>
+              <h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Clear plans from the backend source of truth.</h2>
+              <p className="mt-4 text-sm leading-7 text-[var(--steel)] md:text-base">The prices and plan limits below match the backend billing policy: Free Trial, Plus, and Pro.</p>
             </div>
             <Link href="/register" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]">
               Start free trial <ArrowRight className="h-4 w-4" />
@@ -257,7 +309,10 @@ export default function MarketingPage() {
                 {plan.highlight ? <div className="absolute right-5 top-5 rounded-full bg-[var(--gold)] px-3 py-1 text-xs font-black uppercase tracking-[0.08em] text-[var(--ink)]">Recommended</div> : null}
                 <p className={`font-mono text-xs font-bold uppercase tracking-[0.16em] ${plan.highlight ? "text-[var(--gold)]" : "text-[var(--signal)]"}`}>{plan.caption}</p>
                 <h3 className="mt-4 text-3xl font-black tracking-[-0.04em]">{plan.name}</h3>
-                <p className="money mt-4 text-4xl font-black">{plan.price}</p>
+                <div className="mt-4 flex items-end gap-2">
+                  <p className="money text-4xl font-black">{plan.price}</p>
+                  {plan.name !== "Free Trial" ? <span className={plan.highlight ? "pb-1 text-sm font-semibold text-white/52" : "pb-1 text-sm font-semibold text-[var(--steel)]"}>/month</span> : null}
+                </div>
                 <p className={`mt-4 text-sm leading-7 ${plan.highlight ? "text-white/65" : "text-[var(--steel)]"}`}>{plan.description}</p>
                 <div className="mt-6 grid gap-3">
                   {plan.features.map((feature) => (
@@ -273,7 +328,7 @@ export default function MarketingPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 pb-16 md:px-8 lg:pb-24">
+      <section id="contact" className="mx-auto max-w-7xl scroll-mt-28 px-5 pb-16 md:px-8 lg:pb-24">
         <div className="grid gap-8 rounded-[2.25rem] border border-[var(--line)] bg-[var(--ink)] p-6 text-white shadow-[var(--shadow-depth)] lg:grid-cols-[0.8fr_1.2fr] lg:p-8">
           <div>
             <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">05 / contact</p>
