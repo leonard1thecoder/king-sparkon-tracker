@@ -16,12 +16,12 @@
   --line-strong: #c8beaa;
   --font-display: var(--font-jetbrains-mono);
   --font-body: var(--font-inter);
-  --radius-sm: 0.55rem;
-  --radius-md: 0.85rem;
-  --radius-lg: 1.15rem;
-  --radius-xl: 1.5rem;
-  --shadow-soft: 0 16px 48px rgba(7, 17, 31, 0.1);
-  --shadow-ledger: 0 24px 80px rgba(7, 17, 31, 0.16);
-  --shadow-depth: 0 34px 90px rgba(7, 17, 31, 0.28);
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
+  --shadow-soft: 0 18px 54px rgba(7, 17, 31, 0.1);
+  --shadow-ledger: 0 28px 90px rgba(7, 17, 31, 0.16);
+  --shadow-depth: 0 38px 110px rgba(7, 17, 31, 0.28);
   --focus-ring: 0 0 0 4px rgba(242, 100, 42, 0.18);
 }
