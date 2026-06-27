@@ -5,9 +5,14 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils/cn";
 
+function isRoleDashboardRoot(href: string) {
+  const segments = href.split("/").filter(Boolean);
+  return segments.length === 2 && segments[0] === "dashboard";
+}
+
 export function NavLink({ href, children }: { href: string; children: ReactNode }) {
   const pathname = usePathname();
-  const isActive = pathname === href || pathname.startsWith(`${href}/`);
+  const isActive = pathname === href || (!isRoleDashboardRoot(href) && pathname.startsWith(href + "/"));
 
   return (
     <Link
