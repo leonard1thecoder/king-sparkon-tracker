@@ -2,9 +2,36 @@ import type { Metadata } from "next";
 import { AuthShell } from "../auth-shell";
 
 export const metadata: Metadata = {
-  title: "Login to Barcode Inventory Software",
+  title: "Login | Barcode Inventory Dashboard Access",
   description:
-    "Sign in to King Sparkon Tracker to manage barcode inventory, product stock, worker scans, returnable claims, reports, audit logs, transactions, and billing.",
+    "Login to King Sparkon Tracker for barcode inventory scanning, QR verification, product stock movement, worker tips, affiliate reports, payments, promotions, and audit-ready dashboards.",
+  keywords: [
+    "King Sparkon Tracker login",
+    "barcode inventory login",
+    "QR scanner dashboard login",
+    "inventory tracking account",
+    "business barcode software access",
+  ],
+  alternates: {
+    canonical: "/login",
+  },
+  openGraph: {
+    title: "Login to King Sparkon Tracker",
+    description: "Secure access for owners, workers, affiliates, and admins using King Sparkon Tracker barcode operations software.",
+    type: "website",
+    siteName: "King Sparkon Tracker",
+    images: [{ url: "/king-sparkon-logo.png", width: 512, height: 512, alt: "King Sparkon Tracker login page" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "King Sparkon Tracker Login",
+    description: "Access barcode scanning, product tracking, tips, payouts, affiliates, and dashboard reporting.",
+    images: ["/king-sparkon-logo.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function LoginPage() {
@@ -13,30 +40,32 @@ export default function LoginPage() {
       mode="login"
       endpoint="/api/auth/login"
       eyebrow="Welcome back"
-      title="Sign in to your workspace"
-      description="Access barcode inventory tracking, product stock movement, worker scanning, returnable claims, reports, audit logs, transactions, and billing."
-      submitLabel="Sign in"
+      title="Sign in to your King Sparkon workspace"
+      description="Use your owner, worker, affiliate, or admin account. After login, King Sparkon Tracker opens the dashboard that matches your backend role."
+      submitLabel="Sign in securely"
       footerText="New to King Sparkon Tracker?"
       footerHref="/register"
-      footerLink="Create an account"
+      footerLink="Create a business account"
       visualTitle="Secure access for barcode inventory teams."
-      visualText="Owners and workers enter one business-scoped workspace for product stock, barcode scanning, claims, reports, and billing."
+      visualText="One clean entry point for product stock, barcode scanning, returnable claims, reports, payouts, promotions, affiliate visibility, and billing."
       fields={[
         {
           name: "username",
           label: "Username",
           type: "text",
-          placeholder: "owner",
+          placeholder: "Example: owner_admin",
           autoComplete: "username",
           icon: "user",
+          helper: "Required. This is the account username created for the workspace.",
         },
         {
           name: "password",
           label: "Password",
           type: "password",
-          placeholder: "Enter your password",
+          placeholder: "Account password",
           autoComplete: "current-password",
           icon: "lock",
+          helper: "Required. Use the account password for this workspace.",
         },
       ]}
     />

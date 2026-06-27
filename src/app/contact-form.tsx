@@ -15,6 +15,8 @@ type ContactResponse = {
   detail?: string;
 };
 
+const inputClasses = "h-12 rounded-[var(--radius-md)] border border-white/12 bg-white/[0.06] px-4 text-white outline-none placeholder:text-white/34 hover:border-white/24 hover:bg-white/[0.08] focus:border-[var(--gold)] focus:ring-4 focus:ring-[rgba(247,183,49,0.16)]";
+
 function fieldValue(formData: FormData, name: string) {
   const value = formData.get(name);
   return typeof value === "string" ? value.trim() : "";
@@ -22,14 +24,14 @@ function fieldValue(formData: FormData, name: string) {
 
 function statusClasses(tone: ContactStatus["tone"]) {
   if (tone === "success") {
-    return "border-[#99e39e]/30 bg-[#99e39e]/10 text-[#c8fad6]";
+    return "border-[var(--confirm)]/40 bg-[var(--confirm)]/12 text-white";
   }
 
   if (tone === "warning") {
-    return "border-[#ffab00]/30 bg-[#ffab00]/10 text-[#ffd666]";
+    return "border-[var(--gold)]/40 bg-[var(--gold)]/12 text-white";
   }
 
-  return "border-[#ff5630]/30 bg-[#ff5630]/10 text-[#ffac82]";
+  return "border-[var(--signal)]/40 bg-[var(--signal)]/12 text-white";
 }
 
 function validatePayload(payload: Record<string, string>) {
@@ -117,52 +119,37 @@ export function ContactForm() {
   return (
     <form className="grid gap-4" onSubmit={handleSubmit}>
       <div className="grid gap-4 sm:grid-cols-2">
-        <input
-          name="contactName"
-          className="h-12 rounded-lg border border-white/12 bg-[#000510]/45 px-4 text-white outline-none transition placeholder:text-white/34 hover:border-[#99e39e]/45 hover:bg-[#000510]/70 hover:text-white focus:border-[#99e39e] focus:bg-[#000510]/70 focus:ring-4 focus:ring-[#99e39e]/15"
-          placeholder="Your name"
-          autoComplete="name"
-        />
-        <input
-          name="phoneNumber"
-          className="h-12 rounded-lg border border-white/12 bg-[#000510]/45 px-4 text-white outline-none transition placeholder:text-white/34 hover:border-[#99e39e]/45 hover:bg-[#000510]/70 hover:text-white focus:border-[#99e39e] focus:bg-[#000510]/70 focus:ring-4 focus:ring-[#99e39e]/15"
-          placeholder="Phone number"
-          autoComplete="tel"
-        />
+        <label className="grid gap-2 text-sm font-semibold text-white/80">
+          Contact name
+          <input name="contactName" className={inputClasses} placeholder="Your name" autoComplete="name" />
+        </label>
+        <label className="grid gap-2 text-sm font-semibold text-white/80">
+          Phone number
+          <input name="phoneNumber" className={inputClasses} placeholder="+27 00 000 0000" autoComplete="tel" />
+        </label>
       </div>
-      <input
-        name="businessName"
-        required
-        className="h-12 rounded-lg border border-white/12 bg-[#000510]/45 px-4 text-white outline-none transition placeholder:text-white/34 hover:border-[#99e39e]/45 hover:bg-[#000510]/70 hover:text-white focus:border-[#99e39e] focus:bg-[#000510]/70 focus:ring-4 focus:ring-[#99e39e]/15"
-        placeholder="Business name"
-        autoComplete="organization"
-      />
-      <input
-        name="emailAddress"
-        required
-        className="h-12 rounded-lg border border-white/12 bg-[#000510]/45 px-4 text-white outline-none transition placeholder:text-white/34 hover:border-[#99e39e]/45 hover:bg-[#000510]/70 hover:text-white focus:border-[#99e39e] focus:bg-[#000510]/70 focus:ring-4 focus:ring-[#99e39e]/15"
-        placeholder="Email address"
-        type="email"
-        autoComplete="email"
-      />
-      <textarea
-        name="message"
-        required
-        maxLength={2000}
-        className="min-h-32 rounded-lg border border-white/12 bg-[#000510]/45 px-4 py-3 text-white outline-none transition placeholder:text-white/34 hover:border-[#99e39e]/45 hover:bg-[#000510]/70 hover:text-white focus:border-[#99e39e] focus:bg-[#000510]/70 focus:ring-4 focus:ring-[#99e39e]/15"
-        placeholder="Tell us what products and barcode workflow you need to track."
-      />
+      <label className="grid gap-2 text-sm font-semibold text-white/80">
+        Business name
+        <input name="businessName" required className={inputClasses} placeholder="Your business" autoComplete="organization" />
+      </label>
+      <label className="grid gap-2 text-sm font-semibold text-white/80">
+        Email address
+        <input name="emailAddress" required className={inputClasses} placeholder="you@company.com" type="email" autoComplete="email" />
+      </label>
+      <label className="grid gap-2 text-sm font-semibold text-white/80">
+        Barcode workflow
+        <textarea
+          name="message"
+          required
+          maxLength={2000}
+          className="min-h-32 rounded-[var(--radius-md)] border border-white/12 bg-white/[0.06] px-4 py-3 text-white outline-none placeholder:text-white/34 hover:border-white/24 hover:bg-white/[0.08] focus:border-[var(--gold)] focus:ring-4 focus:ring-[rgba(247,183,49,0.16)]"
+          placeholder="Tell us what products, branches, workers, and barcode flow you need to track."
+        />
+      </label>
 
       {status ? (
-        <div
-          className={`flex items-start gap-3 rounded-xl border px-4 py-3 text-sm leading-6 ${statusClasses(status.tone)}`}
-          role={status.tone === "error" ? "alert" : "status"}
-        >
-          {status.tone === "success" ? (
-            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-          ) : (
-            <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-          )}
+        <div className={`flex items-start gap-3 rounded-[var(--radius-md)] border px-4 py-3 text-sm leading-6 ${statusClasses(status.tone)}`} role={status.tone === "error" ? "alert" : "status"}>
+          {status.tone === "success" ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" /> : <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />}
           <span>{status.message}</span>
         </div>
       ) : null}
@@ -170,7 +157,7 @@ export function ContactForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[#99e39e] px-6 font-semibold text-[#000510] transition hover:bg-transparent hover:text-[#99e39e] hover:ring-1 hover:ring-[#99e39e] focus:outline-none focus:ring-4 focus:ring-[#99e39e]/20 disabled:cursor-not-allowed disabled:opacity-70"
+        className="inline-flex h-12 items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[var(--gold)] px-6 font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] hover:bg-white focus:ring-4 focus:ring-[rgba(247,183,49,0.18)] disabled:cursor-not-allowed disabled:opacity-70"
       >
         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <ArrowRight className="h-4 w-4" aria-hidden="true" />}
         {isSubmitting ? "Sending..." : "Send message"}
