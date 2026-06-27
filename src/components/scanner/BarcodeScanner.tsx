@@ -1,7 +1,7 @@
 "use client";
 
 import { BrowserMultiFormatReader, type IScannerControls } from "@zxing/browser";
-import { type FormEvent, useRef, useState } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import { Keyboard, ScanLine, StopCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ScanResultCard } from "./ScanResultCard";
@@ -11,16 +11,39 @@ type ScannerStatus = "IDLE" | "SCANNING" | "VERIFIED" | "CAMERA_NOT_READY" | "CA
 export function BarcodeScanner({ onScan }: { onScan?: (value: string) => void }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const controlsRef = useRef<IScannerControls | null>(null);
+  const isStartingRef = useRef(false);
   const [lastScan, setLastScan] = useState<string>();
   const [status, setStatus] = useState<ScannerStatus>("IDLE");
+  const isCameraActive = status === "SCANNING" || Boolean(controlsRef.current);
+
+  function stopScanner(nextStatus?: ScannerStatus) {
+    controlsRef.current?.stop();
+    controlsRef.current = null;
+
+    if (nextStatus) {
+      setStatus(nextStatus);
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      stopScanner();
+    };
+  }, []);
 
   async function start() {
+    if (controlsRef.current || isStartingRef.current) {
+      return;
+    }
+
     const videoElement = videoRef.current;
 
     if (!videoElement) {
       setStatus("CAMERA_NOT_READY");
       return;
     }
+
+    isStartingRef.current = true;
 
     try {
       setStatus("SCANNING");
@@ -34,14 +57,15 @@ export function BarcodeScanner({ onScan }: { onScan?: (value: string) => void })
         }
       });
     } catch {
+      controlsRef.current = null;
       setStatus("CAMERA_BLOCKED");
+    } finally {
+      isStartingRef.current = false;
     }
   }
 
   function stop() {
-    controlsRef.current?.stop();
-    controlsRef.current = null;
-    setStatus("IDLE");
+    stopScanner("IDLE");
   }
 
   function submitManualBarcode(event: FormEvent<HTMLFormElement>) {
@@ -68,15 +92,15 @@ export function BarcodeScanner({ onScan }: { onScan?: (value: string) => void })
             <div className="scan-sweep absolute inset-x-0 top-0 h-1 bg-[var(--signal)] shadow-[0_0_28px_var(--signal)]" />
           </div>
           <div className="absolute left-4 top-4 rounded-full border border-white/12 bg-black/30 px-3 py-1.5 font-mono text-[0.62rem] uppercase tracking-[0.16em] text-white/70">
-            {status === "SCANNING" ? "Scanning live" : "Camera frame"}
+            {isCameraActive ? "Camera active" : "Camera frame"}
           </div>
         </div>
 
         <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-          <Button onClick={start} className="sm:flex-1">
-            <ScanLine className="h-4 w-4" /> Start scan
+          <Button onClick={start} disabled={isCameraActive} className="sm:flex-1">
+            <ScanLine className="h-4 w-4" /> {isCameraActive ? "Scanner running" : "Start scan"}
           </Button>
-          <Button variant="quiet" onClick={stop} className="sm:flex-1">
+          <Button variant="quiet" onClick={stop} disabled={!isCameraActive && status === "IDLE"} className="sm:flex-1">
             <StopCircle className="h-4 w-4" /> Stop
           </Button>
         </div>
@@ -95,7 +119,7 @@ export function BarcodeScanner({ onScan }: { onScan?: (value: string) => void })
               name="barcode"
               className="h-12 rounded-[var(--radius-md)] border border-[var(--line)] bg-[var(--paper)] px-4 font-mono text-sm outline-none placeholder:text-[var(--muted)] focus:border-[var(--signal)]"
               placeholder="Enter or paste barcode"
-              inputMode="numeric"
+              inputMode="text"
             />
           </label>
           <Button type="submit" variant="secondary" className="mt-4 w-full">
