@@ -27,18 +27,18 @@ const roleCopy: Record<Role, { title: string; description: string }> = {
   },
 };
 
-const products: InventoryProduct[] = [
+const previewProducts: InventoryProduct[] = [
   { barcode: "KST-6001234567890", name: "Sparkon Premium Lager", location: "Warehouse A", quantity: 184, status: "Healthy", lastScanned: "2 min ago" },
   { barcode: "KST-6001234567814", name: "Returnable Bottle Crate", location: "Counter 02", quantity: 18, status: "Low stock", lastScanned: "11 min ago" },
   { barcode: "KST-6001234567838", name: "Promotion QR Card", location: "Promo Desk", quantity: 72, status: "Review", lastScanned: "24 min ago" },
   { barcode: "KST-6001234567883", name: "Worker Tip QR Stand", location: "Front till", quantity: 46, status: "Healthy", lastScanned: "41 min ago" },
 ];
 
-const activity = [
-  ["SELL", "Sparkon Premium Lager", "Worker terminal verified 3 item barcodes", "2 min ago", "confirm"],
-  ["LOW", "Returnable Bottle Crate", "Quantity dropped below branch threshold", "11 min ago", "signal"],
-  ["PAY", "Website payment", "Payment link generated for customer checkout", "18 min ago", "neutral"],
-  ["TIP", "Worker QR tip", "Tip request created and assigned to owner review", "27 min ago", "confirm"],
+const previewActivity = [
+  ["SELL", "Sparkon Premium Lager", "Preview event: worker terminal verified 3 item barcodes", "2 min ago", "confirm"],
+  ["LOW", "Returnable Bottle Crate", "Preview event: quantity dropped below branch threshold", "11 min ago", "signal"],
+  ["PAY", "Website payment", "Preview event: payment link generated for customer checkout", "18 min ago", "neutral"],
+  ["TIP", "Worker QR tip", "Preview event: tip request created and assigned to owner review", "27 min ago", "confirm"],
 ] as const;
 
 const featureCards = [
@@ -55,30 +55,30 @@ export function DashboardShell({ role }: { role: Role }) {
       <DashboardHeader role={role} title={copy.title} description={copy.description} />
       <main className="grid gap-6 p-5 md:p-8">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <MetricCard label="Total products" value="18,420" detail="Verified inventory records" tone="confirm" icon={<Boxes className="h-5 w-5" />} />
-          <MetricCard label="Total scans" value="426K" detail="Barcode and QR events" tone="signal" icon={<ScanLine className="h-5 w-5" />} />
-          <MetricCard label="Low stock alerts" value="07" detail="Needs owner attention" icon={<AlertTriangle className="h-5 w-5" />} />
-          <MetricCard label="Active branches" value="12" detail="Warehouses and counters" icon={<Warehouse className="h-5 w-5" />} />
+          <MetricCard label="Preview products" value="18,420" detail="Demo value until product API is connected" tone="confirm" icon={<Boxes className="h-5 w-5" />} />
+          <MetricCard label="Preview scans" value="426K" detail="Demo barcode and QR events" tone="signal" icon={<ScanLine className="h-5 w-5" />} />
+          <MetricCard label="Preview low stock" value="07" detail="Demo alerts, not live totals" icon={<AlertTriangle className="h-5 w-5" />} />
+          <MetricCard label="Preview branches" value="12" detail="Demo warehouses and counters" icon={<Warehouse className="h-5 w-5" />} />
         </div>
 
         <div className="grid gap-6 xl:grid-cols-[1.45fr_0.85fr]">
           <section className="grid gap-4">
             <SectionHeader
-              eyebrow="Inventory status"
-              title="Products that need operational visibility."
-              description="Readable tables on desktop, clean cards on mobile, and status badges operators can understand immediately."
+              eyebrow="Preview inventory status"
+              title="Demo products that show operational visibility."
+              description="Static preview data is labelled clearly until backend product, scan, and branch metrics are wired into this shell."
             />
-            <ProductTable products={products} />
+            <ProductTable products={previewProducts} />
           </section>
 
           <section className="grid gap-4">
-            <SectionHeader eyebrow="Live activity" title="Recent scan movement." />
+            <SectionHeader eyebrow="Preview activity" title="Demo scan movement." />
             <Card>
               <CardHeader>
-                <CardTitle>Operational feed</CardTitle>
+                <CardTitle>Preview operational feed</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-3">
-                {activity.map(([code, title, detail, time, tone]) => (
+                {previewActivity.map(([code, title, detail, time, tone]) => (
                   <article key={`${code}-${time}`} className="rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--surface)] p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
