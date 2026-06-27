@@ -1,7 +1,5 @@
 "use client";
 
-/* eslint-disable react-hooks/exhaustive-deps */
-
 import { BrowserMultiFormatReader, type IScannerControls } from "@zxing/browser";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { Keyboard, ScanLine, StopCircle } from "lucide-react";
@@ -12,30 +10,29 @@ type ScannerStatus = "IDLE" | "SCANNING" | "VERIFIED" | "CAMERA_NOT_READY" | "CA
 
 export function BarcodeScanner({ onScan }: { onScan?: (value: string) => void }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const controlsRef = useRef<IScannerControls | null>(null);
   const isStartingRef = useRef(false);
+  const [controls, setControls] = useState<IScannerControls | null>(null);
   const [lastScan, setLastScan] = useState<string>();
   const [status, setStatus] = useState<ScannerStatus>("IDLE");
-  const isCameraActive = status === "SCANNING" || Boolean(controlsRef.current);
+  const isCameraActive = status === "SCANNING" || Boolean(controls);
+
+  useEffect(() => {
+    return () => {
+      controls?.stop();
+    };
+  }, [controls]);
 
   function stopScanner(nextStatus?: ScannerStatus) {
-    controlsRef.current?.stop();
-    controlsRef.current = null;
+    controls?.stop();
+    setControls(null);
 
     if (nextStatus) {
       setStatus(nextStatus);
     }
   }
 
-  useEffect(() => {
-    return () => {
-      controlsRef.current?.stop();
-      controlsRef.current = null;
-    };
-  }, []);
-
   async function start() {
-    if (controlsRef.current || isStartingRef.current) {
+    if (controls || isStartingRef.current) {
       return;
     }
 
@@ -51,7 +48,7 @@ export function BarcodeScanner({ onScan }: { onScan?: (value: string) => void })
     try {
       setStatus("SCANNING");
       const reader = new BrowserMultiFormatReader();
-      controlsRef.current = await reader.decodeFromVideoDevice(undefined, videoElement, (result) => {
+      const nextControls = await reader.decodeFromVideoDevice(undefined, videoElement, (result) => {
         const value = result?.getText();
         if (value) {
           setLastScan(value);
@@ -59,8 +56,9 @@ export function BarcodeScanner({ onScan }: { onScan?: (value: string) => void })
           onScan?.(value);
         }
       });
+      setControls(nextControls);
     } catch {
-      controlsRef.current = null;
+      setControls(null);
       setStatus("CAMERA_BLOCKED");
     } finally {
       isStartingRef.current = false;
