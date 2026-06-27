@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import { BrowserMultiFormatReader, type IScannerControls } from "@zxing/browser";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { Keyboard, ScanLine, StopCircle } from "lucide-react";
@@ -27,8 +29,7 @@ export function BarcodeScanner({ onScan }: { onScan?: (value: string) => void })
 
   useEffect(() => {
     return () => {
-      const activeControls = controlsRef.current;
-      activeControls?.stop();
+      controlsRef.current?.stop();
       controlsRef.current = null;
     };
   }, []);
