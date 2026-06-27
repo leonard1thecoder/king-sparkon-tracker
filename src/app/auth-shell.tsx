@@ -20,7 +20,6 @@ import {
   ShieldCheck,
   Sparkles,
   UserRound,
-  UsersRound,
 } from "lucide-react";
 import { SocialLinks } from "@/components/social/SocialLinks";
 import { messageFromBackendPayload } from "@/lib/utils/errors";
@@ -369,7 +368,7 @@ export function AuthShell({
                   <div
                     aria-live="polite"
                     className={`flex gap-3 rounded-[1.5rem] border px-4 py-3 text-sm font-semibold leading-6 ${
-                      status.tone === "error" ? "border-[var(--signal)] bg-[var(--signal)]/8 text-[var(--ember)]" : "border-[var(--confirm)] bg-[var(--confirm)]/8 text-[var(--confirm)]"
+                      status.tone === "error" ? "border-[var(--signal)] bg-[var(--signal)]/10 text-[var(--ember)]" : "border-[var(--confirm)] bg-[var(--confirm)]/10 text-[var(--confirm)]"
                     }`}
                   >
                     {status.tone === "error" ? <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /> : <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />}
