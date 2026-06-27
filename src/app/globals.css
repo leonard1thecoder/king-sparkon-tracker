@@ -14,7 +14,7 @@
 
 html {
   min-height: 100%;
-  background: var(--paper);
+  background: #ffffff;
   scroll-behavior: smooth;
 }
 
@@ -22,8 +22,9 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at top left, rgba(247, 183, 49, 0.16), transparent 34rem),
-    linear-gradient(180deg, #fbf7ef 0%, var(--paper) 52%, #eee5d7 100%);
+    radial-gradient(circle at top left, rgba(247, 183, 49, 0.12), transparent 26rem),
+    radial-gradient(circle at top right, rgba(242, 100, 42, 0.1), transparent 28rem),
+    #ffffff;
   color: var(--ink);
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
   text-rendering: geometricPrecision;
@@ -103,7 +104,7 @@ textarea {
 }
 
 .table-ledger th {
-  background: rgba(255, 250, 240, 0.7);
+  background: rgba(255, 250, 240, 0.72);
   color: var(--steel);
   font-family: var(--font-jetbrains-mono), monospace;
   font-size: 0.68rem;
@@ -143,17 +144,17 @@ textarea {
 
 @keyframes scan-pass {
   0% {
-    transform: translateY(-12%);
+    transform: translateY(0);
     opacity: 0;
   }
-  14% {
+  12% {
     opacity: 1;
   }
   86% {
     opacity: 1;
   }
   100% {
-    transform: translateY(112%);
+    transform: translateY(5.75rem);
     opacity: 0;
   }
 }
