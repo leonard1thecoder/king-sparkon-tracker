@@ -1,7 +1,7 @@
 :root {
   --ink: #07111f;
   --ink-2: #0c1728;
-  --paper: #f6f1e8;
+  --paper: #ffffff;
   --surface: #fffaf0;
   --surface-strong: #ffffff;
   --signal: #f2642a;
@@ -12,7 +12,7 @@
   --danger: #dc2626;
   --steel: #667085;
   --muted: #98a2b3;
-  --line: #ded7c8;
+  --line: #e7e2d8;
   --line-strong: #c8beaa;
   --font-display: var(--font-jetbrains-mono);
   --font-body: var(--font-inter);
@@ -20,8 +20,8 @@
   --radius-md: 1rem;
   --radius-lg: 1.5rem;
   --radius-xl: 2rem;
-  --shadow-soft: 0 18px 54px rgba(7, 17, 31, 0.1);
-  --shadow-ledger: 0 28px 90px rgba(7, 17, 31, 0.16);
-  --shadow-depth: 0 38px 110px rgba(7, 17, 31, 0.28);
+  --shadow-soft: 0 18px 54px rgba(7, 17, 31, 0.08);
+  --shadow-ledger: 0 28px 90px rgba(7, 17, 31, 0.12);
+  --shadow-depth: 0 38px 110px rgba(7, 17, 31, 0.2);
   --focus-ring: 0 0 0 4px rgba(242, 100, 42, 0.18);
 }
