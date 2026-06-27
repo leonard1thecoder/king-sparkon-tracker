@@ -40,30 +40,32 @@ export default function LoginPage() {
       mode="login"
       endpoint="/api/auth/login"
       eyebrow="Welcome back"
-      title="Login to your scan terminal"
-      description="Access barcode inventory tracking, product stock movement, worker scanning, returnable claims, reports, audit logs, transactions, billing, tips, and affiliate visibility."
+      title="Sign in to your King Sparkon workspace"
+      description="Use your owner, worker, affiliate, or admin account. After login, King Sparkon Tracker opens the dashboard that matches your backend role."
       submitLabel="Sign in securely"
       footerText="New to King Sparkon Tracker?"
       footerHref="/register"
       footerLink="Create a business account"
       visualTitle="Secure access for barcode inventory teams."
-      visualText="Owners, workers, affiliates, and admins enter one business-scoped workspace for product stock, barcode scanning, claims, reports, payouts, and billing."
+      visualText="One clean entry point for product stock, barcode scanning, returnable claims, reports, payouts, promotions, affiliate visibility, and billing."
       fields={[
         {
           name: "username",
           label: "Username",
           type: "text",
-          placeholder: "owner",
+          placeholder: "Example: owner_admin",
           autoComplete: "username",
           icon: "user",
+          helper: "Required. This is the account username created for the workspace.",
         },
         {
           name: "password",
           label: "Password",
           type: "password",
-          placeholder: "Enter your password",
+          placeholder: "Account password",
           autoComplete: "current-password",
           icon: "lock",
+          helper: "Required. Use the account password for this workspace.",
         },
       ]}
     />
