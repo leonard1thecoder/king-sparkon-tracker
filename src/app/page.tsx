@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BarChart3, CheckCircle2, CreditCard, ShieldCheck, UsersRound, WalletCards } from "lucide-react";
 import { ScanLoop } from "@/components/hero/ScanLoop";
+import { AFFILIATE_COMMISSION_SUMMARY, BUSINESS_PRICING_PLANS, SOFTWARE_APPLICATION_OFFERS } from "@/lib/config/business-policy";
 import { ContactForm } from "./contact-form";
 
 export const metadata: Metadata = {
@@ -43,18 +44,14 @@ const structuredData = {
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web",
   description: "Barcode and QR operations platform for inventory tracking, stock movement, worker tips, affiliate referrals, promotions, billing, reports, and audit trails.",
-  offers: [
-    { "@type": "Offer", name: "Free Trial", price: "0", priceCurrency: "ZAR" },
-    { "@type": "Offer", name: "Plus", price: "880.00", priceCurrency: "ZAR" },
-    { "@type": "Offer", name: "Pro", price: "2300.00", priceCurrency: "ZAR" },
-  ],
+  offers: SOFTWARE_APPLICATION_OFFERS,
 };
 
-const trustMetrics = [
-  ["Products tracked", "18.4K", "Across stock rooms and sales counters"],
-  ["Scans processed", "426K", "Barcode and QR events verified"],
-  ["Active users", "1.2K", "Owners, workers, affiliates, admins"],
-  ["Inventory accuracy", "99.4%", "Audit-first stock visibility"],
+const previewTrustMetrics = [
+  ["Preview products", "18.4K", "Demo value until backend metrics connect"],
+  ["Preview scans", "426K", "Demo barcode and QR events"],
+  ["Preview users", "1.2K", "Demo owner, worker, affiliate, admin mix"],
+  ["Preview accuracy", "99.4%", "Demo audit-first stock visibility"],
 ] as const;
 
 const workflows = [
@@ -105,36 +102,9 @@ const featurePillars = [
 
 const affiliateBenefits = [
   ["Referral links", "Affiliates get trackable links and QR previews they can share with businesses."],
-  ["Commission visibility", "Display tiered commission rules: 18% for the first 3 months, 23% after 3 months, and 28% after 1 year."],
+  ["Commission visibility", `Display centralized commission rules: ${AFFILIATE_COMMISSION_SUMMARY}.`],
   ["Marketing assets", "Give partners campaign material, product explanations, and QR-ready promotion tools."],
   ["Growth channel", "Turn satisfied users, workers, and promoters into measurable acquisition partners."],
-] as const;
-
-const pricingPlans = [
-  {
-    name: "Free Trial",
-    price: "R0",
-    caption: "14-day trial",
-    highlight: false,
-    description: "For a small team testing barcode tracking before committing to a paid plan.",
-    features: ["2 workers", "Unlimited products", "Unlimited barcode scanning", "Affiliate promo QR tracking", "Core owner dashboard"],
-  },
-  {
-    name: "Plus",
-    price: "R880",
-    caption: "Per month",
-    highlight: true,
-    description: "For growing businesses that need more workers, clean inventory visibility, and stronger daily operations.",
-    features: ["5 workers", "Unlimited products", "Unlimited barcode scanning", "Affiliate promo QR tracking", "Transactions and reports"],
-  },
-  {
-    name: "Pro",
-    price: "R2,300",
-    caption: "Per month",
-    highlight: false,
-    description: "For businesses that need unlimited workers, tips, advanced analysis, and full operational visibility.",
-    features: ["Unlimited workers", "Worker tips platform", "Business Analysis AI", "Worker clocker", "Affiliate promo QR tracking"],
-  },
 ] as const;
 
 export default function MarketingPage() {
@@ -202,7 +172,7 @@ export default function MarketingPage() {
 
         <div className="relative z-10 border-t border-white/10 bg-white/[0.03] backdrop-blur">
           <div className="mx-auto grid max-w-7xl gap-3 px-5 py-5 sm:grid-cols-2 md:px-8 xl:grid-cols-4">
-            {trustMetrics.map(([label, value, detail]) => (
+            {previewTrustMetrics.map(([label, value, detail]) => (
               <div key={label} className="rounded-[1.4rem] border border-white/10 bg-white/[0.05] p-4 shadow-[var(--shadow-soft)]">
                 <p className="font-mono text-[0.66rem] uppercase tracking-[0.14em] text-white/45">{label}</p>
                 <p className="money mt-2 text-3xl font-black text-white">{value}</p>
@@ -274,7 +244,7 @@ export default function MarketingPage() {
             </Link>
             <div className="mt-8 rounded-[2rem] border border-white/10 bg-white/[0.05] p-5 shadow-[var(--shadow-depth)]">
               <div className="barcode-rule text-white" />
-              <p className="mt-4 text-sm leading-7 text-white/60">Commission tiers from backend: 18% for the first 3 months, 23% after 3 months, and 28% after 1 year.</p>
+              <p className="mt-4 text-sm leading-7 text-white/60">Commission tiers from centralized policy: {AFFILIATE_COMMISSION_SUMMARY}.</p>
             </div>
           </div>
 
@@ -294,9 +264,9 @@ export default function MarketingPage() {
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div className="max-w-3xl">
-              <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">04 / backend pricing model</p>
-              <h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Clear plans from the backend source of truth.</h2>
-              <p className="mt-4 text-sm leading-7 text-[var(--steel)] md:text-base">The prices and plan limits below match the backend billing policy: Free Trial, Plus, and Pro.</p>
+              <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">04 / centralized pricing policy</p>
+              <h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Clear plans from one frontend policy mirror.</h2>
+              <p className="mt-4 text-sm leading-7 text-[var(--steel)] md:text-base">These plan cards now read from one shared config. Replace that config with the live billing API once `/api/billing/plans` is connected.</p>
             </div>
             <Link href="/register" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]">
               Start free trial <ArrowRight className="h-4 w-4" />
@@ -304,14 +274,14 @@ export default function MarketingPage() {
           </div>
 
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {pricingPlans.map((plan) => (
+            {BUSINESS_PRICING_PLANS.map((plan) => (
               <article key={plan.name} className={`relative overflow-hidden rounded-[2rem] border p-6 shadow-[var(--shadow-soft)] ${plan.highlight ? "border-[var(--signal)] bg-[var(--ink)] text-white shadow-[var(--shadow-depth)]" : "border-[var(--line)] bg-[var(--surface-strong)] text-[var(--ink)]"}`}>
                 {plan.highlight ? <div className="absolute right-5 top-5 rounded-full bg-[var(--gold)] px-3 py-1 text-xs font-black uppercase tracking-[0.08em] text-[var(--ink)]">Recommended</div> : null}
                 <p className={`font-mono text-xs font-bold uppercase tracking-[0.16em] ${plan.highlight ? "text-[var(--gold)]" : "text-[var(--signal)]"}`}>{plan.caption}</p>
                 <h3 className="mt-4 text-3xl font-black tracking-[-0.04em]">{plan.name}</h3>
                 <div className="mt-4 flex items-end gap-2">
-                  <p className="money text-4xl font-black">{plan.price}</p>
-                  {plan.name !== "Free Trial" ? <span className={plan.highlight ? "pb-1 text-sm font-semibold text-white/52" : "pb-1 text-sm font-semibold text-[var(--steel)]"}>/month</span> : null}
+                  <p className="money text-4xl font-black">{plan.priceDisplay}</p>
+                  {plan.billingSuffix ? <span className={plan.highlight ? "pb-1 text-sm font-semibold text-white/52" : "pb-1 text-sm font-semibold text-[var(--steel)]"}>/{plan.billingSuffix}</span> : null}
                 </div>
                 <p className={`mt-4 text-sm leading-7 ${plan.highlight ? "text-white/65" : "text-[var(--steel)]"}`}>{plan.description}</p>
                 <div className="mt-6 grid gap-3">
