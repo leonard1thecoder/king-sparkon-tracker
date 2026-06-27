@@ -15,7 +15,8 @@ type ContactResponse = {
   detail?: string;
 };
 
-const inputClasses = "h-12 rounded-[var(--radius-md)] border border-white/12 bg-white/[0.06] px-4 text-white outline-none placeholder:text-white/34 hover:border-white/24 hover:bg-white/[0.08] focus:border-[var(--gold)] focus:ring-4 focus:ring-[rgba(247,183,49,0.16)]";
+const inputClasses = "h-12 rounded-[var(--radius-lg)] border border-[var(--line)] bg-white px-4 text-[var(--ink)] shadow-[var(--shadow-soft)] outline-none placeholder:text-[var(--muted)] hover:border-[var(--line-strong)] focus:border-[var(--signal)] focus:ring-4 focus:ring-[rgba(242,100,42,0.14)]";
+const labelClasses = "grid gap-2 text-sm font-black text-[var(--ink)]";
 
 function fieldValue(formData: FormData, name: string) {
   const value = formData.get(name);
@@ -24,14 +25,14 @@ function fieldValue(formData: FormData, name: string) {
 
 function statusClasses(tone: ContactStatus["tone"]) {
   if (tone === "success") {
-    return "border-[var(--confirm)]/40 bg-[var(--confirm)]/12 text-white";
+    return "border-[var(--confirm)]/40 bg-[var(--confirm)]/10 text-[var(--confirm)]";
   }
 
   if (tone === "warning") {
-    return "border-[var(--gold)]/40 bg-[var(--gold)]/12 text-white";
+    return "border-[var(--gold)]/50 bg-[var(--gold)]/12 text-[var(--warning)]";
   }
 
-  return "border-[var(--signal)]/40 bg-[var(--signal)]/12 text-white";
+  return "border-[var(--signal)]/45 bg-[var(--signal)]/10 text-[var(--ember)]";
 }
 
 function validatePayload(payload: Record<string, string>) {
@@ -117,38 +118,38 @@ export function ContactForm() {
   }
 
   return (
-    <form className="grid gap-4" onSubmit={handleSubmit}>
+    <form className="grid gap-4 rounded-[2rem] bg-white p-0 text-[var(--ink)]" onSubmit={handleSubmit}>
       <div className="grid gap-4 sm:grid-cols-2">
-        <label className="grid gap-2 text-sm font-semibold text-white/80">
+        <label className={labelClasses}>
           Contact name
-          <input name="contactName" className={inputClasses} placeholder="Your name" autoComplete="name" />
+          <input name="contactName" className={inputClasses} placeholder="Example: Sizolwakhe Nkosi" autoComplete="name" />
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-white/80">
+        <label className={labelClasses}>
           Phone number
-          <input name="phoneNumber" className={inputClasses} placeholder="+27 00 000 0000" autoComplete="tel" />
+          <input name="phoneNumber" className={inputClasses} placeholder="Example: +27 82 123 4567" autoComplete="tel" />
         </label>
       </div>
-      <label className="grid gap-2 text-sm font-semibold text-white/80">
+      <label className={labelClasses}>
         Business name
-        <input name="businessName" required className={inputClasses} placeholder="Your business" autoComplete="organization" />
+        <input name="businessName" required className={inputClasses} placeholder="Example: Sparkon Retail Store" autoComplete="organization" />
       </label>
-      <label className="grid gap-2 text-sm font-semibold text-white/80">
+      <label className={labelClasses}>
         Email address
-        <input name="emailAddress" required className={inputClasses} placeholder="you@company.com" type="email" autoComplete="email" />
+        <input name="emailAddress" required className={inputClasses} placeholder="Example: owner@sparkonstore.co.za" type="email" autoComplete="email" />
       </label>
-      <label className="grid gap-2 text-sm font-semibold text-white/80">
+      <label className={labelClasses}>
         Barcode workflow
         <textarea
           name="message"
           required
           maxLength={2000}
-          className="min-h-32 rounded-[var(--radius-md)] border border-white/12 bg-white/[0.06] px-4 py-3 text-white outline-none placeholder:text-white/34 hover:border-white/24 hover:bg-white/[0.08] focus:border-[var(--gold)] focus:ring-4 focus:ring-[rgba(247,183,49,0.16)]"
-          placeholder="Tell us what products, branches, workers, and barcode flow you need to track."
+          className="min-h-32 rounded-[var(--radius-lg)] border border-[var(--line)] bg-white px-4 py-3 text-[var(--ink)] shadow-[var(--shadow-soft)] outline-none placeholder:text-[var(--muted)] hover:border-[var(--line-strong)] focus:border-[var(--signal)] focus:ring-4 focus:ring-[rgba(242,100,42,0.14)]"
+          placeholder="Example: We need to track products, branches, workers, stock movement, QR tips, and barcode scan reports."
         />
       </label>
 
       {status ? (
-        <div className={`flex items-start gap-3 rounded-[var(--radius-md)] border px-4 py-3 text-sm leading-6 ${statusClasses(status.tone)}`} role={status.tone === "error" ? "alert" : "status"}>
+        <div className={`flex items-start gap-3 rounded-[var(--radius-lg)] border px-4 py-3 text-sm font-semibold leading-6 ${statusClasses(status.tone)}`} role={status.tone === "error" ? "alert" : "status"}>
           {status.tone === "success" ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" /> : <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />}
           <span>{status.message}</span>
         </div>
@@ -157,7 +158,7 @@ export function ContactForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="inline-flex h-12 items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[var(--gold)] px-6 font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] hover:bg-white focus:ring-4 focus:ring-[rgba(247,183,49,0.18)] disabled:cursor-not-allowed disabled:opacity-70"
+        className="inline-flex h-12 items-center justify-center gap-2 rounded-[var(--radius-lg)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] focus:ring-4 focus:ring-[rgba(242,100,42,0.18)] disabled:cursor-not-allowed disabled:opacity-70"
       >
         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <ArrowRight className="h-4 w-4" aria-hidden="true" />}
         {isSubmitting ? "Sending..." : "Send message"}
