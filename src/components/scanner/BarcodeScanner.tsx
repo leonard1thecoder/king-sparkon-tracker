@@ -27,7 +27,9 @@ export function BarcodeScanner({ onScan }: { onScan?: (value: string) => void })
 
   useEffect(() => {
     return () => {
-      stopScanner();
+      const activeControls = controlsRef.current;
+      activeControls?.stop();
+      controlsRef.current = null;
     };
   }, []);
 
