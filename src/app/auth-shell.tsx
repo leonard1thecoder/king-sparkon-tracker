@@ -4,7 +4,22 @@ import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import { type FormEvent, type ReactNode, useMemo, useState } from "react";
-import { AlertCircle, ArrowRight, Barcode, Building2, CheckCircle2, Eye, Fingerprint, KeyRound, LockKeyhole, Mail, MapPin, ShieldCheck, Sparkles, UserRound } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowRight,
+  Barcode,
+  Building2,
+  CheckCircle2,
+  Eye,
+  Fingerprint,
+  KeyRound,
+  LockKeyhole,
+  Mail,
+  MapPin,
+  ShieldCheck,
+  Sparkles,
+  UserRound,
+} from "lucide-react";
 import { SocialLinks } from "@/components/social/SocialLinks";
 import { messageFromBackendPayload } from "@/lib/utils/errors";
 
@@ -50,7 +65,12 @@ const iconMap: Record<string, ReactNode> = {
   user: <UserRound className="h-4 w-4" />,
 };
 
-const trustItems = ["Owner, worker, affiliate and admin routing", "Clear field examples for every input", "White rounded UI instead of the old square auth look", "Official profile links on every auth page"] as const;
+const trustItems = [
+  "Owner, worker, affiliate, admin, and ticket portal routing",
+  "Clear field examples for every input",
+  "White rounded UI instead of the old square auth look",
+  "Official profile links on every auth page",
+] as const;
 
 function payloadFromForm(formData: FormData) {
   const payload: Record<string, string> = {};
@@ -70,21 +90,14 @@ function validatePayload(mode: AuthMode, payload: Record<string, string>, fields
   return null;
 }
 
-function dashboardPath(responseBody: Record<string, unknown>) {
-  const user = responseBody.user as { privilege?: string; roles?: string[] } | undefined;
-  const roles = user?.roles ?? [user?.privilege ?? ""];
-  const roleText = roles.join(" ").toLowerCase();
-  if (roleText.includes("admin")) return "/dashboard/admin";
-  if (roleText.includes("affiliate")) return "/dashboard/affiliate";
-  if (roleText.includes("worker")) return "/dashboard/worker";
-  if (roleText.includes("owner")) return "/dashboard/owner";
-  return "/dashboard";
+function loginRedirectPath() {
+  return "/tickets";
 }
 
 function successMessage(mode: AuthMode, responseBody: Record<string, unknown>) {
   if (mode === "login") {
     const user = responseBody.user as { username?: string } | undefined;
-    return user?.username ? `Signed in as ${user.username}.` : "Signed in successfully.";
+    return user?.username ? `Signed in as ${user.username}. Opening ticket portal.` : "Signed in successfully. Opening ticket portal.";
   }
   if (mode === "register") return "Workspace created. Check the inbox for the email verification link before signing in.";
   if (mode === "forgot") return "If the account exists, a reset link has been sent.";
@@ -127,7 +140,7 @@ function FieldInput({ field }: { field: AuthField }) {
 export function AuthShell({ mode, eyebrow, title, description, fields, submitLabel, footerText, footerHref, footerLink, endpoint, note, visualTitle, visualText }: AuthShellProps) {
   const [status, setStatus] = useState<AuthStatus | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const activeNote = useMemo(() => note ?? (mode === "register" ? "Owners, affiliates, and admins must verify email before login when backend policy enforces it." : null), [mode, note]);
+  const activeNote = useMemo(() => note ?? (mode === "register" ? "Owners, affiliates, admins, and ticket managers must verify email before login when backend policy enforces it." : null), [mode, note]);
   const isLogin = mode === "login";
   const isRegister = mode === "register";
 
@@ -135,6 +148,7 @@ export function AuthShell({ mode, eyebrow, title, description, fields, submitLab
     event.preventDefault();
     setIsSubmitting(true);
     setStatus(null);
+
     try {
       const form = event.currentTarget;
       const payload = payloadFromForm(new FormData(form));
@@ -143,11 +157,12 @@ export function AuthShell({ mode, eyebrow, title, description, fields, submitLab
         setStatus({ tone: "error", message: validationError });
         return;
       }
+
       const response = await axios.post<Record<string, unknown>>(endpoint, payload, { withCredentials: true });
       const responseBody = response.data;
       if (!isLogin) form.reset();
       setStatus({ tone: "success", message: successMessage(mode, responseBody) });
-      if (isLogin) window.setTimeout(() => { window.location.href = dashboardPath(responseBody); }, 400);
+      if (isLogin) window.setTimeout(() => { window.location.href = loginRedirectPath(); }, 400);
       if (mode === "reset") window.setTimeout(() => { window.location.href = "/login"; }, 700);
     } catch (error) {
       setStatus({ tone: "error", message: axios.isAxiosError(error) ? messageFromBackendPayload(error.response?.data) : "Unable to reach the auth API." });
@@ -167,7 +182,10 @@ export function AuthShell({ mode, eyebrow, title, description, fields, submitLab
         <section className="order-2 lg:order-1">
           <Link href="/" aria-label="King Sparkon Tracker home" className="inline-flex items-center gap-3">
             <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker barcode logo" width={54} height={54} className="rounded-[1.35rem] border border-[var(--line)] bg-white p-1.5 shadow-[var(--shadow-soft)]" priority />
-            <div><p className="font-mono text-[0.66rem] font-black uppercase tracking-[0.2em] text-[var(--signal)]">King Sparkon</p><p className="text-xl font-black uppercase tracking-[-0.04em]">Tracker</p></div>
+            <div>
+              <p className="font-mono text-[0.66rem] font-black uppercase tracking-[0.2em] text-[var(--signal)]">King Sparkon</p>
+              <p className="text-xl font-black uppercase tracking-[-0.04em]">Tracker</p>
+            </div>
           </Link>
 
           <div className="mt-10 max-w-3xl">
@@ -178,7 +196,11 @@ export function AuthShell({ mode, eyebrow, title, description, fields, submitLab
 
           <div className="mt-8 overflow-hidden rounded-[2.25rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-7">
             <div className="flex flex-col gap-4 border-b border-[var(--line)] pb-5 md:flex-row md:items-start md:justify-between">
-              <div><p className="font-mono text-xs font-black uppercase tracking-[0.16em] text-[var(--signal)]">Secure workspace entry</p><h2 className="mt-2 text-2xl font-black tracking-[-0.04em] md:text-3xl">{visualTitle}</h2><p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--steel)]">{visualText}</p></div>
+              <div>
+                <p className="font-mono text-xs font-black uppercase tracking-[0.16em] text-[var(--signal)]">Secure workspace entry</p>
+                <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] md:text-3xl">{visualTitle}</h2>
+                <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--steel)]">{visualText}</p>
+              </div>
               <div className="grid h-13 w-13 shrink-0 place-items-center rounded-[1.35rem] bg-[var(--ink)] text-[var(--gold)] shadow-[var(--shadow-soft)]">{isLogin ? <ShieldCheck className="h-6 w-6" /> : <Barcode className="h-6 w-6" />}</div>
             </div>
 
@@ -189,7 +211,9 @@ export function AuthShell({ mode, eyebrow, title, description, fields, submitLab
               {isLogin ? <div className="flex flex-col gap-3 text-sm font-bold text-[var(--steel)] sm:flex-row sm:items-center sm:justify-between"><label className="inline-flex items-center gap-2"><input type="checkbox" name="remember" className="h-4 w-4 rounded border-[var(--line)] accent-[var(--signal)]" />Remember this device</label><div className="flex flex-wrap gap-3"><Link href="/resend-verification" className="text-[var(--signal)] hover:text-[var(--ember)]">Resend verification</Link><Link href="/forgot-password" className="text-[var(--signal)] hover:text-[var(--ember)]">Forgot password?</Link></div></div> : null}
               {isRegister ? <label className="flex items-start gap-3 rounded-[1.5rem] border border-[var(--line)] bg-[var(--surface)] p-4 text-sm font-semibold leading-6 text-[var(--steel)]"><input type="checkbox" name="terms" required className="mt-1 h-4 w-4 accent-[var(--signal)]" /><span>I confirm this account will manage a business-scoped King Sparkon Tracker workspace.</span></label> : null}
               {status ? <div aria-live="polite" className={`flex gap-3 rounded-[1.5rem] border px-4 py-3 text-sm font-semibold leading-6 ${status.tone === "error" ? "border-[var(--signal)] bg-[var(--signal)]/10 text-[var(--ember)]" : "border-[var(--confirm)] bg-[var(--confirm)]/10 text-[var(--confirm)]"}`}>{status.tone === "error" ? <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /> : <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />}<span>{status.message}</span></div> : null}
-              <button type="submit" disabled={isSubmitting} className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] disabled:pointer-events-none disabled:opacity-60">{isSubmitting ? "Working..." : submitLabel} <ArrowRight className="h-4 w-4" /></button>
+              <button type="submit" disabled={isSubmitting} className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] disabled:opacity-55">
+                {isSubmitting ? "Submitting..." : submitLabel} <ArrowRight className="h-4 w-4" />
+              </button>
             </form>
 
             <div className="mt-6 rounded-[1.75rem] border border-[var(--line)] bg-[var(--surface)] p-4"><p className="text-sm font-bold text-[var(--steel)]">{footerText} <Link href={footerHref} className="font-black text-[var(--signal)] hover:text-[var(--ember)]">{footerLink}</Link></p></div>
@@ -198,7 +222,15 @@ export function AuthShell({ mode, eyebrow, title, description, fields, submitLab
         </section>
 
         <aside className="order-1 lg:order-2">
-          <div className="relative mx-auto max-w-xl [perspective:1200px]"><div className="absolute -inset-4 rounded-[3rem] bg-gradient-to-br from-[var(--gold)]/28 via-white to-[var(--signal)]/18 blur-2xl" /><div className="relative rounded-[2.75rem] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-depth)] [transform:rotateX(3deg)_rotateY(-6deg)] md:p-5"><div className="overflow-hidden rounded-[2.25rem] border border-[var(--line)] bg-[var(--ink)] text-white"><div className="flex items-center justify-between border-b border-white/10 px-5 py-4"><div><p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.18em] text-[var(--gold)]">Auth terminal</p><p className="mt-1 text-sm font-semibold text-white/62">King Sparkon Tracker access</p></div><span className="rounded-full border border-white/10 bg-white/[0.08] px-3 py-1 text-xs font-black text-white/78">Ready</span></div><div className="grid gap-4 p-5"><div className="rounded-[1.75rem] border border-white/10 bg-white/[0.06] p-5"><div className="barcode-rule h-16 text-white" /><div className="mt-4 flex items-center justify-between text-xs font-bold uppercase tracking-[0.14em] text-white/48"><span>Workspace</span><span>Verified</span></div></div><div className="grid gap-3">{trustItems.map((point) => <div key={point} className="flex items-center gap-3 rounded-[1.35rem] border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-bold text-white/68"><CheckCircle2 className="h-4 w-4 shrink-0 text-[var(--gold)]" />{point}</div>)}</div></div></div></div></div>
+          <div className="relative mx-auto max-w-xl [perspective:1200px]">
+            <div className="absolute -inset-4 rounded-[3rem] bg-gradient-to-br from-[var(--gold)]/28 via-white to-[var(--signal)]/18 blur-2xl" />
+            <div className="relative rounded-[2.75rem] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-depth)] [transform:rotateX(3deg)_rotateY(-6deg)] md:p-5">
+              <div className="overflow-hidden rounded-[2.25rem] border border-[var(--line)] bg-[var(--ink)] text-white">
+                <div className="flex items-center justify-between border-b border-white/10 px-5 py-4"><div><p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.18em] text-[var(--gold)]">Auth terminal</p><p className="mt-1 text-sm font-semibold text-white/62">King Sparkon Tracker access</p></div><span className="rounded-full border border-white/10 bg-white/[0.08] px-3 py-1 text-xs font-black text-white/78">Ready</span></div>
+                <div className="grid gap-4 p-5"><div className="rounded-[1.75rem] border border-white/10 bg-white/[0.06] p-5"><div className="barcode-rule h-16 text-white" /><div className="mt-4 flex items-center justify-between text-xs font-bold uppercase tracking-[0.14em] text-white/48"><span>Workspace</span><span>Ticket portal</span></div></div><div className="grid gap-3">{trustItems.map((point) => <div key={point} className="flex items-center gap-3 rounded-[1.35rem] border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-bold text-white/68"><CheckCircle2 className="h-4 w-4 shrink-0 text-[var(--gold)]" />{point}</div>)}</div></div>
+              </div>
+            </div>
+          </div>
         </aside>
       </div>
     </main>
