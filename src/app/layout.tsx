@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import "./globals.css";
@@ -54,9 +53,6 @@ export const metadata: Metadata = {
       },
     ],
   },
-  other: {
-    "google-adsense-account": adsensePublisherId,
-  },
 };
 
 export default function RootLayout({
@@ -66,13 +62,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
-        <Script
-          id="google-adsense"
-          strategy="beforeInteractive"
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsensePublisherId}`}
+      <head>
+        <meta name="google-adsense-account" content={adsensePublisherId} />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8918343184695576"
           crossOrigin="anonymous"
         />
+      </head>
+      <body className="min-h-full flex flex-col">
         {children}
         <SiteFooter marketingOnly />
       </body>
