@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { TicketCheckoutClient } from "./ticket-checkout-client";
 
@@ -13,5 +14,9 @@ export const metadata: Metadata = {
 
 export default async function TicketCheckoutPage({ params }: PageProps) {
   const { eventId } = await params;
-  return <TicketCheckoutClient eventId={eventId} />;
+  return (
+    <Suspense fallback={<div className="mx-auto max-w-7xl px-5 py-16 md:px-8"><div className="h-[34rem] animate-pulse rounded-[2.4rem] border border-[var(--line)] bg-[var(--surface)]" /></div>}>
+      <TicketCheckoutClient eventId={eventId} />
+    </Suspense>
+  );
 }
