@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Barcode, Building2, Crown, QrCode, ShieldCheck, Ticket, UserRound } from "lucide-react";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { getTicketSession, setDemoTicketRole, ticketRoleOptions } from "@/services/ticketAuthService";
@@ -23,11 +23,7 @@ const links = [
 
 export function TicketLayout({ children }: TicketLayoutProps) {
   const pathname = usePathname();
-  const [session, setSession] = useState<TicketSession | null>(null);
-
-  useEffect(() => {
-    setSession(getTicketSession());
-  }, []);
+  const [session, setSession] = useState<TicketSession>(() => getTicketSession());
 
   function switchRole(role: TicketRole) {
     setSession(setDemoTicketRole(role));
@@ -64,10 +60,10 @@ export function TicketLayout({ children }: TicketLayoutProps) {
 
         <div className="border-t border-[var(--line)] bg-[var(--surface)]/70">
           <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-3 text-xs font-bold text-[var(--steel)] md:px-8 lg:flex-row lg:items-center lg:justify-between">
-            <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-[var(--confirm)]" /> Demo protected flow: backend auth is now principal-aware. Current role: <strong className="text-[var(--ink)]">{session?.roles.join(" + ") ?? "Loading"}</strong></span>
+            <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-[var(--confirm)]" /> Demo protected flow: backend auth is now principal-aware. Current role: <strong className="text-[var(--ink)]">{session.roles.join(" + ")}</strong></span>
             <div className="flex flex-wrap gap-2">
               {ticketRoleOptions.map((role) => (
-                <button key={role} type="button" onClick={() => switchRole(role)} className={`rounded-full border px-3 py-1.5 font-mono text-[0.66rem] font-black uppercase tracking-[0.12em] ${session?.roles.includes(role) ? "border-[var(--signal)] bg-white text-[var(--signal)]" : "border-[var(--line)] bg-white/70 text-[var(--steel)] hover:border-[var(--signal)]"}`}>
+                <button key={role} type="button" onClick={() => switchRole(role)} className={`rounded-full border px-3 py-1.5 font-mono text-[0.66rem] font-black uppercase tracking-[0.12em] ${session.roles.includes(role) ? "border-[var(--signal)] bg-white text-[var(--signal)]" : "border-[var(--line)] bg-white/70 text-[var(--steel)] hover:border-[var(--signal)]"}`}>
                   {role}
                 </button>
               ))}
