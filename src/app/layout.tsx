@@ -16,6 +16,8 @@ const jetBrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+const adsensePublisherId = "ca-pub-8918343184695576";
+
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://king-sparkon-tracker.com"),
   title: {
@@ -52,6 +54,9 @@ export const metadata: Metadata = {
       },
     ],
   },
+  other: {
+    "google-adsense-account": adsensePublisherId,
+  },
 };
 
 export default function RootLayout({
@@ -62,15 +67,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
-        {children}
-        <SiteFooter marketingOnly />
         <Script
           id="google-adsense"
-          async
-          strategy="afterInteractive"
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8918343184695576"
+          strategy="beforeInteractive"
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsensePublisherId}`}
           crossOrigin="anonymous"
         />
+        {children}
+        <SiteFooter marketingOnly />
       </body>
     </html>
   );
