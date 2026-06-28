@@ -49,13 +49,13 @@ const serviceNotes: Record<string, string> = {
   AFFILIATE_PROMOTIONS: "Service selected: Affiliate Promotions for referral links, QR campaigns, commission visibility, and promoter performance.",
 };
 
-const serviceOptions = [
+const serviceOptions: Array<{ label: string; value: string }> = [
   { label: "Full Business Suite — inventory, tickets, tips, affiliates, payments", value: "FULL_BUSINESS_SUITE" },
   { label: "Barcode Inventory — products, scanning, stock movement", value: "BARCODE_INVENTORY" },
   { label: "QR Ticket Events — event tickets and gate verification", value: "QR_TICKET_EVENTS" },
   { label: "Worker Tips & Payouts — QR tips and owner payout review", value: "WORKER_TIPS_PAYOUTS" },
   { label: "Affiliate Promotions — referral links and campaign QR tracking", value: "AFFILIATE_PROMOTIONS" },
-] as const;
+];
 
 export default async function RegisterPage({
   searchParams,
@@ -85,17 +85,7 @@ export default async function RegisterPage({
       visualTitle="Launch a service-aware barcode workspace."
       visualText="The register flow now shows exactly whether the business is signing up for inventory, QR events, worker tips, affiliate promotions, or the full King Sparkon operating suite."
       fields={[
-        {
-          name: "serviceRegistrationType",
-          label: "Service registering for",
-          type: "select",
-          placeholder: "Choose the King Sparkon service this workspace needs",
-          autoComplete: "off",
-          icon: "service",
-          defaultValue: selectedService,
-          helper: "Required. This tells the workspace which service to prioritize after onboarding.",
-          options: serviceOptions,
-        },
+        { name: "serviceRegistrationType", label: "Service registering for", type: "select", placeholder: "Choose the King Sparkon service this workspace needs", autoComplete: "off", icon: "service", defaultValue: selectedService, helper: "Required. This tells the workspace which service to prioritize after onboarding.", options: serviceOptions },
         { name: "businessName", label: "Business name", type: "text", placeholder: "Example: Sparkon Retail Store", autoComplete: "organization", icon: "business", helper: "Required. The company or trading name shown in the dashboard." },
         { name: "businessDescription", label: "Business description", type: "textarea", placeholder: "Example: Barcode-enabled retail store selling beverages, snacks, and returnable bottles.", autoComplete: "off", icon: "business", required: false, helper: "Optional. Describe what the business sells or tracks." },
         { name: "physicalAddress", label: "Physical address", type: "text", placeholder: "Example: 12 Main Road, Johannesburg, South Africa", autoComplete: "street-address", icon: "business", required: false, helper: "Optional. Useful for branch, delivery, and stock location context." },
@@ -104,20 +94,7 @@ export default async function RegisterPage({
         { name: "username", label: "Owner username", type: "text", placeholder: "Example: owner_admin", autoComplete: "username", icon: "user", helper: "Required. This becomes the first owner login username." },
         { name: "emailAddress", label: "Owner email address", type: "email", placeholder: "Example: owner@sparkonstore.co.za", autoComplete: "email", icon: "email", helper: "Required. Verification and account messages are sent here." },
         { name: "password", label: "Create password", type: "password", placeholder: "Minimum 8 characters with letters and numbers", autoComplete: "new-password", icon: "lock", helper: "Required. Use a strong password for the owner account." },
-        {
-          name: "localizationCountry",
-          label: "Localization country",
-          type: "text",
-          placeholder: "SOUTH_AFRICA",
-          autoComplete: "country-name",
-          icon: "country",
-          defaultValue: "SOUTH_AFRICA",
-          helper: "Required. Choose South Africa for local pricing, phone, and payment copy.",
-          options: [
-            { label: "South Africa", value: "SOUTH_AFRICA" },
-            { label: "Rest of the world", value: "REST_OF_WORLD" },
-          ],
-        },
+        { name: "localizationCountry", label: "Localization country", type: "text", placeholder: "SOUTH_AFRICA", autoComplete: "country-name", icon: "country", defaultValue: "SOUTH_AFRICA", helper: "Required. Choose South Africa for local pricing, phone, and payment copy.", options: [{ label: "South Africa", value: "SOUTH_AFRICA" }, { label: "Rest of the world", value: "REST_OF_WORLD" }] },
       ]}
     />
   );
