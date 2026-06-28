@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import "./globals.css";
@@ -63,6 +64,13 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         {children}
         <SiteFooter marketingOnly />
+        <Script
+          id="google-adsense"
+          async
+          strategy="afterInteractive"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8918343184695576"
+          crossOrigin="anonymous"
+        />
       </body>
     </html>
   );
