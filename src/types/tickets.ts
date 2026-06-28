@@ -83,6 +83,8 @@ export interface OwnerTicketDashboard extends TicketTotals {
   regularSold: number;
   vipSold: number;
   vvipSold: number;
+  ticketWithdrawalFeePercent?: number;
+  availableWithdrawalBalance?: number;
 }
 
 export interface CreateTicketEventPayload {
@@ -105,4 +107,34 @@ export interface TicketCheckoutQuote {
   subtotal: number;
   serviceFee: number;
   total: number;
+}
+
+export interface StripeCheckoutResponse {
+  paymentId: string;
+  checkoutSessionId: string;
+  checkoutUrl: string;
+  publishableKey?: string;
+}
+
+export interface TicketEventComment {
+  id: string;
+  eventId: string;
+  userId: string;
+  displayName: string;
+  comment: string;
+  createdAt: string;
+}
+
+export interface BusinessCatalogItem {
+  businessId: string;
+  businessName: string;
+  imagePath?: string | null;
+  following: boolean;
+  eventCount: number;
+}
+
+export interface FollowResponse {
+  businessId: string;
+  userId: string;
+  following: boolean;
 }
