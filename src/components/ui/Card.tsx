@@ -2,11 +2,11 @@ import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils/cn";
 
 export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface-strong)] shadow-[var(--shadow-soft)]", className)} {...props} />;
+  return <div className={cn("rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface-strong)] shadow-[var(--shadow-soft)] ring-1 ring-white/70", className)} {...props} />;
 }
 
 export function CardHeader({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("border-b border-[var(--line)] px-5 py-4", className)} {...props} />;
+  return <div className={cn("border-b border-[var(--line)] bg-[var(--surface)]/55 px-5 py-4", className)} {...props} />;
 }
 
 export function CardTitle({ children, className }: { children: ReactNode; className?: string }) {
