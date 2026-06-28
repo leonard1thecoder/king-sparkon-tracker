@@ -4,9 +4,9 @@ type Tone = "neutral" | "signal" | "confirm" | "warning";
 
 const tones: Record<Tone, string> = {
   neutral: "border-[var(--line-strong)] bg-[var(--paper)] text-[var(--steel)]",
-  signal: "border-[var(--signal)] bg-[rgba(242,100,42,0.08)] text-[var(--signal)]",
-  confirm: "border-[var(--confirm)] bg-[rgba(21,128,61,0.08)] text-[var(--confirm)]",
-  warning: "border-[var(--warning)] bg-[rgba(183,121,31,0.08)] text-[var(--warning)]",
+  signal: "border-[var(--signal)] bg-[rgba(29,92,131,0.08)] text-[var(--signal)]",
+  confirm: "border-[var(--confirm)] bg-[rgba(50,213,131,0.12)] text-[var(--confirm)]",
+  warning: "border-[var(--warning)] bg-[rgba(245,158,11,0.1)] text-[var(--warning)]",
 };
 
 export function StatusPill({ label, tone = "neutral", className }: { label: string; tone?: Tone; className?: string }) {
