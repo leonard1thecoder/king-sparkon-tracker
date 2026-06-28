@@ -22,9 +22,9 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at top left, rgba(247, 183, 49, 0.12), transparent 26rem),
-    radial-gradient(circle at top right, rgba(242, 100, 42, 0.1), transparent 28rem),
-    #ffffff;
+    radial-gradient(circle at top left, rgba(40, 214, 198, 0.16), transparent 28rem),
+    radial-gradient(circle at top right, rgba(124, 92, 255, 0.12), transparent 30rem),
+    linear-gradient(180deg, #ffffff 0%, #f7fafc 52%, #ffffff 100%);
   color: var(--ink);
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
   text-rendering: geometricPrecision;
@@ -56,8 +56,8 @@ button:disabled {
 }
 
 ::selection {
-  background: var(--signal);
-  color: white;
+  background: var(--gold);
+  color: var(--ink);
 }
 
 :focus-visible {
@@ -85,7 +85,7 @@ textarea {
   position: absolute;
   inset: 0.75rem -0.75rem -0.75rem 0.75rem;
   z-index: -1;
-  border: 1px solid rgba(242, 100, 42, 0.35);
+  border: 1px solid rgba(40, 214, 198, 0.35);
   border-radius: inherit;
 }
 
@@ -104,7 +104,7 @@ textarea {
 }
 
 .table-ledger th {
-  background: rgba(255, 250, 240, 0.72);
+  background: rgba(247, 250, 252, 0.88);
   color: var(--steel);
   font-family: var(--font-jetbrains-mono), monospace;
   font-size: 0.68rem;
@@ -117,6 +117,13 @@ textarea {
   background-image: repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 5px, currentColor 5px 6px, transparent 6px 10px, currentColor 10px 13px, transparent 13px 19px);
   height: 34px;
   opacity: 0.2;
+}
+
+.enterprise-grid {
+  background-image:
+    linear-gradient(rgba(29, 92, 131, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(29, 92, 131, 0.06) 1px, transparent 1px);
+  background-size: 34px 34px;
 }
 
 .scan-grid {
