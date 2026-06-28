@@ -1,0 +1,87 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { ArrowRight, Calendar, MapPin, ShieldCheck, Ticket } from "lucide-react";
+import { TicketLayout } from "@/components/tickets/TicketLayout";
+import { TicketTypeCard } from "@/components/tickets/TicketTypeCard";
+import { TicketStatusBadge } from "@/components/tickets/TicketStatusBadge";
+import { getEventById, getEventTotals } from "@/services/ticketService";
+import type { TicketEvent } from "@/types/tickets";
+
+type EventDetailsClientProps = {
+  eventId: string;
+};
+
+function formatDate(eventDate: string, eventTime: string) {
+  return new Intl.DateTimeFormat("en-ZA", { dateStyle: "full", timeStyle: "short" }).format(new Date(`${eventDate}T${eventTime}`));
+}
+
+export function EventDetailsClient({ eventId }: EventDetailsClientProps) {
+  const [event, setEvent] = useState<TicketEvent | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    getEventById(eventId).then((nextEvent) => {
+      if (!mounted) return;
+      setEvent(nextEvent);
+      setIsLoading(false);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [eventId]);
+
+  if (isLoading) {
+    return (
+      <TicketLayout>
+        <main className="mx-auto max-w-7xl px-5 py-16 md:px-8"><div className="h-[32rem] animate-pulse rounded-[2.4rem] border border-[var(--line)] bg-[var(--surface)]" /></main>
+      </TicketLayout>
+    );
+  }
+
+  if (!event) {
+    return (
+      <TicketLayout>
+        <main className="mx-auto max-w-4xl px-5 py-20 text-center md:px-8"><div className="rounded-[2rem] border border-dashed border-[var(--line-strong)] bg-white p-10 shadow-[var(--shadow-soft)]"><Ticket className="mx-auto h-10 w-10 text-[var(--signal)]" /><h1 className="mt-4 text-3xl font-black tracking-[-0.04em]">Event not found</h1><p className="mt-2 text-sm font-semibold text-[var(--steel)]">This event may have been removed or the ID is incorrect.</p><Link href="/tickets" className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white">Back to tickets</Link></div></main>
+      </TicketLayout>
+    );
+  }
+
+  const totals = getEventTotals(event);
+  const soldOut = totals.totalAvailable <= 0;
+
+  return (
+    <TicketLayout>
+      <main className="bg-white">
+        <section className="relative overflow-hidden px-5 py-16 md:px-8 lg:py-24">
+          <div className="pointer-events-none absolute inset-0"><div className="absolute left-[-14rem] top-[-14rem] h-[34rem] w-[34rem] rounded-full bg-[var(--gold)]/18 blur-3xl" /><div className="absolute right-[-14rem] top-16 h-[34rem] w-[34rem] rounded-full bg-[var(--signal)]/12 blur-3xl" /></div>
+          <div className="relative z-10 mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
+            <div className="overflow-hidden rounded-[2.4rem] border border-[var(--line)] bg-[var(--ink)] shadow-[var(--shadow-depth)]">
+              <div className="relative min-h-[28rem]">
+                {event.bannerUrl ? <Image src={event.bannerUrl} alt={`${event.name} banner`} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover opacity-86" /> : <div className="absolute inset-0 scan-grid" />}
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--ink)] via-[var(--ink)]/30 to-transparent" />
+                <div className="absolute bottom-6 left-6 right-6"><div className="barcode-rule mb-6 text-white" /><TicketStatusBadge status={event.status} /></div>
+              </div>
+            </div>
+            <div>
+              <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Event details</p>
+              <h1 className="mt-4 text-5xl font-black leading-[0.96] tracking-[-0.07em] md:text-7xl">{event.name}</h1>
+              <p className="mt-6 text-lg leading-8 text-[var(--steel)]">{event.description}</p>
+              <div className="mt-6 grid gap-3 text-sm font-bold text-[var(--steel)] md:grid-cols-2"><span className="inline-flex items-center gap-2 rounded-[1.2rem] border border-[var(--line)] bg-white px-4 py-3 shadow-[var(--shadow-soft)]"><Calendar className="h-4 w-4 text-[var(--signal)]" />{formatDate(event.eventDate, event.eventTime)}</span><span className="inline-flex items-center gap-2 rounded-[1.2rem] border border-[var(--line)] bg-white px-4 py-3 shadow-[var(--shadow-soft)]"><MapPin className="h-4 w-4 text-[var(--signal)]" />{event.location}</span></div>
+              <div className="mt-6 grid grid-cols-3 gap-3 text-center"><div className="rounded-[1.2rem] border border-[var(--line)] bg-[var(--surface)] p-4"><p className="money text-2xl font-black">{totals.totalCapacity}</p><p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Capacity</p></div><div className="rounded-[1.2rem] border border-[var(--line)] bg-[var(--surface)] p-4"><p className="money text-2xl font-black">{totals.totalSold}</p><p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Sold</p></div><div className="rounded-[1.2rem] border border-[var(--line)] bg-[var(--surface)] p-4"><p className="money text-2xl font-black">{totals.totalAvailable}</p><p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Available</p></div></div>
+              {soldOut ? <div className="mt-6 rounded-[1.4rem] border border-[var(--danger)]/25 bg-[var(--danger)]/10 p-4 text-sm font-black text-[var(--danger)]">All ticket classes are sold out.</div> : <Link href={`/tickets/checkout/${event.id}`} className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]">Buy tickets <ArrowRight className="h-4 w-4" /></Link>}
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-5 pb-16 md:px-8 lg:pb-24">
+          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between"><div><p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Ticket classes</p><h2 className="mt-3 text-4xl font-black tracking-[-0.05em]">Regular, VIP and VVIP availability</h2></div><div className="inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface)] px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-[var(--steel)]"><ShieldCheck className="h-4 w-4 text-[var(--confirm)]" /> Capacity updates after purchase</div></div>
+          <div className="mt-8 grid gap-5 lg:grid-cols-3">{event.ticketTypes.map((ticketType) => <TicketTypeCard key={ticketType.id} ticketType={ticketType} eventId={event.id} />)}</div>
+        </section>
+      </main>
+    </TicketLayout>
+  );
+}
