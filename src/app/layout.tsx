@@ -34,8 +34,11 @@ export const metadata: Metadata = {
     "King Sparkon Tracker",
   ],
   icons: {
-    icon: "/king-sparkon-logo.png",
-    shortcut: "/king-sparkon-logo.png",
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/king-sparkon-logo.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/icon.svg",
     apple: "/king-sparkon-logo.png",
   },
   openGraph: {
