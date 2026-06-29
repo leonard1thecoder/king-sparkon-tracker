@@ -9,13 +9,13 @@ const previewTerminalMetrics = [
   ["Preview alerts", "07"],
 ] as const;
 
-const socialShareLinks = [
-  { label: "Facebook", shortLabel: "f", buildHref: (url: string) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}` },
-  { label: "X", shortLabel: "X", buildHref: (url: string) => `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent("King Sparkon Tracker - scan, track, verify, and report smarter.")}` },
-  { label: "LinkedIn", shortLabel: "in", buildHref: (url: string) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}` },
-  { label: "WhatsApp", shortLabel: "WA", buildHref: (url: string) => `https://wa.me/?text=${encodeURIComponent(`King Sparkon Tracker: ${url}`)}` },
-  { label: "GitHub", shortLabel: "GH", buildHref: () => "https://github.com/leonard1thecoder/king-sparkon-tracker" },
-] as const;
+const socialShareLinks: Array<{ label: string; shortLabel: string; buildHref: (url: string) => string }> = [
+  { label: "Facebook", shortLabel: "f", buildHref: (url) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}` },
+  { label: "X", shortLabel: "X", buildHref: (url) => `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent("King Sparkon Tracker - scan, track, verify, and report smarter.")}` },
+  { label: "LinkedIn", shortLabel: "in", buildHref: (url) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}` },
+  { label: "WhatsApp", shortLabel: "WA", buildHref: (url) => `https://wa.me/?text=${encodeURIComponent(`King Sparkon Tracker: ${url}`)}` },
+  { label: "GitHub", shortLabel: "GH", buildHref: (url) => `https://github.com/leonard1thecoder/king-sparkon-tracker?ref=${encodeURIComponent(url)}` },
+];
 
 const defaultShareUrl = "https://king-sparkon-tracker.vercel.app";
 
