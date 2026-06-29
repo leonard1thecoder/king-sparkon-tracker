@@ -410,10 +410,25 @@ export async function getOwnerTicketDashboard(): Promise<OwnerTicketDashboard> {
 
   return {
     ...totals,
+    ticketsSold: totals.totalSold,
     regularSold: getSoldByType("REGULAR"),
     vipSold: getSoldByType("VIP"),
     vvipSold: getSoldByType("VVIP"),
   };
+}
+
+export function __resetTicketMockDataForTests() {
+  events = cloneEvents(initialEvents);
+  tickets = cloneTickets(initialTickets);
+}
+
+export function __setTicketTypeInventoryForTests(eventId: string, type: TicketType, capacity: number, sold: number) {
+  const event = requireEvent(eventId);
+  const ticketType = requireTicketType(event, type);
+  ticketType.capacity = capacity;
+  ticketType.sold = sold;
+  syncAvailability(ticketType);
+  event.updatedAt = nowIso();
 }
 
 function requireEvent(eventId: string) {
