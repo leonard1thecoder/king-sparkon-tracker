@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Calendar, MapPin, ShieldCheck, Ticket } from "lucide-react";
+import { ArrowRight, Calendar, MapPin, ShieldCheck } from "lucide-react";
 import type { TicketEvent } from "@/types/tickets";
 import { getEventTotals } from "@/services/ticketService";
 import { TicketStatusBadge } from "./TicketStatusBadge";

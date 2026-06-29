@@ -27,7 +27,21 @@ export function OwnerTicketsClient() {
   }
 
   useEffect(() => {
-    void loadDashboard();
+    let isActive = true;
+
+    Promise.all([getOwnerTicketDashboard(), getOwnerEvents()])
+      .then(([nextDashboard, nextEvents]) => {
+        if (!isActive) return;
+        setDashboard(nextDashboard);
+        setEvents(nextEvents);
+      })
+      .finally(() => {
+        if (isActive) setIsLoading(false);
+      });
+
+    return () => {
+      isActive = false;
+    };
   }, []);
 
   async function handleStatusChange(eventId: string, status: EventStatus) {

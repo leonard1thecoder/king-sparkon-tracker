@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { LockKeyhole, ShieldCheck } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { getTicketSession, setDemoTicketRole, userHasTicketRole } from "@/services/ticketAuthService";
 import type { TicketRole, TicketSession } from "@/types/tickets";
 
@@ -14,22 +14,7 @@ type TicketRoleGateProps = {
 };
 
 export function TicketRoleGate({ allowedRoles, title, description, children }: TicketRoleGateProps) {
-  const [session, setSession] = useState<TicketSession | null>(null);
-
-  useEffect(() => {
-    setSession(getTicketSession());
-  }, []);
-
-  if (!session) {
-    return (
-      <div className="mx-auto max-w-4xl px-5 py-20 md:px-8">
-        <div className="rounded-[2rem] border border-[var(--line)] bg-white p-8 text-center shadow-[var(--shadow-soft)]">
-          <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--muted)]">Checking ticket session</p>
-          <h1 className="mt-3 text-3xl font-black tracking-[-0.04em]">Loading protected portal...</h1>
-        </div>
-      </div>
-    );
-  }
+  const [session, setSession] = useState<TicketSession>(() => getTicketSession());
 
   if (userHasTicketRole(session, allowedRoles)) return <>{children}</>;
 

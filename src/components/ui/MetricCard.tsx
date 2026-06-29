@@ -15,10 +15,11 @@ export function MetricCard({
   icon?: ReactNode;
 }) {
   return (
-    <div className="rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-[var(--shadow-soft)] hover:-translate-y-0.5 hover:border-[var(--line-strong)]">
+    <div className="group relative overflow-hidden rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-[var(--shadow-soft)] ring-1 ring-white/70 hover:-translate-y-0.5 hover:border-[var(--gold)]">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[var(--signal)] via-[var(--gold)] to-[var(--ember)] opacity-70" />
       <div className="flex items-start justify-between gap-4">
         <p className="font-mono text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--steel)]">{label}</p>
-        {icon ? <div className="grid h-10 w-10 place-items-center rounded-[var(--radius-md)] bg-[var(--paper)] text-[var(--signal)]">{icon}</div> : null}
+        {icon ? <div className="grid h-10 w-10 place-items-center rounded-[var(--radius-md)] border border-[var(--line)] bg-[var(--surface)] text-[var(--signal)] group-hover:border-[var(--gold)]">{icon}</div> : null}
       </div>
       <p
         className={cn(

@@ -78,8 +78,8 @@ const initialEvents: TicketEvent[] = [
       "A serious worker/staff training session focused on fast QR scanning, manual ticket lookup, fraud prevention, and clean entry reporting.",
     location: "Durban ICC Gate B",
     eventDate: futureDate(63),
-    eventTime: "09:00",
-    bannerUrl: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1400&q=80",
+    eventTime: "10:00",
+    bannerUrl: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1400&q=80",
     status: "DRAFT",
     ticketTypes: [],
     createdAt: nowIso(),
@@ -88,21 +88,21 @@ const initialEvents: TicketEvent[] = [
 ];
 
 initialEvents[0].ticketTypes = [
-  createTicketType(initialEvents[0].id, "REGULAR", 180, 220, 86),
-  createTicketType(initialEvents[0].id, "VIP", 480, 80, 37),
-  createTicketType(initialEvents[0].id, "VVIP", 950, 24, 13),
+  createTicketType(initialEvents[0].id, "REGULAR", 180, 400, 186),
+  createTicketType(initialEvents[0].id, "VIP", 450, 120, 54),
+  createTicketType(initialEvents[0].id, "VVIP", 980, 40, 17),
 ];
 
 initialEvents[1].ticketTypes = [
-  createTicketType(initialEvents[1].id, "REGULAR", 150, 300, 144),
-  createTicketType(initialEvents[1].id, "VIP", 420, 90, 55),
-  createTicketType(initialEvents[1].id, "VVIP", 820, 30, 30),
+  createTicketType(initialEvents[1].id, "REGULAR", 150, 350, 91),
+  createTicketType(initialEvents[1].id, "VIP", 380, 90, 22),
+  createTicketType(initialEvents[1].id, "VVIP", 760, 30, 8),
 ];
 
 initialEvents[2].ticketTypes = [
-  createTicketType(initialEvents[2].id, "REGULAR", 120, 140, 12),
-  createTicketType(initialEvents[2].id, "VIP", 320, 35, 6),
-  createTicketType(initialEvents[2].id, "VVIP", 680, 12, 2),
+  createTicketType(initialEvents[2].id, "REGULAR", 90, 220, 0),
+  createTicketType(initialEvents[2].id, "VIP", 220, 70, 0),
+  createTicketType(initialEvents[2].id, "VVIP", 520, 20, 0),
 ];
 
 const initialTickets: UserTicket[] = [
@@ -113,7 +113,7 @@ const initialTickets: UserTicket[] = [
     buyerName: "Sizolwakhe Ticket Buyer",
     buyerEmail: "buyer@kingsparkon.co.za",
     ticketType: "VIP",
-    pricePaid: 480,
+    pricePaid: 450,
     ticketReference: "KST-EVENT-DEMO-001",
     status: "ACTIVE",
     purchasedAt: nowIso(),
@@ -138,7 +138,7 @@ let events = cloneEvents(initialEvents);
 let tickets = cloneTickets(initialTickets);
 
 function delay() {
-  return new Promise((resolve) => windowSafeTimeout(resolve, 220));
+  return new Promise<void>((resolve) => windowSafeTimeout(() => resolve(), 220));
 }
 
 function windowSafeTimeout(callback: () => void, milliseconds: number) {
@@ -158,23 +158,7 @@ function cloneTickets(source: UserTicket[]) {
 }
 
 function cloneEvent(event: TicketEvent) {
-  return { ...event, ticketTypes: event.ticketTypes.map((ticketType) => ({ ...ticketType })) };
-}
-
-function syncAvailability(ticketType: EventTicketType) {
-  ticketType.available = calculateTicketAvailability(ticketType.capacity, ticketType.sold);
-}
-
-function requireEvent(eventId: string) {
-  const event = events.find((candidate) => candidate.id === eventId);
-  if (!event) throw new Error("Event not found.");
-  return event;
-}
-
-function requireTicketType(event: TicketEvent, ticketType: TicketType) {
-  const selectedTicketType = event.ticketTypes.find((candidate) => candidate.type === ticketType);
-  if (!selectedTicketType) throw new Error("Ticket type not found for this event.");
-  return selectedTicketType;
+  return cloneEvents([event])[0];
 }
 
 function normalizeReference(value: string) {
@@ -390,7 +374,6 @@ export async function createEvent(payload: CreateTicketEventPayload) {
 export async function updateEvent(eventId: string, payload: UpdateTicketEventPayload) {
   await delay();
   const event = requireEvent(eventId);
-
   if (payload.name !== undefined) event.name = payload.name.trim();
   if (payload.description !== undefined) event.description = payload.description.trim();
   if (payload.location !== undefined) event.location = payload.location.trim();
@@ -398,55 +381,40 @@ export async function updateEvent(eventId: string, payload: UpdateTicketEventPay
   if (payload.eventTime !== undefined) event.eventTime = payload.eventTime;
   if (payload.bannerUrl !== undefined) event.bannerUrl = payload.bannerUrl.trim() || undefined;
   if (payload.status !== undefined) event.status = payload.status;
-
-  if (payload.ticketTypes) {
-    payload.ticketTypes.forEach((ticketTypeUpdate) => {
-      const current = requireTicketType(event, ticketTypeUpdate.type);
-      if (ticketTypeUpdate.price !== undefined) current.price = Math.max(ticketTypeUpdate.price, 0);
-      if (ticketTypeUpdate.capacity !== undefined) current.capacity = Math.max(ticketTypeUpdate.capacity, current.sold);
-      syncAvailability(current);
-    });
-  }
-
   event.updatedAt = nowIso();
   return cloneEvent(event);
 }
 
+export async function getOwnerEvents() {
+  await delay();
+  return cloneEvents(events).sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+}
+
 export async function getOwnerTicketDashboard(): Promise<OwnerTicketDashboard> {
   await delay();
-  const publishedOrDraftEvents = events.filter((event) => event.status !== "CANCELLED");
-  const totals = publishedOrDraftEvents.reduce(
-    (runningTotals, event) => {
+  const totals = events.reduce(
+    (summary, event) => {
       const eventTotals = getEventTotals(event);
       return {
-        totalCapacity: runningTotals.totalCapacity + eventTotals.totalCapacity,
-        totalSold: runningTotals.totalSold + eventTotals.totalSold,
-        totalAvailable: runningTotals.totalAvailable + eventTotals.totalAvailable,
+        totalEvents: summary.totalEvents + 1,
+        publishedEvents: summary.publishedEvents + (event.status === "PUBLISHED" ? 1 : 0),
+        upcomingEvents: summary.upcomingEvents + (isUpcomingPublished(event) ? 1 : 0),
+        totalCapacity: summary.totalCapacity + eventTotals.totalCapacity,
+        totalSold: summary.totalSold + eventTotals.totalSold,
+        totalAvailable: summary.totalAvailable + eventTotals.totalAvailable,
+        revenue: summary.revenue + event.ticketTypes.reduce((sum, ticketType) => sum + ticketType.sold * ticketType.price, 0),
       };
     },
-    { totalCapacity: 0, totalSold: 0, totalAvailable: 0 },
-  );
-
-  const revenue = publishedOrDraftEvents.reduce(
-    (sum, event) => sum + event.ticketTypes.reduce((ticketSum, ticketType) => ticketSum + ticketType.price * ticketType.sold, 0),
-    0,
+    { totalEvents: 0, publishedEvents: 0, upcomingEvents: 0, totalCapacity: 0, totalSold: 0, totalAvailable: 0, revenue: 0 },
   );
 
   return {
     ...totals,
-    totalEvents: events.length,
     ticketsSold: totals.totalSold,
-    revenue,
-    upcomingEvents: events.filter(isUpcomingPublished).length,
     regularSold: getSoldByType("REGULAR"),
     vipSold: getSoldByType("VIP"),
     vvipSold: getSoldByType("VVIP"),
   };
-}
-
-export async function getOwnerEvents() {
-  await delay();
-  return cloneEvents(events).sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
 }
 
 export function __resetTicketMockDataForTests() {
@@ -460,4 +428,21 @@ export function __setTicketTypeInventoryForTests(eventId: string, type: TicketTy
   ticketType.capacity = capacity;
   ticketType.sold = sold;
   syncAvailability(ticketType);
+  event.updatedAt = nowIso();
+}
+
+function requireEvent(eventId: string) {
+  const event = events.find((candidate) => candidate.id === eventId);
+  if (!event) throw new Error("Event not found.");
+  return event;
+}
+
+function requireTicketType(event: TicketEvent, type: TicketType) {
+  const ticketType = event.ticketTypes.find((candidate) => candidate.type === type);
+  if (!ticketType) throw new Error(`${getTicketTypeLabel(type)} ticket type is not available.`);
+  return ticketType;
+}
+
+function syncAvailability(ticketType: EventTicketType) {
+  ticketType.available = calculateTicketAvailability(ticketType.capacity, ticketType.sold);
 }
