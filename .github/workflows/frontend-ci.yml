@@ -22,7 +22,12 @@ jobs:
         run: bun run lint
 
       - name: Typecheck
-        run: bun run typecheck
+        run: |
+          set +e
+          bun run typecheck > build.log 2>&1
+          status=$?
+          tail -n 200 build.log
+          exit $status
 
       - name: Test
         run: bun run test
