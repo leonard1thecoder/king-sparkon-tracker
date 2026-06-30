@@ -9,7 +9,7 @@ type ContactStatus = {
 };
 
 type ContactResponse = {
-  status?: "RECEIVED" | "EMAIL_SENT" | "EMAIL_FAILED";
+  status?: "RECEIVED" | "EMAIL_QUEUED" | "EMAIL_SENT" | "EMAIL_FAILED";
   message?: string;
   error?: string;
   detail?: string;
@@ -101,7 +101,7 @@ export function ContactForm() {
           responseBody.message ??
           (deliveryFailed
             ? "Your message was saved, but email delivery failed. Please try again or contact support."
-            : "Thanks. We received your message and sent a confirmation email."),
+            : "Thanks. We received your message and queued your confirmation email."),
       });
 
       if (!deliveryFailed) {
