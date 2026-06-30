@@ -10,8 +10,6 @@ type ContactStatus = {
 
 type ContactResponse = {
   status?: "RECEIVED" | "EMAIL_SENT" | "EMAIL_FAILED";
-  confirmationEmailSent?: boolean;
-  notificationEmailSent?: boolean;
   message?: string;
   error?: string;
   detail?: string;
@@ -51,26 +49,6 @@ function validatePayload(payload: Record<string, string>) {
   }
 
   return null;
-}
-
-function successMessage(responseBody: ContactResponse) {
-  if (responseBody.confirmationEmailSent && responseBody.notificationEmailSent) {
-    return responseBody.message ?? "Thanks. We sent your confirmation email and notified King Sparkon Tracker support.";
-  }
-
-  return responseBody.message ?? "Thanks. We received your message and sent a confirmation email.";
-}
-
-function warningMessage(responseBody: ContactResponse) {
-  if (responseBody.confirmationEmailSent && !responseBody.notificationEmailSent) {
-    return "Your message was saved and your confirmation email was sent, but King Sparkon Tracker support notification failed.";
-  }
-
-  if (!responseBody.confirmationEmailSent && responseBody.notificationEmailSent) {
-    return "Your message was saved and King Sparkon Tracker support was notified, but your confirmation email failed.";
-  }
-
-  return responseBody.message ?? "Your message was saved, but email delivery failed. Please try again or contact support.";
 }
 
 export function ContactForm() {
@@ -119,7 +97,11 @@ export function ContactForm() {
       const deliveryFailed = responseBody.status === "EMAIL_FAILED";
       setStatus({
         tone: deliveryFailed ? "warning" : "success",
-        message: deliveryFailed ? warningMessage(responseBody) : successMessage(responseBody),
+        message:
+          responseBody.message ??
+          (deliveryFailed
+            ? "Your message was saved, but email delivery failed. Please try again or contact support."
+            : "Thanks. We received your message and sent a confirmation email."),
       });
 
       if (!deliveryFailed) {
@@ -137,10 +119,6 @@ export function ContactForm() {
 
   return (
     <form className="grid gap-4 rounded-[2rem] bg-white p-0 text-[var(--ink)]" onSubmit={handleSubmit}>
-      <div className="rounded-[1.35rem] border border-[var(--line)] bg-[var(--surface)] px-4 py-3 text-sm font-semibold leading-6 text-[var(--steel)]">
-        Successful submissions send two emails: one confirmation to you and one notification to King Sparkon Tracker support.
-      </div>
-
       <div className="grid gap-4 sm:grid-cols-2">
         <label className={labelClasses}>
           Contact name
