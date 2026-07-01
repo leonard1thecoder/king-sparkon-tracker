@@ -1,4 +1,4 @@
-export type UserRole = "Owner" | "Worker" | "Affiliate" | "Admin";
+export type UserRole = "Owner" | "Worker" | "Affiliate" | "Admin" | "User";
 export type BusinessPlan = "FREE_TRIAL" | "PLUS" | "PRO";
 export type PaymentType = "CASH" | "SWIPE_MACHINE" | "WEBSITE_PAYMENT";
 export type TransactionType = "BUY" | "SELL";
@@ -36,18 +36,53 @@ export type ProductBarcode = {
   referenceEmail?: string | null;
   referencee?: string | null;
   status?: string;
+  availabilityStatus?: string;
 };
 
 export type Product = {
   id: number;
+  businessId?: number | null;
+  businessName?: string | null;
   name: string;
+  productImageUrl?: string | null;
   category: "Alcohol" | "NonAlcohol" | string;
   status?: string;
   price: number;
+  salePrice?: number;
+  localizedPrice?: MoneyResponse | null;
+  localizedSalePrice?: MoneyResponse | null;
   stockQuantity: number;
   barcodes?: Array<string | ProductBarcode>;
   barcodeCount?: number;
   remainingBarcodeSlots?: number;
+  returnableEnabled?: boolean;
+  returnablePrice?: number;
+  nightShiftEnabled?: boolean;
+  nightShiftPrice?: number;
+};
+
+export type MoneyResponse = {
+  amount: number;
+  currency?: string;
+  formatted?: string;
+};
+
+export type CreateProductPayload = {
+  name: string;
+  category: string;
+  price: number;
+  returnableEnabled: boolean;
+  returnablePrice?: number | null;
+  nightShiftEnabled: boolean;
+  nightShiftPrice?: number | null;
+  nightShiftStartTime?: string | null;
+  nightShiftEndTime?: string | null;
+  stockQuantity: number;
+  productImageUrl?: string | null;
+};
+
+export type ProductImageUpdatePayload = {
+  productImageUrl: string;
 };
 
 export type TransactionItemPayload = {
@@ -91,6 +126,48 @@ export type Tip = TipPayload & {
   paymentReference?: string | null;
   paymentUrl?: string | null;
   qrCodeUrl?: string | null;
+};
+
+export type TuckShopPurchaseItemPayload = {
+  productId: number;
+  quantity: number;
+  barcodes?: string[];
+};
+
+export type CreateTuckShopPurchasePayload = {
+  paymentEmail?: string;
+  paymentContact?: string;
+  workerId?: number | null;
+  tipAmount?: number | null;
+  tipCallbackUrl?: string | null;
+  items: TuckShopPurchaseItemPayload[];
+};
+
+export type TuckShopPurchaseItem = {
+  productId: number;
+  productName: string;
+  productImageUrl?: string | null;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+  barcodes?: string[];
+};
+
+export type TuckShopPurchase = {
+  transactionId: number;
+  businessId?: number | null;
+  businessName?: string | null;
+  workerId?: number | null;
+  ownerId?: number | null;
+  productTotal: number;
+  paymentStatus?: string | null;
+  paymentType?: PaymentType | string | null;
+  paymentReference?: string | null;
+  paymentUrl?: string | null;
+  paymentQrCodeUrl?: string | null;
+  tip?: Tip | null;
+  createdAt?: string;
+  items: TuckShopPurchaseItem[];
 };
 
 export type Withdrawal = {

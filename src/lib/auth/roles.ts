@@ -6,6 +6,9 @@ const roleMap: Record<string, UserRole> = {
   affiliate: "Affiliate",
   admin: "Admin",
   administrator: "Admin",
+  user: "User",
+  customer: "User",
+  buyer: "User",
 };
 
 export function normalizeRole(value: unknown): UserRole | null {
@@ -30,6 +33,7 @@ export function primaryDashboardForRoles(roles: UserRole[]) {
   if (roles.includes("Owner")) return "/dashboard/owner";
   if (roles.includes("Worker")) return "/dashboard/worker";
   if (roles.includes("Affiliate")) return "/dashboard/affiliate";
+  if (roles.includes("User")) return "/dashboard/user";
   return "/dashboard";
 }
 
