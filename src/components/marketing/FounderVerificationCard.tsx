@@ -2,7 +2,7 @@ import Link from "next/link";
 import { BadgeCheck } from "lucide-react";
 
 const highlightedTrustText = "rounded-[0.16em] bg-[var(--gold)] px-[0.08em] text-[#000]";
-const badgeUrl = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/king-sparkon-lego-logo-4k-high-quality.png";
+const badgeUrl = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2001_29_39%20AM.png";
 
 export function FounderVerificationCard() {
   return (
