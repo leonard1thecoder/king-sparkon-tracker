@@ -12,9 +12,10 @@ export const metadata: Metadata = {
 export default async function DashboardRedirectPage() {
   const token = (await cookies()).get(ACCESS_COOKIE_NAME)?.value;
   const claims = decodeJwtPayload(token);
+  const dashboardPath = dashboardPathForSession(claims);
 
-  if (claims) {
-    redirect(dashboardPathForSession(claims));
+  if (claims && dashboardPath !== "/dashboard") {
+    redirect(dashboardPath);
   }
 
   return (
