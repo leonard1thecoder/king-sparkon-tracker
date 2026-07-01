@@ -1,4 +1,4 @@
-export type UserRole = "User" | "Owner" | "Worker" | "Affiliate" | "Admin";
+export type UserRole = "Owner" | "Worker" | "Affiliate" | "Admin" | "User";
 export type BusinessPlan = "FREE_TRIAL" | "PLUS" | "PRO";
 export type PaymentType = "CASH" | "SWIPE_MACHINE" | "WEBSITE_PAYMENT";
 export type TransactionType = "BUY" | "SELL";
@@ -44,12 +44,6 @@ export type ProductBarcode = {
   availabilityStatus?: string;
 };
 
-export type MoneyResponse = {
-  amount: number;
-  currency?: string;
-  formatted?: string;
-};
-
 export type Product = {
   id: number;
   businessId?: number | null;
@@ -70,6 +64,12 @@ export type Product = {
   returnablePrice?: number;
   nightShiftEnabled?: boolean;
   nightShiftPrice?: number;
+};
+
+export type MoneyResponse = {
+  amount: number;
+  currency?: string;
+  formatted?: string;
 };
 
 export type CreateProductPayload = {
