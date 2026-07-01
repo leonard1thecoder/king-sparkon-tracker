@@ -3,7 +3,7 @@
 import axios from "axios";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowRight, BriefcaseBusiness, CheckCircle2, Loader2, MapPin, RefreshCw, Search, ShieldCheck, XCircle } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, CheckCircle2, Loader2, MapPin, RefreshCw, Search, XCircle } from "lucide-react";
 import {
   archiveJobOpportunity,
   closeJobOpportunity,
