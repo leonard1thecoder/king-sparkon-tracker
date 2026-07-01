@@ -29,8 +29,8 @@ export const BUSINESS_PRICING_PLANS = [
     billingSuffix: "month",
     caption: "Per month",
     highlight: false,
-    description: "For businesses that need unlimited workers, tips, advanced analysis, and full operational visibility.",
-    features: ["Unlimited workers", "Worker tips platform", "Business Analysis AI", "Worker clocker", "Affiliate promo QR tracking"],
+    description: "For businesses that need unlimited workers, tips, reports, audit history, and full operational visibility.",
+    features: ["Unlimited workers", "Worker tips platform", "Advanced reports", "Worker clocker", "Affiliate promo QR tracking"],
   },
 ] as const;
 
