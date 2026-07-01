@@ -31,10 +31,17 @@ export function JobApplicationsPanel({ jobId, scope = jobId ? "manage" : "mine" 
   const [isSaving, setIsSaving] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const canManage = scope === "manage";
+  const needsJobSelection = canManage && !jobId;
 
   const loadApplications = useCallback(async () => {
     setIsLoading(true);
     setError(null);
+    if (needsJobSelection) {
+      setApplications([]);
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const result = jobId ? await getJobApplications(jobId) : await getMyJobApplications();
       setApplications(result.content ?? []);
@@ -44,7 +51,7 @@ export function JobApplicationsPanel({ jobId, scope = jobId ? "manage" : "mine" 
     } finally {
       setIsLoading(false);
     }
-  }, [jobId]);
+  }, [jobId, needsJobSelection]);
 
   useEffect(() => {
     void loadApplications();
@@ -70,25 +77,33 @@ export function JobApplicationsPanel({ jobId, scope = jobId ? "manage" : "mine" 
           <div>
             <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Applications</p>
             <h1 className="mt-3 text-4xl font-black tracking-[-0.055em] md:text-5xl">{canManage ? "Job applications" : "My applications"}</h1>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--steel)]">{canManage ? "Review applicants and move them through the backend status pipeline." : "Track the roles you have applied for and keep your next action visible."}</p>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--steel)]">{canManage ? "Review applicants from a specific job detail page and move them through the backend status pipeline." : "Track the roles you have applied for and keep your next action visible."}</p>
           </div>
-          <button type="button" onClick={() => void loadApplications()} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)] hover:border-[var(--gold)]">
-            <RefreshCw className="h-4 w-4" /> Refresh
-          </button>
+          {!needsJobSelection ? (
+            <button type="button" onClick={() => void loadApplications()} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)] hover:border-[var(--gold)]">
+              <RefreshCw className="h-4 w-4" /> Refresh
+            </button>
+          ) : null}
         </div>
       </div>
 
-      {error ? <div className="flex gap-2 rounded-[1.5rem] border border-[var(--danger)] bg-[var(--danger)]/10 p-4 text-sm font-bold text-[var(--danger)]"><XCircle className="h-5 w-5" /> {error}</div> : null}
+      {needsJobSelection ? (
+        <div className="rounded-[2rem] border border-[var(--line)] bg-white p-8 text-center shadow-[var(--shadow-soft)]">
+          <div className="mx-auto grid h-16 w-16 place-items-center rounded-[1.4rem] bg-[var(--ink)] text-[var(--gold)]"><FileCheck2 className="h-8 w-8" /></div>
+          <h2 className="mt-5 text-2xl font-black tracking-[-0.04em]">Select a job to review applications.</h2>
+          <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-[var(--steel)]">The backend exposes applications by job. Open a job from the Job Opportunities board, then review and update applications from that job detail page.</p>
+        </div>
+      ) : error ? <div className="flex gap-2 rounded-[1.5rem] border border-[var(--danger)] bg-[var(--danger)]/10 p-4 text-sm font-bold text-[var(--danger)]"><XCircle className="h-5 w-5" /> {error}</div> : null}
 
-      {isLoading ? (
+      {!needsJobSelection && isLoading ? (
         <div className="grid min-h-72 place-items-center rounded-[2rem] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]"><div className="inline-flex items-center gap-3 text-sm font-black text-[var(--steel)]"><Loader2 className="h-5 w-5 animate-spin text-[var(--signal)]" /> Loading applications</div></div>
-      ) : applications.length === 0 ? (
+      ) : !needsJobSelection && applications.length === 0 ? (
         <div className="rounded-[2rem] border border-[var(--line)] bg-white p-8 text-center shadow-[var(--shadow-soft)]">
           <div className="mx-auto grid h-16 w-16 place-items-center rounded-[1.4rem] bg-[var(--ink)] text-[var(--gold)]"><FileCheck2 className="h-8 w-8" /></div>
           <h2 className="mt-5 text-2xl font-black tracking-[-0.04em]">No applications yet.</h2>
           <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-[var(--steel)]">Applications will appear here once users submit them through the job detail page.</p>
         </div>
-      ) : (
+      ) : !needsJobSelection ? (
         <div className="grid gap-4">
           {applications.map((application) => (
             <article key={application.id} className="rounded-[2rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] md:p-6">
@@ -122,7 +137,7 @@ export function JobApplicationsPanel({ jobId, scope = jobId ? "manage" : "mine" 
             </article>
           ))}
         </div>
-      )}
+      ) : null}
     </section>
   );
 }
