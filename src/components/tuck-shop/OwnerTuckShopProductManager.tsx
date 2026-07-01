@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { ImagePlus, Loader2, PackagePlus, Store } from "lucide-react";
 import { createOwnerProduct, listOwnerProducts, updateOwnerProductImage } from "@/lib/api/tuck-shop";
 import { normalizeApiError } from "@/lib/api/client";
@@ -58,7 +58,7 @@ export function OwnerTuckShopProductManager() {
   const inTuckShop = useMemo(() => products.filter((product) => product.status === "CREATED" && product.stockQuantity > 0), [products]);
   const missingImages = useMemo(() => products.filter((product) => !product.productImageUrl).length, [products]);
 
-  async function createProduct(event: React.FormEvent<HTMLFormElement>) {
+  async function createProduct(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSaving(true);
     setError(null);
