@@ -24,11 +24,7 @@ import {
 import { cn } from "@/lib/utils/cn";
 import type { UserRole } from "@/lib/types/backend";
 
-type NavItem = {
-  label: string;
-  href: string;
-  icon: LucideIcon;
-};
+type NavItem = { label: string; href: string; icon: LucideIcon };
 
 const navByRole: Record<UserRole, NavItem[]> = {
   Admin: [
@@ -37,6 +33,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Businesses", href: "/dashboard/admin/businesses", icon: Building2 },
     { label: "Products", href: "/dashboard/admin/products", icon: Boxes },
     { label: "Tickets", href: "/tickets", icon: Ticket },
+    { label: "Capacity", href: "/dashboard/admin/capacity", icon: BarChart3 },
     { label: "Job Opportunities", href: "/dashboard/admin/jobs", icon: BriefcaseBusiness },
     { label: "Applications", href: "/dashboard/admin/jobs?tab=applications", icon: FileCheck2 },
     { label: "Promotions", href: "/dashboard/admin/promotions", icon: Megaphone },
@@ -49,6 +46,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
   Owner: [
     { label: "Overview", href: "/dashboard/owner", icon: Building2 },
     { label: "Products", href: "/dashboard/owner/products", icon: Boxes },
+    { label: "Capacity", href: "/dashboard/owner/capacity", icon: BarChart3 },
     { label: "Barcode Scanner", href: "/dashboard/worker/scan", icon: ScanLine },
     { label: "Transactions", href: "/dashboard/owner/transactions", icon: CreditCard },
     { label: "Tickets", href: "/tickets", icon: Ticket },
@@ -96,27 +94,5 @@ function isActive(pathname: string, href: string) {
 export function DashboardRoleNav({ role }: { role: UserRole }) {
   const pathname = usePathname();
   const items = navByRole[role];
-
-  return (
-    <>
-      {items.map(({ label, href, icon: Icon }) => {
-        const active = isActive(pathname, href);
-        return (
-          <Link
-            key={`${role}-${href}-${label}`}
-            href={href}
-            className={cn(
-              "inline-flex min-h-11 shrink-0 items-center gap-3 rounded-full border px-4 py-2 text-sm font-black transition lg:w-full lg:rounded-[1.15rem]",
-              active
-                ? "border-[var(--gold)] bg-white text-[var(--ink)] shadow-[var(--shadow-soft)]"
-                : "border-white/10 bg-white/[0.04] text-white/68 hover:border-[var(--gold)] hover:bg-white/10 hover:text-white",
-            )}
-          >
-            <Icon className={cn("h-4 w-4", active ? "text-[var(--signal)]" : "text-[var(--gold)]")} />
-            <span>{label}</span>
-          </Link>
-        );
-      })}
-    </>
-  );
+  return <>{items.map(({ label, href, icon: Icon }) => { const active = isActive(pathname, href); return <Link key={`${role}-${href}-${label}`} href={href} className={cn("inline-flex min-h-11 shrink-0 items-center gap-3 rounded-full border px-4 py-2 text-sm font-black transition lg:w-full lg:rounded-[1.15rem]", active ? "border-[var(--gold)] bg-white text-[var(--ink)] shadow-[var(--shadow-soft)]" : "border-white/10 bg-white/[0.04] text-white/68 hover:border-[var(--gold)] hover:bg-white/10 hover:text-white")}><Icon className={cn("h-4 w-4", active ? "text-[var(--signal)]" : "text-[var(--gold)]")} /><span>{label}</span></Link>; })}</>;
 }
