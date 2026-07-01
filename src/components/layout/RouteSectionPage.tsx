@@ -1,8 +1,12 @@
 import type { ReactNode } from "react";
 import { ArrowRight, PlugZap } from "lucide-react";
+import { DashboardFrame } from "./DashboardFrame";
 import { DashboardHeader } from "./DashboardHeader";
+import { DashboardRoleNav } from "./DashboardRoleNav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { StatusPill } from "@/components/ui/StatusPill";
+import { normalizeRole } from "@/lib/auth/roles";
+import type { UserRole } from "@/lib/types/backend";
 
 export function RouteSectionPage({
   role,
@@ -17,10 +21,12 @@ export function RouteSectionPage({
   endpoint?: string;
   children?: ReactNode;
 }) {
+  const normalizedRole: UserRole = normalizeRole(role) ?? "User";
+
   return (
-    <>
-      <DashboardHeader role={role} title={title} description={description} />
-      <main className="grid gap-5 p-5 md:p-8">
+    <DashboardFrame role={normalizedRole} nav={<DashboardRoleNav role={normalizedRole} />}>
+      <DashboardHeader role={normalizedRole} title={title} description={description} />
+      <main className="grid gap-5 bg-[var(--surface)] p-5 md:p-8">
         {children ? children : null}
         <Card>
           <CardHeader className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -50,6 +56,6 @@ export function RouteSectionPage({
           </CardContent>
         </Card>
       </main>
-    </>
+    </DashboardFrame>
   );
 }
