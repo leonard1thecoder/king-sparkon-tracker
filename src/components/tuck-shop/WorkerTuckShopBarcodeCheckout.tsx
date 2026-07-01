@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { type FormEvent, useState } from "react";
 import { ExternalLink, Loader2, ScanLine, ShoppingCart } from "lucide-react";
 import { createWorkerTuckShopBarcodePurchase } from "@/lib/api/tuck-shop";
 import { normalizeApiError } from "@/lib/api/client";
@@ -40,7 +40,7 @@ export function WorkerTuckShopBarcodeCheckout() {
     setLines((current) => (current.length === 1 ? current : current.filter((line) => line.id !== id)));
   }
 
-  async function submit(event: React.FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSaving(true);
     setError(null);
