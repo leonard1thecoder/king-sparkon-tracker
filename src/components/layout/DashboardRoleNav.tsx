@@ -16,6 +16,7 @@ import {
   ScanLine,
   Settings,
   ShieldCheck,
+  ShoppingCart,
   Ticket,
   UserRound,
   UsersRound,
@@ -32,6 +33,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Users", href: "/dashboard/admin/users", icon: UsersRound },
     { label: "Businesses", href: "/dashboard/admin/businesses", icon: Building2 },
     { label: "Products", href: "/dashboard/admin/products", icon: Boxes },
+    { label: "Tuck Shop", href: "/dashboard/admin/products", icon: ShoppingCart },
     { label: "Tickets", href: "/tickets", icon: Ticket },
     { label: "Capacity", href: "/dashboard/admin/capacity", icon: BarChart3 },
     { label: "Job Opportunities", href: "/dashboard/admin/jobs", icon: BriefcaseBusiness },
@@ -46,6 +48,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
   Owner: [
     { label: "Overview", href: "/dashboard/owner", icon: Building2 },
     { label: "Products", href: "/dashboard/owner/products", icon: Boxes },
+    { label: "Tuck Shop", href: "/dashboard/owner/products", icon: ShoppingCart },
     { label: "Capacity", href: "/dashboard/owner/capacity", icon: BarChart3 },
     { label: "Barcode Scanner", href: "/dashboard/worker/scan", icon: ScanLine },
     { label: "Transactions", href: "/dashboard/owner/transactions", icon: CreditCard },
@@ -62,6 +65,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
   Worker: [
     { label: "Overview", href: "/dashboard/worker", icon: UserRound },
     { label: "Scan Products", href: "/dashboard/worker/scan", icon: ScanLine },
+    { label: "Tuck Shop Checkout", href: "/dashboard/worker/scan", icon: ShoppingCart },
     { label: "Scan Tickets", href: "/tickets/scan", icon: Ticket },
     { label: "Transactions", href: "/dashboard/worker/transactions", icon: CreditCard },
     { label: "Tips", href: "/dashboard/worker/tips", icon: WalletCards },
@@ -77,6 +81,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
   ],
   User: [
     { label: "Overview", href: "/dashboard/user", icon: UserRound },
+    { label: "Tuck Shop", href: "/dashboard/user", icon: ShoppingCart },
     { label: "Tickets", href: "/tickets", icon: Ticket },
     { label: "My Tickets", href: "/dashboard/user/tickets", icon: QrCode },
     { label: "Job Opportunities", href: "/dashboard/user/jobs", icon: BriefcaseBusiness },
