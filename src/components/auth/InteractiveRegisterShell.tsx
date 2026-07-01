@@ -4,7 +4,7 @@ import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import { type FormEvent, useMemo, useState } from "react";
-import { AlertCircle, ArrowDown, ArrowRight, Barcode, CheckCircle2, Eye, Gift, KeyRound, LockKeyhole, Mail, MapPin, ShieldCheck, Sparkles, UserRound, WalletCards } from "lucide-react";
+import { AlertCircle, ArrowDown, ArrowRight, CheckCircle2, Eye, Gift, KeyRound, LockKeyhole, Mail, MapPin, ShieldCheck, Sparkles, UserRound, WalletCards } from "lucide-react";
 import { messageFromBackendPayload } from "@/lib/utils/errors";
 
 type RegisterField = {
@@ -54,6 +54,7 @@ function iconFor(field: RegisterField) {
 function Field({ field, onRoleChange }: { field: RegisterField; onRoleChange?: (value: string) => void }) {
   if (field.type === "hidden") return <input type="hidden" name={field.name} value={field.defaultValue ?? ""} />;
   const required = field.required !== false;
+  const showPayPalHelp = field.name.toLowerCase().includes("paypal");
   return (
     <label className="grid gap-2" htmlFor={field.name}>
       <span className="flex items-center justify-between gap-3"><span className="text-sm font-black text-[var(--ink)]">{field.label}</span>{!required ? <span className="rounded-full bg-[var(--surface)] px-2 py-1 text-[0.65rem] font-black uppercase tracking-[0.12em] text-[var(--muted)]">Optional</span> : null}</span>
@@ -63,6 +64,7 @@ function Field({ field, onRoleChange }: { field: RegisterField; onRoleChange?: (
         {field.type === "password" ? <Eye className="h-4 w-4 shrink-0 text-[var(--muted)]" /> : null}
       </span>
       {field.helper ? <span className="text-xs font-semibold leading-5 text-[var(--steel)]">{field.helper}</span> : null}
+      {showPayPalHelp ? <a href="https://www.paypal.com/paypalme" target="_blank" rel="noreferrer" className="text-xs font-black text-[var(--signal)] underline decoration-[var(--gold)] decoration-2 underline-offset-4 hover:text-[var(--ember)]">Don&apos;t know PayPal? Create or find your PayPal.me link</a> : null}
     </label>
   );
 }
