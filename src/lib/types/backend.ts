@@ -1,9 +1,14 @@
-export type UserRole = "Owner" | "Worker" | "Affiliate" | "Admin";
+export type UserRole = "User" | "Owner" | "Worker" | "Affiliate" | "Admin";
 export type BusinessPlan = "FREE_TRIAL" | "PLUS" | "PRO";
 export type PaymentType = "CASH" | "SWIPE_MACHINE" | "WEBSITE_PAYMENT";
 export type TransactionType = "BUY" | "SELL";
 export type PromotionChannel = "EMAIL" | "WHATSAPP" | "ANY";
 export type PromotionAudience = "ALL_SUBSCRIBERS" | "REGISTERED_AFFILIATES" | "UNREGISTERED_AFFILIATES" | "REGISTERED_SUBSCRIBERS";
+export type WorkplaceType = "ONSITE" | "REMOTE" | "HYBRID";
+export type EmploymentType = "FULL_TIME" | "PART_TIME" | "CONTRACT" | "INTERNSHIP" | "TEMPORARY";
+export type ExperienceLevel = "ENTRY_LEVEL" | "JUNIOR" | "MID_LEVEL" | "SENIOR" | "LEAD" | "EXECUTIVE";
+export type JobOpportunityStatus = "DRAFT" | "OPEN" | "CLOSED" | "ARCHIVED";
+export type JobApplicationStatus = "SUBMITTED" | "REVIEWING" | "SHORTLISTED" | "REJECTED" | "ACCEPTED" | "WITHDRAWN";
 
 export type PageResponse<T> = {
   content: T[];
@@ -120,4 +125,74 @@ export type PromotionQuote = {
 export type Promotion = PromotionPayload & PromotionQuote & {
   id: number;
   status?: string;
+};
+
+export type JobOpportunity = {
+  id: number;
+  title: string;
+  companyName: string;
+  businessId?: number | null;
+  createdByUserId?: number | null;
+  location: string;
+  workplaceType: WorkplaceType;
+  employmentType: EmploymentType;
+  experienceLevel: ExperienceLevel;
+  salaryMin?: number | null;
+  salaryMax?: number | null;
+  salaryCurrency?: string | null;
+  description: string;
+  responsibilities?: string | null;
+  requirements: string;
+  benefits?: string | null;
+  applyUrl?: string | null;
+  contactEmail?: string | null;
+  whatsappNumber?: string | null;
+  status: JobOpportunityStatus;
+  createdAt?: string;
+  updatedAt?: string;
+  publishedAt?: string | null;
+  closedAt?: string | null;
+};
+
+export type CreateJobOpportunityPayload = {
+  title: string;
+  companyName: string;
+  location: string;
+  workplaceType: WorkplaceType;
+  employmentType: EmploymentType;
+  experienceLevel: ExperienceLevel;
+  salaryMin?: number;
+  salaryMax?: number;
+  salaryCurrency?: string;
+  description: string;
+  responsibilities?: string;
+  requirements: string;
+  benefits?: string;
+  applyUrl?: string;
+  contactEmail?: string;
+  whatsappNumber?: string;
+};
+
+export type JobApplication = {
+  id: number;
+  jobOpportunityId?: number;
+  jobTitle?: string;
+  companyName?: string;
+  applicantUserId?: number;
+  applicantName: string;
+  applicantEmail: string;
+  phoneNumber?: string | null;
+  coverMessage?: string | null;
+  cvUrl?: string | null;
+  status: JobApplicationStatus;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type ApplyForJobPayload = {
+  applicantName: string;
+  applicantEmail: string;
+  phoneNumber?: string;
+  coverMessage?: string;
+  cvUrl?: string;
 };
