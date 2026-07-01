@@ -4,13 +4,11 @@ import { BadgeCheck } from "lucide-react";
 export function FounderVerificationCard() {
   return (
     <div className="mt-5 max-w-2xl">
-      <div className="overflow-hidden rounded-full border border-[var(--gold)]/35 bg-white/42 px-3 py-2 shadow-[var(--shadow-soft)] backdrop-blur-xl">
-        <p className="truncate whitespace-nowrap bg-gradient-to-r from-[var(--gold)] via-purple-600 to-orange-500 bg-clip-text text-[0.55rem] font-black uppercase tracking-[0.13em] text-transparent sm:text-[0.63rem] lg:text-[0.69rem]">
-          King Sparkon is trademark of Sizolwakhe Leonard Mthimyunye and King Sparkon Tracker service maintained by King Sparkon.
-        </p>
-      </div>
+      <p className="truncate whitespace-nowrap bg-gradient-to-r from-[var(--gold)] via-purple-600 to-orange-500 bg-clip-text text-[0.58rem] font-black uppercase tracking-[0.13em] text-transparent sm:text-[0.66rem] lg:text-[0.74rem]">
+        King Sparkon is trademark of Sizolwakhe Leonard Mthimyunye and King Sparkon...
+      </p>
 
-      <p className="mt-3 whitespace-nowrap bg-gradient-to-r from-purple-600 via-[var(--gold)] to-orange-500 bg-clip-text text-[0.62rem] font-black uppercase tracking-[0.13em] text-transparent sm:text-[0.72rem] lg:text-[0.78rem]">
+      <p className="mt-2 whitespace-nowrap bg-gradient-to-r from-purple-600 via-[var(--gold)] to-orange-500 bg-clip-text text-[0.48rem] font-black uppercase tracking-[0.12em] text-transparent sm:text-[0.56rem] lg:text-[0.62rem]">
         King Sparkon is innovative software developer, verified by Oracle University. View badge by verify below the badge.
       </p>
 
