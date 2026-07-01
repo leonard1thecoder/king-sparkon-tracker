@@ -90,6 +90,9 @@ function buildPayload(formData: FormData) {
   }
   const parts = [payload.addressStreet, payload.addressLine2, payload.addressSuburb, payload.addressCity, payload.addressProvince, payload.addressPostalCode, payload.addressCountry].filter(Boolean);
   if (parts.length) payload.physicalAddress = parts.join(", ");
+  if (payload.serviceRegisteringFor === "USER") payload.serviceRegistrationType = "FREE_USER_ACCESS";
+  if (payload.serviceRegisteringFor === "AFFILIATE") payload.serviceRegistrationType = "FREE_AFFILIATE_ACCESS";
+  if (payload.serviceRegisteringFor === "BUSINESS_OWNER" && (!payload.serviceRegistrationType || payload.serviceRegistrationType === "FREE_USER_ACCESS" || payload.serviceRegistrationType === "FREE_AFFILIATE_ACCESS")) payload.serviceRegistrationType = "FULL_BUSINESS_SUITE";
   return payload;
 }
 
