@@ -15,9 +15,7 @@ const roleMap: Record<string, UserRole> = {
   promoter: "Affiliate",
   admin: "Admin",
   administrator: "Admin",
-  user: "User",
-  customer: "User",
-  buyer: "User",
+  platform_admin: "Admin",
 };
 
 function roleKey(value: string) {
