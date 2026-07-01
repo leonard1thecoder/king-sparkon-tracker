@@ -33,13 +33,15 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
+const PAYPAL_HELP = "Need a payment link? Create or find your PayPal.me link here: https://www.paypal.com/paypalme";
+
 const planNotes: Record<string, string> = {
   FREE_USER: "Selected plan: Free User at R0. Best for tickets, job applications, cart checkout, profile, and purchase QR flows.",
-  FREE_AFFILIATE: "Selected plan: Free Affiliate at R0. Best for referral links, QR promotion cards, campaign assets, and commission visibility.",
-  FREE_TRIAL_BUSINESS: "Selected plan: Free Trial Business for 14 days. Best for testing barcode inventory, tickets, jobs, tips, promotions, and reports.",
-  FREE_TRIAL: "Selected plan: Free Trial Business for 14 days. Best for testing barcode inventory, tickets, jobs, tips, promotions, and reports.",
-  PLUS: "Selected plan: Plus at R880 per month. Register as Business owner to create the owner workspace first, then complete billing from the dashboard.",
-  PRO: "Selected plan: Pro at R2,300 per month. Register as Business owner for unlimited workers, tips, reports, capacity visibility, and full platform control.",
+  FREE_AFFILIATE: `Selected plan: Free Affiliate at R0. Add your PayPal.me link for earnings setup. ${PAYPAL_HELP}`,
+  FREE_TRIAL_BUSINESS: `Selected plan: Free Trial Business for 14 days. Business owner payment link is optional during registration. ${PAYPAL_HELP}`,
+  FREE_TRIAL: `Selected plan: Free Trial Business for 14 days. Business owner payment link is optional during registration. ${PAYPAL_HELP}`,
+  PLUS: `Selected plan: Plus at R880 per month. Register as Business owner first, then complete billing from the dashboard. ${PAYPAL_HELP}`,
+  PRO: `Selected plan: Pro at R2,300 per month. Register as Business owner for unlimited workers, tips, reports, capacity visibility, and full platform control. ${PAYPAL_HELP}`,
 };
 
 const privilegeNotes: Record<string, string> = {
@@ -57,16 +59,6 @@ const serviceNotes: Record<string, string> = {
   WORKER_TIPS_PAYOUTS: "Service selected: Worker Tips & Review for worker QR codes, payment links, owner review, service fees, and status.",
   AFFILIATE_PROMOTIONS: "Service selected: Affiliate Promotions for referral links, QR campaigns, commission visibility, and promoter performance.",
 };
-
-const serviceOptions = [
-  { label: "Free User Access — tickets, jobs, cart checkout, QR purchases", value: "FREE_USER_ACCESS" },
-  { label: "Free Affiliate Access — referrals, campaign assets, QR promotions", value: "FREE_AFFILIATE_ACCESS" },
-  { label: "Full Business Suite — inventory, tickets, jobs, tips, affiliates, payments", value: "FULL_BUSINESS_SUITE" },
-  { label: "Barcode Inventory — products, scanning, stock movement", value: "BARCODE_INVENTORY" },
-  { label: "QR Ticket Events — event tickets and gate verification", value: "QR_TICKET_EVENTS" },
-  { label: "Worker Tips & Review — QR tips and owner review", value: "WORKER_TIPS_PAYOUTS" },
-  { label: "Affiliate Promotions — referral links and campaign QR tracking", value: "AFFILIATE_PROMOTIONS" },
-];
 
 function defaultPrivilege(plan?: string, privilege?: string) {
   const normalizedPrivilege = privilege?.toUpperCase();
@@ -92,7 +84,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
   const selectedPrivilege = defaultPrivilege(plan, privilege);
   const selectedService = defaultService(plan, service, selectedPrivilege);
   const selectedPlanNote = normalizedPlan ? planNotes[normalizedPlan] : undefined;
-  const composedNote = [privilegeNotes[selectedPrivilege], serviceNotes[selectedService], selectedPlanNote].filter(Boolean).join(" ");
+  const composedNote = [privilegeNotes[selectedPrivilege], selectedPlanNote].filter(Boolean).join(" ");
 
   return (
     <InteractiveRegisterShell
@@ -102,12 +94,13 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
       note={composedNote}
       fields={[
         { name: "serviceRegisteringFor", label: "Choose role", type: "select", placeholder: "Choose User, Business owner, or Affiliate", autoComplete: "off", defaultValue: selectedPrivilege, helper: "Start here. The form changes based on this role.", options: registrationPrivilegeOptions.map((option) => ({ label: option.label, value: option.value })) },
-        { name: "serviceRegistrationType", label: "Service registering for", type: "select", placeholder: "Choose service", autoComplete: "off", defaultValue: selectedService, helper: "User and Affiliate stay free. Business owner can choose the operating suite.", options: serviceOptions },
+        { name: "serviceRegistrationType", label: "Service registering for", type: "hidden", placeholder: selectedService, autoComplete: "off", defaultValue: selectedService },
         { name: "businessName", label: "Business name", type: "text", placeholder: "Example: Sparkon Retail Store", autoComplete: "organization", visibleForPrivileges: ["BUSINESS_OWNER"], helper: "Required for Business owner." },
         { name: "username", label: "Username", type: "text", placeholder: "Example: sparkon_user", autoComplete: "username", helper: "Required. This becomes your login username." },
         { name: "emailAddress", label: "Email address", type: "email", placeholder: "Example: owner@sparkonstore.co.za", autoComplete: "email", helper: "Required. Verification and account messages are sent here." },
         { name: "cellphoneNumber", label: "Cellphone number", type: "tel", placeholder: "Example: +27821234567", autoComplete: "tel", required: false, visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE"], helper: "Optional. Use international format for WhatsApp or account contact." },
-        { name: "paypalLink", label: "Affiliate PayPal link", type: "url", placeholder: "Example: https://paypal.me/kingaffiliate", autoComplete: "url", visibleForPrivileges: ["AFFILIATE"], helper: "Required for Affiliate. Used for affiliate earnings setup." },
+        { name: "businessPaypalLink", label: "Business PayPal payment link", type: "url", placeholder: "Example: https://paypal.me/kingsparkonstore", autoComplete: "url", required: false, visibleForPrivileges: ["BUSINESS_OWNER"], helper: `Optional for Business owner payments during registration. ${PAYPAL_HELP}` },
+        { name: "paypalLink", label: "Affiliate PayPal link", type: "url", placeholder: "Example: https://paypal.me/kingaffiliate", autoComplete: "url", visibleForPrivileges: ["AFFILIATE"], helper: `Required for Affiliate. Used for affiliate earnings setup. ${PAYPAL_HELP}` },
         { name: "password", label: "Create password", type: "password", placeholder: "Minimum 8 characters with letters and numbers", autoComplete: "new-password", helper: "Required. Use a strong password for this account." },
         { name: "addressStreet", label: "Street address", type: "text", placeholder: "Example: 12 Main Road", autoComplete: "street-address", visibleForPrivileges: ["USER", "BUSINESS_OWNER"], section: "address", helper: "Required for User and Business owner." },
         { name: "addressLine2", label: "Unit, building, complex", type: "text", placeholder: "Example: Unit 4, Sparkon Heights", autoComplete: "address-line2", required: false, visibleForPrivileges: ["USER", "BUSINESS_OWNER"], section: "address" },
