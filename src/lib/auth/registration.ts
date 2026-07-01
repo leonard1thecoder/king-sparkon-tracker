@@ -8,26 +8,26 @@ export type RegistrationPrivilegeOption = {
 
 export const registrationPrivilegeOptions: RegistrationPrivilegeOption[] = [
   {
+    label: "User free",
+    value: "USER",
+    description: "Creates a User privilege for tickets, cart checkout, job applications, purchase QR flows, and personal account access.",
+  },
+  {
+    label: "Affiliate free",
+    value: "AFFILIATE",
+    description: "Creates an Affiliate privilege with referral links, promotion assets, and an affiliate QR code.",
+  },
+  {
     label: "Business owner",
     value: "BUSINESS_OWNER",
     description: "Creates an Owner privilege and a business workspace with its own QR code.",
-  },
-  {
-    label: "User",
-    value: "USER",
-    description: "Creates a User privilege for customer purchases, QR payment flows, and personal account access.",
-  },
-  {
-    label: "Affiliate",
-    value: "AFFILIATE",
-    description: "Creates an Affiliate privilege with a referral code, promotion link, and affiliate QR code.",
   },
 ];
 
 export function normalizeRegistrationPrivilege(value: string | null | undefined): ServiceRegistrationFor {
   const normalized = value?.trim().toUpperCase().replace(/[\s-]+/g, "_");
 
-  if (!normalized) return "BUSINESS_OWNER";
+  if (!normalized) return "USER";
   if (normalized === "OWNER" || normalized === "BUSINESS" || normalized === "BUSINESS_OWNER") return "BUSINESS_OWNER";
   if (normalized === "AFFILIATE" || normalized === "AFFLIATE") return "AFFILIATE";
   if (normalized === "USER" || normalized === "CUSTOMER" || normalized === "CLIENT") return "USER";

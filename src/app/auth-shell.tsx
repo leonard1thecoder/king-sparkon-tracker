@@ -39,6 +39,8 @@ type AuthField = {
   icon?: string;
   helper?: string;
   required?: boolean;
+  readOnly?: boolean;
+  visibleForPrivileges?: string[];
 };
 
 type AuthMode = "login" | "register" | "forgot" | "reset" | "resend";
@@ -57,6 +59,8 @@ type AuthShellProps = {
   note?: string;
   visualTitle: string;
   visualText: string;
+  allowedEmailAddress?: string;
+  extraPayload?: Record<string, string>;
 };
 
 type AuthStatus = { tone: "success" | "error" | "info"; message: string };
@@ -75,17 +79,40 @@ const iconMap: Record<string, ReactNode> = {
 };
 
 const trustItems = [
-  "Owner, worker, affiliate, admin, and ticket portal routing",
-  "Register shows the exact service the workspace is being created for",
-  "Clear field examples and helper text for every input",
+  "Role-aware form fields with no clutter",
+  "User, owner, affiliate, worker, and admin dashboard routing",
+  "Register keeps the selected service and selected privilege clear",
   "Official profile links on every auth page",
 ] as const;
 
 const serviceCards = [
-  [Barcode, "Barcode inventory", "Product records, stock movement, branch context, and scan logs."],
-  [QrCode, "QR ticketing", "Events, ticket classes, buyer tickets, capacity, and gate verification."],
-  [WalletCards, "Tips & payouts", "Worker QR links, gross tips, platform fee, net amount, and payout state."],
+  [UserRound, "Free User", "Tickets, job applications, cart-ready checkout, and profile access."],
+  [QrCode, "Free Affiliate", "Referral links, QR promotion shell, campaign assets, and commission visibility."],
+  [Barcode, "Business Owner", "Barcode inventory, tickets, jobs, workers, tips, capacity, and reports."],
 ] as const;
+
+const roleSnapshots: Record<string, { title: string; copy: string; tags: string[] }> = {
+  USER: {
+    title: "Free user account",
+    copy: "Minimal registration for ticket buyers, job applicants, cart checkout, profile, and purchase QR flows.",
+    tags: ["R0", "Tickets", "Jobs", "Cart"],
+  },
+  BUSINESS_OWNER: {
+    title: "Business owner workspace",
+    copy: "Full operator registration for products, scanners, tickets, workers, tips, jobs, promotions, reports, and capacity views.",
+    tags: ["Owner", "Barcode", "Workers", "Reports"],
+  },
+  AFFILIATE: {
+    title: "Free affiliate account",
+    copy: "Lean promoter registration for referral links, QR promotion assets, commission visibility, and campaign tracking.",
+    tags: ["R0", "Referral", "QR", "Campaigns"],
+  },
+  ADMIN: {
+    title: "Restricted admin account",
+    copy: "Platform-only registration with locked email validation and admin role metadata.",
+    tags: ["Admin", "Locked", "Platform", "Audit"],
+  },
+};
 
 function payloadFromForm(formData: FormData) {
   const payload: Record<string, string> = {};
@@ -97,22 +124,23 @@ function payloadFromForm(formData: FormData) {
   return payload;
 }
 
-function validatePayload(mode: AuthMode, payload: Record<string, string>, fields: AuthField[]) {
-  const missingField = fields.find((field) => field.required !== false && !String(payload[field.name] ?? "").trim());
+function validatePayload(mode: AuthMode, payload: Record<string, string>, fields: AuthField[], allowedEmailAddress?: string) {
+  const missingField = fields.find((field) => field.type !== "hidden" && field.required !== false && !String(payload[field.name] ?? "").trim());
   if (missingField) return `Complete ${missingField.label.toLowerCase()} before submitting.`;
   if (payload.emailAddress && !payload.emailAddress.includes("@")) return "Enter a valid email address.";
+  if (allowedEmailAddress && payload.emailAddress?.trim().toLowerCase() !== allowedEmailAddress.trim().toLowerCase()) return `Admin registration is restricted to ${allowedEmailAddress}.`;
   if (mode === "reset" && payload.newPassword !== payload.confirmPassword) return "New password and confirmation must match.";
   return null;
 }
 
 function loginRedirectPath() {
-  return "/tickets";
+  return "/dashboard";
 }
 
 function successMessage(mode: AuthMode, responseBody: Record<string, unknown>) {
   if (mode === "login") {
     const user = responseBody.user as { username?: string } | undefined;
-    return user?.username ? `Signed in as ${user.username}. Opening ticket portal.` : "Signed in successfully. Opening ticket portal.";
+    return user?.username ? `Signed in as ${user.username}. Opening your role dashboard.` : "Signed in successfully. Opening your role dashboard.";
   }
   if (mode === "register") return "Workspace created. Check the inbox for the email verification link before signing in.";
   if (mode === "forgot") return "If the account exists, a reset link has been sent.";
@@ -120,7 +148,11 @@ function successMessage(mode: AuthMode, responseBody: Record<string, unknown>) {
   return "Password reset successful. You can now sign in.";
 }
 
-function FieldInput({ field }: { field: AuthField }) {
+function FieldInput({ field, onValueChange }: { field: AuthField; onValueChange?: (name: string, value: string) => void }) {
+  if (field.type === "hidden") {
+    return <input type="hidden" name={field.name} value={field.defaultValue ?? ""} />;
+  }
+
   const required = field.required !== false;
   const icon = iconMap[field.icon ?? ""] ?? <Fingerprint className="h-4 w-4" />;
   const isTextarea = field.type === "textarea";
@@ -135,14 +167,22 @@ function FieldInput({ field }: { field: AuthField }) {
       <span className={`flex border border-[var(--line)] bg-white px-4 shadow-[var(--shadow-soft)] focus-within:border-[var(--gold)] focus-within:shadow-[var(--focus-ring)] ${isTextarea ? "min-h-32 items-start gap-3 rounded-[1.65rem] py-4" : "min-h-12 items-center gap-3 rounded-[1.65rem]"}`}>
         <span className={`shrink-0 text-[var(--signal)] ${isTextarea ? "mt-1" : ""}`}>{icon}</span>
         {field.options ? (
-          <select id={field.name} name={field.name} defaultValue={field.defaultValue ?? field.options[0]?.value} required={required} aria-describedby={helperId} className="min-h-12 w-full bg-transparent text-sm font-semibold text-[var(--ink)] outline-none">
+          <select
+            id={field.name}
+            name={field.name}
+            defaultValue={field.defaultValue ?? field.options[0]?.value}
+            required={required}
+            aria-describedby={helperId}
+            onChange={(event) => onValueChange?.(field.name, event.target.value)}
+            className="min-h-12 w-full bg-transparent text-sm font-semibold text-[var(--ink)] outline-none"
+          >
             {field.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
           </select>
         ) : isTextarea ? (
-          <textarea id={field.name} name={field.name} placeholder={field.placeholder} defaultValue={field.defaultValue} required={required} aria-describedby={helperId} className="min-h-28 w-full resize-none bg-transparent text-sm font-semibold leading-6 text-[var(--ink)] outline-none placeholder:text-[var(--muted)]" />
+          <textarea id={field.name} name={field.name} placeholder={field.placeholder} defaultValue={field.defaultValue} required={required} readOnly={field.readOnly} aria-describedby={helperId} className="min-h-28 w-full resize-none bg-transparent text-sm font-semibold leading-6 text-[var(--ink)] outline-none placeholder:text-[var(--muted)] read-only:text-[var(--steel)]" />
         ) : (
           <>
-            <input id={field.name} name={field.name} type={field.type} autoComplete={field.autoComplete} placeholder={field.placeholder} defaultValue={field.defaultValue} required={required} aria-describedby={helperId} className="min-h-12 w-full bg-transparent text-sm font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--muted)]" />
+            <input id={field.name} name={field.name} type={field.type} autoComplete={field.autoComplete} placeholder={field.placeholder} defaultValue={field.defaultValue} required={required} readOnly={field.readOnly} aria-describedby={helperId} className="min-h-12 w-full bg-transparent text-sm font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--muted)] read-only:text-[var(--steel)]" />
             {field.type === "password" ? <Eye className="h-4 w-4 shrink-0 text-[var(--muted)]" aria-hidden="true" /> : null}
           </>
         )}
@@ -152,12 +192,19 @@ function FieldInput({ field }: { field: AuthField }) {
   );
 }
 
-export function AuthShell({ mode, eyebrow, title, description, fields, submitLabel, footerText, footerHref, footerLink, endpoint, note, visualTitle, visualText }: AuthShellProps) {
+export function AuthShell({ mode, eyebrow, title, description, fields, submitLabel, footerText, footerHref, footerLink, endpoint, note, visualTitle, visualText, allowedEmailAddress, extraPayload }: AuthShellProps) {
+  const initialPrivilege = fields.find((field) => field.name === "serviceRegisteringFor")?.defaultValue ?? "BUSINESS_OWNER";
+  const [selectedPrivilege, setSelectedPrivilege] = useState(initialPrivilege);
   const [status, setStatus] = useState<AuthStatus | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const activeNote = useMemo(() => note ?? (mode === "register" ? "Choose the service this workspace is registering for before creating the account. Owners, affiliates, admins, and ticket managers must verify email when backend policy enforces it." : null), [mode, note]);
+  const activeNote = useMemo(() => note ?? (mode === "register" ? "Choose the role first. The form renders only the fields that role needs, keeping User and Affiliate registration free and clean." : null), [mode, note]);
   const isLogin = mode === "login";
   const isRegister = mode === "register";
+  const visibleFields = useMemo(
+    () => fields.filter((field) => !field.visibleForPrivileges || field.visibleForPrivileges.includes(selectedPrivilege) || field.type === "hidden" || field.name === "serviceRegisteringFor" || field.name === "serviceRegistrationType"),
+    [fields, selectedPrivilege],
+  );
+  const roleSnapshot = roleSnapshots[selectedPrivilege];
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -166,8 +213,8 @@ export function AuthShell({ mode, eyebrow, title, description, fields, submitLab
 
     try {
       const form = event.currentTarget;
-      const payload = payloadFromForm(new FormData(form));
-      const validationError = validatePayload(mode, payload, fields);
+      const payload = { ...payloadFromForm(new FormData(form)), ...(extraPayload ?? {}) };
+      const validationError = validatePayload(mode, payload, visibleFields, allowedEmailAddress);
       if (validationError) {
         setStatus({ tone: "error", message: validationError });
         return;
@@ -222,10 +269,19 @@ export function AuthShell({ mode, eyebrow, title, description, fields, submitLab
 
             {activeNote ? <div className="mt-5 flex gap-3 rounded-[1.5rem] border border-[var(--gold)]/45 bg-[var(--gold)]/10 p-4 text-sm font-semibold leading-6 text-[var(--steel)]"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--signal)]" /><span>{activeNote}</span></div> : null}
 
+            {isRegister && roleSnapshot ? (
+              <div className="mt-5 rounded-[1.75rem] border border-[var(--line)] bg-[var(--ink)] p-4 text-white shadow-[var(--shadow-soft)]">
+                <p className="font-mono text-[0.66rem] font-black uppercase tracking-[0.16em] text-[var(--gold)]">Selected role</p>
+                <h3 className="mt-2 text-2xl font-black tracking-[-0.04em]">{roleSnapshot.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-white/68">{roleSnapshot.copy}</p>
+                <div className="mt-4 flex flex-wrap gap-2">{roleSnapshot.tags.map((tag) => <span key={tag} className="rounded-full border border-white/10 bg-white/[0.08] px-3 py-1 text-xs font-black uppercase tracking-[0.1em] text-white/72">{tag}</span>)}</div>
+              </div>
+            ) : null}
+
             <form className="mt-7 grid gap-5" onSubmit={handleSubmit}>
-              <div className={isRegister ? "grid gap-5 md:grid-cols-2" : "grid gap-5"}>{fields.map((field) => <FieldInput key={field.name} field={field} />)}</div>
+              <div className={isRegister ? "grid gap-5 md:grid-cols-2" : "grid gap-5"}>{visibleFields.map((field) => <FieldInput key={field.name} field={field} onValueChange={(name, value) => { if (name === "serviceRegisteringFor") setSelectedPrivilege(value); }} />)}</div>
               {isLogin ? <div className="flex flex-col gap-3 text-sm font-bold text-[var(--steel)] sm:flex-row sm:items-center sm:justify-between"><label className="inline-flex items-center gap-2"><input type="checkbox" name="remember" className="h-4 w-4 rounded border-[var(--line)] accent-[var(--signal)]" />Remember this device</label><div className="flex flex-wrap gap-3"><Link href="/resend-verification" className="text-[var(--signal)] hover:text-[var(--ember)]">Resend verification</Link><Link href="/forgot-password" className="text-[var(--signal)] hover:text-[var(--ember)]">Forgot password?</Link></div></div> : null}
-              {isRegister ? <label className="flex items-start gap-3 rounded-[1.5rem] border border-[var(--line)] bg-[var(--surface)] p-4 text-sm font-semibold leading-6 text-[var(--steel)]"><input type="checkbox" name="terms" required className="mt-1 h-4 w-4 accent-[var(--signal)]" /><span>I confirm this account will manage a business-scoped King Sparkon Tracker workspace for the selected service.</span></label> : null}
+              {isRegister ? <label className="flex items-start gap-3 rounded-[1.5rem] border border-[var(--line)] bg-[var(--surface)] p-4 text-sm font-semibold leading-6 text-[var(--steel)]"><input type="checkbox" name="terms" required className="mt-1 h-4 w-4 accent-[var(--signal)]" /><span>I confirm this account is being created for the selected King Sparkon role and service.</span></label> : null}
               {status ? <div aria-live="polite" className={`flex gap-3 rounded-[1.5rem] border px-4 py-3 text-sm font-semibold leading-6 ${status.tone === "error" ? "border-[var(--danger)] bg-[var(--danger)]/10 text-[var(--danger)]" : "border-[var(--confirm)] bg-[var(--confirm)]/10 text-[var(--confirm)]"}`}>{status.tone === "error" ? <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /> : <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />}<span>{status.message}</span></div> : null}
               <button type="submit" disabled={isSubmitting} className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-black text-white shadow-[0_18px_42px_rgba(29,92,131,0.24)] hover:border-[var(--gold)] hover:bg-[var(--ink)] disabled:opacity-55">
                 {isSubmitting ? "Submitting..." : submitLabel} <ArrowRight className="h-4 w-4" />
@@ -243,7 +299,7 @@ export function AuthShell({ mode, eyebrow, title, description, fields, submitLab
             <div className="relative rounded-[2.75rem] border border-[var(--line)] bg-white/86 p-4 shadow-[var(--shadow-depth)] backdrop-blur [transform:rotateX(3deg)_rotateY(-6deg)] md:p-5">
               <div className="overflow-hidden rounded-[2.25rem] border border-white/10 bg-[var(--ink)] text-white enterprise-grid">
                 <div className="flex items-center justify-between border-b border-white/10 px-5 py-4"><div><p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.18em] text-[var(--gold)]">Auth terminal</p><p className="mt-1 text-sm font-semibold text-white/62">King Sparkon Tracker access</p></div><span className="rounded-full border border-white/10 bg-white/[0.08] px-3 py-1 text-xs font-black text-white/78">Ready</span></div>
-                <div className="grid gap-4 p-5"><div className="rounded-[1.75rem] border border-white/10 bg-white/[0.06] p-5"><div className="barcode-rule h-16 text-white" /><div className="mt-4 flex items-center justify-between text-xs font-bold uppercase tracking-[0.14em] text-white/48"><span>Workspace</span><span>{isRegister ? "Service selected" : "Secure login"}</span></div></div><div className="grid gap-3">{trustItems.map((point) => <div key={point} className="flex items-center gap-3 rounded-[1.35rem] border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-bold text-white/68"><CheckCircle2 className="h-4 w-4 shrink-0 text-[var(--gold)]" />{point}</div>)}</div></div>
+                <div className="grid gap-4 p-5"><div className="rounded-[1.75rem] border border-white/10 bg-white/[0.06] p-5"><div className="barcode-rule h-16 text-white" /><div className="mt-4 flex items-center justify-between text-xs font-bold uppercase tracking-[0.14em] text-white/48"><span>Workspace</span><span>{isRegister ? "Role selected" : "Secure login"}</span></div></div><div className="grid gap-3">{trustItems.map((point) => <div key={point} className="flex items-center gap-3 rounded-[1.35rem] border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-bold text-white/68"><CheckCircle2 className="h-4 w-4 shrink-0 text-[var(--gold)]" />{point}</div>)}</div></div>
               </div>
             </div>
           </div>
