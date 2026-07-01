@@ -1,25 +1,28 @@
-import { AlertTriangle, BarChart3, Boxes, Building2, CreditCard, Megaphone, ScanLine, ShieldCheck, Ticket, UsersRound, WalletCards, Warehouse } from "lucide-react";
+import { AlertTriangle, BarChart3, Boxes, Building2, CreditCard, Megaphone, ScanLine, ShieldCheck, ShoppingCart, Store, Ticket, UsersRound, WalletCards, Warehouse } from "lucide-react";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { MetricCard } from "@/components/ui/MetricCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { ProductTable, type InventoryProduct } from "@/components/inventory/ProductTable";
+import { OwnerTuckShopProductManager } from "@/components/tuck-shop/OwnerTuckShopProductManager";
+import { TuckShopDashboard } from "@/components/tuck-shop/TuckShopDashboard";
+import { WorkerTuckShopBarcodeCheckout } from "@/components/tuck-shop/WorkerTuckShopBarcodeCheckout";
 
-type Role = "Owner" | "Worker" | "Affiliate" | "Admin";
+type Role = "Owner" | "Worker" | "Affiliate" | "Admin" | "User";
 
 const roleCopy: Record<Role, { title: string; description: string; primary: string; secondary: string }> = {
   Owner: {
     title: "Owner operations console",
-    description: "Track products, scan activity, low-stock alerts, payments, tips, withdrawals, promotions, and audit signals from one clean workspace.",
+    description: "Track products, tuck shop photos, scan activity, low-stock alerts, payments, tips, withdrawals, promotions, and audit signals from one clean workspace.",
     primary: "Business command center",
-    secondary: "Stock, workers, payments, tips, tickets, and reports stay grouped for daily owner decisions.",
+    secondary: "Stock, tuck shop products, workers, payments, tips, tickets, and reports stay grouped for daily owner decisions.",
   },
   Worker: {
     title: "Worker scan terminal",
-    description: "Scan items, verify products, register barcodes, create transactions, and keep every stock movement clean at the source.",
+    description: "Scan items, verify products, register barcodes, create transactions, process tuck shop purchases, and keep every stock movement clean at the source.",
     primary: "Fast scanning workspace",
-    secondary: "The worker view keeps barcode capture, fallback entry, and verification status obvious on mobile.",
+    secondary: "The worker view keeps barcode capture, tuck shop checkout, fallback entry, and verification status obvious on mobile.",
   },
   Affiliate: {
     title: "Affiliate referral console",
@@ -29,9 +32,15 @@ const roleCopy: Record<Role, { title: string; description: string; primary: stri
   },
   Admin: {
     title: "Platform oversight console",
-    description: "Review users, businesses, promotions, scan logs, subscriber growth, feature policy, and platform health without clutter.",
+    description: "Review users, businesses, tuck shop adoption, promotions, scan logs, subscriber growth, feature policy, and platform health without clutter.",
     primary: "Platform quality cockpit",
-    secondary: "Admin gets a clean system overview for users, companies, scan logs, policies, and health checks.",
+    secondary: "Admin gets a clean system overview for users, companies, scan logs, policies, shop readiness, and health checks.",
+  },
+  User: {
+    title: "King Sparkon Tuck Shop",
+    description: "Browse products from registered businesses, checkout with Stripe, and optionally tip workers without needing a worker to start the purchase.",
+    primary: "Buyer marketplace",
+    secondary: "Users can buy available products directly while every purchase still creates barcode-backed transactions for the business.",
   },
 };
 
@@ -44,24 +53,25 @@ const previewProducts: InventoryProduct[] = [
 
 const previewActivity = [
   ["SELL", "Sparkon Premium Lager", "Preview event: worker terminal verified 3 item barcodes", "2 min ago", "confirm"],
+  ["SHOP", "Tuck Shop checkout", "Preview event: user self-service payment link generated", "5 min ago", "signal"],
   ["LOW", "Returnable Bottle Crate", "Preview event: quantity dropped below branch threshold", "11 min ago", "signal"],
   ["PAY", "Website payment", "Preview event: payment link generated for customer checkout", "18 min ago", "neutral"],
   ["TIP", "Worker QR tip", "Preview event: tip request created and assigned to owner review", "27 min ago", "confirm"],
 ] as const;
 
 const featureCards = [
-  [Building2, "Branch readiness", "Mobile-friendly stock views for warehouses, shelves, counters, and delivery points."],
-  [BarChart3, "Reporting clarity", "Inventory totals, scan movement, payment visibility, and audit signals stay grouped."],
-  [ScanLine, "Scanner-first UX", "The scan flow now has a real camera frame, manual fallback, and clear verification output."],
+  [Building2, "Branch readiness", "Mobile-friendly stock views for warehouses, shelves, counters, delivery points, and tuck shop storefronts."],
+  [Store, "Tuck Shop marketplace", "Product photos, live availability, self-service checkout, and barcode-backed sales stay tied to inventory."],
+  [BarChart3, "Reporting clarity", "Inventory totals, scan movement, product payments, tips, and audit signals stay grouped."],
 ] as const;
 
 const operationalModules = [
+  [Store, "Tuck Shop", "Business products in one marketplace with product photos, self-service checkout, and barcode-backed transactions."],
   [Ticket, "QR tickets", "Capacity, sold seats, class sales, issued tickets, and gate verification."],
   [WalletCards, "Worker tips", "Gross tips, platform fee, net payout, QR links, and owner review state."],
   [Megaphone, "Promotions", "Audience, campaign channel, quote visibility, subscribers, and launch state."],
   [CreditCard, "Transactions", "BUY/SELL activity, payment URLs, references, methods, and statuses."],
   [UsersRound, "People", "Owner, worker, affiliate, buyer, and admin flows stay role-aware."],
-  [ShieldCheck, "Audit trail", "Barcode, QR, payment, ticket, and payout events remain reviewable."],
 ] as const;
 
 export function DashboardShell({ role }: { role: Role }) {
@@ -79,7 +89,7 @@ export function DashboardShell({ role }: { role: Role }) {
               <p className="mt-4 max-w-2xl text-sm leading-7 text-white/68 md:text-base">{copy.secondary}</p>
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
-              {["Real-time scans", "Role-aware access", "Audit-ready reports"].map((item) => (
+              {["Real-time scans", "Tuck Shop checkout", "Audit-ready reports"].map((item) => (
                 <div key={item} className="rounded-[1.35rem] border border-white/10 bg-white/[0.06] p-4 text-sm font-black text-white/78 backdrop-blur">
                   {item}
                 </div>
@@ -89,11 +99,15 @@ export function DashboardShell({ role }: { role: Role }) {
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
             <MetricCard label="Preview products" value="18,420" detail="Demo value until product API is connected" tone="confirm" icon={<Boxes className="h-5 w-5" />} />
-            <MetricCard label="Preview scans" value="426K" detail="Demo barcode and QR events" tone="signal" icon={<ScanLine className="h-5 w-5" />} />
+            <MetricCard label="Tuck shop" value="Live API" detail="Products, images, cart, checkout, tips" tone="signal" icon={<ShoppingCart className="h-5 w-5" />} />
             <MetricCard label="Preview low stock" value="07" detail="Demo alerts, not live totals" icon={<AlertTriangle className="h-5 w-5" />} />
             <MetricCard label="Preview branches" value="12" detail="Demo warehouses and counters" icon={<Warehouse className="h-5 w-5" />} />
           </div>
         </section>
+
+        {role === "User" ? <TuckShopDashboard /> : null}
+        {role === "Owner" ? <OwnerTuckShopProductManager /> : null}
+        {role === "Worker" ? <WorkerTuckShopBarcodeCheckout /> : null}
 
         <div className="grid gap-6 xl:grid-cols-[1.45fr_0.85fr]">
           <section className="grid gap-4">
@@ -143,7 +157,7 @@ export function DashboardShell({ role }: { role: Role }) {
           <div className="lg:col-span-1">
             <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Operational modules</p>
             <h2 className="mt-3 text-3xl font-black tracking-[-0.05em]">Everything remains visible.</h2>
-            <p className="mt-3 text-sm leading-7 text-[var(--steel)]">Inventory, ticketing, tips, promotions, transactions, people, and audit history keep their place in the UI.</p>
+            <p className="mt-3 text-sm leading-7 text-[var(--steel)]">Inventory, tuck shop, ticketing, tips, promotions, transactions, people, and audit history keep their place in the UI.</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:col-span-2 xl:grid-cols-3">
             {operationalModules.map(([Icon, title, description]) => (
