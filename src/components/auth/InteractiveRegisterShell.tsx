@@ -3,7 +3,7 @@
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
-import { type FormEvent, useMemo, useState } from "react";
+import { type FormEvent, type ReactNode, useMemo, useState } from "react";
 import { AlertCircle, ArrowDown, ArrowRight, CheckCircle2, Eye, Gift, KeyRound, LockKeyhole, Mail, MapPin, ShieldCheck, Sparkles, UserRound, WalletCards } from "lucide-react";
 import { messageFromBackendPayload } from "@/lib/utils/errors";
 
@@ -69,7 +69,7 @@ function Field({ field, onRoleChange }: { field: RegisterField; onRoleChange?: (
   );
 }
 
-function ToggleSection({ title, copy, required, open, onClick, children }: { title: string; copy: string; required?: boolean; open: boolean; onClick: () => void; children: React.ReactNode }) {
+function ToggleSection({ title, copy, required, open, onClick, children }: { title: string; copy: string; required?: boolean; open: boolean; onClick: () => void; children: ReactNode }) {
   return (
     <section className="overflow-hidden rounded-[1.65rem] border border-[var(--line)] bg-[var(--surface)] shadow-[var(--shadow-soft)]">
       <button type="button" onClick={onClick} aria-expanded={open} className="flex w-full items-center justify-between gap-4 p-4 text-left md:p-5">
