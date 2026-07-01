@@ -39,6 +39,7 @@ type AuthField = {
   icon?: string;
   helper?: string;
   required?: boolean;
+  readOnly?: boolean;
 };
 
 type AuthMode = "login" | "register" | "forgot" | "reset" | "resend";
@@ -57,6 +58,8 @@ type AuthShellProps = {
   note?: string;
   visualTitle: string;
   visualText: string;
+  allowedEmailAddress?: string;
+  extraPayload?: Record<string, string>;
 };
 
 type AuthStatus = { tone: "success" | "error" | "info"; message: string };
@@ -97,10 +100,11 @@ function payloadFromForm(formData: FormData) {
   return payload;
 }
 
-function validatePayload(mode: AuthMode, payload: Record<string, string>, fields: AuthField[]) {
-  const missingField = fields.find((field) => field.required !== false && !String(payload[field.name] ?? "").trim());
+function validatePayload(mode: AuthMode, payload: Record<string, string>, fields: AuthField[], allowedEmailAddress?: string) {
+  const missingField = fields.find((field) => field.type !== "hidden" && field.required !== false && !String(payload[field.name] ?? "").trim());
   if (missingField) return `Complete ${missingField.label.toLowerCase()} before submitting.`;
   if (payload.emailAddress && !payload.emailAddress.includes("@")) return "Enter a valid email address.";
+  if (allowedEmailAddress && payload.emailAddress?.trim().toLowerCase() !== allowedEmailAddress.trim().toLowerCase()) return `Admin registration is restricted to ${allowedEmailAddress}.`;
   if (mode === "reset" && payload.newPassword !== payload.confirmPassword) return "New password and confirmation must match.";
   return null;
 }
@@ -121,6 +125,10 @@ function successMessage(mode: AuthMode, responseBody: Record<string, unknown>) {
 }
 
 function FieldInput({ field }: { field: AuthField }) {
+  if (field.type === "hidden") {
+    return <input type="hidden" name={field.name} value={field.defaultValue ?? ""} />;
+  }
+
   const required = field.required !== false;
   const icon = iconMap[field.icon ?? ""] ?? <Fingerprint className="h-4 w-4" />;
   const isTextarea = field.type === "textarea";
@@ -139,10 +147,10 @@ function FieldInput({ field }: { field: AuthField }) {
             {field.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
           </select>
         ) : isTextarea ? (
-          <textarea id={field.name} name={field.name} placeholder={field.placeholder} defaultValue={field.defaultValue} required={required} aria-describedby={helperId} className="min-h-28 w-full resize-none bg-transparent text-sm font-semibold leading-6 text-[var(--ink)] outline-none placeholder:text-[var(--muted)]" />
+          <textarea id={field.name} name={field.name} placeholder={field.placeholder} defaultValue={field.defaultValue} required={required} readOnly={field.readOnly} aria-describedby={helperId} className="min-h-28 w-full resize-none bg-transparent text-sm font-semibold leading-6 text-[var(--ink)] outline-none placeholder:text-[var(--muted)] read-only:text-[var(--steel)]" />
         ) : (
           <>
-            <input id={field.name} name={field.name} type={field.type} autoComplete={field.autoComplete} placeholder={field.placeholder} defaultValue={field.defaultValue} required={required} aria-describedby={helperId} className="min-h-12 w-full bg-transparent text-sm font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--muted)]" />
+            <input id={field.name} name={field.name} type={field.type} autoComplete={field.autoComplete} placeholder={field.placeholder} defaultValue={field.defaultValue} required={required} readOnly={field.readOnly} aria-describedby={helperId} className="min-h-12 w-full bg-transparent text-sm font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--muted)] read-only:text-[var(--steel)]" />
             {field.type === "password" ? <Eye className="h-4 w-4 shrink-0 text-[var(--muted)]" aria-hidden="true" /> : null}
           </>
         )}
@@ -152,7 +160,7 @@ function FieldInput({ field }: { field: AuthField }) {
   );
 }
 
-export function AuthShell({ mode, eyebrow, title, description, fields, submitLabel, footerText, footerHref, footerLink, endpoint, note, visualTitle, visualText }: AuthShellProps) {
+export function AuthShell({ mode, eyebrow, title, description, fields, submitLabel, footerText, footerHref, footerLink, endpoint, note, visualTitle, visualText, allowedEmailAddress, extraPayload }: AuthShellProps) {
   const [status, setStatus] = useState<AuthStatus | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const activeNote = useMemo(() => note ?? (mode === "register" ? "Choose the service this workspace is registering for before creating the account. Owners, affiliates, admins, and ticket managers must verify email when backend policy enforces it." : null), [mode, note]);
@@ -166,8 +174,8 @@ export function AuthShell({ mode, eyebrow, title, description, fields, submitLab
 
     try {
       const form = event.currentTarget;
-      const payload = payloadFromForm(new FormData(form));
-      const validationError = validatePayload(mode, payload, fields);
+      const payload = { ...payloadFromForm(new FormData(form)), ...(extraPayload ?? {}) };
+      const validationError = validatePayload(mode, payload, fields, allowedEmailAddress);
       if (validationError) {
         setStatus({ tone: "error", message: validationError });
         return;
