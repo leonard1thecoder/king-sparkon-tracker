@@ -75,7 +75,7 @@ const iconMap: Record<string, ReactNode> = {
 };
 
 const trustItems = [
-  "Owner, worker, affiliate, admin, and ticket portal routing",
+  "User, owner, worker, affiliate, admin, and ticket portal routing",
   "Register shows the exact service the workspace is being created for",
   "Clear field examples and helper text for every input",
   "Official profile links on every auth page",
@@ -106,13 +106,13 @@ function validatePayload(mode: AuthMode, payload: Record<string, string>, fields
 }
 
 function loginRedirectPath() {
-  return "/tickets";
+  return "/dashboard";
 }
 
 function successMessage(mode: AuthMode, responseBody: Record<string, unknown>) {
   if (mode === "login") {
     const user = responseBody.user as { username?: string } | undefined;
-    return user?.username ? `Signed in as ${user.username}. Opening ticket portal.` : "Signed in successfully. Opening ticket portal.";
+    return user?.username ? `Signed in as ${user.username}. Opening your role dashboard.` : "Signed in successfully. Opening your role dashboard.";
   }
   if (mode === "register") return "Workspace created. Check the inbox for the email verification link before signing in.";
   if (mode === "forgot") return "If the account exists, a reset link has been sent.";
