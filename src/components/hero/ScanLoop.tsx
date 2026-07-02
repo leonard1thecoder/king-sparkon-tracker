@@ -48,7 +48,7 @@ function ScanTerminalCard({ imageSrc, eyebrow, title, subtitle, cardClassName }:
             </div>
 
             <div className="relative mx-auto my-3 w-full overflow-hidden rounded-[1.8rem] border border-white/18 bg-[var(--ink)] text-white shadow-[0_28px_80px_rgba(0,0,0,0.38)]">
-              <div className="relative aspect-square w-full overflow-hidden bg-[radial-gradient(circle_at_50%_40%,rgba(255,210,90,0.18),rgba(7,19,31,0.98)_62%)]">
+              <div className="hero-scan-window relative aspect-square w-full overflow-hidden bg-[radial-gradient(circle_at_50%_40%,rgba(255,210,90,0.18),rgba(7,19,31,0.98)_62%)]">
                 <Image
                   src={imageSrc}
                   alt={title}
@@ -58,11 +58,12 @@ function ScanTerminalCard({ imageSrc, eyebrow, title, subtitle, cardClassName }:
                   sizes="(min-width: 1280px) 640px, (min-width: 1024px) 52vw, 94vw"
                   className="transform-gpu object-contain [backface-visibility:hidden] [image-rendering:auto]"
                 />
-                <div className="logo-reflection-wick pointer-events-none absolute inset-0" aria-hidden="true" />
-                <div className="barcode-scan-line pointer-events-none absolute left-4 right-4 h-1.5 rounded-full bg-[var(--signal)] shadow-[0_0_34px_var(--signal)]" aria-hidden="true" />
-                <div className="pointer-events-none absolute left-4 right-4 top-0 h-full border-x border-[var(--signal)]/18" aria-hidden="true" />
+                <div className="logo-reflection-wick pointer-events-none absolute inset-0 z-10" aria-hidden="true" />
+                <div className="barcode-scan-beam pointer-events-none absolute left-0 right-0 z-20 h-24 bg-gradient-to-b from-transparent via-[var(--signal)]/18 to-transparent" aria-hidden="true" />
+                <div className="barcode-scan-line pointer-events-none absolute left-4 right-4 z-30 h-1.5 rounded-full bg-[var(--signal)] shadow-[0_0_22px_var(--signal),0_0_52px_var(--signal)]" aria-hidden="true" />
+                <div className="pointer-events-none absolute left-4 right-4 top-0 z-20 h-full border-x border-[var(--signal)]/18" aria-hidden="true" />
               </div>
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgba(7,19,31,0.92)] via-[rgba(7,19,31,0.52)] to-transparent px-5 pb-5 pt-16 text-white">
+              <div className="absolute inset-x-0 bottom-0 z-40 bg-gradient-to-t from-[rgba(7,19,31,0.92)] via-[rgba(7,19,31,0.52)] to-transparent px-5 pb-5 pt-16 text-white">
                 <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.18em] text-[var(--gold)]">New official logo</p>
                 <p className="mt-2 text-xl font-black tracking-[-0.04em]">{title}</p>
               </div>
@@ -77,11 +78,6 @@ function ScanTerminalCard({ imageSrc, eyebrow, title, subtitle, cardClassName }:
 export function ScanLoop() {
   return (
     <div className="relative mx-auto w-full max-w-2xl [perspective:1400px]">
-      <div className="mb-5 rounded-[1.65rem] border border-[var(--line)] bg-white/88 p-4 shadow-[var(--shadow-soft)] backdrop-blur">
-        <p className="mb-3 font-mono text-[0.68rem] font-black uppercase tracking-[0.16em] text-[var(--muted)]">Official profiles</p>
-        <SocialLinks variant="light" />
-      </div>
-
       <div className="hero-scan-stage relative min-h-[34rem] sm:min-h-[42rem] lg:min-h-[45rem]">
         <ScanTerminalCard
           imageSrc={HERO_3D_IMAGE}
@@ -99,7 +95,12 @@ export function ScanLoop() {
         />
       </div>
 
-      <style jsx>{`
+      <div className="mt-10 rounded-[1.65rem] border border-[var(--line)] bg-white/88 p-4 shadow-[var(--shadow-soft)] backdrop-blur">
+        <p className="mb-3 font-mono text-[0.68rem] font-black uppercase tracking-[0.16em] text-[var(--muted)]">Official profiles</p>
+        <SocialLinks variant="light" />
+      </div>
+
+      <style jsx global>{`
         .hero-scan-stage {
           transform-style: preserve-3d;
         }
@@ -117,22 +118,31 @@ export function ScanLoop() {
           animation: showSecondScanCard 16s linear infinite;
         }
 
+        .barcode-scan-line,
+        .barcode-scan-beam {
+          top: -6rem;
+          animation: barcodeLineDown 2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+        }
+
         .barcode-scan-line {
-          top: -2%;
-          animation: barcodeLineDown 2s linear infinite;
+          mix-blend-mode: screen;
+        }
+
+        .barcode-scan-beam {
+          animation-name: barcodeBeamDown;
         }
 
         @keyframes showFirstScanCard {
-          0%, 48% {
+          0%, 49.6% {
             opacity: 1;
             filter: blur(0);
             transform: translate3d(0, 0, 0) scale(1);
             z-index: 2;
           }
-          50%, 98% {
+          50%, 99.6% {
             opacity: 0;
             filter: blur(5px);
-            transform: translate3d(0, 12px, -40px) scale(0.98);
+            transform: translate3d(0, 14px, -42px) scale(0.985);
             z-index: 1;
           }
           100% {
@@ -144,13 +154,13 @@ export function ScanLoop() {
         }
 
         @keyframes showSecondScanCard {
-          0%, 48% {
+          0%, 49.6% {
             opacity: 0;
             filter: blur(5px);
-            transform: translate3d(0, 12px, -40px) scale(0.98);
+            transform: translate3d(0, 14px, -42px) scale(0.985);
             z-index: 1;
           }
-          50%, 98% {
+          50%, 99.6% {
             opacity: 1;
             filter: blur(0);
             transform: translate3d(0, 0, 0) scale(1);
@@ -159,7 +169,7 @@ export function ScanLoop() {
           100% {
             opacity: 0;
             filter: blur(5px);
-            transform: translate3d(0, 12px, -40px) scale(0.98);
+            transform: translate3d(0, 14px, -42px) scale(0.985);
             z-index: 1;
           }
         }
@@ -167,19 +177,42 @@ export function ScanLoop() {
         @keyframes barcodeLineDown {
           0% {
             opacity: 0;
-            transform: translateY(0) scaleX(0.82);
+            top: -1.5rem;
+            transform: scaleX(0.72);
           }
           8% {
             opacity: 1;
-            transform: translateY(0) scaleX(1);
+            top: -0.4rem;
+            transform: scaleX(1);
           }
-          82% {
+          78% {
             opacity: 1;
-            transform: translateY(calc(100cqw - 1rem)) scaleX(1);
+            top: calc(100% - 0.4rem);
+            transform: scaleX(1);
           }
           100% {
             opacity: 0;
-            transform: translateY(calc(100cqw - 1rem)) scaleX(0.86);
+            top: calc(100% + 1.5rem);
+            transform: scaleX(0.72);
+          }
+        }
+
+        @keyframes barcodeBeamDown {
+          0% {
+            opacity: 0;
+            top: -6rem;
+          }
+          12% {
+            opacity: 0.72;
+            top: -3rem;
+          }
+          78% {
+            opacity: 0.62;
+            top: calc(100% - 4rem);
+          }
+          100% {
+            opacity: 0;
+            top: calc(100% + 1rem);
           }
         }
       `}</style>
