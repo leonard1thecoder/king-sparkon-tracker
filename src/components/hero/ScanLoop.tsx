@@ -20,10 +20,12 @@ type TerminalCardProps = {
   eyebrow: string;
   title: string;
   subtitle: string;
+  overlayEyebrow: string;
+  overlayTitle: string;
   cardClassName: string;
 };
 
-function ScanTerminalCard({ imageSrc, eyebrow, title, subtitle, cardClassName }: TerminalCardProps) {
+function ScanTerminalCard({ imageSrc, eyebrow, title, subtitle, overlayEyebrow, overlayTitle, cardClassName }: TerminalCardProps) {
   return (
     <div className={`hero-scan-card absolute inset-0 ${cardClassName}`}>
       <div className="relative rounded-[2.25rem] border border-[var(--line)] bg-white p-3 shadow-[var(--shadow-depth)] [transform:rotateX(2deg)_rotateY(-3deg)]">
@@ -64,8 +66,8 @@ function ScanTerminalCard({ imageSrc, eyebrow, title, subtitle, cardClassName }:
                 <div className="pointer-events-none absolute left-4 right-4 top-0 z-20 h-full border-x border-[var(--signal)]/18" aria-hidden="true" />
               </div>
               <div className="absolute inset-x-0 bottom-0 z-40 bg-gradient-to-t from-[rgba(7,19,31,0.92)] via-[rgba(7,19,31,0.52)] to-transparent px-5 pb-5 pt-16 text-white">
-                <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.18em] text-[var(--gold)]">New official logo</p>
-                <p className="mt-2 text-xl font-black tracking-[-0.04em]">{title}</p>
+                <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.18em] text-[var(--gold)]">{overlayEyebrow}</p>
+                <p className="mt-2 text-xl font-black tracking-[-0.04em]">{overlayTitle}</p>
               </div>
             </div>
           </div>
@@ -84,13 +86,17 @@ export function ScanLoop() {
           eyebrow="King Sparkon brand terminal"
           subtitle="Barcode line scans down 4 times"
           title="King Sparkon Tracker"
+          overlayEyebrow="King Sparkon Lego"
+          overlayTitle="Present King Sparkon Tracker"
           cardClassName="hero-scan-card--first"
         />
         <ScanTerminalCard
           imageSrc={SECOND_3D_IMAGE}
           eyebrow="King Sparkon second terminal"
           subtitle="Second card scans down 4 times"
-          title="Badge-level 3D showcase"
+          title="Sizolwakhe Leonard Mthimunye"
+          overlayEyebrow="Sizolwakhe Leonard Mthimunye"
+          overlayTitle="Present King Sparkon"
           cardClassName="hero-scan-card--second"
         />
       </div>
