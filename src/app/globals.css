@@ -162,6 +162,20 @@ textarea {
   font-variant-numeric: tabular-nums;
 }
 
+#pricing .mt-10.grid > article {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+}
+
+#pricing .mt-10.grid > article > ul {
+  flex: 1 1 auto;
+}
+
+#pricing .mt-10.grid > article > a {
+  margin-top: auto;
+}
+
 @keyframes scan-pass {
   0% {
     transform: translateY(0);
