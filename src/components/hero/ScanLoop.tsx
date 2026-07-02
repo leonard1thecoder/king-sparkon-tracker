@@ -87,7 +87,7 @@ export function ScanLoop() {
           subtitle="Barcode line scans down 4 times"
           title="King Sparkon Tracker"
           overlayEyebrow="King Sparkon Lego"
-          overlayTitle="Present King Sparkon Tracker"
+          overlayTitle="Present King Sparkon Lego"
           cardClassName="hero-scan-card--first"
         />
         <ScanTerminalCard
