@@ -4,10 +4,10 @@ import Image from "next/image";
 import { SocialLinks } from "@/components/social/SocialLinks";
 
 const HERO_3D_IMAGE =
-  "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/king-sparkon-lego-logo-4k-high-quality.png";
+  "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jun%2029,%202026,%2001_23_49%20PM.png";
 
 const SECOND_3D_IMAGE =
-  "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2001_48_06%20AM%20XX.png";
+  "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/XSX.png";
 
 const previewTerminalMetrics = [
   ["Brand logo", "LEGO"],
@@ -23,11 +23,11 @@ type TerminalCardProps = {
   animationClassName: string;
 };
 
-function PaperRollTerminalCard({ imageSrc, eyebrow, title, subtitle, animationClassName }: TerminalCardProps) {
+function SlideTerminalCard({ imageSrc, eyebrow, title, subtitle, animationClassName }: TerminalCardProps) {
   return (
-    <div className={`paper-roll-card absolute inset-0 ${animationClassName}`}>
+    <div className={`hero-slide-card absolute inset-0 ${animationClassName}`}>
       <div className="relative rounded-[2.25rem] border border-[var(--line)] bg-white p-3 shadow-[var(--shadow-depth)] [transform:rotateX(2deg)_rotateY(-3deg)]">
-        <div className="paper-curl pointer-events-none absolute inset-x-8 top-2 z-20 h-5 rounded-full bg-gradient-to-b from-white via-white/72 to-transparent blur-[1px]" aria-hidden="true" />
+        <div className="pointer-events-none absolute inset-x-8 top-2 z-20 h-5 rounded-full bg-gradient-to-b from-white via-white/72 to-transparent blur-[1px]" aria-hidden="true" />
         <div className="relative overflow-hidden rounded-[1.85rem] border border-[var(--line)] bg-[var(--ink)] scan-grid">
           <div className="relative z-10 flex items-center justify-between gap-3 border-b border-white/10 px-5 py-4">
             <div>
@@ -77,20 +77,20 @@ function PaperRollTerminalCard({ imageSrc, eyebrow, title, subtitle, animationCl
 export function ScanLoop() {
   return (
     <div className="relative mx-auto w-full max-w-2xl [perspective:1400px]">
-      <div className="paper-roll-stage relative min-h-[34rem] sm:min-h-[42rem] lg:min-h-[45rem]">
-        <PaperRollTerminalCard
+      <div className="hero-slide-stage relative min-h-[34rem] overflow-hidden sm:min-h-[42rem] lg:min-h-[45rem]">
+        <SlideTerminalCard
           imageSrc={HERO_3D_IMAGE}
           eyebrow="King Sparkon brand terminal"
           subtitle="4K LEGO logo scan reflection"
           title="King Sparkon Tracker"
-          animationClassName="paper-roll-card--first"
+          animationClassName="hero-slide-card--first"
         />
-        <PaperRollTerminalCard
+        <SlideTerminalCard
           imageSrc={SECOND_3D_IMAGE}
           eyebrow="King Sparkon second terminal"
-          subtitle="3D image roll-down scan reflection"
+          subtitle="3D image slide scan reflection"
           title="Badge-level 3D showcase"
-          animationClassName="paper-roll-card--second"
+          animationClassName="hero-slide-card--second"
         />
       </div>
 
@@ -100,72 +100,56 @@ export function ScanLoop() {
       </div>
 
       <style jsx>{`
-        .paper-roll-stage {
+        .hero-slide-stage {
           transform-style: preserve-3d;
         }
 
-        .paper-roll-card {
-          transform-origin: top center;
+        .hero-slide-card {
           backface-visibility: hidden;
           will-change: transform, opacity, filter;
         }
 
-        .paper-roll-card--first {
-          animation: paperRollFirst 12s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+        .hero-slide-card--first {
+          animation: heroSlideFirst 12s cubic-bezier(0.16, 1, 0.3, 1) infinite;
         }
 
-        .paper-roll-card--second {
-          animation: paperRollSecond 12s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+        .hero-slide-card--second {
+          animation: heroSlideSecond 12s cubic-bezier(0.16, 1, 0.3, 1) infinite;
         }
 
-        .paper-curl {
-          animation: paperCurl 6s ease-in-out infinite;
-        }
-
-        @keyframes paperRollFirst {
+        @keyframes heroSlideFirst {
           0% {
             opacity: 0;
-            filter: blur(8px);
-            transform: translateY(-42px) rotateX(-88deg) scaleY(0.08);
+            filter: blur(10px);
+            transform: translate3d(-110%, 0, -70px) rotateY(12deg) scale(0.94);
           }
-          7%, 43% {
+          8%, 42% {
             opacity: 1;
             filter: blur(0);
-            transform: translateY(0) rotateX(0deg) scaleY(1);
+            transform: translate3d(0, 0, 0) rotateY(0deg) scale(1);
           }
           50%, 100% {
             opacity: 0;
-            filter: blur(6px);
-            transform: translateY(36px) rotateX(74deg) scaleY(0.72);
+            filter: blur(8px);
+            transform: translate3d(110%, 0, -70px) rotateY(-12deg) scale(0.94);
           }
         }
 
-        @keyframes paperRollSecond {
+        @keyframes heroSlideSecond {
           0%, 48% {
             opacity: 0;
-            filter: blur(8px);
-            transform: translateY(-42px) rotateX(-88deg) scaleY(0.08);
+            filter: blur(10px);
+            transform: translate3d(-110%, 0, -70px) rotateY(12deg) scale(0.94);
           }
-          57%, 90% {
+          58%, 90% {
             opacity: 1;
             filter: blur(0);
-            transform: translateY(0) rotateX(0deg) scaleY(1);
+            transform: translate3d(0, 0, 0) rotateY(0deg) scale(1);
           }
-          97%, 100% {
+          98%, 100% {
             opacity: 0;
-            filter: blur(6px);
-            transform: translateY(36px) rotateX(74deg) scaleY(0.72);
-          }
-        }
-
-        @keyframes paperCurl {
-          0%, 100% {
-            opacity: 0.36;
-            transform: translateY(0) scaleX(0.86);
-          }
-          50% {
-            opacity: 0.78;
-            transform: translateY(2px) scaleX(1);
+            filter: blur(8px);
+            transform: translate3d(110%, 0, -70px) rotateY(-12deg) scale(0.94);
           }
         }
       `}</style>
