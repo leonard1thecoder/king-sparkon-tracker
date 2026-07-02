@@ -87,6 +87,9 @@ const qrCells = new Set([
   72, 73, 74, 75, 76, 78, 79, 80,
 ]);
 
+const TIP_KING_SPARKON_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/AAA.png";
+const CHOOSE_FORM_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/AXA.png";
+
 function planRegisterHref(plan: (typeof BUSINESS_PRICING_PLANS)[number]) {
   return `/register?plan=${plan.planCode}&privilege=${plan.registrationPrivilege}&service=${plan.registrationService}`;
 }
@@ -200,7 +203,15 @@ export function KingSparkonLanding() {
           </div>
 
           <div className="rounded-[2.25rem] border border-white/10 bg-white/[0.07] p-5 shadow-[0_28px_90px_rgba(0,0,0,0.35)] backdrop-blur-xl">
-            <div className="grid gap-5 md:grid-cols-[0.9fr_1.1fr] md:items-center">
+            <div className="relative overflow-hidden rounded-[1.9rem] border border-white/10 bg-[radial-gradient(circle_at_50%_20%,rgba(255,210,90,0.18),rgba(255,255,255,0.06)_48%,rgba(7,19,31,0.22))] shadow-[0_22px_70px_rgba(0,0,0,0.28)]">
+              <img src={TIP_KING_SPARKON_IMAGE} alt="Tip King Sparkon support visual" className="h-72 w-full object-contain p-4" />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgba(7,19,31,0.96)] via-[rgba(7,19,31,0.55)] to-transparent px-5 pb-5 pt-20">
+                <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.18em] text-[var(--gold)]">Tip King Sparkon</p>
+                <p className="mt-2 text-2xl font-black tracking-[-0.05em]">Maintain. Build. Grow.</p>
+              </div>
+            </div>
+
+            <div className="mt-5 grid gap-5 md:grid-cols-[0.9fr_1.1fr] md:items-center">
               <div className="rounded-[1.85rem] bg-white p-4 text-[var(--ink)] shadow-[var(--shadow-soft)]">
                 <div className="grid grid-cols-9 gap-1 rounded-[1.25rem] border border-[var(--line)] bg-white p-3">
                   {Array.from({ length: 81 }).map((_, index) => (
@@ -250,11 +261,24 @@ export function KingSparkonLanding() {
 
       <section id="roles" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto grid max-w-7xl gap-8 rounded-[2.75rem] bg-[var(--ink)] p-6 text-white shadow-[var(--shadow-depth)] enterprise-grid lg:p-8">
-          <div className="max-w-4xl">
-            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">04 / choose your form</p>
-            <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Every role gets the right door.</h2>
-            <p className="mt-5 text-sm leading-7 text-white/68 md:text-base">Registration now renders based on the selected role: User, Affiliate, Owner, or locked Admin.</p>
+          <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+            <div className="max-w-4xl">
+              <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">04 / choose your form</p>
+              <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Every role gets the right door.</h2>
+              <p className="mt-5 text-sm leading-7 text-white/68 md:text-base">Registration now renders based on the selected role: User, Affiliate, Owner, or locked Admin.</p>
+            </div>
+
+            <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.07] p-3 shadow-[0_26px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+              <div className="relative overflow-hidden rounded-[1.65rem] bg-[radial-gradient(circle_at_50%_20%,rgba(255,210,90,0.16),rgba(255,255,255,0.05)_48%,rgba(7,19,31,0.42))]">
+                <img src={CHOOSE_FORM_IMAGE} alt="King Sparkon choose your form visual" className="h-72 w-full object-contain p-4" />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgba(7,19,31,0.96)] via-[rgba(7,19,31,0.48)] to-transparent px-5 pb-5 pt-20">
+                  <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.18em] text-[var(--gold)]">Choose your King Sparkon door</p>
+                  <p className="mt-2 text-2xl font-black tracking-[-0.05em]">User. Affiliate. Owner. Admin.</p>
+                </div>
+              </div>
+            </div>
           </div>
+
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {roleCards.map(({ icon: Icon, title, price, href, copy }) => (
               <Link key={title} href={href} className="rounded-[2rem] border border-white/10 bg-white/[0.06] p-5 text-white backdrop-blur hover:-translate-y-1 hover:border-[var(--gold)]">
