@@ -11,7 +11,7 @@ const SECOND_3D_IMAGE =
 
 const previewTerminalMetrics = [
   ["Brand logo", "LEGO"],
-  ["Scan sweep", "Looping"],
+  ["Scan sweep", "4x"],
   ["Hero view", "4K"],
 ] as const;
 
@@ -20,12 +20,12 @@ type TerminalCardProps = {
   eyebrow: string;
   title: string;
   subtitle: string;
-  animationClassName: string;
+  cardClassName: string;
 };
 
-function SlideTerminalCard({ imageSrc, eyebrow, title, subtitle, animationClassName }: TerminalCardProps) {
+function ScanTerminalCard({ imageSrc, eyebrow, title, subtitle, cardClassName }: TerminalCardProps) {
   return (
-    <div className={`hero-slide-card absolute inset-0 ${animationClassName}`}>
+    <div className={`hero-scan-card absolute inset-0 ${cardClassName}`}>
       <div className="relative rounded-[2.25rem] border border-[var(--line)] bg-white p-3 shadow-[var(--shadow-depth)] [transform:rotateX(2deg)_rotateY(-3deg)]">
         <div className="pointer-events-none absolute inset-x-8 top-2 z-20 h-5 rounded-full bg-gradient-to-b from-white via-white/72 to-transparent blur-[1px]" aria-hidden="true" />
         <div className="relative overflow-hidden rounded-[1.85rem] border border-[var(--line)] bg-[var(--ink)] scan-grid">
@@ -34,7 +34,7 @@ function SlideTerminalCard({ imageSrc, eyebrow, title, subtitle, animationClassN
               <p className="font-mono text-[0.62rem] font-bold uppercase tracking-[0.18em] text-[var(--gold)]">{eyebrow}</p>
               <p className="mt-1 text-sm font-semibold text-white/62">{subtitle}</p>
             </div>
-            <span className="rounded-full border border-[var(--confirm)]/40 bg-[var(--confirm)]/20 px-3 py-1 text-xs font-black text-white">Looping</span>
+            <span className="rounded-full border border-[var(--confirm)]/40 bg-[var(--confirm)]/20 px-3 py-1 text-xs font-black text-white">4 scans</span>
           </div>
 
           <div className="relative z-10 grid gap-4 p-5">
@@ -59,7 +59,7 @@ function SlideTerminalCard({ imageSrc, eyebrow, title, subtitle, animationClassN
                   className="transform-gpu object-contain [backface-visibility:hidden] [image-rendering:auto]"
                 />
                 <div className="logo-reflection-wick pointer-events-none absolute inset-0" aria-hidden="true" />
-                <div className="scan-sweep-logo pointer-events-none absolute left-4 right-4 h-1.5 rounded-full bg-[var(--signal)] shadow-[0_0_34px_var(--signal)]" aria-hidden="true" />
+                <div className="barcode-scan-line pointer-events-none absolute left-4 right-4 h-1.5 rounded-full bg-[var(--signal)] shadow-[0_0_34px_var(--signal)]" aria-hidden="true" />
                 <div className="pointer-events-none absolute left-4 right-4 top-0 h-full border-x border-[var(--signal)]/18" aria-hidden="true" />
               </div>
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgba(7,19,31,0.92)] via-[rgba(7,19,31,0.52)] to-transparent px-5 pb-5 pt-16 text-white">
@@ -77,79 +77,109 @@ function SlideTerminalCard({ imageSrc, eyebrow, title, subtitle, animationClassN
 export function ScanLoop() {
   return (
     <div className="relative mx-auto w-full max-w-2xl [perspective:1400px]">
-      <div className="hero-slide-stage relative min-h-[34rem] overflow-hidden sm:min-h-[42rem] lg:min-h-[45rem]">
-        <SlideTerminalCard
-          imageSrc={HERO_3D_IMAGE}
-          eyebrow="King Sparkon brand terminal"
-          subtitle="4K LEGO logo scan reflection"
-          title="King Sparkon Tracker"
-          animationClassName="hero-slide-card--first"
-        />
-        <SlideTerminalCard
-          imageSrc={SECOND_3D_IMAGE}
-          eyebrow="King Sparkon second terminal"
-          subtitle="3D image slide scan reflection"
-          title="Badge-level 3D showcase"
-          animationClassName="hero-slide-card--second"
-        />
-      </div>
-
-      <div className="mt-5 rounded-[1.65rem] border border-[var(--line)] bg-white/88 p-4 shadow-[var(--shadow-soft)] backdrop-blur">
+      <div className="mb-5 rounded-[1.65rem] border border-[var(--line)] bg-white/88 p-4 shadow-[var(--shadow-soft)] backdrop-blur">
         <p className="mb-3 font-mono text-[0.68rem] font-black uppercase tracking-[0.16em] text-[var(--muted)]">Official profiles</p>
         <SocialLinks variant="light" />
       </div>
 
+      <div className="hero-scan-stage relative min-h-[34rem] sm:min-h-[42rem] lg:min-h-[45rem]">
+        <ScanTerminalCard
+          imageSrc={HERO_3D_IMAGE}
+          eyebrow="King Sparkon brand terminal"
+          subtitle="Barcode line scans down 4 times"
+          title="King Sparkon Tracker"
+          cardClassName="hero-scan-card--first"
+        />
+        <ScanTerminalCard
+          imageSrc={SECOND_3D_IMAGE}
+          eyebrow="King Sparkon second terminal"
+          subtitle="Second card scans down 4 times"
+          title="Badge-level 3D showcase"
+          cardClassName="hero-scan-card--second"
+        />
+      </div>
+
       <style jsx>{`
-        .hero-slide-stage {
+        .hero-scan-stage {
           transform-style: preserve-3d;
         }
 
-        .hero-slide-card {
+        .hero-scan-card {
           backface-visibility: hidden;
-          will-change: transform, opacity, filter;
+          will-change: opacity, filter, transform;
         }
 
-        .hero-slide-card--first {
-          animation: heroSlideFirst 12s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+        .hero-scan-card--first {
+          animation: showFirstScanCard 16s linear infinite;
         }
 
-        .hero-slide-card--second {
-          animation: heroSlideSecond 12s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+        .hero-scan-card--second {
+          animation: showSecondScanCard 16s linear infinite;
         }
 
-        @keyframes heroSlideFirst {
-          0% {
-            opacity: 0;
-            filter: blur(10px);
-            transform: translate3d(-110%, 0, -70px) rotateY(12deg) scale(0.94);
-          }
-          8%, 42% {
+        .barcode-scan-line {
+          top: -2%;
+          animation: barcodeLineDown 2s linear infinite;
+        }
+
+        @keyframes showFirstScanCard {
+          0%, 48% {
             opacity: 1;
             filter: blur(0);
-            transform: translate3d(0, 0, 0) rotateY(0deg) scale(1);
+            transform: translate3d(0, 0, 0) scale(1);
+            z-index: 2;
           }
-          50%, 100% {
+          50%, 98% {
             opacity: 0;
-            filter: blur(8px);
-            transform: translate3d(110%, 0, -70px) rotateY(-12deg) scale(0.94);
+            filter: blur(5px);
+            transform: translate3d(0, 12px, -40px) scale(0.98);
+            z-index: 1;
+          }
+          100% {
+            opacity: 1;
+            filter: blur(0);
+            transform: translate3d(0, 0, 0) scale(1);
+            z-index: 2;
           }
         }
 
-        @keyframes heroSlideSecond {
+        @keyframes showSecondScanCard {
           0%, 48% {
             opacity: 0;
-            filter: blur(10px);
-            transform: translate3d(-110%, 0, -70px) rotateY(12deg) scale(0.94);
+            filter: blur(5px);
+            transform: translate3d(0, 12px, -40px) scale(0.98);
+            z-index: 1;
           }
-          58%, 90% {
+          50%, 98% {
             opacity: 1;
             filter: blur(0);
-            transform: translate3d(0, 0, 0) rotateY(0deg) scale(1);
+            transform: translate3d(0, 0, 0) scale(1);
+            z-index: 2;
           }
-          98%, 100% {
+          100% {
             opacity: 0;
-            filter: blur(8px);
-            transform: translate3d(110%, 0, -70px) rotateY(-12deg) scale(0.94);
+            filter: blur(5px);
+            transform: translate3d(0, 12px, -40px) scale(0.98);
+            z-index: 1;
+          }
+        }
+
+        @keyframes barcodeLineDown {
+          0% {
+            opacity: 0;
+            transform: translateY(0) scaleX(0.82);
+          }
+          8% {
+            opacity: 1;
+            transform: translateY(0) scaleX(1);
+          }
+          82% {
+            opacity: 1;
+            transform: translateY(calc(100cqw - 1rem)) scaleX(1);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(calc(100cqw - 1rem)) scaleX(0.86);
           }
         }
       `}</style>
