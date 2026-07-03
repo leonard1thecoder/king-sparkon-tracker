@@ -19,7 +19,12 @@ jobs:
         run: bun install
 
       - name: Lint
-        run: bun run lint
+        run: |
+          set +e
+          bun run lint > build.log 2>&1
+          status=$?
+          tail -n 200 build.log
+          exit $status
 
       - name: Typecheck
         run: bun run typecheck
@@ -29,6 +34,13 @@ jobs:
 
       - name: Build
         run: bun run build
+
+      - name: Upload frontend build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build-log
+          path: build.log
 
       - name: Deploy preview
         if: github.event_name == 'pull_request'
