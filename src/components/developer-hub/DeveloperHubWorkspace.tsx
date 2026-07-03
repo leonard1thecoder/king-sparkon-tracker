@@ -96,10 +96,9 @@ export function DeveloperHubWorkspace({ scope }: { scope: DeveloperHubScope }) {
   const metrics = useMemo(() => {
     const qaCount = requests.filter((request) => request.requiresQualityAssuranceRegression).length;
     const cloudCount = requests.filter((request) => request.requiresCloudMaintenance).length;
-    const activeCount = requests.filter((request) => request.status !== "COMPLETED").length;
     const startedCount = requests.filter((request) => request.stage !== "REQUESTED").length;
 
-    return { qaCount, cloudCount, activeCount, startedCount };
+    return { qaCount, cloudCount, startedCount };
   }, [requests]);
 
   async function loadRequests({ quiet = false } = {}) {
