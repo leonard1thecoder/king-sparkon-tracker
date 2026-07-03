@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import type { ReactNode } from "react";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import "./globals.css";
 import "./brand-polish.css";
@@ -95,19 +97,21 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable} h-full antialiased`}>
       <head>
         <meta name="google-adsense-account" content={adsensePublisherId} />
-        <script
+      </head>
+      <body className="min-h-full flex flex-col">
+        <Script
+          id="king-sparkon-adsense"
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8918343184695576"
           crossOrigin="anonymous"
+          strategy="afterInteractive"
         />
-      </head>
-      <body className="min-h-full flex flex-col">
         {children}
         <SiteFooter marketingOnly />
       </body>
