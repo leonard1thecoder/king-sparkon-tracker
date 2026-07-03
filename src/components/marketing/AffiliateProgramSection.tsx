@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, Megaphone, QrCode, WalletCards } from "lucide-react";
+import { AnimatedStat } from "@/components/ui/AnimatedStat";
 
 const affiliateStats = [
-  ["180+", "Registered affiliates", "Promoters ready to push barcode inventory, event hosting, and job opportunity hosting."],
-  ["4,800+", "Potential leads", "Business owners, event hosts, retailers, and employers that affiliates can introduce."],
-  ["920+", "Accepted leads", "Qualified leads that can move into owner trials, demos, and sales follow-up."],
-  ["R65k+", "Tracked earnings", "Commission visibility with simple earning records and payout readiness."],
+  { end: 180, suffix: "+", label: "Registered affiliates", copy: "Promoters ready to push barcode inventory, event hosting, and job opportunity hosting." },
+  { end: 4800, suffix: "+", label: "Potential leads", copy: "Business owners, event hosts, retailers, and employers that affiliates can introduce." },
+  { end: 920, suffix: "+", label: "Accepted leads", copy: "Qualified leads that can move into owner trials, demos, and sales follow-up." },
+  { end: 65000, prefix: "R", suffix: "+", compact: true, label: "Tracked earnings", copy: "Commission visibility with simple earning records and payout readiness." },
 ] as const;
 
 const affiliateChannels = [
@@ -39,9 +40,9 @@ export function AffiliateProgramSection() {
           <div className="pointer-events-none absolute inset-0 scan-grid opacity-70" />
           <div className="contact-dashboard-glow pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--gold)]/24 blur-3xl" />
           <div className="relative z-10 grid gap-4 sm:grid-cols-2">
-            {affiliateStats.map(([value, label, copy]) => (
+            {affiliateStats.map(({ end, prefix, suffix, compact, label, copy }) => (
               <article key={label} className="rounded-[1.7rem] border border-white/10 bg-white/[0.08] p-5 shadow-[0_24px_70px_rgba(0,0,0,0.22)] backdrop-blur">
-                <p className="font-mono text-3xl font-black tracking-[-0.08em] text-[var(--gold)]">{value}</p>
+                <AnimatedStat end={end} prefix={prefix} suffix={suffix} compact={compact} className="font-mono text-3xl font-black tracking-[-0.08em] text-[var(--gold)]" />
                 <h3 className="mt-3 text-lg font-black tracking-[-0.03em] text-white">{label}</h3>
                 <p className="mt-2 text-sm leading-6 text-white/62">{copy}</p>
               </article>
