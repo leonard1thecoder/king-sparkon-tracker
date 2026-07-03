@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DashboardFrame } from "../../dashboard-shell";
+import { DashboardFrame } from "@/components/layout/DashboardFrame";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { DashboardRoleNav } from "@/components/layout/DashboardRoleNav";
 import { DeveloperHubWorkspace } from "@/components/developer-hub/DeveloperHubWorkspace";
