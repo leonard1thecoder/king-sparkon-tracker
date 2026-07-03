@@ -3,15 +3,25 @@ import { backendBaseUrl, responseBodyFromText } from "@/lib/backend-auth";
 type SubscriptionPayload = {
   email?: unknown;
   name?: unknown;
+  subscribeAs?: unknown;
+  interest?: unknown;
 };
 
+function stringField(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
 function normalizePayload(payload: SubscriptionPayload) {
-  const email = typeof payload.email === "string" ? payload.email.trim() : "";
-  const name = typeof payload.name === "string" ? payload.name.trim() : "";
+  const email = stringField(payload.email);
+  const name = stringField(payload.name);
+  const subscribeAs = stringField(payload.subscribeAs);
+  const interest = stringField(payload.interest);
 
   return {
     email,
     name,
+    subscribeAs,
+    interest,
   };
 }
 
