@@ -277,11 +277,11 @@ textarea {
 @keyframes capacity-dashboard-glow {
   0%, 100% {
     opacity: 0.52;
-    transform: scale(0.96);
+    transform: translate(-50%, -50%) scale(0.96);
   }
   50% {
     opacity: 0.9;
-    transform: scale(1.04);
+    transform: translate(-50%, -50%) scale(1.04);
   }
 }
 
