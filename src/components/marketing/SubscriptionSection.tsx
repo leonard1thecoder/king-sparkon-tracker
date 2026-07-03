@@ -83,10 +83,10 @@ export function SubscriptionSection() {
     <section id="subscribe" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
       <div className="mx-auto grid max-w-7xl gap-8 overflow-hidden rounded-[2.75rem] bg-[var(--ink)] p-5 text-white shadow-[var(--shadow-depth)] enterprise-grid md:p-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
         <div>
-          <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">11 / subscription</p>
+          <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">12 / subscription</p>
           <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Subscribe for King Sparkon product updates.</h2>
           <p className="mt-5 max-w-2xl text-sm leading-7 text-white/68 md:text-base">
-            Get scanner, tickets, worker tips, affiliate, dashboard, and capacity updates without digging through the whole platform.
+            Get scanner, tickets, worker tips, affiliate, Dev Hub, dashboard, and capacity updates without digging through the whole platform.
           </p>
 
           <div className="mt-7 grid gap-3 sm:grid-cols-3">
@@ -148,7 +148,7 @@ export function SubscriptionSection() {
 
             <div className="mt-6 flex items-center gap-3 rounded-[1.35rem] border border-white/10 bg-white/[0.06] p-4 text-sm leading-6 text-white/64">
               <Crown className="h-5 w-5 shrink-0 text-[var(--gold)]" />
-              No spam. Just product discipline, launch notes, and practical King Sparkon updates.
+              No spam. Just product discipline, launch notes, Dev Hub notes, and practical King Sparkon updates.
             </div>
           </div>
         </div>
