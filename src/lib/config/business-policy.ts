@@ -34,12 +34,12 @@ export const BUSINESS_PRICING_PLANS = [
     priceDisplay: "R0",
     priceCurrency: "ZAR",
     billingSuffix: "14 days",
-    caption: "Owner trial",
+    caption: "King-Sparkon-Strengths trial",
     highlight: false,
     registrationPrivilege: "BUSINESS_OWNER",
     registrationService: "FULL_BUSINESS_SUITE",
-    description: "For business owners testing barcode inventory, QR tickets, jobs, worker tips, promotions, and reports before a paid plan.",
-    features: ["2 workers", "Unlimited products", "Unlimited barcode scanning", "QR ticket preview", "Job post preview", "Core owner dashboard"],
+    description: "For business owners testing the King Sparkon platform and requesting a free Dev Hub quote before a paid Plus or Pro plan.",
+    features: ["14-day business free trial", "King-Sparkon-Strengths free quote", "Dev Hub discovery", "2 workers", "Unlimited products", "Core owner dashboard"],
   },
   {
     name: "Plus",
@@ -52,8 +52,8 @@ export const BUSINESS_PRICING_PLANS = [
     highlight: true,
     registrationPrivilege: "BUSINESS_OWNER",
     registrationService: "FULL_BUSINESS_SUITE",
-    description: "For growing businesses that need workers, product scanning, cart visibility, QR tickets, jobs, promotions, and reports.",
-    features: ["5 workers", "Product and barcode scanning", "Cart and transactions", "QR tickets and capacity", "Jobs and applications", "Promotions and reports"],
+    description: "For growing businesses that need workers, product scanning, cart visibility, QR tickets, jobs, promotions, reports, and Dev Hub strength.",
+    features: ["14-day business trial included", "Product and barcode scanning", "Cart and transactions", "QR tickets and capacity", "Jobs and applications", "King-Sparkon-Strengths free quote"],
   },
   {
     name: "Pro",
@@ -66,8 +66,8 @@ export const BUSINESS_PRICING_PLANS = [
     highlight: false,
     registrationPrivilege: "BUSINESS_OWNER",
     registrationService: "FULL_BUSINESS_SUITE",
-    description: "For serious operators who need unlimited workers, tips, reporting, audit history, and full platform control.",
-    features: ["Unlimited workers", "Worker tips", "Advanced reports", "Audit history", "Full jobs, tickets, cart, promotion, and affiliate stack", "Priority implementation support"],
+    description: "For serious operators who need unlimited workers, tips, reporting, audit history, full platform control, and Dev Hub implementation support.",
+    features: ["14-day business trial included", "Unlimited workers", "Worker tips", "Advanced reports", "QA and maintenance support", "Cloud implementation support"],
   },
 ] as const;
 
