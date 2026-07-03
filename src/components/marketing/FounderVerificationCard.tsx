@@ -5,7 +5,7 @@ const badgeUrl = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/pub
 
 export function FounderVerificationCard() {
   return (
-    <div className="mt-5 max-w-2xl text-center" aria-label="Sparkon trademark and Oracle University verification">
+    <div className="mt-3 max-w-2xl text-center" aria-label="Sparkon trademark and Oracle University verification">
       <p className="truncate whitespace-nowrap bg-gradient-to-r from-[var(--gold)] via-purple-600 to-orange-500 bg-clip-text text-[0.46rem] font-black uppercase tracking-[0.1em] text-transparent sm:text-[0.53rem] lg:text-[0.59rem]">
         <span className={highlightedTrustText}>Sparkon</span> <span className={highlightedTrustText}>is</span> trademark of <span className={highlightedTrustText}>Sizolwakhe</span> <span className={highlightedTrustText}>Leonard</span> <span className={highlightedTrustText}>Mthimunye</span> <span className={highlightedTrustText}>AND</span>
       </p>
