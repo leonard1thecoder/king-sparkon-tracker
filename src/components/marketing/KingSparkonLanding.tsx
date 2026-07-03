@@ -23,6 +23,7 @@ import { ContactForm } from "@/app/contact-form";
 import { FounderVerificationCard } from "@/components/marketing/FounderVerificationCard";
 import { JobOpportunitiesSection } from "@/components/marketing/JobOpportunitiesSection";
 import { AffiliateProgramSection } from "@/components/marketing/AffiliateProgramSection";
+import { DevHubSection } from "@/components/marketing/DevHubSection";
 import { SubscriptionSection } from "@/components/marketing/SubscriptionSection";
 import { BUSINESS_PRICING_PLANS } from "@/lib/config/business-policy";
 
@@ -31,6 +32,7 @@ const navLinks = [
   ["Features", "#features"],
   ["Jobs", "#jobs"],
   ["Affiliate", "#affiliate"],
+  ["Dev Hub", "#dev-hub"],
   ["Roles", "#roles"],
   ["Capacity", "#capacity"],
   ["Complaints", "#complaints"],
@@ -62,7 +64,7 @@ const visionPillars: Array<{ icon: LucideIcon; title: string; copy: string }> = 
 const roleCards = [
   { icon: UsersRound, title: "Free User", price: "R0", href: "/register?plan=FREE_USER&privilege=USER&service=FREE_USER_ACCESS", copy: "Tickets, cart checkout, job applications, profile, and purchase QR access." },
   { icon: QrCode, title: "Free Affiliate", price: "R0", href: "/register?plan=FREE_AFFILIATE&privilege=AFFILIATE&service=FREE_AFFILIATE_ACCESS", copy: "Referral links, QR promotion assets, campaign workspace, and commission visibility." },
-  { icon: Crown, title: "Business Owner", price: "from R0 trial", href: "/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE", copy: "Inventory, tickets, jobs, workers, tips, promotions, affiliates, reports, and capacity control." },
+  { icon: Crown, title: "Business Owner", price: "from R0 trial", href: "/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE", copy: "Inventory, tickets, Dev Hub quote, King-Sparkon-Strengths, and capacity control." },
   { icon: ShieldCheck, title: "Admin", price: "locked", href: "/register-admin", copy: "Platform control for users, businesses, jobs, tickets, reports, audit logs, and settings." },
 ] as const;
 
@@ -124,7 +126,7 @@ export function KingSparkonLanding() {
 
         <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--line)] bg-white/88 shadow-[0_18px_60px_rgba(7,19,31,0.08)] backdrop-blur-xl">
           <div className="border-b border-[var(--line)] bg-[var(--ink)] px-5 py-2 text-center text-xs font-black text-white/78">
-            <span className="text-[var(--gold)]">Sparks evolved:</span> King Sparkon powers scanning, tickets, jobs, cart checkout, free affiliates, and role-safe dashboards.
+            <span className="text-[var(--gold)]">Sparks evolved:</span> King Sparkon powers scanning, tickets, jobs, Dev Hub, free affiliates, and role-safe dashboards.
           </div>
           <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 md:px-8" aria-label="Primary navigation">
             <Link href="/" className="flex min-w-0 items-center gap-3">
@@ -155,18 +157,18 @@ export function KingSparkonLanding() {
               <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">King Sparkon</span> tracker <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">is</span> not <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">just</span> a scanner. It is <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">the</span> <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">best</span> operating <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">king</span>.
             </h1>
             <FounderVerificationCard />
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--steel)]">Barcode inventory, QR tickets, cart checkout, job opportunities, worker tips, free affiliates, promotions, payments, capacity views, and role-safe dashboards.</p>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--steel)]">Barcode inventory, QR tickets, cart checkout, job opportunities, worker tips, Dev Hub software delivery, free affiliates, promotions, payments, capacity views, and role-safe dashboards.</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link href="/register?plan=FREE_USER&privilege=USER&service=FREE_USER_ACCESS" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ink)]">Create free user <ArrowRight className="h-4 w-4" /></Link>
               <Link href="/register?plan=FREE_AFFILIATE&privilege=AFFILIATE&service=FREE_AFFILIATE_ACCESS" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--line)] bg-white px-6 font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--gold)]">Join free affiliate</Link>
-              <Link href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--gold)] bg-[var(--gold)] px-6 font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--ink)]">Owner trial</Link>
+              <Link href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--gold)] bg-[var(--gold)] px-6 font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--ink)]">Start business free 14 trial</Link>
             </div>
           </div>
 
           <div className="grid gap-5">
             <ScanLoop />
             <div className="grid gap-3 rounded-[2rem] border border-[var(--line)] bg-white/82 p-4 shadow-[var(--shadow-ledger)] backdrop-blur sm:grid-cols-2 xl:grid-cols-4">
-              {[["Identity", "King Sparkon"], ["User plan", "R0"], ["Affiliate plan", "R0"], ["Owner suite", "Full stack"]].map(([label, value]) => (
+              {[["Identity", "King Sparkon"], ["User plan", "R0"], ["Affiliate plan", "R0"], ["Owner suite", "14-day trial"]].map(([label, value]) => (
                 <div key={label} className="rounded-[1.35rem] border border-[var(--line)] bg-[var(--surface)] p-4">
                   <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">{label}</p>
                   <p className="mt-2 text-lg font-black text-[var(--ink)]">{value}</p>
@@ -185,7 +187,7 @@ export function KingSparkonLanding() {
               <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Build the operating crown for real-world commerce.</h2>
             </div>
             <p className="text-base leading-8 text-[var(--steel)] lg:text-lg">
-              King Sparkon exists to connect scanning, ticketing, cart checkout, worker tips, job opportunities, affiliate growth, and business capacity into one disciplined platform. The vision is simple: every action should be traceable, every role should be protected, and every business should understand what is happening before chaos starts.
+              King Sparkon exists to connect scanning, ticketing, cart checkout, worker tips, job opportunities, Dev Hub delivery, affiliate growth, and business capacity into one disciplined platform. The vision is simple: every action should be traceable, every role should be protected, and every business should understand what is happening before chaos starts.
             </p>
           </div>
 
@@ -257,7 +259,7 @@ export function KingSparkonLanding() {
           <div className="mx-auto max-w-3xl text-center">
             <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">03 / no weak UI</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">A full platform with every feature visible.</h2>
-            <p className="mt-4 text-sm leading-7 text-[var(--steel)] md:text-base">Scanning, tickets, cart, jobs, tips, affiliates, capacity, and role-safe dashboards.</p>
+            <p className="mt-4 text-sm leading-7 text-[var(--steel)] md:text-base">Scanning, tickets, cart, jobs, tips, affiliates, Dev Hub, capacity, and role-safe dashboards.</p>
           </div>
           <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {features.map(({ icon: Icon, title, copy, tags }) => (
@@ -280,12 +282,13 @@ export function KingSparkonLanding() {
 
       <JobOpportunitiesSection />
       <AffiliateProgramSection />
+      <DevHubSection />
 
       <section id="roles" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto grid max-w-7xl gap-8 rounded-[2.75rem] bg-[var(--ink)] p-6 text-white shadow-[var(--shadow-depth)] enterprise-grid lg:p-8">
           <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <div className="max-w-4xl">
-              <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">06 / choose your form</p>
+              <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">07 / choose your form</p>
               <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Every role gets the right door.</h2>
               <p className="mt-5 text-sm leading-7 text-white/68 md:text-base">Registration now renders based on the selected role: User, Affiliate, Owner, or locked Admin.</p>
             </div>
@@ -319,7 +322,7 @@ export function KingSparkonLanding() {
       <section id="capacity" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.75rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-8">
           <div className="mx-auto max-w-4xl text-center">
-            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">07 / capacity views</p>
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">08 / capacity views</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Dashboards show how much the system can hold.</h2>
             <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[var(--steel)] md:text-base">Capacity is workers, stock, jobs, tickets, campaigns, reports, and platform control.</p>
             <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
@@ -389,7 +392,7 @@ export function KingSparkonLanding() {
       <section id="complaints" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.75rem] border border-[var(--line)] bg-[var(--surface)] p-5 shadow-[var(--shadow-ledger)] md:p-8">
           <div className="mx-auto max-w-4xl text-center">
-            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">08 / application complaints</p>
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">09 / application complaints</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">A complaint from 2018 becomes product discipline now.</h2>
             <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[var(--steel)] md:text-base">From the uploaded complaint note: software should comply with South African law, protect public health, safety, and welfare, serve clients ethically, keep products at a high professional standard, and promote integrity, colleagues, and lifelong learning.</p>
             <a href={FACEBOOK_COMPLAINT_LINK} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ink)]">
@@ -457,10 +460,16 @@ export function KingSparkonLanding() {
 
       <section id="pricing" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl">
-          <div className="max-w-3xl">
-            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">09 / pricing</p>
-            <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Free where it must be free. Paid where business gets power.</h2>
-            <p className="mt-4 text-sm leading-7 text-[var(--steel)] md:text-base">Prices come from the shared business policy. User and Affiliate start at R0.</p>
+          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div className="max-w-3xl">
+              <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">10 / pricing</p>
+              <div className="mt-4 inline-flex rounded-full border border-[var(--gold)] bg-[var(--gold)] px-4 py-2 font-mono text-[0.66rem] font-black uppercase tracking-[0.16em] text-[var(--ink)]">King-Sparkon-Strengths</div>
+              <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Free where it must be free. Paid where business gets power.</h2>
+              <p className="mt-4 text-sm leading-7 text-[var(--steel)] md:text-base">Prices come from the shared business policy. User and Affiliate start at R0. Business starts with a gold 14-day trial and a Dev Hub free quote path.</p>
+            </div>
+            <Link href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--gold)] px-6 font-black text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--ink)] hover:bg-white">
+              Start business free 14 trial <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
           <div className="mt-10 grid gap-4 lg:grid-cols-5">
             {BUSINESS_PRICING_PLANS.map((plan) => (
@@ -485,7 +494,7 @@ export function KingSparkonLanding() {
       <section id="contact" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.75rem] border border-white/10 bg-[var(--ink)] p-5 text-white shadow-[var(--shadow-depth)] enterprise-grid md:p-8">
           <div className="mx-auto max-w-4xl text-center">
-            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">10 / contact</p>
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">11 / contact</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Build the King Sparkon operation properly.</h2>
             <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-white/68 md:text-base">Tell us what you track, which roles use the system, and what the first dashboard must prove.</p>
           </div>
