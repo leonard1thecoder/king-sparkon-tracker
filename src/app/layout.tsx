@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import "./globals.css";
+import "./brand-polish.css";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -19,39 +20,75 @@ const adsensePublisherId = "ca-pub-8918343184695576";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://king-sparkon-tracker.com"),
+  applicationName: "King Sparkon Tracker",
   title: {
-    default: "King Sparkon Tracker | Scan, Verify, Move Stock",
-    template: "%s | King Sparkon Tracker",
+    default: "King Sparkon Tracker™ | Trademark of Sizolwakhe Leonard Mthimunye",
+    template: "%s | King Sparkon Tracker™",
   },
   description:
-    "A barcode and QR verification platform for product tracking, stock movement, worker tips, payouts, affiliate referrals, promotions, and audit-ready business operations.",
+    "King Sparkon Tracker is a trademark platform of Sizolwakhe Leonard Mthimunye, known as King Sparkon: barcode inventory, QR tickets, jobs, affiliate marketing, Dev Hub software development, CI/CD, QA, cloud maintenance, worker tips, capacity dashboards, and role-safe business operations.",
   keywords: [
+    "King Sparkon Tracker",
+    "King Sparkon trademark",
+    "Sizolwakhe Leonard Mthimunye",
+    "Sizolwakhe Mthimunye King Sparkon",
     "barcode scanner platform",
     "QR verification",
     "stock movement tracking",
     "worker tips",
+    "affiliate marketing platform",
+    "job opportunities platform",
+    "software development South Africa",
+    "continuous integration development",
+    "quality assurance software",
+    "cloud maintenance support",
     "product audit trail",
-    "King Sparkon Tracker",
   ],
+  authors: [{ name: "Sizolwakhe Leonard Mthimunye", url: "https://github.com/leonard1thecoder" }],
+  creator: "Sizolwakhe Leonard Mthimunye, known as King Sparkon",
+  publisher: "King Sparkon Tracker",
+  category: "Software Application",
   icons: {
     icon: "/king-sparkon-logo.png",
     shortcut: "/king-sparkon-logo.png",
     apple: "/king-sparkon-logo.png",
   },
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
-    title: "King Sparkon Tracker | Scan, Verify, Move Stock",
+    title: "King Sparkon Tracker™ | Trademark of Sizolwakhe Leonard Mthimunye",
     description:
-      "Precision barcode operations for owners, workers, affiliates, admins, website payments, tips, payouts, and audit trails.",
+      "A King Sparkon trademark platform for barcode inventory, QR tickets, jobs, affiliates, Dev Hub software development, CI/CD, QA, cloud maintenance, capacity dashboards, and role-safe business operations.",
     siteName: "King Sparkon Tracker",
     type: "website",
+    locale: "en_ZA",
     images: [
       {
         url: "/king-sparkon-logo.png",
         width: 512,
         height: 512,
-        alt: "King Sparkon Tracker logo",
+        alt: "King Sparkon Tracker trademark logo",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "King Sparkon Tracker™ | King Sparkon is the best king",
+    description:
+      "Trademark platform of Sizolwakhe Leonard Mthimunye: barcode scanning, QR tickets, jobs, affiliates, Dev Hub, QA, CI/CD, cloud maintenance, and capacity dashboards.",
+    images: ["/king-sparkon-logo.png"],
   },
 };
 
