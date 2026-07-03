@@ -21,12 +21,16 @@ import {
 import { ScanLoop } from "@/components/hero/ScanLoop";
 import { ContactForm } from "@/app/contact-form";
 import { FounderVerificationCard } from "@/components/marketing/FounderVerificationCard";
+import { JobOpportunitiesSection } from "@/components/marketing/JobOpportunitiesSection";
+import { AffiliateProgramSection } from "@/components/marketing/AffiliateProgramSection";
 import { SubscriptionSection } from "@/components/marketing/SubscriptionSection";
 import { BUSINESS_PRICING_PLANS } from "@/lib/config/business-policy";
 
 const navLinks = [
   ["Vision", "#vision"],
   ["Features", "#features"],
+  ["Jobs", "#jobs"],
+  ["Affiliate", "#affiliate"],
   ["Roles", "#roles"],
   ["Capacity", "#capacity"],
   ["Complaints", "#complaints"],
@@ -130,7 +134,7 @@ export function KingSparkonLanding() {
                 <p className="font-black uppercase tracking-[-0.02em]">King Sparkon Tracker</p>
               </div>
             </Link>
-            <div className="hidden items-center gap-5 text-sm font-semibold text-[var(--steel)] lg:flex">
+            <div className="hidden items-center gap-3 text-xs font-semibold text-[var(--steel)] xl:flex xl:gap-5 xl:text-sm">
               {navLinks.map(([label, href]) => (
                 <a key={href} href={href} className="hover:text-[var(--ink)]">{label}</a>
               ))}
@@ -274,11 +278,14 @@ export function KingSparkonLanding() {
         </div>
       </section>
 
+      <JobOpportunitiesSection />
+      <AffiliateProgramSection />
+
       <section id="roles" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto grid max-w-7xl gap-8 rounded-[2.75rem] bg-[var(--ink)] p-6 text-white shadow-[var(--shadow-depth)] enterprise-grid lg:p-8">
           <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <div className="max-w-4xl">
-              <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">04 / choose your form</p>
+              <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">06 / choose your form</p>
               <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Every role gets the right door.</h2>
               <p className="mt-5 text-sm leading-7 text-white/68 md:text-base">Registration now renders based on the selected role: User, Affiliate, Owner, or locked Admin.</p>
             </div>
@@ -312,7 +319,7 @@ export function KingSparkonLanding() {
       <section id="capacity" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.75rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-8">
           <div className="mx-auto max-w-4xl text-center">
-            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">05 / capacity views</p>
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">07 / capacity views</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Dashboards show how much the system can hold.</h2>
             <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[var(--steel)] md:text-base">Capacity is workers, stock, jobs, tickets, campaigns, reports, and platform control.</p>
             <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
@@ -382,7 +389,7 @@ export function KingSparkonLanding() {
       <section id="complaints" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.75rem] border border-[var(--line)] bg-[var(--surface)] p-5 shadow-[var(--shadow-ledger)] md:p-8">
           <div className="mx-auto max-w-4xl text-center">
-            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">06 / application complaints</p>
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">08 / application complaints</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">A complaint from 2018 becomes product discipline now.</h2>
             <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[var(--steel)] md:text-base">From the uploaded complaint note: software should comply with South African law, protect public health, safety, and welfare, serve clients ethically, keep products at a high professional standard, and promote integrity, colleagues, and lifelong learning.</p>
             <a href={FACEBOOK_COMPLAINT_LINK} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ink)]">
@@ -451,7 +458,7 @@ export function KingSparkonLanding() {
       <section id="pricing" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl">
           <div className="max-w-3xl">
-            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">07 / pricing</p>
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">09 / pricing</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Free where it must be free. Paid where business gets power.</h2>
             <p className="mt-4 text-sm leading-7 text-[var(--steel)] md:text-base">Prices come from the shared business policy. User and Affiliate start at R0.</p>
           </div>
@@ -478,7 +485,7 @@ export function KingSparkonLanding() {
       <section id="contact" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.75rem] border border-white/10 bg-[var(--ink)] p-5 text-white shadow-[var(--shadow-depth)] enterprise-grid md:p-8">
           <div className="mx-auto max-w-4xl text-center">
-            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">08 / contact</p>
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">10 / contact</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Build the King Sparkon operation properly.</h2>
             <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-white/68 md:text-base">Tell us what you track, which roles use the system, and what the first dashboard must prove.</p>
           </div>
