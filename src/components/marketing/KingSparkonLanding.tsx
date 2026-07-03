@@ -28,6 +28,7 @@ const navLinks = [
   ["Features", "#features"],
   ["Roles", "#roles"],
   ["Capacity", "#capacity"],
+  ["Complaints", "#complaints"],
   ["Pricing", "#pricing"],
   ["Contact", "#contact"],
 ] as const;
@@ -68,6 +69,12 @@ const capacityRows = [
   ["Platform capacity", "Users, businesses, reports, audit logs, settings, and admin controls."],
 ] as const;
 
+const complaintSignals = [
+  ["2018 complaint signal", "The early Facebook complaint becomes a product warning: users need software that listens, explains, and improves."],
+  ["Application friction", "Every complaint must turn into a traceable issue, role, workflow, owner, and resolution path."],
+  ["Better platform response", "King Sparkon treats complaints as product evidence so dashboards, support, scans, and forms keep getting sharper."],
+] as const;
+
 const sponsorMaintains = [
   "Cloud hosting, storage, database backups, and uptime discipline.",
   "QR scanning reliability, ticket verification, and barcode improvements.",
@@ -92,6 +99,8 @@ const CHOOSE_FORM_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/o
 const ADMIN_CAPACITY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_35_43%20PM%20(3).png";
 const OWNER_CAPACITY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_26_15%20PM%20(3).png";
 const CONTACT_FORM_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_35_42%20PM%20(1).png";
+const APPLICATION_COMPLAINT_PRIMARY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_35_42%20PM%20(2).png";
+const APPLICATION_COMPLAINT_SECONDARY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_26_11%20PM%20(2).png";
 
 function planRegisterHref(plan: (typeof BUSINESS_PRICING_PLANS)[number]) {
   return `/register?plan=${plan.planCode}&privilege=${plan.registrationPrivilege}&service=${plan.registrationService}`;
@@ -367,10 +376,76 @@ export function KingSparkonLanding() {
         </div>
       </section>
 
+      <section id="complaints" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.75rem] border border-[var(--line)] bg-[var(--surface)] p-5 shadow-[var(--shadow-ledger)] md:p-8">
+          <div className="mx-auto max-w-4xl text-center">
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">06 / application complaints</p>
+            <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">A complaint from 2018 becomes product discipline now.</h2>
+            <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[var(--steel)] md:text-base">I could not safely extract the exact Facebook text from the image link here, so this section keeps the message honest: real application complaints should become clearer flows, stronger dashboards, and visible resolution.</p>
+          </div>
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
+            <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+              {complaintSignals.map(([title, copy]) => (
+                <article key={title} className="rounded-[1.65rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] hover:-translate-y-1 hover:border-[var(--gold)]">
+                  <Megaphone className="h-5 w-5 text-[var(--signal)]" />
+                  <h3 className="mt-4 text-xl font-black tracking-[-0.03em]">{title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{copy}</p>
+                </article>
+              ))}
+            </div>
+
+            <div className="capacity-hero-stage relative overflow-hidden rounded-[2.4rem] border border-[var(--line)] bg-[radial-gradient(circle_at_50%_18%,rgba(255,217,102,0.25),rgba(40,214,198,0.10)_34%,rgba(255,255,255,0.98)_72%)] p-4 shadow-[var(--shadow-depth)] sm:p-6">
+              <div className="pointer-events-none absolute inset-0 enterprise-grid opacity-75" />
+              <div className="capacity-dashboard-glow pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--gold)]/24 blur-3xl" />
+              <div className="capacity-hero-deck relative min-h-[32rem] overflow-hidden rounded-[2rem] border border-white/80 bg-white/44 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur sm:min-h-[36rem]">
+                <div className="absolute inset-x-8 bottom-10 h-36 rounded-[50%] border border-[var(--signal)]/20 bg-[linear-gradient(135deg,rgba(29,92,131,0.10),rgba(255,217,102,0.18))] shadow-[0_42px_90px_rgba(7,19,31,0.18)] [transform:rotateX(64deg)_rotateZ(-2deg)_translateZ(-80px)]" />
+                <div className="absolute left-5 top-6 z-20 rounded-full border border-[var(--line)] bg-white/86 px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--signal)] shadow-[var(--shadow-soft)]">2018 complaint memory</div>
+                <div className="absolute right-5 top-6 z-20 rounded-full border border-[var(--gold)]/50 bg-[var(--ink)] px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--gold)] shadow-[var(--shadow-soft)]">Build from friction</div>
+                <div className="capacity-card-3d capacity-card-3d-admin absolute left-2 top-20 z-10 w-[72%] max-w-[25rem] rounded-[1.85rem] border border-white/80 bg-white/78 p-3 shadow-[0_32px_90px_rgba(7,19,31,0.26)] backdrop-blur sm:left-8 sm:w-[60%]">
+                  <div className="relative overflow-hidden rounded-[1.45rem] bg-[var(--surface)]">
+                    <img src={APPLICATION_COMPLAINT_PRIMARY_IMAGE} alt="3D application complaint visual" className="h-56 w-full object-contain p-2 sm:h-72" />
+                    <div className="capacity-signal-line absolute inset-y-0 w-24 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.82),transparent)]" />
+                  </div>
+                  <div className="mt-3 flex items-center justify-between gap-3">
+                    <div>
+                      <p className="font-mono text-[0.6rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">Complaint input</p>
+                      <p className="mt-1 text-xl font-black tracking-[-0.04em]">User pain captured</p>
+                    </div>
+                    <Megaphone className="h-7 w-7 text-[var(--signal)]" />
+                  </div>
+                </div>
+                <div className="capacity-card-3d capacity-card-3d-owner absolute bottom-16 right-2 z-30 w-[72%] max-w-[25rem] rounded-[1.85rem] border border-[var(--gold)]/45 bg-[var(--ink)]/94 p-3 text-white shadow-[0_34px_100px_rgba(7,19,31,0.34)] backdrop-blur sm:right-8 sm:w-[58%]">
+                  <div className="relative overflow-hidden rounded-[1.45rem] bg-[radial-gradient(circle_at_50%_20%,rgba(255,217,102,0.22),rgba(255,255,255,0.06)_54%,rgba(7,19,31,0.38))]">
+                    <img src={APPLICATION_COMPLAINT_SECONDARY_IMAGE} alt="3D application complaint evidence visual" className="h-56 w-full object-contain p-2 sm:h-72" />
+                    <div className="capacity-signal-line absolute inset-y-0 w-24 bg-[linear-gradient(90deg,transparent,rgba(255,217,102,0.7),transparent)]" />
+                  </div>
+                  <div className="mt-3 flex items-center justify-between gap-3">
+                    <div>
+                      <p className="font-mono text-[0.6rem] font-black uppercase tracking-[0.16em] text-[var(--gold)]">Product answer</p>
+                      <p className="mt-1 text-xl font-black tracking-[-0.04em]">Complaint to roadmap</p>
+                    </div>
+                    <ShieldCheck className="h-7 w-7 text-[var(--gold)]" />
+                  </div>
+                </div>
+                <div className="absolute bottom-5 left-5 right-5 z-40 grid gap-2 rounded-[1.45rem] border border-white/70 bg-white/84 p-3 shadow-[var(--shadow-soft)] backdrop-blur sm:grid-cols-3">
+                  {["Listen", "Fix", "Prove"].map((label, index) => (
+                    <div key={label} className="rounded-[1rem] border border-[var(--line)] bg-white p-3">
+                      <p className="font-mono text-[0.58rem] font-black uppercase tracking-[0.14em] text-[var(--signal)]">0{index + 1}</p>
+                      <p className="mt-1 text-sm font-black text-[var(--ink)]">{label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="pricing" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl">
           <div className="max-w-3xl">
-            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">06 / pricing</p>
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">07 / pricing</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Free where it must be free. Paid where business gets power.</h2>
             <p className="mt-4 text-sm leading-7 text-[var(--steel)] md:text-base">Prices come from the shared business policy. User and Affiliate start at R0.</p>
           </div>
@@ -397,7 +472,7 @@ export function KingSparkonLanding() {
       <section id="contact" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.75rem] border border-white/10 bg-[var(--ink)] p-5 text-white shadow-[var(--shadow-depth)] enterprise-grid md:p-8">
           <div className="mx-auto max-w-4xl text-center">
-            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">07 / contact</p>
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">08 / contact</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Build the King Sparkon operation properly.</h2>
             <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-white/68 md:text-base">Tell us what you track, which roles use the system, and what the first dashboard must prove.</p>
           </div>
