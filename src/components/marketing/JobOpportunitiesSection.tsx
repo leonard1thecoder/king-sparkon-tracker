@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, BriefcaseBusiness, Globe2, UsersRound } from "lucide-react";
+import { AnimatedStat } from "@/components/ui/AnimatedStat";
 
 const jobStats = [
-  ["1,000+", "LinkedIn professional connections", "Global network across software, business, retail, events, and operations."],
-  ["2,400+", "Job hunts", "Job seekers can discover roles, save opportunities, and apply from a cleaner platform flow."],
-  ["1,200+", "Potential employees", "Business owners can build a talent pipeline before hiring becomes urgent."],
-  ["320+", "Open posts", "Role posts, hiring notices, internships, contract work, and business opportunities."],
+  { end: 1000, suffix: "+", label: "LinkedIn professional connections", copy: "Global network across software, business, retail, events, and operations." },
+  { end: 2400, suffix: "+", label: "Job hunts", copy: "Job seekers can discover roles, save opportunities, and apply from a cleaner platform flow." },
+  { end: 1200, suffix: "+", label: "Potential employees", copy: "Business owners can build a talent pipeline before hiring becomes urgent." },
+  { end: 320, suffix: "+", label: "Open posts", copy: "Role posts, hiring notices, internships, contract work, and business opportunities." },
 ] as const;
 
 const jobHighlights = [
@@ -39,9 +40,9 @@ export function JobOpportunitiesSection() {
         </div>
 
         <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {jobStats.map(([value, label, copy]) => (
+          {jobStats.map(({ end, suffix, label, copy }) => (
             <article key={label} className="rounded-[2rem] border border-[var(--line)] bg-[var(--surface)] p-6 shadow-[var(--shadow-soft)] hover:-translate-y-1 hover:border-[var(--gold)]">
-              <p className="font-mono text-4xl font-black tracking-[-0.08em] text-[var(--ink)]">{value}</p>
+              <AnimatedStat end={end} suffix={suffix} className="font-mono text-4xl font-black tracking-[-0.08em] text-[var(--ink)]" />
               <h3 className="mt-4 text-xl font-black tracking-[-0.03em]">{label}</h3>
               <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{copy}</p>
             </article>
