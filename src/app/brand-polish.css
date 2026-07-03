@@ -11,11 +11,18 @@ main > section:first-child header nav a[href="/"] p:last-child::after {
 
 main > section:first-child h1 {
   color: transparent;
+  font-size: 0 !important;
+  line-height: 0 !important;
 }
 
 main > section:first-child h1::before {
   content: "King Sparkon Trademark is not just brand it is the best all in platform.";
+  display: block;
   color: var(--ink);
+  font-size: clamp(2.25rem, 6vw, 4.5rem);
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  line-height: 1.02;
 }
 
 main > section:first-child h1 > * {
