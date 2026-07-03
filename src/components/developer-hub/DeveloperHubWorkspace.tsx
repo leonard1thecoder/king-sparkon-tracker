@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useEffect, useMemo, useState } from "react";
+import type { LucideIcon } from "lucide-react";
 import { ArrowRight, BadgeCheck, CloudCog, Code2, GitBranch, Loader2, PlayCircle, RefreshCw, ShieldCheck, Sparkles, TriangleAlert } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { MetricCard } from "@/components/ui/MetricCard";
@@ -33,6 +34,18 @@ type ApiCollectionResponse = {
   requests?: SoftwareDevelopmentRequest[];
   data?: SoftwareDevelopmentRequest[];
 };
+
+type BackendCard = {
+  icon: LucideIcon;
+  title: string;
+  copy: string;
+};
+
+const backendCards: BackendCard[] = [
+  { icon: Code2, title: "Owner creates request", copy: "Backend derives owner and business from JWT." },
+  { icon: GitBranch, title: "Admin starts process", copy: "Admin moves stages through delivery pipeline." },
+  { icon: Sparkles, title: "Dev Hub delivers", copy: "CI/CD, QA regression, cloud maintenance, UAT, support." },
+];
 
 function messageClasses(tone: WorkspaceMessage["tone"]) {
   if (tone === "success") return "border-[var(--confirm)]/40 bg-[rgba(50,213,131,0.10)] text-[var(--confirm)]";
@@ -218,7 +231,7 @@ export function DeveloperHubWorkspace({ scope }: { scope: DeveloperHubScope }) {
 
         <div className="grid gap-4 md:grid-cols-2">
           <MetricCard label="Requested builds" value={String(requests.length).padStart(2, "0")} detail="Software development requests in view" tone="signal" icon={<Code2 className="h-5 w-5" />} />
-          <MetricCard label="Active delivery" value={String(metrics.activeCount).padStart(2, "0")} detail="Not completed yet" tone="confirm" icon={<PlayCircle className="h-5 w-5" />} />
+          <MetricCard label="Process started" value={String(metrics.startedCount).padStart(2, "0")} detail="Admin has started discovery or later" tone="confirm" icon={<PlayCircle className="h-5 w-5" />} />
           <MetricCard label="QA regression" value={String(metrics.qaCount).padStart(2, "0")} detail="Owners requested regression coverage" icon={<ShieldCheck className="h-5 w-5" />} />
           <MetricCard label="Cloud maintenance" value={String(metrics.cloudCount).padStart(2, "0")} detail="Owners requested cloud support" icon={<CloudCog className="h-5 w-5" />} />
         </div>
@@ -372,15 +385,11 @@ function BackendContractCard() {
       </CardHeader>
       <CardContent className="grid gap-4">
         <div className="grid gap-3 sm:grid-cols-3">
-          {[
-            [Code2, "Owner creates request", "Backend derives owner and business from JWT."],
-            [GitBranch, "Admin starts process", "Admin moves stages through delivery pipeline."],
-            [Sparkles, "Dev Hub delivers", "CI/CD, QA regression, cloud maintenance, UAT, support."],
-          ].map(([Icon, title, copy]) => (
-            <div key={String(title)} className="rounded-[1.35rem] border border-[var(--line)] bg-[var(--surface)] p-4">
+          {backendCards.map(({ icon: Icon, title, copy }) => (
+            <div key={title} className="rounded-[1.35rem] border border-[var(--line)] bg-[var(--surface)] p-4">
               <Icon className="h-5 w-5 text-[var(--signal)]" />
-              <p className="mt-4 font-black text-[var(--ink)]">{String(title)}</p>
-              <p className="mt-2 text-xs leading-5 text-[var(--steel)]">{String(copy)}</p>
+              <p className="mt-4 font-black text-[var(--ink)]">{title}</p>
+              <p className="mt-2 text-xs leading-5 text-[var(--steel)]">{copy}</p>
             </div>
           ))}
         </div>
