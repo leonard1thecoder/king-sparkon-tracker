@@ -3,9 +3,9 @@ import { ArrowRight, BadgeCheck, Megaphone, QrCode, WalletCards } from "lucide-r
 import { AnimatedStat } from "@/components/ui/AnimatedStat";
 
 const affiliateStats = [
-  { end: 180, suffix: "+", label: "Registered affiliates", copy: "Promoters ready to push barcode inventory, event hosting, and job opportunity hosting." },
-  { end: 4800, suffix: "+", label: "Potential leads", copy: "Business owners, event hosts, retailers, and employers that affiliates can introduce." },
-  { end: 920, suffix: "+", label: "Accepted leads", copy: "Qualified leads that can move into owner trials, demos, and sales follow-up." },
+  { end: 180, prefix: "", suffix: "+", compact: false, label: "Registered affiliates", copy: "Promoters ready to push barcode inventory, event hosting, and job opportunity hosting." },
+  { end: 4800, prefix: "", suffix: "+", compact: false, label: "Potential leads", copy: "Business owners, event hosts, retailers, and employers that affiliates can introduce." },
+  { end: 920, prefix: "", suffix: "+", compact: false, label: "Accepted leads", copy: "Qualified leads that can move into owner trials, demos, and sales follow-up." },
   { end: 65000, prefix: "R", suffix: "+", compact: true, label: "Tracked earnings", copy: "Commission visibility with simple earning records and payout readiness." },
 ] as const;
 
