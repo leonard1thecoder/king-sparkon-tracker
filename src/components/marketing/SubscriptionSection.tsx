@@ -16,6 +16,12 @@ type SubscriptionResponse = {
 
 const inputClasses = "h-12 rounded-[var(--radius-lg)] border border-white/14 bg-white/10 px-4 text-white shadow-[var(--shadow-soft)] outline-none placeholder:text-white/42 hover:border-[var(--gold)] focus:border-[var(--gold)] focus:ring-4 focus:ring-[rgba(255,217,102,0.18)]";
 
+const subscribeAsOptions = ["Free User", "Business Owner", "Affiliate", "Dev Hub Client"] as const;
+const interestOptions = ["Job posts", "Barcode inventory", "King Sparkon Tuck Shop", "My Tickets"] as const;
+
+type SubscribeAsOption = (typeof subscribeAsOptions)[number];
+type InterestOption = (typeof interestOptions)[number];
+
 function fieldValue(formData: FormData, name: string) {
   const value = formData.get(name);
   return typeof value === "string" ? value.trim() : "";
@@ -33,9 +39,17 @@ function statusClasses(tone: SubscriptionStatus["tone"]) {
   return "border-[var(--signal)]/45 bg-[var(--signal)]/10 text-[var(--gold)]";
 }
 
+function toggleClasses(active: boolean) {
+  return active
+    ? "border-[var(--gold)] bg-[var(--gold)] text-[var(--ink)] shadow-[var(--shadow-soft)]"
+    : "border-white/14 bg-white/[0.07] text-white/70 hover:border-[var(--gold)] hover:text-white";
+}
+
 export function SubscriptionSection() {
   const [status, setStatus] = useState<SubscriptionStatus | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [subscribeAs, setSubscribeAs] = useState<SubscribeAsOption>("Business Owner");
+  const [interest, setInterest] = useState<InterestOption>("Barcode inventory");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -58,7 +72,7 @@ export function SubscriptionSection() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, name }),
+        body: JSON.stringify({ email, name, subscribeAs, interest }),
       });
       const responseBody = (await response.json().catch(() => ({}))) as SubscriptionResponse;
 
@@ -70,7 +84,7 @@ export function SubscriptionSection() {
         return;
       }
 
-      setStatus({ tone: "success", message: responseBody.message ?? "You are subscribed to King Sparkon product updates." });
+      setStatus({ tone: "success", message: responseBody.message ?? `Subscribed as ${subscribeAs} for ${interest} updates.` });
       form.reset();
     } catch {
       setStatus({ tone: "error", message: "Unable to reach the subscription API. Check that the backend is running." });
@@ -128,6 +142,28 @@ export function SubscriptionSection() {
                 Email address
                 <input name="email" required type="email" className={inputClasses} placeholder="owner@sparkonstore.co.za" autoComplete="email" />
               </label>
+
+              <div className="grid gap-3 rounded-[1.4rem] border border-white/10 bg-white/[0.055] p-4">
+                <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--gold)]">Subscribe as</p>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {subscribeAsOptions.map((option) => (
+                    <button key={option} type="button" onClick={() => setSubscribeAs(option)} className={`min-h-11 rounded-full border px-4 text-xs font-black transition ${toggleClasses(option === subscribeAs)}`} aria-pressed={option === subscribeAs}>
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid gap-3 rounded-[1.4rem] border border-white/10 bg-white/[0.055] p-4">
+                <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--gold)]">Interested in</p>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {interestOptions.map((option) => (
+                    <button key={option} type="button" onClick={() => setInterest(option)} className={`min-h-11 rounded-full border px-4 text-xs font-black transition ${toggleClasses(option === interest)}`} aria-pressed={option === interest}>
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
               {status ? (
                 <div className={`flex items-start gap-3 rounded-[var(--radius-lg)] border px-4 py-3 text-sm font-semibold leading-6 ${statusClasses(status.tone)}`} role={status.tone === "error" ? "alert" : "status"}>
