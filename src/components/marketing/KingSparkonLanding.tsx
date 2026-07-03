@@ -91,6 +91,7 @@ const TIP_KING_SPARKON_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage
 const CHOOSE_FORM_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/AXA.png";
 const ADMIN_CAPACITY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_35_43%20PM%20(3).png";
 const OWNER_CAPACITY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_26_15%20PM%20(3).png";
+const CONTACT_FORM_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_35_42%20PM%20(1).png";
 
 function planRegisterHref(plan: (typeof BUSINESS_PRICING_PLANS)[number]) {
   return `/register?plan=${plan.planCode}&privilege=${plan.registrationPrivilege}&service=${plan.registrationService}`;
@@ -393,15 +394,46 @@ export function KingSparkonLanding() {
         </div>
       </section>
 
-      <section id="contact" className="mx-auto max-w-7xl scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
-        <div className="grid overflow-hidden rounded-[2.25rem] border border-[var(--line)] bg-white shadow-[var(--shadow-ledger)] lg:grid-cols-[0.82fr_1.18fr]">
-          <div className="bg-[var(--ink)] p-6 text-white enterprise-grid md:p-8">
+      <section id="contact" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.75rem] border border-white/10 bg-[var(--ink)] p-5 text-white shadow-[var(--shadow-depth)] enterprise-grid md:p-8">
+          <div className="mx-auto max-w-4xl text-center">
             <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">07 / contact</p>
-            <h2 className="mt-4 max-w-xl break-words text-3xl font-black leading-[1.02] tracking-[-0.05em] sm:text-4xl lg:text-5xl">Build the King Sparkon operation properly.</h2>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-white/68">Tell us what you track, which roles use the system, and what the first dashboard must prove.</p>
-            <div className="barcode-rule mt-8 max-w-md text-white" />
+            <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Build the King Sparkon operation properly.</h2>
+            <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-white/68 md:text-base">Tell us what you track, which roles use the system, and what the first dashboard must prove.</p>
           </div>
-          <div className="p-5 md:p-8"><ContactForm /></div>
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-stretch">
+            <div className="contact-hero-stage relative overflow-hidden rounded-[2.4rem] border border-white/10 bg-white/[0.07] p-4 shadow-[0_30px_100px_rgba(0,0,0,0.36)] backdrop-blur-xl sm:p-6">
+              <div className="pointer-events-none absolute inset-0 scan-grid opacity-80" />
+              <div className="contact-dashboard-glow pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--gold)]/24 blur-3xl" />
+              <div className="relative min-h-[31rem] overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_50%_12%,rgba(255,217,102,0.20),rgba(255,255,255,0.06)_46%,rgba(7,19,31,0.42))] p-4">
+                <div className="absolute inset-x-8 bottom-10 h-36 rounded-[50%] border border-[var(--gold)]/20 bg-[linear-gradient(135deg,rgba(255,217,102,0.18),rgba(40,214,198,0.12))] shadow-[0_46px_100px_rgba(0,0,0,0.35)] [transform:rotateX(64deg)_rotateZ(3deg)_translateZ(-80px)]" />
+                <div className="absolute left-5 top-5 z-20 rounded-full border border-white/10 bg-white/[0.08] px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--gold)] shadow-[var(--shadow-soft)]">Contact pipeline</div>
+                <div className="absolute right-5 top-5 z-20 rounded-full border border-[var(--gold)]/40 bg-[var(--gold)] px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--ink)] shadow-[var(--shadow-soft)]">Message to action</div>
+                <div className="contact-card-3d absolute inset-x-4 top-20 z-30 rounded-[1.9rem] border border-white/14 bg-white/[0.08] p-3 shadow-[0_34px_110px_rgba(0,0,0,0.42)] backdrop-blur sm:inset-x-8">
+                  <div className="relative overflow-hidden rounded-[1.55rem] bg-[radial-gradient(circle_at_50%_20%,rgba(255,217,102,0.18),rgba(255,255,255,0.08)_52%,rgba(7,19,31,0.34))]">
+                    <img src={CONTACT_FORM_IMAGE} alt="3D King Sparkon contact form visual" className="h-80 w-full object-contain p-3 sm:h-[26rem]" />
+                    <div className="contact-signal-line absolute inset-y-0 w-24 bg-[linear-gradient(90deg,transparent,rgba(255,217,102,0.72),transparent)]" />
+                  </div>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                    {["Track", "Review", "Build"].map((label, index) => (
+                      <div key={label} className="rounded-[1rem] border border-white/10 bg-white/[0.08] p-3">
+                        <p className="font-mono text-[0.58rem] font-black uppercase tracking-[0.14em] text-[var(--gold)]">0{index + 1}</p>
+                        <p className="mt-1 text-sm font-black text-white">{label}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <span className="contact-orbit-dot absolute bottom-20 left-8 h-3 w-3 rounded-full bg-[var(--gold)] shadow-[0_0_28px_rgba(255,217,102,0.85)]" />
+                <span className="contact-orbit-dot absolute bottom-28 right-12 h-2.5 w-2.5 rounded-full bg-[var(--signal)] shadow-[0_0_28px_rgba(40,214,198,0.75)] [animation-delay:900ms]" />
+                <span className="contact-orbit-dot absolute left-1/2 top-16 h-2 w-2 rounded-full bg-white shadow-[0_0_24px_rgba(255,255,255,0.72)] [animation-delay:1500ms]" />
+              </div>
+            </div>
+
+            <div className="rounded-[2.4rem] border border-white/10 bg-white p-5 text-[var(--ink)] shadow-[0_30px_100px_rgba(0,0,0,0.26)] md:p-8">
+              <ContactForm />
+            </div>
+          </div>
         </div>
       </section>
     </main>
