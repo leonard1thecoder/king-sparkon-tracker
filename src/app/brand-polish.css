@@ -1,0 +1,123 @@
+main > section:first-child header nav a[href="/"] p:last-child {
+  font-size: 0 !important;
+  line-height: 1 !important;
+}
+
+main > section:first-child header nav a[href="/"] p:last-child::after {
+  content: "King Sparkon";
+  font-size: 0.875rem;
+  line-height: 1.15;
+}
+
+main > section:first-child h1 {
+  max-width: 54rem;
+  color: transparent;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+
+main > section:first-child h1 span {
+  display: inline;
+  font-size: clamp(2.15rem, 5.25vw, 4.25rem) !important;
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  line-height: 1.03;
+  vertical-align: baseline;
+}
+
+main > section:first-child h1 span::after {
+  background: transparent;
+  color: var(--ink);
+  font-size: clamp(2.15rem, 5.25vw, 4.25rem);
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  line-height: 1.03;
+}
+
+main > section:first-child h1 span:nth-of-type(1)::after {
+  content: " Trademark ";
+}
+
+main > section:first-child h1 span:nth-of-type(2)::after {
+  content: " not ";
+}
+
+main > section:first-child h1 span:nth-of-type(3)::after {
+  content: " brand\Ait is ";
+  white-space: pre;
+}
+
+main > section:first-child h1 span:nth-of-type(4) {
+  margin-right: 0;
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+
+main > section:first-child h1 span:nth-of-type(5) {
+  margin-left: 0;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}
+
+main > section:first-child h1 span:nth-of-type(5)::after {
+  content: " all in\A";
+  white-space: pre;
+}
+
+main > section:first-child h1 span:nth-of-type(6) {
+  color: transparent !important;
+  font-size: 0 !important;
+}
+
+main > section:first-child h1 span:nth-of-type(6)::after {
+  content: "platform";
+  display: inline;
+  border-radius: 0.16em;
+  background: var(--gold);
+  color: #000;
+  padding-inline: 0.14em;
+  font-size: clamp(2.15rem, 5.25vw, 4.25rem);
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  line-height: 1.03;
+}
+
+#pricing article > span.absolute {
+  position: static !important;
+  display: inline-flex !important;
+  margin-bottom: 0.85rem;
+  width: fit-content;
+}
+
+@media (max-width: 640px) {
+  main > section:first-child h1 span,
+  main > section:first-child h1 span::after,
+  main > section:first-child h1 span:nth-of-type(6)::after {
+    font-size: clamp(2rem, 11vw, 3rem) !important;
+    line-height: 1.04;
+  }
+
+  #complaints .capacity-hero-deck {
+    min-height: 39rem !important;
+  }
+
+  #complaints .capacity-hero-deck > div.absolute.left-5.top-6 {
+    left: 1rem !important;
+    right: 1rem !important;
+    top: 1rem !important;
+    width: auto;
+    text-align: center;
+  }
+
+  #complaints .capacity-hero-deck > div.absolute.right-5.top-6 {
+    left: 1rem !important;
+    right: 1rem !important;
+    top: 4.25rem !important;
+    width: auto;
+    text-align: center;
+  }
+
+  #complaints .capacity-card-3d-admin {
+    top: 8.5rem !important;
+  }
+}

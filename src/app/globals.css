@@ -176,6 +176,54 @@ textarea {
   margin-top: auto;
 }
 
+.capacity-hero-stage,
+.contact-hero-stage {
+  perspective: 1400px;
+}
+
+.capacity-hero-deck,
+.capacity-card-3d,
+.contact-card-3d {
+  transform-style: preserve-3d;
+}
+
+.capacity-card-3d,
+.contact-card-3d {
+  will-change: transform;
+}
+
+.capacity-card-3d-admin {
+  animation: capacity-card-admin-float 7.5s ease-in-out infinite;
+}
+
+.capacity-card-3d-owner {
+  animation: capacity-card-owner-float 8.2s ease-in-out infinite;
+}
+
+.capacity-dashboard-glow {
+  animation: capacity-dashboard-glow 3.4s ease-in-out infinite;
+}
+
+.capacity-signal-line {
+  animation: capacity-signal-pass 2.8s ease-in-out infinite;
+}
+
+.contact-card-3d {
+  animation: contact-card-float 8s ease-in-out infinite;
+}
+
+.contact-dashboard-glow {
+  animation: contact-dashboard-glow 3.6s ease-in-out infinite;
+}
+
+.contact-signal-line {
+  animation: contact-signal-pass 2.9s ease-in-out infinite;
+}
+
+.contact-orbit-dot {
+  animation: contact-orbit-pulse 3.8s ease-in-out infinite;
+}
+
 @keyframes scan-pass {
   0% {
     transform: translateY(0);
@@ -224,6 +272,100 @@ textarea {
   100% {
     opacity: 0;
     transform: translateX(135%);
+  }
+}
+
+@keyframes capacity-card-admin-float {
+  0%, 100% {
+    transform: translate3d(-1.2rem, 0.4rem, 2rem) rotateX(8deg) rotateY(-18deg) rotateZ(-1deg);
+  }
+  50% {
+    transform: translate3d(-0.45rem, -0.8rem, 4.5rem) rotateX(5deg) rotateY(-10deg) rotateZ(1deg);
+  }
+}
+
+@keyframes capacity-card-owner-float {
+  0%, 100% {
+    transform: translate3d(1rem, -0.15rem, 4.2rem) rotateX(7deg) rotateY(15deg) rotateZ(1deg);
+  }
+  50% {
+    transform: translate3d(0.25rem, 0.85rem, 1.5rem) rotateX(10deg) rotateY(8deg) rotateZ(-1deg);
+  }
+}
+
+@keyframes capacity-dashboard-glow {
+  0%, 100% {
+    opacity: 0.52;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(1.04);
+  }
+}
+
+@keyframes capacity-signal-pass {
+  0% {
+    transform: translateX(-115%);
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  82% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(115%);
+    opacity: 0;
+  }
+}
+
+@keyframes contact-card-float {
+  0%, 100% {
+    transform: translate3d(-0.35rem, 0.55rem, 2rem) rotateX(8deg) rotateY(-12deg) rotateZ(-1deg);
+  }
+  50% {
+    transform: translate3d(0.35rem, -0.7rem, 4.8rem) rotateX(5deg) rotateY(9deg) rotateZ(1deg);
+  }
+}
+
+@keyframes contact-dashboard-glow {
+  0%, 100% {
+    opacity: 0.48;
+    transform: translate(-50%, -50%) scale(0.94);
+  }
+  50% {
+    opacity: 0.86;
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+}
+
+@keyframes contact-signal-pass {
+  0% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  82% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+
+@keyframes contact-orbit-pulse {
+  0%, 100% {
+    opacity: 0.42;
+    transform: translate3d(0, 0, 0) scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: translate3d(0, -0.6rem, 2rem) scale(1.18);
   }
 }
 

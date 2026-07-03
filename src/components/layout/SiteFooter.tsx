@@ -16,8 +16,9 @@ const footerGroups = [
     title: "Platform",
     links: [
       { label: "Features", href: "/#features" },
-      { label: "Tickets", href: "/tickets" },
+      { label: "Jobs", href: "/#jobs" },
       { label: "Affiliate Program", href: "/#affiliate" },
+      { label: "Dev Hub", href: "/#dev-hub" },
       { label: "Pricing", href: "/#pricing" },
       { label: "Contact", href: "/#contact" },
     ],
@@ -26,7 +27,7 @@ const footerGroups = [
     title: "Ticket Access",
     links: [
       { label: "Login", href: "/login" },
-      { label: "Register Business", href: "/register" },
+      { label: "Register Business", href: "/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" },
       { label: "My Tickets", href: "/tickets/my-tickets" },
       { label: "Scan Ticket", href: "/tickets/scan" },
     ],
@@ -63,23 +64,23 @@ export function SiteFooter({ marketingOnly = false }: SiteFooterProps) {
         <div className="grid gap-10 lg:grid-cols-[1.15fr_1.35fr] lg:items-start">
           <div className="max-w-xl">
             <Link href="/" aria-label="King Sparkon Tracker home" className="inline-flex items-center gap-3">
-              <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker barcode logo" width={58} height={58} className="rounded-[1.35rem] border border-white/12 bg-white/[0.06] p-1.5 shadow-[var(--shadow-soft)]" />
+              <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker trademark barcode logo" width={58} height={58} className="rounded-[1.35rem] border border-white/12 bg-white/[0.06] p-1.5 shadow-[var(--shadow-soft)]" />
               <div>
-                <p className="font-mono text-[0.66rem] font-black uppercase tracking-[0.2em] text-[var(--gold)]">Barcode operations</p>
-                <p className="text-xl font-black uppercase tracking-[-0.04em] text-white">King Sparkon Tracker</p>
+                <p className="font-mono text-[0.66rem] font-black uppercase tracking-[0.2em] text-[var(--gold)]">Trademark platform</p>
+                <p className="text-xl font-black uppercase tracking-[-0.04em] text-white">King Sparkon Tracker™</p>
               </div>
             </Link>
 
             <p className="mt-6 text-sm leading-7 text-white/62 md:text-base">
-              Professional barcode inventory and QR ticket software for scanning, event entry, stock movement, worker tips, affiliate growth, payments, promotions, and audit-ready reports.
+              King Sparkon Tracker™ is the trademark platform of Sizolwakhe Leonard Mthimunye, known as King Sparkon: barcode inventory, QR tickets, jobs, affiliate marketing, Dev Hub software delivery, CI/CD, QA, cloud maintenance, and audit-ready reports.
             </p>
 
             <div className="mt-7 flex flex-wrap gap-3">
               <Link href="/tickets" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]">
                 Explore tickets <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link href="/login" className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/14 px-5 text-sm font-black text-white/78 hover:border-white/35 hover:bg-white/[0.06] hover:text-white">
-                Login terminal
+              <Link href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--gold)] bg-[var(--gold)] px-5 text-sm font-black text-[var(--ink)] shadow-[var(--shadow-soft)] hover:bg-white">
+                Start business free 14 trial
               </Link>
             </div>
 
@@ -114,7 +115,7 @@ export function SiteFooter({ marketingOnly = false }: SiteFooterProps) {
           </div>
           <div className="flex gap-3">
             <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[var(--signal)]/12 text-[var(--signal)]"><ShieldCheck className="h-5 w-5" /></div>
-            <div><p className="text-sm font-black text-white">QR ticket verification</p><p className="mt-1 text-xs leading-5 text-white/52">Event capacity, ticket status, class sales, and gate entry verification.</p></div>
+            <div><p className="text-sm font-black text-white">King-Sparkon-Strengths</p><p className="mt-1 text-xs leading-5 text-white/52">Software development, CI/CD, QA, cloud maintenance, and lifetime support.</p></div>
           </div>
           <div className="flex gap-3">
             <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10 text-white"><Mail className="h-5 w-5" /></div>
@@ -123,7 +124,7 @@ export function SiteFooter({ marketingOnly = false }: SiteFooterProps) {
         </div>
 
         <div className="mt-8 flex flex-col gap-4 border-t border-white/10 pt-6 text-xs font-semibold text-white/44 md:flex-row md:items-center md:justify-between">
-          <p>© {year} King Sparkon Tracker. Built for serious barcode and ticket operations.</p>
+          <p>© {year} King Sparkon Tracker™. Trademark platform of Sizolwakhe Leonard Mthimunye, known as King Sparkon.</p>
           <div className="flex flex-wrap items-center gap-3">
             <span className="inline-flex items-center gap-2"><MapPin className="h-3.5 w-3.5" /> South Africa ready</span>
             <span className="hidden h-1 w-1 rounded-full bg-white/24 md:inline-flex" />

@@ -27,7 +27,7 @@ export const registrationPrivilegeOptions: RegistrationPrivilegeOption[] = [
 export function normalizeRegistrationPrivilege(value: string | null | undefined): ServiceRegistrationFor {
   const normalized = value?.trim().toUpperCase().replace(/[\s-]+/g, "_");
 
-  if (!normalized) return "USER";
+  if (!normalized) return "BUSINESS_OWNER";
   if (normalized === "OWNER" || normalized === "BUSINESS" || normalized === "BUSINESS_OWNER") return "BUSINESS_OWNER";
   if (normalized === "AFFILIATE" || normalized === "AFFLIATE") return "AFFILIATE";
   if (normalized === "USER" || normalized === "CUSTOMER" || normalized === "CLIENT") return "USER";

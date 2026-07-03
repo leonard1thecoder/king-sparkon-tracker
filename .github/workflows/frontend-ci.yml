@@ -19,7 +19,12 @@ jobs:
         run: bun install
 
       - name: Lint
-        run: bun run lint
+        run: |
+          set +e
+          bun run lint > build.log 2>&1
+          status=$?
+          tail -n 200 build.log
+          exit $status
 
       - name: Typecheck
         run: |
@@ -30,7 +35,12 @@ jobs:
           exit $status
 
       - name: Test
-        run: bun run test
+        run: |
+          set +e
+          bun run test > build.log 2>&1
+          status=$?
+          tail -n 200 build.log
+          exit $status
 
       - name: Build
         run: |

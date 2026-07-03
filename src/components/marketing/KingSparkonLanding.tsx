@@ -21,15 +21,24 @@ import {
 import { ScanLoop } from "@/components/hero/ScanLoop";
 import { ContactForm } from "@/app/contact-form";
 import { FounderVerificationCard } from "@/components/marketing/FounderVerificationCard";
+import { JobOpportunitiesSection } from "@/components/marketing/JobOpportunitiesSection";
+import { AffiliateProgramSection } from "@/components/marketing/AffiliateProgramSection";
+import { DevHubSection } from "@/components/marketing/DevHubSection";
+import { SubscriptionSection } from "@/components/marketing/SubscriptionSection";
 import { BUSINESS_PRICING_PLANS } from "@/lib/config/business-policy";
 
 const navLinks = [
   ["Vision", "#vision"],
   ["Features", "#features"],
+  ["Jobs", "#jobs"],
+  ["Affiliate", "#affiliate"],
+  ["Dev Hub", "#dev-hub"],
   ["Roles", "#roles"],
   ["Capacity", "#capacity"],
+  ["Complaints", "#complaints"],
   ["Pricing", "#pricing"],
   ["Contact", "#contact"],
+  ["Subscribe", "#subscribe"],
 ] as const;
 
 const features: Array<{ icon: LucideIcon; title: string; copy: string; tags: string[] }> = [
@@ -55,7 +64,7 @@ const visionPillars: Array<{ icon: LucideIcon; title: string; copy: string }> = 
 const roleCards = [
   { icon: UsersRound, title: "Free User", price: "R0", href: "/register?plan=FREE_USER&privilege=USER&service=FREE_USER_ACCESS", copy: "Tickets, cart checkout, job applications, profile, and purchase QR access." },
   { icon: QrCode, title: "Free Affiliate", price: "R0", href: "/register?plan=FREE_AFFILIATE&privilege=AFFILIATE&service=FREE_AFFILIATE_ACCESS", copy: "Referral links, QR promotion assets, campaign workspace, and commission visibility." },
-  { icon: Crown, title: "Business Owner", price: "from R0 trial", href: "/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE", copy: "Inventory, tickets, jobs, workers, tips, promotions, affiliates, reports, and capacity control." },
+  { icon: Crown, title: "Business Owner", price: "from R0 trial", href: "/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE", copy: "Inventory, tickets, Dev Hub quote, King-Sparkon-Strengths, and capacity control." },
   { icon: ShieldCheck, title: "Admin", price: "locked", href: "/register-admin", copy: "Platform control for users, businesses, jobs, tickets, reports, audit logs, and settings." },
 ] as const;
 
@@ -66,6 +75,12 @@ const capacityRows = [
   ["Stock capacity", "Products, branches, barcode counts, low stock, and movement history."],
   ["Promotion capacity", "Campaign audience, channels, referral assets, and quote visibility."],
   ["Platform capacity", "Users, businesses, reports, audit logs, settings, and admin controls."],
+] as const;
+
+const complaintSignals = [
+  ["Public interest", "Software should protect health, safety, welfare, and the public interest before shortcuts or hidden risk."],
+  ["Professional standards", "Every product and modification should meet high standards, legal expectations, and ethical engineering practice."],
+  ["Integrity and learning", "Good engineering keeps judgement independent, supports colleagues, and improves through lifelong learning."],
 ] as const;
 
 const sponsorMaintains = [
@@ -89,6 +104,12 @@ const qrCells = new Set([
 
 const TIP_KING_SPARKON_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/AAA.png";
 const CHOOSE_FORM_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/AXA.png";
+const ADMIN_CAPACITY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_35_43%20PM%20(3).png";
+const OWNER_CAPACITY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_26_15%20PM%20(3).png";
+const CONTACT_FORM_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_35_42%20PM%20(1).png";
+const APPLICATION_COMPLAINT_PRIMARY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_35_42%20PM%20(2).png";
+const APPLICATION_COMPLAINT_SECONDARY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_26_11%20PM%20(2).png";
+const FACEBOOK_COMPLAINT_LINK = "https://www.facebook.com/share/1CaAzEGBJb/";
 
 function planRegisterHref(plan: (typeof BUSINESS_PRICING_PLANS)[number]) {
   return `/register?plan=${plan.planCode}&privilege=${plan.registrationPrivilege}&service=${plan.registrationService}`;
@@ -105,7 +126,7 @@ export function KingSparkonLanding() {
 
         <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--line)] bg-white/88 shadow-[0_18px_60px_rgba(7,19,31,0.08)] backdrop-blur-xl">
           <div className="border-b border-[var(--line)] bg-[var(--ink)] px-5 py-2 text-center text-xs font-black text-white/78">
-            <span className="text-[var(--gold)]">Sparks evolved:</span> King Sparkon powers scanning, tickets, jobs, cart checkout, free affiliates, and role-safe dashboards.
+            <span className="text-[var(--gold)]">Sparks evolved:</span> King Sparkon powers scanning, tickets, jobs, Dev Hub, free affiliates, and role-safe dashboards.
           </div>
           <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 md:px-8" aria-label="Primary navigation">
             <Link href="/" className="flex min-w-0 items-center gap-3">
@@ -115,7 +136,7 @@ export function KingSparkonLanding() {
                 <p className="font-black uppercase tracking-[-0.02em]">King Sparkon Tracker</p>
               </div>
             </Link>
-            <div className="hidden items-center gap-5 text-sm font-semibold text-[var(--steel)] lg:flex">
+            <div className="hidden items-center gap-3 text-xs font-semibold text-[var(--steel)] xl:flex xl:gap-5 xl:text-sm">
               {navLinks.map(([label, href]) => (
                 <a key={href} href={href} className="hover:text-[var(--ink)]">{label}</a>
               ))}
@@ -136,18 +157,18 @@ export function KingSparkonLanding() {
               <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">King Sparkon</span> tracker <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">is</span> not <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">just</span> a scanner. It is <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">the</span> <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">best</span> operating <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">king</span>.
             </h1>
             <FounderVerificationCard />
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--steel)]">Barcode inventory, QR tickets, cart checkout, job opportunities, worker tips, free affiliates, promotions, payments, capacity views, and role-safe dashboards.</p>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--steel)]">Barcode inventory, QR tickets, cart checkout, job opportunities, worker tips, Dev Hub software delivery, free affiliates, promotions, payments, capacity views, and role-safe dashboards.</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link href="/register?plan=FREE_USER&privilege=USER&service=FREE_USER_ACCESS" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ink)]">Create free user <ArrowRight className="h-4 w-4" /></Link>
               <Link href="/register?plan=FREE_AFFILIATE&privilege=AFFILIATE&service=FREE_AFFILIATE_ACCESS" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--line)] bg-white px-6 font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--gold)]">Join free affiliate</Link>
-              <Link href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--gold)] bg-[var(--gold)] px-6 font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--ink)]">Owner trial</Link>
+              <Link href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--gold)] bg-[var(--gold)] px-6 font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--ink)]">Start business free 14 trial</Link>
             </div>
           </div>
 
           <div className="grid gap-5">
             <ScanLoop />
             <div className="grid gap-3 rounded-[2rem] border border-[var(--line)] bg-white/82 p-4 shadow-[var(--shadow-ledger)] backdrop-blur sm:grid-cols-2 xl:grid-cols-4">
-              {[["Identity", "King Sparkon"], ["User plan", "R0"], ["Affiliate plan", "R0"], ["Owner suite", "Full stack"]].map(([label, value]) => (
+              {[["Identity", "King Sparkon"], ["User plan", "R0"], ["Affiliate plan", "R0"], ["Owner suite", "14-day trial"]].map(([label, value]) => (
                 <div key={label} className="rounded-[1.35rem] border border-[var(--line)] bg-[var(--surface)] p-4">
                   <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">{label}</p>
                   <p className="mt-2 text-lg font-black text-[var(--ink)]">{value}</p>
@@ -166,7 +187,7 @@ export function KingSparkonLanding() {
               <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Build the operating crown for real-world commerce.</h2>
             </div>
             <p className="text-base leading-8 text-[var(--steel)] lg:text-lg">
-              King Sparkon exists to connect scanning, ticketing, cart checkout, worker tips, job opportunities, affiliate growth, and business capacity into one disciplined platform. The vision is simple: every action should be traceable, every role should be protected, and every business should understand what is happening before chaos starts.
+              King Sparkon exists to connect scanning, ticketing, cart checkout, worker tips, job opportunities, Dev Hub delivery, affiliate growth, and business capacity into one disciplined platform. The vision is simple: every action should be traceable, every role should be protected, and every business should understand what is happening before chaos starts.
             </p>
           </div>
 
@@ -238,7 +259,7 @@ export function KingSparkonLanding() {
           <div className="mx-auto max-w-3xl text-center">
             <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">03 / no weak UI</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">A full platform with every feature visible.</h2>
-            <p className="mt-4 text-sm leading-7 text-[var(--steel)] md:text-base">Scanning, tickets, cart, jobs, tips, affiliates, capacity, and role-safe dashboards.</p>
+            <p className="mt-4 text-sm leading-7 text-[var(--steel)] md:text-base">Scanning, tickets, cart, jobs, tips, affiliates, Dev Hub, capacity, and role-safe dashboards.</p>
           </div>
           <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {features.map(({ icon: Icon, title, copy, tags }) => (
@@ -259,11 +280,15 @@ export function KingSparkonLanding() {
         </div>
       </section>
 
+      <JobOpportunitiesSection />
+      <AffiliateProgramSection />
+      <DevHubSection />
+
       <section id="roles" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto grid max-w-7xl gap-8 rounded-[2.75rem] bg-[var(--ink)] p-6 text-white shadow-[var(--shadow-depth)] enterprise-grid lg:p-8">
           <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <div className="max-w-4xl">
-              <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">04 / choose your form</p>
+              <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">07 / choose your form</p>
               <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Every role gets the right door.</h2>
               <p className="mt-5 text-sm leading-7 text-white/68 md:text-base">Registration now renders based on the selected role: User, Affiliate, Owner, or locked Admin.</p>
             </div>
@@ -295,34 +320,156 @@ export function KingSparkonLanding() {
       </section>
 
       <section id="capacity" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
-        <div className="mx-auto grid max-w-7xl gap-8 rounded-[2.5rem] border border-[var(--line)] bg-white p-6 shadow-[var(--shadow-ledger)] lg:grid-cols-[0.85fr_1.15fr] lg:p-8">
-          <div>
-            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">05 / capacity views</p>
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.75rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-8">
+          <div className="mx-auto max-w-4xl text-center">
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">08 / capacity views</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Dashboards show how much the system can hold.</h2>
-            <p className="mt-5 text-sm leading-7 text-[var(--steel)] md:text-base">Capacity is workers, stock, jobs, tickets, campaigns, reports, and platform control.</p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+            <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[var(--steel)] md:text-base">Capacity is workers, stock, jobs, tickets, campaigns, reports, and platform control.</p>
+            <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
               <Link href="/dashboard/admin/capacity" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ink)]">View admin capacity <ArrowRight className="h-4 w-4" /></Link>
               <Link href="/dashboard/owner/capacity" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--line)] bg-white px-6 font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--gold)]">Owner capacity</Link>
             </div>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {capacityRows.map(([title, copy]) => (
-              <article key={title} className="rounded-[1.65rem] border border-[var(--line)] bg-[var(--surface)] p-5 shadow-[var(--shadow-soft)]">
-                <BadgeCheck className="h-5 w-5 text-[var(--signal)]" />
-                <h3 className="mt-4 text-xl font-black tracking-[-0.03em]">{title}</h3>
-                <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{copy}</p>
-              </article>
-            ))}
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-[1.12fr_0.88fr] lg:items-center">
+            <div className="capacity-hero-stage relative overflow-hidden rounded-[2.4rem] border border-[var(--line)] bg-[radial-gradient(circle_at_50%_18%,rgba(255,217,102,0.26),rgba(40,214,198,0.12)_34%,rgba(247,250,252,0.98)_72%)] p-4 shadow-[var(--shadow-depth)] sm:p-6">
+              <div className="pointer-events-none absolute inset-0 enterprise-grid opacity-70" />
+              <div className="capacity-dashboard-glow pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--gold)]/24 blur-3xl" />
+              <div className="capacity-hero-deck relative min-h-[32rem] overflow-hidden rounded-[2rem] border border-white/80 bg-white/42 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur sm:min-h-[36rem]">
+                <div className="absolute inset-x-8 bottom-10 h-36 rounded-[50%] border border-[var(--signal)]/20 bg-[linear-gradient(135deg,rgba(29,92,131,0.10),rgba(255,217,102,0.18))] shadow-[0_42px_90px_rgba(7,19,31,0.18)] [transform:rotateX(64deg)_rotateZ(-2deg)_translateZ(-80px)]" />
+                <div className="absolute left-5 top-6 z-20 rounded-full border border-[var(--line)] bg-white/86 px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--signal)] shadow-[var(--shadow-soft)]">Live capacity cockpit</div>
+                <div className="absolute right-5 top-6 z-20 rounded-full border border-[var(--gold)]/50 bg-[var(--ink)] px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--gold)] shadow-[var(--shadow-soft)]">Admin + owner views</div>
+                <div className="capacity-card-3d capacity-card-3d-admin absolute left-2 top-20 z-10 w-[72%] max-w-[25rem] rounded-[1.85rem] border border-white/80 bg-white/78 p-3 shadow-[0_32px_90px_rgba(7,19,31,0.26)] backdrop-blur sm:left-8 sm:w-[60%]">
+                  <div className="relative overflow-hidden rounded-[1.45rem] bg-[var(--surface)]">
+                    <img src={ADMIN_CAPACITY_IMAGE} alt="3D admin capacity dashboard visual" className="h-56 w-full object-contain p-2 sm:h-72" />
+                    <div className="capacity-signal-line absolute inset-y-0 w-24 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.82),transparent)]" />
+                  </div>
+                  <div className="mt-3 flex items-center justify-between gap-3">
+                    <div>
+                      <p className="font-mono text-[0.6rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">Admin capacity</p>
+                      <p className="mt-1 text-xl font-black tracking-[-0.04em]">Platform control</p>
+                    </div>
+                    <BarChart3 className="h-7 w-7 text-[var(--signal)]" />
+                  </div>
+                </div>
+                <div className="capacity-card-3d capacity-card-3d-owner absolute bottom-16 right-2 z-30 w-[72%] max-w-[25rem] rounded-[1.85rem] border border-[var(--gold)]/45 bg-[var(--ink)]/94 p-3 text-white shadow-[0_34px_100px_rgba(7,19,31,0.34)] backdrop-blur sm:right-8 sm:w-[58%]">
+                  <div className="relative overflow-hidden rounded-[1.45rem] bg-[radial-gradient(circle_at_50%_20%,rgba(255,217,102,0.22),rgba(255,255,255,0.06)_54%,rgba(7,19,31,0.38))]">
+                    <img src={OWNER_CAPACITY_IMAGE} alt="3D owner capacity dashboard visual" className="h-56 w-full object-contain p-2 sm:h-72" />
+                    <div className="capacity-signal-line absolute inset-y-0 w-24 bg-[linear-gradient(90deg,transparent,rgba(255,217,102,0.7),transparent)]" />
+                  </div>
+                  <div className="mt-3 flex items-center justify-between gap-3">
+                    <div>
+                      <p className="font-mono text-[0.6rem] font-black uppercase tracking-[0.16em] text-[var(--gold)]">Owner capacity</p>
+                      <p className="mt-1 text-xl font-black tracking-[-0.04em]">Business command</p>
+                    </div>
+                    <Crown className="h-7 w-7 text-[var(--gold)]" />
+                  </div>
+                </div>
+                <div className="absolute bottom-5 left-5 right-5 z-40 grid gap-2 rounded-[1.45rem] border border-white/70 bg-white/84 p-3 shadow-[var(--shadow-soft)] backdrop-blur sm:grid-cols-3">
+                  {["Workers", "Stock", "Tickets"].map((label, index) => (
+                    <div key={label} className="rounded-[1rem] border border-[var(--line)] bg-white p-3">
+                      <p className="font-mono text-[0.58rem] font-black uppercase tracking-[0.14em] text-[var(--signal)]">0{index + 1}</p>
+                      <p className="mt-1 text-sm font-black text-[var(--ink)]">{label} capacity</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+              {capacityRows.map(([title, copy]) => (
+                <article key={title} className="rounded-[1.65rem] border border-[var(--line)] bg-[var(--surface)] p-5 shadow-[var(--shadow-soft)] hover:-translate-y-1 hover:border-[var(--gold)]">
+                  <BadgeCheck className="h-5 w-5 text-[var(--signal)]" />
+                  <h3 className="mt-4 text-xl font-black tracking-[-0.03em]">{title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{copy}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="complaints" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.75rem] border border-[var(--line)] bg-[var(--surface)] p-5 shadow-[var(--shadow-ledger)] md:p-8">
+          <div className="mx-auto max-w-4xl text-center">
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">09 / application complaints</p>
+            <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">A complaint from 2018 becomes product discipline now.</h2>
+            <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[var(--steel)] md:text-base">From the uploaded complaint note: software should comply with South African law, protect public health, safety, and welfare, serve clients ethically, keep products at a high professional standard, and promote integrity, colleagues, and lifelong learning.</p>
+            <a href={FACEBOOK_COMPLAINT_LINK} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ink)]">
+              Read Facebook complaint <ArrowRight className="h-4 w-4" />
+            </a>
+          </div>
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
+            <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+              {complaintSignals.map(([title, copy]) => (
+                <article key={title} className="rounded-[1.65rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] hover:-translate-y-1 hover:border-[var(--gold)]">
+                  <Megaphone className="h-5 w-5 text-[var(--signal)]" />
+                  <h3 className="mt-4 text-xl font-black tracking-[-0.03em]">{title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{copy}</p>
+                </article>
+              ))}
+            </div>
+
+            <div className="capacity-hero-stage relative overflow-hidden rounded-[2.4rem] border border-[var(--line)] bg-[radial-gradient(circle_at_50%_18%,rgba(255,217,102,0.25),rgba(40,214,198,0.10)_34%,rgba(255,255,255,0.98)_72%)] p-4 shadow-[var(--shadow-depth)] sm:p-6">
+              <div className="pointer-events-none absolute inset-0 enterprise-grid opacity-75" />
+              <div className="capacity-dashboard-glow pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--gold)]/24 blur-3xl" />
+              <div className="capacity-hero-deck relative min-h-[32rem] overflow-hidden rounded-[2rem] border border-white/80 bg-white/44 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur sm:min-h-[36rem]">
+                <div className="absolute inset-x-8 bottom-10 h-36 rounded-[50%] border border-[var(--signal)]/20 bg-[linear-gradient(135deg,rgba(29,92,131,0.10),rgba(255,217,102,0.18))] shadow-[0_42px_90px_rgba(7,19,31,0.18)] [transform:rotateX(64deg)_rotateZ(-2deg)_translateZ(-80px)]" />
+                <div className="absolute left-5 top-6 z-20 rounded-full border border-[var(--line)] bg-white/86 px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--signal)] shadow-[var(--shadow-soft)]">2018 complaint memory</div>
+                <div className="absolute right-5 top-6 z-20 rounded-full border border-[var(--gold)]/50 bg-[var(--ink)] px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--gold)] shadow-[var(--shadow-soft)]">Build from friction</div>
+                <div className="capacity-card-3d capacity-card-3d-admin absolute left-2 top-20 z-10 w-[72%] max-w-[25rem] rounded-[1.85rem] border border-white/80 bg-white/78 p-3 shadow-[0_32px_90px_rgba(7,19,31,0.26)] backdrop-blur sm:left-8 sm:w-[60%]">
+                  <div className="relative overflow-hidden rounded-[1.45rem] bg-[var(--surface)]">
+                    <img src={APPLICATION_COMPLAINT_PRIMARY_IMAGE} alt="3D application complaint visual" className="h-56 w-full object-contain p-2 sm:h-72" />
+                    <div className="capacity-signal-line absolute inset-y-0 w-24 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.82),transparent)]" />
+                  </div>
+                  <div className="mt-3 flex items-center justify-between gap-3">
+                    <div>
+                      <p className="font-mono text-[0.6rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">Complaint input</p>
+                      <p className="mt-1 text-xl font-black tracking-[-0.04em]">User pain captured</p>
+                    </div>
+                    <Megaphone className="h-7 w-7 text-[var(--signal)]" />
+                  </div>
+                </div>
+                <div className="capacity-card-3d capacity-card-3d-owner absolute bottom-16 right-2 z-30 w-[72%] max-w-[25rem] rounded-[1.85rem] border border-[var(--gold)]/45 bg-[var(--ink)]/94 p-3 text-white shadow-[0_34px_100px_rgba(7,19,31,0.34)] backdrop-blur sm:right-8 sm:w-[58%]">
+                  <div className="relative overflow-hidden rounded-[1.45rem] bg-[radial-gradient(circle_at_50%_20%,rgba(255,217,102,0.22),rgba(255,255,255,0.06)_54%,rgba(7,19,31,0.38))]">
+                    <img src={APPLICATION_COMPLAINT_SECONDARY_IMAGE} alt="3D application complaint evidence visual" className="h-56 w-full object-contain p-2 sm:h-72" />
+                    <div className="capacity-signal-line absolute inset-y-0 w-24 bg-[linear-gradient(90deg,transparent,rgba(255,217,102,0.7),transparent)]" />
+                  </div>
+                  <div className="mt-3 flex items-center justify-between gap-3">
+                    <div>
+                      <p className="font-mono text-[0.6rem] font-black uppercase tracking-[0.16em] text-[var(--gold)]">Product answer</p>
+                      <p className="mt-1 text-xl font-black tracking-[-0.04em]">Complaint to roadmap</p>
+                    </div>
+                    <ShieldCheck className="h-7 w-7 text-[var(--gold)]" />
+                  </div>
+                </div>
+                <div className="absolute bottom-5 left-5 right-5 z-40 grid gap-2 rounded-[1.45rem] border border-white/70 bg-white/84 p-3 shadow-[var(--shadow-soft)] backdrop-blur sm:grid-cols-3">
+                  {["Listen", "Fix", "Prove"].map((label, index) => (
+                    <div key={label} className="rounded-[1rem] border border-[var(--line)] bg-white p-3">
+                      <p className="font-mono text-[0.58rem] font-black uppercase tracking-[0.14em] text-[var(--signal)]">0{index + 1}</p>
+                      <p className="mt-1 text-sm font-black text-[var(--ink)]">{label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       <section id="pricing" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl">
-          <div className="max-w-3xl">
-            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">06 / pricing</p>
-            <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Free where it must be free. Paid where business gets power.</h2>
-            <p className="mt-4 text-sm leading-7 text-[var(--steel)] md:text-base">Prices come from the shared business policy. User and Affiliate start at R0.</p>
+          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div className="max-w-3xl">
+              <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">10 / pricing</p>
+              <div className="mt-4 inline-flex rounded-full border border-[var(--gold)] bg-[var(--gold)] px-4 py-2 font-mono text-[0.66rem] font-black uppercase tracking-[0.16em] text-[var(--ink)]">King-Sparkon-Strengths</div>
+              <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Free where it must be free. Paid where business gets power.</h2>
+              <p className="mt-4 text-sm leading-7 text-[var(--steel)] md:text-base">Prices come from the shared business policy. User and Affiliate start at R0. Business starts with a gold 14-day trial and a Dev Hub free quote path.</p>
+            </div>
+            <Link href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--gold)] px-6 font-black text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--ink)] hover:bg-white">
+              Start business free 14 trial <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
           <div className="mt-10 grid gap-4 lg:grid-cols-5">
             {BUSINESS_PRICING_PLANS.map((plan) => (
@@ -344,17 +491,50 @@ export function KingSparkonLanding() {
         </div>
       </section>
 
-      <section id="contact" className="mx-auto max-w-7xl scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
-        <div className="grid overflow-hidden rounded-[2.25rem] border border-[var(--line)] bg-white shadow-[var(--shadow-ledger)] lg:grid-cols-[0.82fr_1.18fr]">
-          <div className="bg-[var(--ink)] p-6 text-white enterprise-grid md:p-8">
-            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">07 / contact</p>
-            <h2 className="mt-4 max-w-xl break-words text-3xl font-black leading-[1.02] tracking-[-0.05em] sm:text-4xl lg:text-5xl">Build the King Sparkon operation properly.</h2>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-white/68">Tell us what you track, which roles use the system, and what the first dashboard must prove.</p>
-            <div className="barcode-rule mt-8 max-w-md text-white" />
+      <section id="contact" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.75rem] border border-white/10 bg-[var(--ink)] p-5 text-white shadow-[var(--shadow-depth)] enterprise-grid md:p-8">
+          <div className="mx-auto max-w-4xl text-center">
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">11 / contact</p>
+            <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Build the King Sparkon operation properly.</h2>
+            <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-white/68 md:text-base">Tell us what you track, which roles use the system, and what the first dashboard must prove.</p>
           </div>
-          <div className="p-5 md:p-8"><ContactForm /></div>
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-stretch">
+            <div className="contact-hero-stage relative overflow-hidden rounded-[2.4rem] border border-white/10 bg-white/[0.07] p-4 shadow-[0_30px_100px_rgba(0,0,0,0.36)] backdrop-blur-xl sm:p-6">
+              <div className="pointer-events-none absolute inset-0 scan-grid opacity-80" />
+              <div className="contact-dashboard-glow pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--gold)]/24 blur-3xl" />
+              <div className="relative min-h-[31rem] overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_50%_12%,rgba(255,217,102,0.20),rgba(255,255,255,0.06)_46%,rgba(7,19,31,0.42))] p-4">
+                <div className="absolute inset-x-8 bottom-10 h-36 rounded-[50%] border border-[var(--gold)]/20 bg-[linear-gradient(135deg,rgba(255,217,102,0.18),rgba(40,214,198,0.12))] shadow-[0_46px_100px_rgba(0,0,0,0.35)] [transform:rotateX(64deg)_rotateZ(3deg)_translateZ(-80px)]" />
+                <div className="absolute left-5 top-5 z-20 rounded-full border border-white/10 bg-white/[0.08] px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--gold)] shadow-[var(--shadow-soft)]">Contact pipeline</div>
+                <div className="absolute right-5 top-5 z-20 rounded-full border border-[var(--gold)]/40 bg-[var(--gold)] px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--ink)] shadow-[var(--shadow-soft)]">Message to action</div>
+                <div className="contact-card-3d absolute inset-x-4 top-20 z-30 rounded-[1.9rem] border border-white/14 bg-white/[0.08] p-3 shadow-[0_34px_110px_rgba(0,0,0,0.42)] backdrop-blur sm:inset-x-8">
+                  <div className="relative overflow-hidden rounded-[1.55rem] bg-[radial-gradient(circle_at_50%_20%,rgba(255,217,102,0.18),rgba(255,255,255,0.08)_52%,rgba(7,19,31,0.34))]">
+                    <img src={CONTACT_FORM_IMAGE} alt="3D King Sparkon contact form visual" className="h-80 w-full object-contain p-3 sm:h-[26rem]" />
+                    <div className="contact-signal-line absolute inset-y-0 w-24 bg-[linear-gradient(90deg,transparent,rgba(255,217,102,0.72),transparent)]" />
+                  </div>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                    {["Track", "Review", "Build"].map((label, index) => (
+                      <div key={label} className="rounded-[1rem] border border-white/10 bg-white/[0.08] p-3">
+                        <p className="font-mono text-[0.58rem] font-black uppercase tracking-[0.14em] text-[var(--gold)]">0{index + 1}</p>
+                        <p className="mt-1 text-sm font-black text-white">{label}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <span className="contact-orbit-dot absolute bottom-20 left-8 h-3 w-3 rounded-full bg-[var(--gold)] shadow-[0_0_28px_rgba(255,217,102,0.85)]" />
+                <span className="contact-orbit-dot absolute bottom-28 right-12 h-2.5 w-2.5 rounded-full bg-[var(--signal)] shadow-[0_0_28px_rgba(40,214,198,0.75)] [animation-delay:900ms]" />
+                <span className="contact-orbit-dot absolute left-1/2 top-16 h-2 w-2 rounded-full bg-white shadow-[0_0_24px_rgba(255,255,255,0.72)] [animation-delay:1500ms]" />
+              </div>
+            </div>
+
+            <div className="rounded-[2.4rem] border border-white/10 bg-white p-5 text-[var(--ink)] shadow-[0_30px_100px_rgba(0,0,0,0.26)] md:p-8">
+              <ContactForm />
+            </div>
+          </div>
         </div>
       </section>
+
+      <SubscriptionSection />
     </main>
   );
 }
