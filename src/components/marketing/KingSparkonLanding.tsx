@@ -70,9 +70,9 @@ const capacityRows = [
 ] as const;
 
 const complaintSignals = [
-  ["2018 complaint signal", "The early Facebook complaint becomes a product warning: users need software that listens, explains, and improves."],
-  ["Application friction", "Every complaint must turn into a traceable issue, role, workflow, owner, and resolution path."],
-  ["Better platform response", "King Sparkon treats complaints as product evidence so dashboards, support, scans, and forms keep getting sharper."],
+  ["Public interest", "Software should protect health, safety, welfare, and the public interest before shortcuts or hidden risk."],
+  ["Professional standards", "Every product and modification should meet high standards, legal expectations, and ethical engineering practice."],
+  ["Integrity and learning", "Good engineering keeps judgement independent, supports colleagues, and improves through lifelong learning."],
 ] as const;
 
 const sponsorMaintains = [
@@ -101,6 +101,7 @@ const OWNER_CAPACITY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v
 const CONTACT_FORM_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_35_42%20PM%20(1).png";
 const APPLICATION_COMPLAINT_PRIMARY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_35_42%20PM%20(2).png";
 const APPLICATION_COMPLAINT_SECONDARY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_26_11%20PM%20(2).png";
+const FACEBOOK_COMPLAINT_LINK = "https://www.facebook.com/share/1CaAzEGBJb/";
 
 function planRegisterHref(plan: (typeof BUSINESS_PRICING_PLANS)[number]) {
   return `/register?plan=${plan.planCode}&privilege=${plan.registrationPrivilege}&service=${plan.registrationService}`;
@@ -381,7 +382,10 @@ export function KingSparkonLanding() {
           <div className="mx-auto max-w-4xl text-center">
             <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">06 / application complaints</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">A complaint from 2018 becomes product discipline now.</h2>
-            <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[var(--steel)] md:text-base">I could not safely extract the exact Facebook text from the image link here, so this section keeps the message honest: real application complaints should become clearer flows, stronger dashboards, and visible resolution.</p>
+            <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[var(--steel)] md:text-base">From the uploaded complaint note: software should comply with South African law, protect public health, safety, and welfare, serve clients ethically, keep products at a high professional standard, and promote integrity, colleagues, and lifelong learning.</p>
+            <a href={FACEBOOK_COMPLAINT_LINK} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ink)]">
+              Read Facebook complaint <ArrowRight className="h-4 w-4" />
+            </a>
           </div>
 
           <div className="mt-10 grid gap-6 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
