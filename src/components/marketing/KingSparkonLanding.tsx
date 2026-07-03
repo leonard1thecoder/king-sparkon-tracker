@@ -21,6 +21,7 @@ import {
 import { ScanLoop } from "@/components/hero/ScanLoop";
 import { ContactForm } from "@/app/contact-form";
 import { FounderVerificationCard } from "@/components/marketing/FounderVerificationCard";
+import { SubscriptionSection } from "@/components/marketing/SubscriptionSection";
 import { BUSINESS_PRICING_PLANS } from "@/lib/config/business-policy";
 
 const navLinks = [
@@ -31,6 +32,7 @@ const navLinks = [
   ["Complaints", "#complaints"],
   ["Pricing", "#pricing"],
   ["Contact", "#contact"],
+  ["Subscribe", "#subscribe"],
 ] as const;
 
 const features: Array<{ icon: LucideIcon; title: string; copy: string; tags: string[] }> = [
@@ -515,6 +517,8 @@ export function KingSparkonLanding() {
           </div>
         </div>
       </section>
+
+      <SubscriptionSection />
     </main>
   );
 }
