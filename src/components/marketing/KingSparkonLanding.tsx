@@ -89,6 +89,8 @@ const qrCells = new Set([
 
 const TIP_KING_SPARKON_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/AAA.png";
 const CHOOSE_FORM_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/AXA.png";
+const ADMIN_CAPACITY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_35_43%20PM%20(3).png";
+const OWNER_CAPACITY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_26_15%20PM%20(3).png";
 
 function planRegisterHref(plan: (typeof BUSINESS_PRICING_PLANS)[number]) {
   return `/register?plan=${plan.planCode}&privilege=${plan.registrationPrivilege}&service=${plan.registrationService}`;
@@ -295,24 +297,71 @@ export function KingSparkonLanding() {
       </section>
 
       <section id="capacity" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
-        <div className="mx-auto grid max-w-7xl gap-8 rounded-[2.5rem] border border-[var(--line)] bg-white p-6 shadow-[var(--shadow-ledger)] lg:grid-cols-[0.85fr_1.15fr] lg:p-8">
-          <div>
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.75rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-8">
+          <div className="mx-auto max-w-4xl text-center">
             <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">05 / capacity views</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Dashboards show how much the system can hold.</h2>
-            <p className="mt-5 text-sm leading-7 text-[var(--steel)] md:text-base">Capacity is workers, stock, jobs, tickets, campaigns, reports, and platform control.</p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+            <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[var(--steel)] md:text-base">Capacity is workers, stock, jobs, tickets, campaigns, reports, and platform control.</p>
+            <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
               <Link href="/dashboard/admin/capacity" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ink)]">View admin capacity <ArrowRight className="h-4 w-4" /></Link>
               <Link href="/dashboard/owner/capacity" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--line)] bg-white px-6 font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--gold)]">Owner capacity</Link>
             </div>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {capacityRows.map(([title, copy]) => (
-              <article key={title} className="rounded-[1.65rem] border border-[var(--line)] bg-[var(--surface)] p-5 shadow-[var(--shadow-soft)]">
-                <BadgeCheck className="h-5 w-5 text-[var(--signal)]" />
-                <h3 className="mt-4 text-xl font-black tracking-[-0.03em]">{title}</h3>
-                <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{copy}</p>
-              </article>
-            ))}
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-[1.12fr_0.88fr] lg:items-center">
+            <div className="capacity-hero-stage relative overflow-hidden rounded-[2.4rem] border border-[var(--line)] bg-[radial-gradient(circle_at_50%_18%,rgba(255,217,102,0.26),rgba(40,214,198,0.12)_34%,rgba(247,250,252,0.98)_72%)] p-4 shadow-[var(--shadow-depth)] sm:p-6">
+              <div className="pointer-events-none absolute inset-0 enterprise-grid opacity-70" />
+              <div className="capacity-dashboard-glow pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--gold)]/24 blur-3xl" />
+              <div className="capacity-hero-deck relative min-h-[32rem] overflow-hidden rounded-[2rem] border border-white/80 bg-white/42 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur sm:min-h-[36rem]">
+                <div className="absolute inset-x-8 bottom-10 h-36 rounded-[50%] border border-[var(--signal)]/20 bg-[linear-gradient(135deg,rgba(29,92,131,0.10),rgba(255,217,102,0.18))] shadow-[0_42px_90px_rgba(7,19,31,0.18)] [transform:rotateX(64deg)_rotateZ(-2deg)_translateZ(-80px)]" />
+                <div className="absolute left-5 top-6 z-20 rounded-full border border-[var(--line)] bg-white/86 px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--signal)] shadow-[var(--shadow-soft)]">Live capacity cockpit</div>
+                <div className="absolute right-5 top-6 z-20 rounded-full border border-[var(--gold)]/50 bg-[var(--ink)] px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--gold)] shadow-[var(--shadow-soft)]">Admin + owner views</div>
+                <div className="capacity-card-3d capacity-card-3d-admin absolute left-2 top-20 z-10 w-[72%] max-w-[25rem] rounded-[1.85rem] border border-white/80 bg-white/78 p-3 shadow-[0_32px_90px_rgba(7,19,31,0.26)] backdrop-blur sm:left-8 sm:w-[60%]">
+                  <div className="relative overflow-hidden rounded-[1.45rem] bg-[var(--surface)]">
+                    <img src={ADMIN_CAPACITY_IMAGE} alt="3D admin capacity dashboard visual" className="h-56 w-full object-contain p-2 sm:h-72" />
+                    <div className="capacity-signal-line absolute inset-y-0 w-24 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.82),transparent)]" />
+                  </div>
+                  <div className="mt-3 flex items-center justify-between gap-3">
+                    <div>
+                      <p className="font-mono text-[0.6rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">Admin capacity</p>
+                      <p className="mt-1 text-xl font-black tracking-[-0.04em]">Platform control</p>
+                    </div>
+                    <BarChart3 className="h-7 w-7 text-[var(--signal)]" />
+                  </div>
+                </div>
+                <div className="capacity-card-3d capacity-card-3d-owner absolute bottom-16 right-2 z-30 w-[72%] max-w-[25rem] rounded-[1.85rem] border border-[var(--gold)]/45 bg-[var(--ink)]/94 p-3 text-white shadow-[0_34px_100px_rgba(7,19,31,0.34)] backdrop-blur sm:right-8 sm:w-[58%]">
+                  <div className="relative overflow-hidden rounded-[1.45rem] bg-[radial-gradient(circle_at_50%_20%,rgba(255,217,102,0.22),rgba(255,255,255,0.06)_54%,rgba(7,19,31,0.38))]">
+                    <img src={OWNER_CAPACITY_IMAGE} alt="3D owner capacity dashboard visual" className="h-56 w-full object-contain p-2 sm:h-72" />
+                    <div className="capacity-signal-line absolute inset-y-0 w-24 bg-[linear-gradient(90deg,transparent,rgba(255,217,102,0.7),transparent)]" />
+                  </div>
+                  <div className="mt-3 flex items-center justify-between gap-3">
+                    <div>
+                      <p className="font-mono text-[0.6rem] font-black uppercase tracking-[0.16em] text-[var(--gold)]">Owner capacity</p>
+                      <p className="mt-1 text-xl font-black tracking-[-0.04em]">Business command</p>
+                    </div>
+                    <Crown className="h-7 w-7 text-[var(--gold)]" />
+                  </div>
+                </div>
+                <div className="absolute bottom-5 left-5 right-5 z-40 grid gap-2 rounded-[1.45rem] border border-white/70 bg-white/84 p-3 shadow-[var(--shadow-soft)] backdrop-blur sm:grid-cols-3">
+                  {["Workers", "Stock", "Tickets"].map((label, index) => (
+                    <div key={label} className="rounded-[1rem] border border-[var(--line)] bg-white p-3">
+                      <p className="font-mono text-[0.58rem] font-black uppercase tracking-[0.14em] text-[var(--signal)]">0{index + 1}</p>
+                      <p className="mt-1 text-sm font-black text-[var(--ink)]">{label} capacity</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+              {capacityRows.map(([title, copy]) => (
+                <article key={title} className="rounded-[1.65rem] border border-[var(--line)] bg-[var(--surface)] p-5 shadow-[var(--shadow-soft)] hover:-translate-y-1 hover:border-[var(--gold)]">
+                  <BadgeCheck className="h-5 w-5 text-[var(--signal)]" />
+                  <h3 className="mt-4 text-xl font-black tracking-[-0.03em]">{title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{copy}</p>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
