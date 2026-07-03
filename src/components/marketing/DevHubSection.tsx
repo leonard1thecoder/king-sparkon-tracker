@@ -36,11 +36,11 @@ export function DevHubSection() {
             </div>
             <p className="mt-5 text-2xl font-black tracking-[-0.04em]">Dev Hub is for businesses that need software built, tested, deployed, maintained, and improved properly.</p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Link href="#pricing" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--gold)] px-6 font-black text-[var(--ink)] shadow-[var(--shadow-soft)] hover:bg-white">
+              <Link href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--gold)] px-6 font-black text-[var(--ink)] shadow-[var(--shadow-soft)] hover:bg-white">
                 Start business free 14 trial <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link href="#contact" className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/12 bg-white/[0.07] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:border-[var(--gold)]">
-                Request free quote
+              <Link href="/dashboard/owner/developer" className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/12 bg-white/[0.07] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:border-[var(--gold)]">
+                Request Dev Hub quote
               </Link>
             </div>
           </div>
