@@ -1,0 +1,5 @@
+main > section:first-child h1 span:nth-of-type(3) {
+  background: transparent !important;
+  padding-inline: 0 !important;
+  color: currentColor !important;
+}
