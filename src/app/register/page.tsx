@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { InteractiveRegisterShell } from "@/components/auth/InteractiveRegisterShell";
+import { SignedInRegisterNotice } from "@/components/auth/SignedInRegisterNotice";
+import { ACCESS_COOKIE_NAME, dashboardPathForSession, decodeJwtPayload } from "@/lib/auth/session";
 import { registrationPrivilegeOptions } from "@/lib/auth/registration";
 
 export const metadata: Metadata = {
@@ -79,6 +82,14 @@ function defaultService(plan: string | undefined, service: string | undefined, p
 }
 
 export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ plan?: string; service?: string; privilege?: string }> }) {
+  const token = (await cookies()).get(ACCESS_COOKIE_NAME)?.value;
+  const claims = decodeJwtPayload(token);
+  const dashboardPath = dashboardPathForSession(claims);
+
+  if (claims && dashboardPath !== "/dashboard") {
+    return <SignedInRegisterNotice dashboardPath={dashboardPath} />;
+  }
+
   const { plan, service, privilege } = await searchParams;
   const normalizedPlan = plan?.toUpperCase();
   const selectedPrivilege = defaultPrivilege(plan, privilege);
