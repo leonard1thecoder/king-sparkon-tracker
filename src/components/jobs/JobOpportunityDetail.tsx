@@ -137,11 +137,11 @@ export function JobOpportunityDetail({ id, canApply = true, manageHref }: { id: 
               ["applicantName", "Full name", "Example: Sizolwakhe Mkhize", "text"],
               ["applicantEmail", "Email", "you@example.com", "email"],
               ["phoneNumber", "Phone / WhatsApp", "+27...", "tel"],
-              ["cvUrl", "CV link", "https://...", "url"],
+              ["cvUrl", "CV / resume link", "https://...", "url"],
             ].map(([name, label, placeholder, type]) => (
               <label key={name} className="grid gap-2 text-sm font-black text-[var(--ink)]" htmlFor={name}>
                 {label}
-                <input id={name} name={name} type={type} required={name === "applicantName" || name === "applicantEmail"} placeholder={placeholder} className="min-h-12 rounded-[1.35rem] border border-[var(--line)] bg-[var(--surface)] px-4 text-sm font-semibold outline-none placeholder:text-[var(--muted)] focus:border-[var(--gold)]" />
+                <input id={name} name={name} type={type} required={name === "applicantName" || name === "applicantEmail" || name === "cvUrl"} placeholder={placeholder} className="min-h-12 rounded-[1.35rem] border border-[var(--line)] bg-[var(--surface)] px-4 text-sm font-semibold outline-none placeholder:text-[var(--muted)] focus:border-[var(--gold)]" />
               </label>
             ))}
             <label className="grid gap-2 text-sm font-black text-[var(--ink)]" htmlFor="coverMessage">
