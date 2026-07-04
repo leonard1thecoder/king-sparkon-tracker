@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { ArrowRight, Boxes, BriefcaseBusiness, Building2, CreditCard, QrCode, ScanLine, ShieldCheck, ShoppingCart, Ticket, UserRound, WalletCards } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { ArrowRight, Building2, QrCode, ScanLine, ShieldCheck, UserRound } from "lucide-react";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { MetricCard } from "@/components/ui/MetricCard";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { OwnerTuckShopProductManager } from "@/components/tuck-shop/OwnerTuckShopProductManager";
@@ -10,10 +10,10 @@ import { WorkerTuckShopBarcodeCheckout } from "@/components/tuck-shop/WorkerTuck
 import type { UserRole } from "@/lib/types/backend";
 
 type Role = UserRole;
-
 type Action = { label: string; href: string; detail: string; tone?: "neutral" | "signal" | "confirm" };
+type Overview = { title: string; description: string; primary: Action; secondary: Action; metrics: Array<{ label: string; value: string; detail: string; tone?: "neutral" | "signal" | "confirm" }>; actions: Action[] };
 
-const overview: Record<Role, { title: string; description: string; primary: Action; secondary: Action; metrics: Array<{ label: string; value: string; detail: string; tone?: "neutral" | "signal" | "confirm" }>; actions: Action[] }> = {
+const overview: Record<Role, Overview> = {
   Admin: {
     title: "Platform oversight console",
     description: "Admin should review users, businesses, tickets, promotions, reports and platform settings from one controlled workspace. No public ticket demo redirects.",
@@ -96,13 +96,7 @@ const overview: Record<Role, { title: string; description: string; primary: Acti
   },
 };
 
-const roleIcons: Record<Role, typeof ShieldCheck> = {
-  Admin: ShieldCheck,
-  Owner: Building2,
-  Worker: ScanLine,
-  Affiliate: QrCode,
-  User: UserRound,
-};
+const roleIcons: Record<Role, LucideIcon> = { Admin: ShieldCheck, Owner: Building2, Worker: ScanLine, Affiliate: QrCode, User: UserRound };
 
 function ActionCard({ action }: { action: Action }) {
   return (
