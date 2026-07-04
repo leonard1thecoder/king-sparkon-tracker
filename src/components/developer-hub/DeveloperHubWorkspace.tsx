@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import { ArrowRight, BadgeCheck, CloudCog, Code2, GitBranch, Loader2, PlayCircle, RefreshCw, ShieldCheck, Sparkles, TriangleAlert } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -101,7 +101,7 @@ export function DeveloperHubWorkspace({ scope }: { scope: DeveloperHubScope }) {
     return { qaCount, cloudCount, startedCount };
   }, [requests]);
 
-  async function loadRequests({ quiet = false } = {}) {
+  const loadRequests = useCallback(async ({ quiet = false } = {}) => {
     if (!quiet) setIsLoading(true);
 
     try {
@@ -110,7 +110,7 @@ export function DeveloperHubWorkspace({ scope }: { scope: DeveloperHubScope }) {
 
       if (!response.ok) {
         setRequests(previewRequestsForScope(scope));
-        setMessage({ tone: "warning", text: "Backend Developer Hub endpoints are not live yet. Showing preview rows while the frontend contract is ready." });
+        setMessage({ tone: "warning", text: "Developer Hub live records are not available yet. Showing preview rows while the workflow stays usable." });
         return;
       }
 
@@ -123,11 +123,11 @@ export function DeveloperHubWorkspace({ scope }: { scope: DeveloperHubScope }) {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [scope]);
 
   useEffect(() => {
     void loadRequests();
-  }, [scope]);
+  }, [loadRequests]);
 
   async function submitRequest(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -173,7 +173,7 @@ export function DeveloperHubWorkspace({ scope }: { scope: DeveloperHubScope }) {
       setMessage({ tone: "success", text: "Software development request submitted to King Sparkon Dev Hub." });
       form.reset();
     } catch {
-      setMessage({ tone: "error", text: "Could not reach the Developer Hub API. Backend must implement the defined contract before live submission works." });
+      setMessage({ tone: "error", text: "Could not reach Developer Hub live submission. Please try again once the service is available." });
     } finally {
       setIsSubmitting(false);
     }
@@ -200,7 +200,7 @@ export function DeveloperHubWorkspace({ scope }: { scope: DeveloperHubScope }) {
       setRequests((current) => current.map((item) => (item.id === request.id ? { ...item, ...updated, stage, status: updated.status ?? statusForStage(stage), updatedAt: updated.updatedAt ?? new Date().toISOString() } : item)));
       setMessage({ tone: "success", text: `${request.softwareName} moved to ${SOFTWARE_DEVELOPMENT_STAGE_LABELS[stage]}.` });
     } catch {
-      setMessage({ tone: "error", text: "Could not reach the admin stage API. Backend must wire the PATCH contract." });
+      setMessage({ tone: "error", text: "Could not update the admin stage. Please try again once the service is available." });
     } finally {
       setActiveRequestId(null);
     }

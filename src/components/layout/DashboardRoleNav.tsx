@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
 import { BarChart3, Boxes, BriefcaseBusiness, Building2, CreditCard, FileCheck2, Megaphone, QrCode, ScanLine, Settings, ShieldCheck, ShoppingCart, Ticket, UserRound, UsersRound, WalletCards } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
@@ -63,19 +63,30 @@ const navByRole: Record<UserRole, NavItem[]> = {
   ],
 };
 
-function isActive(pathname: string, href: string) {
-  const cleanHref = href.split("?")[0];
-  return pathname === cleanHref || pathname.startsWith(`${cleanHref}/`);
+function isActive(pathname: string, searchParams: URLSearchParams, href: string) {
+  const [cleanHref, query = ""] = href.split("?");
+
+  if (query) {
+    const hrefParams = new URLSearchParams(query);
+    return pathname === cleanHref && Array.from(hrefParams.entries()).every(([key, value]) => searchParams.get(key) === value);
+  }
+
+  if (pathname !== cleanHref && !pathname.startsWith(`${cleanHref}/`)) {
+    return false;
+  }
+
+  return pathname !== cleanHref || !searchParams.has("tab");
 }
 
 export function DashboardRoleNav({ role }: { role: UserRole }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const items = navByRole[role];
 
   return (
     <>
       {items.map(({ label, href, icon: Icon }) => {
-        const active = isActive(pathname, href);
+        const active = isActive(pathname, searchParams, href);
         return (
           <Link
             key={`${role}-${href}-${label}`}

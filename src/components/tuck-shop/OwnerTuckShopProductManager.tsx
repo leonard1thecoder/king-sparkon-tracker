@@ -155,7 +155,6 @@ export function OwnerTuckShopProductManager() {
             <div className="grid gap-4 lg:grid-cols-2">
               {products.map((product) => (
                 <article key={product.id} className="grid gap-4 rounded-[1.5rem] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)] sm:grid-cols-[8rem_1fr]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={productImage(product)} alt={product.name} className="h-32 w-full rounded-[1.1rem] object-cover sm:w-32" />
                   <div className="grid gap-3">
                     <div className="flex items-start justify-between gap-3">

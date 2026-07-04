@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { SiteFooter } from "@/components/layout/SiteFooter";
@@ -103,15 +102,14 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable} h-full antialiased`}>
       <head>
         <meta name="google-adsense-account" content={adsensePublisherId} />
-      </head>
-      <body className="min-h-full flex flex-col">
-        <Script
+        <script
           id="king-sparkon-adsense"
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8918343184695576"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
         />
+      </head>
+      <body className="min-h-full flex flex-col">
         {children}
         <SiteFooter marketingOnly />
       </body>

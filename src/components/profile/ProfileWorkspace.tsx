@@ -37,7 +37,7 @@ export function ProfileWorkspace({ role }: { role: UserRole }) {
           <div>
             <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">{role} profile</p>
             <h1 className="mt-3 text-3xl font-black tracking-[-0.05em] md:text-5xl">Account, role and session controls.</h1>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--steel)]">This page uses the protected backend profile endpoint. It gives every role a real place to inspect identity and sign out.</p>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--steel)]">This page gives every role a real place to inspect identity, role state, and sign out.</p>
           </div>
           <LogoutButton />
         </div>
@@ -46,7 +46,7 @@ export function ProfileWorkspace({ role }: { role: UserRole }) {
       {error ? <p className="rounded-[var(--radius-lg)] border border-[var(--danger)]/30 bg-white p-4 text-sm font-bold text-[var(--danger)]">{error}</p> : null}
 
       <div className="grid gap-4 md:grid-cols-3">
-        <MetricCard label="Profile API" value={loading ? "..." : user ? "Loaded" : "Unavailable"} detail="GET /api/users/me through the protected proxy" tone={user ? "confirm" : "neutral"} icon={<UserRound className="h-5 w-5" />} />
+        <MetricCard label="Profile status" value={loading ? "..." : user ? "Loaded" : "Unavailable"} detail="Protected session profile" tone={user ? "confirm" : "neutral"} icon={<UserRound className="h-5 w-5" />} />
         <MetricCard label="Role" value={accountRoles[0] ?? role} detail={accountRoles.length > 1 ? accountRoles.join(" + ") : "Primary dashboard role"} tone="signal" icon={<ShieldCheck className="h-5 w-5" />} />
         <MetricCard label="Email" value={user?.emailVerified ? "Verified" : "Review"} detail={user?.emailAddress ?? "Backend profile not loaded yet"} icon={<Mail className="h-5 w-5" />} />
       </div>

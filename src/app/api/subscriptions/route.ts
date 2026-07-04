@@ -13,10 +13,9 @@ function stringField(value: unknown) {
 
 function subscriberType(value: string) {
   const normalized = value.trim().toUpperCase().replaceAll(" ", "_").replaceAll("-", "_");
-  if (normalized.includes("BUSINESS")) return "BUSINESS_OWNER";
   if (normalized.includes("AFFILIATE")) return "AFFILIATE";
-  if (normalized.includes("DEV")) return "DEV_HUB_CLIENT";
-  return "USER";
+  if (normalized.includes("CLIENT")) return "CLIENT";
+  return "KINGSPARKON_SUBSCRIBER";
 }
 
 function normalizePayload(payload: SubscriptionPayload) {
@@ -31,7 +30,7 @@ function normalizePayload(payload: SubscriptionPayload) {
     name,
     subscriberType: subscriberType(subscribeAs),
     preferredChannel: "EMAIL",
-    affiliateRegistered: subscriberType(subscribeAs) === "AFFILIATE",
+    affiliateRegistered: false,
     interest,
   };
 }

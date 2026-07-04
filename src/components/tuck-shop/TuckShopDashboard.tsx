@@ -190,7 +190,6 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {products.map((product) => (
                 <article key={product.id} className="overflow-hidden rounded-[1.5rem] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)] transition hover:-translate-y-1 hover:border-[var(--gold)]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={productImage(product)} alt={product.name} className="h-44 w-full object-cover" />
                   <div className="grid gap-4 p-4">
                     <div className="flex items-start justify-between gap-3">

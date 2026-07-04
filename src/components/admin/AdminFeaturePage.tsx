@@ -37,7 +37,7 @@ export function AdminFeaturePage({ eyebrow, title, description, icon: Icon, modu
             <aside className="rounded-[2rem] border border-[var(--line)] bg-[var(--surface)] p-5">
               <ShieldCheck className="h-6 w-6 text-[var(--signal)]" />
               <h2 className="mt-5 text-2xl font-black tracking-[-0.04em]">Admin feature shell is ready.</h2>
-              <p className="mt-3 text-sm leading-7 text-[var(--steel)]">This route keeps the admin navigation, production spacing, empty state guidance, and integration expectations visible while backend endpoints are wired feature-by-feature.</p>
+              <p className="mt-3 text-sm leading-7 text-[var(--steel)]">This workspace keeps the admin navigation, production spacing, empty state guidance, and live-data expectations visible while each feature area is expanded.</p>
               {primaryHref && primaryLabel ? (
                 <Link href={primaryHref} className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white hover:bg-[var(--ink)]">
                   {primaryLabel} <ArrowRight className="h-4 w-4" />

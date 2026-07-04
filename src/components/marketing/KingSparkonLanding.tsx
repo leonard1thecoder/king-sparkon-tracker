@@ -225,7 +225,7 @@ export function KingSparkonLanding() {
 
           <div className="rounded-[2.25rem] border border-white/10 bg-white/[0.07] p-5 shadow-[0_28px_90px_rgba(0,0,0,0.35)] backdrop-blur-xl">
             <div className="relative overflow-hidden rounded-[1.9rem] border border-white/10 bg-[radial-gradient(circle_at_50%_20%,rgba(255,210,90,0.18),rgba(255,255,255,0.06)_48%,rgba(7,19,31,0.22))] shadow-[0_22px_70px_rgba(0,0,0,0.28)]">
-              <img src={TIP_KING_SPARKON_IMAGE} alt="Tip King Sparkon support visual" className="h-72 w-full object-contain p-4" />
+              <img src={TIP_KING_SPARKON_IMAGE} alt="Tip King Sparkon support visual" loading="lazy" decoding="async" className="h-72 w-full object-contain p-4" />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgba(7,19,31,0.96)] via-[rgba(7,19,31,0.55)] to-transparent px-5 pb-5 pt-20">
                 <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.18em] text-[var(--gold)]">Tip King Sparkon</p>
                 <p className="mt-2 text-2xl font-black tracking-[-0.05em]">Maintain. Build. Grow.</p>
@@ -295,7 +295,7 @@ export function KingSparkonLanding() {
 
             <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.07] p-3 shadow-[0_26px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl">
               <div className="relative overflow-hidden rounded-[1.65rem] bg-[radial-gradient(circle_at_50%_20%,rgba(255,210,90,0.16),rgba(255,255,255,0.05)_48%,rgba(7,19,31,0.42))]">
-                <img src={CHOOSE_FORM_IMAGE} alt="King Sparkon choose your form visual" className="h-72 w-full object-contain p-4" />
+                <img src={CHOOSE_FORM_IMAGE} alt="King Sparkon choose your form visual" loading="lazy" decoding="async" className="h-72 w-full object-contain p-4" />
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[rgba(7,19,31,0.96)] via-[rgba(7,19,31,0.48)] to-transparent px-5 pb-5 pt-20">
                   <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.18em] text-[var(--gold)]">Choose your King Sparkon door</p>
                   <p className="mt-2 text-2xl font-black tracking-[-0.05em]">User. Affiliate. Owner. Admin.</p>
@@ -341,7 +341,7 @@ export function KingSparkonLanding() {
                 <div className="absolute right-5 top-6 z-20 rounded-full border border-[var(--gold)]/50 bg-[var(--ink)] px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--gold)] shadow-[var(--shadow-soft)]">Admin + owner views</div>
                 <div className="capacity-card-3d capacity-card-3d-admin absolute left-2 top-20 z-10 w-[72%] max-w-[25rem] rounded-[1.85rem] border border-white/80 bg-white/78 p-3 shadow-[0_32px_90px_rgba(7,19,31,0.26)] backdrop-blur sm:left-8 sm:w-[60%]">
                   <div className="relative overflow-hidden rounded-[1.45rem] bg-[var(--surface)]">
-                    <img src={ADMIN_CAPACITY_IMAGE} alt="3D admin capacity dashboard visual" className="h-56 w-full object-contain p-2 sm:h-72" />
+                    <img src={ADMIN_CAPACITY_IMAGE} alt="3D admin capacity dashboard visual" loading="lazy" decoding="async" className="h-56 w-full object-contain p-2 sm:h-72" />
                     <div className="capacity-signal-line absolute inset-y-0 w-24 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.82),transparent)]" />
                   </div>
                   <div className="mt-3 flex items-center justify-between gap-3">
@@ -354,7 +354,7 @@ export function KingSparkonLanding() {
                 </div>
                 <div className="capacity-card-3d capacity-card-3d-owner absolute bottom-16 right-2 z-30 w-[72%] max-w-[25rem] rounded-[1.85rem] border border-[var(--gold)]/45 bg-[var(--ink)]/94 p-3 text-white shadow-[0_34px_100px_rgba(7,19,31,0.34)] backdrop-blur sm:right-8 sm:w-[58%]">
                   <div className="relative overflow-hidden rounded-[1.45rem] bg-[radial-gradient(circle_at_50%_20%,rgba(255,217,102,0.22),rgba(255,255,255,0.06)_54%,rgba(7,19,31,0.38))]">
-                    <img src={OWNER_CAPACITY_IMAGE} alt="3D owner capacity dashboard visual" className="h-56 w-full object-contain p-2 sm:h-72" />
+                    <img src={OWNER_CAPACITY_IMAGE} alt="3D owner capacity dashboard visual" loading="lazy" decoding="async" className="h-56 w-full object-contain p-2 sm:h-72" />
                     <div className="capacity-signal-line absolute inset-y-0 w-24 bg-[linear-gradient(90deg,transparent,rgba(255,217,102,0.7),transparent)]" />
                   </div>
                   <div className="mt-3 flex items-center justify-between gap-3">
@@ -420,7 +420,7 @@ export function KingSparkonLanding() {
                 <div className="absolute right-5 top-6 z-20 rounded-full border border-[var(--gold)]/50 bg-[var(--ink)] px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--gold)] shadow-[var(--shadow-soft)]">Build from friction</div>
                 <div className="capacity-card-3d capacity-card-3d-admin absolute left-2 top-20 z-10 w-[72%] max-w-[25rem] rounded-[1.85rem] border border-white/80 bg-white/78 p-3 shadow-[0_32px_90px_rgba(7,19,31,0.26)] backdrop-blur sm:left-8 sm:w-[60%]">
                   <div className="relative overflow-hidden rounded-[1.45rem] bg-[var(--surface)]">
-                    <img src={APPLICATION_COMPLAINT_PRIMARY_IMAGE} alt="3D application complaint visual" className="h-56 w-full object-contain p-2 sm:h-72" />
+                    <img src={APPLICATION_COMPLAINT_PRIMARY_IMAGE} alt="3D application complaint visual" loading="lazy" decoding="async" className="h-56 w-full object-contain p-2 sm:h-72" />
                     <div className="capacity-signal-line absolute inset-y-0 w-24 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.82),transparent)]" />
                   </div>
                   <div className="mt-3 flex items-center justify-between gap-3">
@@ -433,7 +433,7 @@ export function KingSparkonLanding() {
                 </div>
                 <div className="capacity-card-3d capacity-card-3d-owner absolute bottom-16 right-2 z-30 w-[72%] max-w-[25rem] rounded-[1.85rem] border border-[var(--gold)]/45 bg-[var(--ink)]/94 p-3 text-white shadow-[0_34px_100px_rgba(7,19,31,0.34)] backdrop-blur sm:right-8 sm:w-[58%]">
                   <div className="relative overflow-hidden rounded-[1.45rem] bg-[radial-gradient(circle_at_50%_20%,rgba(255,217,102,0.22),rgba(255,255,255,0.06)_54%,rgba(7,19,31,0.38))]">
-                    <img src={APPLICATION_COMPLAINT_SECONDARY_IMAGE} alt="3D application complaint evidence visual" className="h-56 w-full object-contain p-2 sm:h-72" />
+                    <img src={APPLICATION_COMPLAINT_SECONDARY_IMAGE} alt="3D application complaint evidence visual" loading="lazy" decoding="async" className="h-56 w-full object-contain p-2 sm:h-72" />
                     <div className="capacity-signal-line absolute inset-y-0 w-24 bg-[linear-gradient(90deg,transparent,rgba(255,217,102,0.7),transparent)]" />
                   </div>
                   <div className="mt-3 flex items-center justify-between gap-3">
@@ -509,7 +509,7 @@ export function KingSparkonLanding() {
                 <div className="absolute right-5 top-5 z-20 rounded-full border border-[var(--gold)]/40 bg-[var(--gold)] px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--ink)] shadow-[var(--shadow-soft)]">Message to action</div>
                 <div className="contact-card-3d absolute inset-x-4 top-20 z-30 rounded-[1.9rem] border border-white/14 bg-white/[0.08] p-3 shadow-[0_34px_110px_rgba(0,0,0,0.42)] backdrop-blur sm:inset-x-8">
                   <div className="relative overflow-hidden rounded-[1.55rem] bg-[radial-gradient(circle_at_50%_20%,rgba(255,217,102,0.18),rgba(255,255,255,0.08)_52%,rgba(7,19,31,0.34))]">
-                    <img src={CONTACT_FORM_IMAGE} alt="3D King Sparkon contact form visual" className="h-80 w-full object-contain p-3 sm:h-[26rem]" />
+                    <img src={CONTACT_FORM_IMAGE} alt="3D King Sparkon contact form visual" loading="lazy" decoding="async" className="h-80 w-full object-contain p-3 sm:h-[26rem]" />
                     <div className="contact-signal-line absolute inset-y-0 w-24 bg-[linear-gradient(90deg,transparent,rgba(255,217,102,0.72),transparent)]" />
                   </div>
                   <div className="mt-4 grid gap-3 sm:grid-cols-3">

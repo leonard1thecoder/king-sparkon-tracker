@@ -69,7 +69,7 @@ export default async function WorkerTipPage({ params }: WorkerTipPageProps) {
               <h2 className="code mt-3 break-all text-3xl font-black tracking-[-0.04em] md:text-5xl">{workerLabel}</h2>
               <div className="barcode-rule mt-5 h-10 text-white" />
               <p className="mt-4 text-sm leading-6 text-white/64">
-                This is the customer-facing route generated from TIPS_WORKER_TIP_URL_TEMPLATE.
+                This is the customer-facing tip link generated for this worker.
               </p>
             </div>
 
@@ -124,7 +124,7 @@ export default async function WorkerTipPage({ params }: WorkerTipPageProps) {
                 <div>
                   <p className="font-mono text-[0.66rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">Payment handoff</p>
                   <p className="mt-2 text-sm leading-6 text-[var(--steel)]">
-                    Once the PayPal checkout endpoint is connected, this CTA should request a live payment link for worker {workerLabel}.
+                    Continue when you are ready to generate a live payment link for worker {workerLabel}.
                   </p>
                 </div>
                 <button

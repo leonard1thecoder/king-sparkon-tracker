@@ -84,7 +84,7 @@ function LiveTable({ title, rows }: { title: string; rows: BackendRow[] }) {
   if (!rows.length) {
     return (
       <div className="rounded-[var(--radius-xl)] border border-dashed border-[var(--line)] bg-white p-6 text-sm font-semibold text-[var(--steel)]">
-        No live backend records returned for this workspace yet.
+        No live records returned for this workspace yet.
       </div>
     );
   }
@@ -93,7 +93,7 @@ function LiveTable({ title, rows }: { title: string; rows: BackendRow[] }) {
     <section className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
       <div className="flex flex-col gap-2 border-b border-[var(--line)] bg-[var(--paper)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">Live backend data</p>
+          <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">Live data</p>
           <h3 className="mt-1 text-lg font-black tracking-[-0.03em] text-[var(--ink)]">{labelFor(title)}</h3>
         </div>
         <span className="rounded-full bg-[var(--confirm)] px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-white">{rows.length} rows</span>
@@ -153,7 +153,7 @@ export function ContractDataWorkspace({ endpoint, title }: { endpoint?: string; 
     return (
       <div className="rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-6 shadow-[var(--shadow-soft)]">
         <div className="flex items-center gap-3 text-sm font-black text-[var(--steel)]">
-          <Loader2 className="h-5 w-5 animate-spin text-[var(--signal)]" /> Loading backend-backed dashboard data...
+          <Loader2 className="h-5 w-5 animate-spin text-[var(--signal)]" /> Loading dashboard data...
         </div>
       </div>
     );
@@ -165,7 +165,7 @@ export function ContractDataWorkspace({ endpoint, title }: { endpoint?: string; 
         <div className="flex items-start gap-3">
           <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0 text-[var(--signal)]" />
           <div>
-            <h3 className="font-black text-[var(--ink)]">Backend contract not reachable</h3>
+            <h3 className="font-black text-[var(--ink)]">Live data unavailable</h3>
             <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{state.message}</p>
             <button type="button" onClick={() => void load()} className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full bg-[var(--ink)] px-4 text-sm font-black text-white hover:bg-[var(--signal)]">
               <RefreshCcw className="h-4 w-4" /> Retry
@@ -188,8 +188,8 @@ export function ContractDataWorkspace({ endpoint, title }: { endpoint?: string; 
           </div>
           <div>
             <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--confirm)]">Connected workspace</p>
-            <h3 className="mt-1 text-xl font-black tracking-[-0.03em] text-[var(--ink)]">{title} is reading the backend contract.</h3>
-            <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-[var(--steel)]"><CheckCircle2 className="h-4 w-4 text-[var(--confirm)]" /> Empty tables mean the backend returned no records, not fake UI.</p>
+            <h3 className="mt-1 text-xl font-black tracking-[-0.03em] text-[var(--ink)]">{title} is reading live King Sparkon data.</h3>
+            <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-[var(--steel)]"><CheckCircle2 className="h-4 w-4 text-[var(--confirm)]" /> Empty tables mean no records were returned, not fake fallback rows.</p>
           </div>
         </div>
       </div>

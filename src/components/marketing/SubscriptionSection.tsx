@@ -2,6 +2,7 @@
 
 import { type FormEvent, useState } from "react";
 import { ArrowRight, CheckCircle2, Crown, Loader2, Mail, ShieldCheck, TriangleAlert } from "lucide-react";
+import { subscribe, type SubscribePayload } from "@/lib/api/subscribers";
 
 type SubscriptionStatus = {
   tone: "success" | "error" | "warning";
@@ -21,6 +22,17 @@ const interestOptions = ["Job posts", "Barcode inventory", "King Sparkon Tuck Sh
 
 type SubscribeAsOption = (typeof subscribeAsOptions)[number];
 type InterestOption = (typeof interestOptions)[number];
+
+function subscriptionPayload(contact: string, subscribeAs: SubscribeAsOption): SubscribePayload {
+  const isAffiliate = subscribeAs === "Affiliate";
+
+  return {
+    contact,
+    subscriberType: isAffiliate ? "AFFILIATE" : "KINGSPARKON_SUBSCRIBER",
+    preferredChannel: "EMAIL",
+    affiliateRegistered: false,
+  };
+}
 
 function fieldValue(formData: FormData, name: string) {
   const value = formData.get(name);
@@ -60,34 +72,21 @@ export function SubscriptionSection() {
       const form = event.currentTarget;
       const formData = new FormData(form);
       const email = fieldValue(formData, "email");
-      const name = fieldValue(formData, "name");
-
       if (!email || !email.includes("@")) {
         setStatus({ tone: "error", message: "Enter a valid email address before joining the King Sparkon updates." });
         return;
       }
 
-      const response = await fetch("/api/subscriptions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, name, subscribeAs, interest }),
-      });
-      const responseBody = (await response.json().catch(() => ({}))) as SubscriptionResponse;
-
-      if (!response.ok) {
-        setStatus({
-          tone: "error",
-          message: responseBody.message ?? responseBody.error ?? responseBody.detail ?? "The backend rejected this subscription request.",
-        });
-        return;
-      }
+      const responseBody = (await subscribe(subscriptionPayload(email, subscribeAs))) as SubscriptionResponse;
 
       setStatus({ tone: "success", message: responseBody.message ?? `Subscribed as ${subscribeAs} for ${interest} updates.` });
       form.reset();
-    } catch {
-      setStatus({ tone: "error", message: "Unable to reach the subscription API. Check that the backend is running." });
+    } catch (error) {
+      const responseBody = (error as { response?: { data?: SubscriptionResponse } }).response?.data;
+      setStatus({
+        tone: "error",
+        message: responseBody?.message ?? responseBody?.error ?? responseBody?.detail ?? "Unable to reach the subscription API. Check that the backend is running.",
+      });
     } finally {
       setIsSubmitting(false);
     }

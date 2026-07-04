@@ -2,7 +2,14 @@ import axios from "axios";
 
 const publicClient = axios.create({ withCredentials: true });
 
-export function subscribe(payload: { contact: string; subscriberType: string; preferredChannel: string; affiliateRegistered?: boolean }) {
+export type SubscribePayload = {
+  contact: string;
+  subscriberType: "CLIENT" | "AFFILIATE" | "KINGSPARKON_SUBSCRIBER";
+  preferredChannel: "EMAIL" | "WHATSAPP" | "ANY";
+  affiliateRegistered?: boolean;
+};
+
+export function subscribe(payload: SubscribePayload) {
   return publicClient.post("/api/subscribers", payload).then((response) => response.data);
 }
 

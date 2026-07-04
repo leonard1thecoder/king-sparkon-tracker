@@ -14,7 +14,7 @@ export function FounderVerificationCard() {
         <span className={highlightedTrustText}>is</span> a <span className={highlightedTrustText}>innovative</span> <span className={highlightedTrustText}>software</span> <span className={highlightedTrustText}>developer</span>, verified by Oracle University. click <span className={highlightedTrustText}>BADGE</span> <span className={highlightedTrustText}>THAT!</span> to verify badge
       </p>
 
-      <img src={badgeUrl} alt="Oracle University verification badge for Sizolwakhe Leonard Mthimunye, known as King Sparkon" className="mx-auto mt-4 h-28 w-auto drop-shadow-[0_22px_34px_rgba(88,28,135,0.22)] sm:h-32" />
+      <img src={badgeUrl} alt="Oracle University verification badge for Sizolwakhe Leonard Mthimunye, known as King Sparkon" loading="lazy" decoding="async" className="mx-auto mt-4 h-28 w-auto drop-shadow-[0_22px_34px_rgba(88,28,135,0.22)] sm:h-32" />
 
       <a href={badgeUrl} target="_blank" rel="noopener noreferrer" className="mx-auto mt-3 inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-gradient-to-r from-[var(--gold)] via-orange-400 to-purple-500 px-4 text-xs font-black uppercase tracking-[0.12em] text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--ink)]">
         <BadgeCheck className="h-3.5 w-3.5" />
