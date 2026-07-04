@@ -25,10 +25,10 @@ export function RouteSectionPage({
         <Card>
           <CardHeader className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <CardTitle>Backend integration</CardTitle>
-              <p className="mt-2 text-sm leading-6 text-[var(--steel)]">This route is ready for live data from the matching domain API module.</p>
+              <CardTitle>Operational workspace</CardTitle>
+              <p className="mt-2 text-sm leading-6 text-[var(--steel)]">This section stays inside the role dashboard shell and is ready for the matching protected backend endpoint.</p>
             </div>
-            <StatusPill label={endpoint ? "API READY" : "UI READY"} tone={endpoint ? "confirm" : "neutral"} />
+            <StatusPill label={endpoint ? "API CONTRACT" : "DASHBOARD ROUTE"} tone={endpoint ? "confirm" : "neutral"} />
           </CardHeader>
           <CardContent className="grid gap-4">
             {endpoint ? (
@@ -45,7 +45,7 @@ export function RouteSectionPage({
               </div>
             ) : null}
             <div className="flex items-center gap-2 text-sm font-semibold text-[var(--steel)]">
-              <ArrowRight className="h-4 w-4 text-[var(--signal)]" /> Replace mock blocks only when backend response shape is confirmed.
+              <ArrowRight className="h-4 w-4 text-[var(--signal)]" /> Keep the user in the same role workspace and wire live data only through protected API modules.
             </div>
           </CardContent>
         </Card>

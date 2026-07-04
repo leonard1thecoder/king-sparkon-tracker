@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { DashboardFrame } from "@/components/layout/DashboardFrame";
-import { DashboardRoleNav } from "@/components/layout/DashboardRoleNav";
 import { JobApplicationsPanel } from "@/components/jobs/JobApplicationsPanel";
 
 export const metadata: Metadata = {
@@ -10,10 +8,8 @@ export const metadata: Metadata = {
 
 export default function UserApplicationsPage() {
   return (
-    <DashboardFrame role="User" nav={<DashboardRoleNav role="User" />}>
-      <main className="grid gap-6 bg-[var(--surface)] p-5 md:p-8">
-        <JobApplicationsPanel scope="mine" />
-      </main>
-    </DashboardFrame>
+    <main className="grid gap-6 bg-[var(--surface)] p-5 md:p-8">
+      <JobApplicationsPanel scope="mine" />
+    </main>
   );
 }

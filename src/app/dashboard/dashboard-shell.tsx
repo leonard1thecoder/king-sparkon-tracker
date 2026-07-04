@@ -1,183 +1,145 @@
-import { AlertTriangle, BarChart3, Boxes, BriefcaseBusiness, Building2, CreditCard, Megaphone, ScanLine, ShieldCheck, ShoppingCart, Store, Ticket, UsersRound, WalletCards, Warehouse } from "lucide-react";
-import { DashboardFrame } from "@/components/layout/DashboardFrame";
+import Link from "next/link";
+import type { LucideIcon } from "lucide-react";
+import { ArrowRight, Building2, QrCode, ScanLine, ShieldCheck, UserRound } from "lucide-react";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
-import { DashboardRoleNav } from "@/components/layout/DashboardRoleNav";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { MetricCard } from "@/components/ui/MetricCard";
-import { SectionHeader } from "@/components/ui/SectionHeader";
 import { StatusPill } from "@/components/ui/StatusPill";
-import { ProductTable, type InventoryProduct } from "@/components/inventory/ProductTable";
 import { OwnerTuckShopProductManager } from "@/components/tuck-shop/OwnerTuckShopProductManager";
 import { TuckShopDashboard } from "@/components/tuck-shop/TuckShopDashboard";
 import { WorkerTuckShopBarcodeCheckout } from "@/components/tuck-shop/WorkerTuckShopBarcodeCheckout";
 import type { UserRole } from "@/lib/types/backend";
 
 type Role = UserRole;
+type Action = { label: string; href: string; detail: string; tone?: "neutral" | "signal" | "confirm" };
+type Overview = { title: string; description: string; primary: Action; secondary: Action; metrics: Array<{ label: string; value: string; detail: string; tone?: "neutral" | "signal" | "confirm" }>; actions: Action[] };
 
-const roleCopy: Record<Role, { title: string; description: string; primary: string; secondary: string }> = {
-  User: {
-    title: "User Tuck Shop, tickets and opportunity console",
-    description: "Browse King Sparkon Tuck Shop products, checkout with Stripe payment links, view tickets, discover job opportunities, track applications, and manage your profile from one role-aware workspace.",
-    primary: "Buyer command center",
-    secondary: "Users can buy available products directly while tickets, job applications, cart checkout, profile, and purchase QR flows remain visible in the left navigation.",
+const overview: Record<Role, Overview> = {
+  Admin: {
+    title: "Platform oversight console",
+    description: "Admin should review users, businesses, tickets, promotions, reports and platform settings from one controlled workspace. No public ticket demo redirects.",
+    primary: { label: "Review users", href: "/dashboard/admin/users", detail: "Verification, roles and account state.", tone: "signal" },
+    secondary: { label: "Ticket oversight", href: "/dashboard/admin/tickets", detail: "Events, capacity and scan control.", tone: "confirm" },
+    metrics: [
+      { label: "UX routing", value: "Fixed", detail: "Tickets stay inside /dashboard/admin/tickets.", tone: "confirm" },
+      { label: "Nav source", value: "One", detail: "Admin nav now shares the role-aware dashboard nav.", tone: "signal" },
+      { label: "Profile", value: "Ready", detail: "Session profile and logout are available." },
+    ],
+    actions: [
+      { label: "Businesses", href: "/dashboard/admin/businesses", detail: "Plan, billing policy and operational status.", tone: "signal" },
+      { label: "Reports", href: "/dashboard/admin/reports", detail: "Platform reporting and audit signals." },
+      { label: "Settings", href: "/dashboard/admin/settings", detail: "Policy, role and platform configuration." },
+    ],
   },
   Owner: {
     title: "Owner operations console",
-    description: "Track products, tuck shop photos, scan activity, low-stock alerts, payments, tips, withdrawals, promotions, jobs, applications, and audit signals from one clean workspace.",
-    primary: "Business command center",
-    secondary: "Stock, Tuck Shop products, workers, payments, tips, tickets, jobs, applications, and reports stay grouped for daily owner decisions.",
+    description: "Owner should see products, workers, transactions, tips, tickets, jobs, promotions, reports and billing without leaving the dashboard shell.",
+    primary: { label: "Manage products", href: "/dashboard/owner/products", detail: "Live product API, images and Tuck Shop readiness.", tone: "confirm" },
+    secondary: { label: "Owner tickets", href: "/dashboard/owner/tickets", detail: "Event setup and QR ticket operations.", tone: "signal" },
+    metrics: [
+      { label: "Products", value: "Live API", detail: "Owner products use the existing product backend.", tone: "confirm" },
+      { label: "Tickets", value: "Internal", detail: "Owner ticket UX no longer jumps to /tickets.", tone: "signal" },
+      { label: "Session", value: "Logout", detail: "Owner can sign out from the shell." },
+    ],
+    actions: [
+      { label: "Transactions", href: "/dashboard/owner/transactions", detail: "Payment URLs, references and statuses.", tone: "signal" },
+      { label: "Tips", href: "/dashboard/owner/tips", detail: "Worker tips, fees and withdrawals." },
+      { label: "Billing", href: "/dashboard/owner/billing", detail: "Plan and subscription state." },
+    ],
   },
   Worker: {
     title: "Worker scan terminal",
-    description: "Scan items, verify products, register barcodes, validate ticket QR codes, process Tuck Shop purchases, and keep every stock movement clean at the source.",
-    primary: "Fast scanning workspace",
-    secondary: "The worker view keeps barcode capture, ticket scanning, Tuck Shop checkout, fallback entry, and verification status obvious on mobile.",
+    description: "Worker UX should prioritize scanning, checkout, ticket verification, transactions, tips and profile. Keep it fast and task-first.",
+    primary: { label: "Start product scan", href: "/dashboard/worker/scan", detail: "Camera scanner and manual barcode fallback.", tone: "confirm" },
+    secondary: { label: "Scan ticket QR", href: "/dashboard/worker/tickets/scan", detail: "Gate verification inside worker dashboard.", tone: "signal" },
+    metrics: [
+      { label: "Task", value: "Scan", detail: "Primary worker action is visible immediately.", tone: "confirm" },
+      { label: "Ticket route", value: "Fixed", detail: "No public /tickets jump from worker nav.", tone: "signal" },
+      { label: "Profile", value: "Ready", detail: "Worker account page is implemented." },
+    ],
+    actions: [
+      { label: "Transactions", href: "/dashboard/worker/transactions", detail: "Worker transaction history.", tone: "signal" },
+      { label: "Tips", href: "/dashboard/worker/tips", detail: "Tip status and payout context." },
+      { label: "Profile", href: "/dashboard/worker/profile", detail: "Identity, business assignment and logout." },
+    ],
   },
   Affiliate: {
     title: "Affiliate referral console",
-    description: "Manage referral links, QR previews, onboarding, commissions, payouts, marketing assets, and performance from a focused dashboard.",
-    primary: "Referral growth workspace",
-    secondary: "Campaign links, QR assets, commission rules, and payout state are visible without hunting.",
+    description: "Affiliate UX should make referral links, campaign assets, commissions, payouts and profile obvious from the first screen.",
+    primary: { label: "Referral links", href: "/dashboard/affiliate/referrals", detail: "Copy link and QR preview.", tone: "signal" },
+    secondary: { label: "Payouts", href: "/dashboard/affiliate/payouts", detail: "Payout status and payment profile.", tone: "confirm" },
+    metrics: [
+      { label: "Referral", value: "Link + QR", detail: "The first action is sharing assets.", tone: "signal" },
+      { label: "Commission", value: "Ledger", detail: "Earnings status belongs in the dashboard.", tone: "confirm" },
+      { label: "Profile", value: "Ready", detail: "Affiliate can inspect profile and logout." },
+    ],
+    actions: [
+      { label: "Campaign assets", href: "/dashboard/affiliate/assets", detail: "WhatsApp and social material.", tone: "signal" },
+      { label: "Commissions", href: "/dashboard/affiliate/commissions", detail: "Pending, approved and paid." },
+      { label: "Profile", href: "/dashboard/affiliate/profile", detail: "PayPal and account identity." },
+    ],
   },
-  Admin: {
-    title: "Platform oversight console",
-    description: "Review users, businesses, Tuck Shop adoption, jobs, applications, promotions, scan logs, subscriber growth, feature policy, and platform health without clutter.",
-    primary: "Platform quality cockpit",
-    secondary: "Admin gets a clean system overview for users, companies, Tuck Shop readiness, jobs, applications, scan logs, policies, and health checks.",
+  User: {
+    title: "User Tuck Shop, tickets and applications",
+    description: "User UX is buying products, checking QR tickets, tracking job applications and managing profile. It must not look like an owner dashboard.",
+    primary: { label: "Browse Tuck Shop", href: "/dashboard/user/shop", detail: "Products, cart and payment links.", tone: "signal" },
+    secondary: { label: "My tickets", href: "/dashboard/user/tickets", detail: "Purchased QR tickets inside user dashboard.", tone: "confirm" },
+    metrics: [
+      { label: "Shop", value: "Browse", detail: "User shop uses the Tuck Shop flow.", tone: "signal" },
+      { label: "Tickets", value: "Internal", detail: "User tickets live at /dashboard/user/tickets.", tone: "confirm" },
+      { label: "Profile", value: "Ready", detail: "User profile and logout are reachable." },
+    ],
+    actions: [
+      { label: "Jobs", href: "/dashboard/user/jobs", detail: "Browse job opportunities.", tone: "signal" },
+      { label: "Applications", href: "/dashboard/user/applications", detail: "Track submitted applications." },
+      { label: "Profile", href: "/dashboard/user/profile", detail: "Address, contact and session." },
+    ],
   },
 };
 
-const previewProducts: InventoryProduct[] = [
-  { barcode: "KST-6001234567890", name: "Sparkon Premium Lager", location: "Warehouse A", quantity: 184, status: "Healthy", lastScanned: "2 min ago" },
-  { barcode: "KST-6001234567814", name: "Returnable Bottle Crate", location: "Counter 02", quantity: 18, status: "Low stock", lastScanned: "11 min ago" },
-  { barcode: "KST-6001234567838", name: "Promotion QR Card", location: "Promo Desk", quantity: 72, status: "Review", lastScanned: "24 min ago" },
-  { barcode: "KST-6001234567883", name: "Worker Tip QR Stand", location: "Front till", quantity: 46, status: "Healthy", lastScanned: "41 min ago" },
-];
+const roleIcons: Record<Role, LucideIcon> = { Admin: ShieldCheck, Owner: Building2, Worker: ScanLine, Affiliate: QrCode, User: UserRound };
 
-const previewActivity = [
-  ["SELL", "Sparkon Premium Lager", "Preview event: worker terminal verified 3 item barcodes", "2 min ago", "confirm"],
-  ["SHOP", "Tuck Shop checkout", "Preview event: user self-service payment link generated", "5 min ago", "signal"],
-  ["LOW", "Returnable Bottle Crate", "Preview event: quantity dropped below branch threshold", "11 min ago", "signal"],
-  ["JOB", "Job opportunity portal", "Preview event: role navigation exposes job opportunities and applications", "21 min ago", "signal"],
-  ["TIP", "Worker QR tip", "Preview event: tip request created and assigned to owner review", "27 min ago", "confirm"],
-] as const;
-
-const featureCards = [
-  [Building2, "Branch readiness", "Mobile-friendly stock views for warehouses, shelves, counters, delivery points, and tuck shop storefronts."],
-  [Store, "Tuck Shop marketplace", "Product photos, live availability, self-service checkout, Stripe payment links, and barcode-backed sales stay tied to inventory."],
-  [BriefcaseBusiness, "Job opportunities", "Users can discover openings while owners and admins manage jobs and applications."],
-  [BarChart3, "Reporting clarity", "Inventory totals, scan movement, product payments, tips, jobs, and audit signals stay grouped."],
-  [ScanLine, "Scanner-first UX", "The scan flow keeps camera capture, manual fallback, barcode checkout, and clear verification output."],
-] as const;
-
-const operationalModules = [
-  [Store, "Tuck Shop", "Business products in one marketplace with photos, self-service checkout, and barcode-backed transactions."],
-  [Ticket, "QR tickets", "Capacity, sold seats, class sales, issued tickets, and gate verification."],
-  [BriefcaseBusiness, "Job opportunities", "Open roles, applications, owner review, and admin oversight are part of the workspace."],
-  [WalletCards, "Worker tips", "Gross tips, platform fee, net payout, QR links, and owner review state."],
-  [Megaphone, "Promotions", "Audience, campaign channel, quote visibility, subscribers, and launch state."],
-  [CreditCard, "Transactions", "BUY/SELL activity, payment URLs, references, methods, and statuses."],
-  [UsersRound, "People", "Owner, worker, affiliate, buyer, user, and admin flows stay role-aware."],
-  [ShieldCheck, "Audit trail", "Barcode, QR, payment, ticket, shop, job, and payout events remain reviewable."],
-] as const;
+function ActionCard({ action }: { action: Action }) {
+  return (
+    <Link href={action.href} className="group rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] hover:-translate-y-1 hover:border-[var(--gold)]">
+      <div className="flex items-start justify-between gap-4">
+        <StatusPill label={action.label} tone={action.tone ?? "neutral"} />
+        <ArrowRight className="h-5 w-5 text-[var(--signal)] group-hover:text-[var(--ember)]" />
+      </div>
+      <p className="mt-4 text-sm leading-6 text-[var(--steel)]">{action.detail}</p>
+    </Link>
+  );
+}
 
 export function DashboardShell({ role }: { role: Role }) {
-  const copy = roleCopy[role];
+  const copy = overview[role];
+  const Icon = roleIcons[role];
 
   return (
-    <DashboardFrame role={role} nav={<DashboardRoleNav role={role} />}>
-      <DashboardHeader role={role} title={copy.title} description={copy.description} />
+    <>
+      <DashboardHeader role={role.toUpperCase()} title={copy.title} description={copy.description} />
       <main className="grid gap-7 bg-[var(--surface)] p-5 md:p-8">
-        <section className="grid gap-6 rounded-[2.5rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-7 xl:grid-cols-[1.1fr_0.9fr]">
-          <div className="flex flex-col justify-between gap-8 rounded-[2rem] bg-[var(--ink)] p-6 text-white shadow-[var(--shadow-depth)] enterprise-grid md:p-8">
-            <div>
-              <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--gold)]">{copy.primary}</p>
-              <h2 className="mt-4 max-w-2xl text-3xl font-black tracking-[-0.05em] md:text-5xl">Dashboard polish for serious barcode operations.</h2>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-white/68 md:text-base">{copy.secondary}</p>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-3">
-              {["Real-time scans", "Tuck Shop checkout", "Audit-ready reports"].map((item) => (
-                <div key={item} className="rounded-[1.35rem] border border-white/10 bg-white/[0.06] p-4 text-sm font-black text-white/78 backdrop-blur">
-                  {item}
-                </div>
-              ))}
+        <section className="grid gap-6 rounded-[2.5rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-7 xl:grid-cols-[1fr_0.85fr]">
+          <div className="rounded-[2rem] bg-[var(--ink)] p-6 text-white enterprise-grid md:p-8">
+            <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--gold)]">{role} workspace plan</p>
+            <h2 className="mt-4 max-w-3xl text-3xl font-black tracking-[-0.05em] md:text-5xl">{copy.description}</h2>
+            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+              <ActionCard action={copy.primary} />
+              <ActionCard action={copy.secondary} />
             </div>
           </div>
-
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
-            <MetricCard label="Preview products" value="18,420" detail="Demo value until product API is connected" tone="confirm" icon={<Boxes className="h-5 w-5" />} />
-            <MetricCard label="Tuck shop" value="Live API" detail="Products, images, cart, checkout, tips" tone="signal" icon={<ShoppingCart className="h-5 w-5" />} />
-            <MetricCard label="Preview jobs" value="Ready" detail="Job opportunity UI shell is wired for backend API" tone="signal" icon={<BriefcaseBusiness className="h-5 w-5" />} />
-            <MetricCard label="Preview low stock" value="07" detail="Demo alerts, not live totals" icon={<AlertTriangle className="h-5 w-5" />} />
-            <MetricCard label="Preview branches" value="12" detail="Demo warehouses and counters" icon={<Warehouse className="h-5 w-5" />} />
+          <div className="grid gap-4">
+            {copy.metrics.map((metric) => <MetricCard key={metric.label} {...metric} icon={<Icon className="h-5 w-5" />} />)}
           </div>
         </section>
 
-        {role === "User" ? <TuckShopDashboard /> : null}
+        <section className="grid gap-4 lg:grid-cols-3">
+          {copy.actions.map((action) => <ActionCard key={action.href} action={action} />)}
+        </section>
+
+        {role === "User" ? <TuckShopDashboard compact /> : null}
         {role === "Owner" ? <OwnerTuckShopProductManager /> : null}
         {role === "Worker" ? <WorkerTuckShopBarcodeCheckout /> : null}
-
-        <div className="grid gap-6 xl:grid-cols-[1.45fr_0.85fr]">
-          <section className="grid gap-4">
-            <SectionHeader
-              eyebrow="Preview inventory status"
-              title="Demo products that show operational visibility."
-              description="Static preview data is labelled clearly until backend product, scan, and branch metrics are wired into this shell. No existing dashboard detail was removed."
-            />
-            <ProductTable products={previewProducts} />
-          </section>
-
-          <section className="grid gap-4">
-            <SectionHeader eyebrow="Preview activity" title="Demo scan movement." />
-            <Card className="overflow-hidden">
-              <CardHeader>
-                <CardTitle>Preview operational feed</CardTitle>
-              </CardHeader>
-              <CardContent className="grid gap-3">
-                {previewActivity.map(([code, title, detail, time, tone]) => (
-                  <article key={`${code}-${time}`} className="rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--surface)] p-4 hover:border-[var(--gold)]">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <StatusPill label={code} tone={tone} />
-                        <h3 className="mt-3 font-black tracking-[-0.02em] text-[var(--ink)]">{title}</h3>
-                      </div>
-                      <span className="text-xs font-semibold text-[var(--muted)]">{time}</span>
-                    </div>
-                    <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{detail}</p>
-                  </article>
-                ))}
-              </CardContent>
-            </Card>
-          </section>
-        </div>
-
-        <section className="grid gap-4 lg:grid-cols-5">
-          {featureCards.map(([Icon, title, description]) => (
-            <Card key={title} className="p-5 hover:-translate-y-1 hover:border-[var(--gold)]">
-              <div className="grid h-12 w-12 place-items-center rounded-[1.2rem] bg-[var(--ink)] text-[var(--gold)]"><Icon className="h-6 w-6" /></div>
-              <h3 className="mt-5 text-xl font-black tracking-[-0.03em]">{title}</h3>
-              <p className="mt-3 text-sm leading-6 text-[var(--steel)]">{description}</p>
-            </Card>
-          ))}
-        </section>
-
-        <section className="grid gap-4 rounded-[2.5rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] md:p-7 lg:grid-cols-3">
-          <div className="lg:col-span-1">
-            <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Operational modules</p>
-            <h2 className="mt-3 text-3xl font-black tracking-[-0.05em]">Everything remains visible.</h2>
-            <p className="mt-3 text-sm leading-7 text-[var(--steel)]">Inventory, tuck shop, ticketing, jobs, tips, promotions, transactions, people, and audit history keep their place in the UI.</p>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:col-span-2 xl:grid-cols-4">
-            {operationalModules.map(([Icon, title, description]) => (
-              <article key={title} className="rounded-[1.5rem] border border-[var(--line)] bg-[var(--surface)] p-4 hover:border-[var(--gold)]">
-                <Icon className="h-5 w-5 text-[var(--signal)]" />
-                <h3 className="mt-4 font-black tracking-[-0.02em]">{title}</h3>
-                <p className="mt-2 text-xs leading-5 text-[var(--steel)]">{description}</p>
-              </article>
-            ))}
-          </div>
-        </section>
       </main>
-    </DashboardFrame>
+    </>
   );
 }
