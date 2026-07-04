@@ -1,6 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { LogoutButton } from "@/components/auth/LogoutButton";
+
+function profileHref(role: string) {
+  const value = role.toLowerCase();
+  if (value.includes("admin")) return "/dashboard/admin/profile";
+  if (value.includes("owner")) return "/dashboard/owner/profile";
+  if (value.includes("worker")) return "/dashboard/worker/profile";
+  if (value.includes("affiliate")) return "/dashboard/affiliate/profile";
+  if (value.includes("user")) return "/dashboard/user/profile";
+  return "/dashboard";
+}
 
 export function DashboardFrame({ role, nav, children }: { role: string; nav: ReactNode; children: ReactNode }) {
   return (
@@ -23,8 +34,12 @@ export function DashboardFrame({ role, nav, children }: { role: string; nav: Rea
           {nav}
         </nav>
 
-        <div className="hidden p-5 lg:block">
-          <div className="rounded-[var(--radius-lg)] border border-white/10 bg-white/[0.04] p-4">
+        <div className="grid gap-3 p-4 lg:p-5">
+          <Link href={profileHref(role)} className="rounded-[var(--radius-lg)] border border-white/10 bg-white/[0.04] p-4 text-sm font-bold text-white/72 hover:border-[var(--gold)] hover:text-white">
+            Profile & session
+          </Link>
+          <LogoutButton className="rounded-[var(--radius-lg)] border border-white/10 bg-white/[0.04] p-4 text-left text-sm font-black uppercase tracking-[0.1em] text-white/72 hover:border-[var(--danger)] hover:text-white disabled:opacity-60" />
+          <div className="hidden rounded-[var(--radius-lg)] border border-white/10 bg-white/[0.04] p-4 lg:block">
             <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-white/45">Scanner health</p>
             <div className="mt-4 flex items-center justify-between">
               <span className="text-sm text-white/70">Terminal sync</span>
