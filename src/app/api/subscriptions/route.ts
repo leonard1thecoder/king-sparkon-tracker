@@ -11,6 +11,14 @@ function stringField(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function subscriberType(value: string) {
+  const normalized = value.trim().toUpperCase().replaceAll(" ", "_").replaceAll("-", "_");
+  if (normalized.includes("BUSINESS")) return "BUSINESS_OWNER";
+  if (normalized.includes("AFFILIATE")) return "AFFILIATE";
+  if (normalized.includes("DEV")) return "DEV_HUB_CLIENT";
+  return "USER";
+}
+
 function normalizePayload(payload: SubscriptionPayload) {
   const email = stringField(payload.email);
   const name = stringField(payload.name);
@@ -18,11 +26,23 @@ function normalizePayload(payload: SubscriptionPayload) {
   const interest = stringField(payload.interest);
 
   return {
+    contact: email,
     email,
     name,
-    subscribeAs,
+    subscriberType: subscriberType(subscribeAs),
+    preferredChannel: "EMAIL",
+    affiliateRegistered: subscriberType(subscribeAs) === "AFFILIATE",
     interest,
   };
+}
+
+async function forwardSubscription(baseUrl: string, path: string, body: string) {
+  return fetch(`${baseUrl}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body,
+    cache: "no-store",
+  });
 }
 
 export async function POST(request: Request) {
@@ -36,21 +56,19 @@ export async function POST(request: Request) {
 
   const payload = normalizePayload(rawPayload);
 
-  if (!payload.email || !payload.email.includes("@")) {
+  if (!payload.contact || !payload.contact.includes("@")) {
     return Response.json({ message: "A valid email address is required." }, { status: 400 });
   }
 
   const baseUrl = backendBaseUrl();
+  const body = JSON.stringify(payload);
 
   try {
-    const backendResponse = await fetch(`${baseUrl}/api/v1/subscriptions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-      cache: "no-store",
-    });
+    let backendResponse = await forwardSubscription(baseUrl, "/api/subscribers", body);
+
+    if (backendResponse.status === 404 || backendResponse.status === 405) {
+      backendResponse = await forwardSubscription(baseUrl, "/api/v1/subscriptions", body);
+    }
 
     return Response.json(responseBodyFromText(await backendResponse.text()), {
       status: backendResponse.status,
