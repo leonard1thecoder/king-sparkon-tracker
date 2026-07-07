@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { Barcode, Bot, Crown, MessageCircle, Send, ShieldCheck, Sparkles, X, Zap } from "lucide-react";
+import { Barcode, Bot, Crown, Loader2, MessageCircle, Send, ShieldCheck, Sparkles, X, Zap } from "lucide-react";
 
 type ChatRole = "assistant" | "user";
 
@@ -9,6 +9,13 @@ type ChatMessage = {
   id: string;
   role: ChatRole;
   content: string;
+  pending?: boolean;
+};
+
+type AiChatApiResponse = {
+  conversationId?: string;
+  answer?: string;
+  suggestions?: string[];
 };
 
 const starterMessages: ChatMessage[] = [
@@ -20,12 +27,15 @@ const starterMessages: ChatMessage[] = [
   },
 ];
 
-const quickActions = [
+const defaultQuickActions = [
   "Barcode tracking",
   "QR ticket support",
   "Owner features",
   "Dev Hub help",
 ] as const;
+
+const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "").replace(/\/$/, "");
+const conversationStorageKey = "king-sparkon-chatbot-conversation-id";
 
 const createMessageId = () => {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -35,39 +45,41 @@ const createMessageId = () => {
   return `message-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 };
 
-const buildAssistantReply = (message: string) => {
-  const normalizedMessage = message.toLowerCase();
+const createConversationId = () => `kst-ui-${createMessageId()}`;
 
-  if (normalizedMessage.includes("barcode") || normalizedMessage.includes("scan") || normalizedMessage.includes("inventory")) {
-    return "Barcode tracking keeps stock movements audit-ready: scan the item, confirm the owner/workflow, then keep every movement visible in the dashboard.";
+const getStoredConversationId = () => {
+  if (typeof window === "undefined") {
+    return createConversationId();
   }
 
-  if (normalizedMessage.includes("ticket") || normalizedMessage.includes("qr") || normalizedMessage.includes("event")) {
-    return "QR tickets help buyers, owners, and workers verify access fast. Owners create events, customers receive QR tickets, and workers scan for secure verification.";
+  const storedConversationId = window.localStorage.getItem(conversationStorageKey);
+  if (storedConversationId) {
+    return storedConversationId;
   }
 
-  if (normalizedMessage.includes("owner") || normalizedMessage.includes("business") || normalizedMessage.includes("dashboard")) {
-    return "Business owners get operational dashboards, QR workflows, worker visibility, product audit trails, and role-safe access for serious day-to-day control.";
-  }
-
-  if (normalizedMessage.includes("dev") || normalizedMessage.includes("qa") || normalizedMessage.includes("cloud") || normalizedMessage.includes("ci")) {
-    return "Dev Hub support covers software development, CI/CD, QA, cloud maintenance, deployment checks, and production readiness for your business platform.";
-  }
-
-  if (normalizedMessage.includes("price") || normalizedMessage.includes("pricing") || normalizedMessage.includes("trial")) {
-    return "You can start with the business trial, then scale by role and feature needs. For a production rollout, use the contact section so King Sparkon can scope it properly.";
-  }
-
-  return "Good question. Use the contact section for a full implementation request, or ask me about barcode tracking, QR tickets, business dashboards, Dev Hub, QA, or cloud support.";
+  const conversationId = createConversationId();
+  window.localStorage.setItem(conversationStorageKey, conversationId);
+  return conversationId;
 };
+
+const fallbackAssistantReply =
+  "King Sparkon Assistant is having trouble reaching the AI backend right now. Please try again, or use the contact section for urgent implementation support.";
 
 export function FloatingChatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>(starterMessages);
   const [inputValue, setInputValue] = useState("");
+  const [conversationId, setConversationId] = useState("");
+  const [suggestions, setSuggestions] = useState<string[]>([...defaultQuickActions]);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const hasUserMessages = useMemo(() => messages.some((message) => message.role === "user"), [messages]);
+
+  useEffect(() => {
+    setConversationId(getStoredConversationId());
+  }, []);
 
   useEffect(() => {
     if (!isOpen) {
@@ -77,33 +89,88 @@ export function FloatingChatbot() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [isOpen, messages]);
 
-  const sendMessage = (message: string) => {
+  const sendMessage = async (message: string) => {
     const trimmedMessage = message.trim();
 
-    if (!trimmedMessage) {
+    if (!trimmedMessage || isSending) {
       return;
     }
 
+    const activeConversationId = conversationId || getStoredConversationId();
     const userMessage: ChatMessage = {
       id: createMessageId(),
       role: "user",
       content: trimmedMessage,
     };
-
-    const assistantMessage: ChatMessage = {
-      id: createMessageId(),
+    const pendingMessageId = createMessageId();
+    const pendingMessage: ChatMessage = {
+      id: pendingMessageId,
       role: "assistant",
-      content: buildAssistantReply(trimmedMessage),
+      content: "Thinking with King Sparkon AI...",
+      pending: true,
     };
+    const history = messages
+      .filter((chatMessage) => !chatMessage.pending)
+      .slice(-12)
+      .map((chatMessage) => ({ role: chatMessage.role, content: chatMessage.content }));
 
-    setMessages((currentMessages) => [...currentMessages, userMessage, assistantMessage]);
+    setMessages((currentMessages) => [...currentMessages, userMessage, pendingMessage]);
     setInputValue("");
+    setErrorMessage("");
     setIsOpen(true);
+    setIsSending(true);
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/v1/ai/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          conversationId: activeConversationId,
+          message: trimmedMessage,
+          currentPage: typeof window === "undefined" ? "/" : window.location.pathname,
+          userPrivilege: "GUEST",
+          history,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`AI request failed with status ${response.status}`);
+      }
+
+      const data = (await response.json()) as AiChatApiResponse;
+      const nextConversationId = data.conversationId || activeConversationId;
+      const answer = data.answer?.trim() || fallbackAssistantReply;
+
+      setConversationId(nextConversationId);
+      window.localStorage.setItem(conversationStorageKey, nextConversationId);
+      setSuggestions(data.suggestions?.length ? data.suggestions.slice(0, 4) : [...defaultQuickActions]);
+      setMessages((currentMessages) =>
+        currentMessages.map((chatMessage) =>
+          chatMessage.id === pendingMessageId
+            ? { id: pendingMessageId, role: "assistant", content: answer }
+            : chatMessage,
+        ),
+      );
+    } catch (error) {
+      console.error("King Sparkon chatbot request failed", error);
+      setErrorMessage("AI backend unavailable. Check backend/Ollama config and try again.");
+      setMessages((currentMessages) =>
+        currentMessages.map((chatMessage) =>
+          chatMessage.id === pendingMessageId
+            ? { id: pendingMessageId, role: "assistant", content: fallbackAssistantReply }
+            : chatMessage,
+        ),
+      );
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    sendMessage(inputValue);
+    void sendMessage(inputValue);
   };
 
   return (
@@ -129,7 +196,7 @@ export function FloatingChatbot() {
                 <div className="min-w-0">
                   <p className="font-mono text-[0.58rem] font-black uppercase tracking-[0.22em] text-[var(--gold)]">AI support</p>
                   <h2 className="truncate text-base font-black tracking-[-0.04em] sm:text-lg">King Sparkon Assistant</h2>
-                  <p className="mt-0.5 truncate text-[0.72rem] font-semibold text-white/[0.58]">Barcode, tickets, dashboards, Dev Hub</p>
+                  <p className="mt-0.5 truncate text-[0.72rem] font-semibold text-white/[0.58]">Backend AI connected</p>
                 </div>
               </div>
 
@@ -170,21 +237,31 @@ export function FloatingChatbot() {
                         : "rounded-bl-md border border-[var(--line)] bg-white text-[var(--ink)]"
                     }`}
                   >
-                    {message.content}
+                    <span className="inline-flex items-center gap-2">
+                      {message.pending ? <Loader2 className="h-3.5 w-3.5 animate-spin text-[var(--gold)]" /> : null}
+                      {message.content}
+                    </span>
                   </div>
                 </div>
               ))}
               <div ref={messagesEndRef} />
             </div>
 
+            {errorMessage ? (
+              <div className="mt-3 shrink-0 rounded-2xl border border-[var(--danger)]/20 bg-[var(--danger)]/5 px-3 py-2 text-[0.72rem] font-bold text-[var(--danger)]">
+                {errorMessage}
+              </div>
+            ) : null}
+
             {!hasUserMessages ? (
               <div className="mt-3 flex shrink-0 gap-2 overflow-x-auto pb-1">
-                {quickActions.map((action) => (
+                {suggestions.map((action) => (
                   <button
                     key={action}
                     type="button"
-                    onClick={() => sendMessage(action)}
-                    className="shrink-0 rounded-full border border-[var(--line)] bg-white px-3 py-2 text-left text-[0.72rem] font-bold text-[var(--steel)] shadow-[var(--shadow-soft)] hover:border-[var(--gold)] hover:text-[var(--ink)]"
+                    disabled={isSending}
+                    onClick={() => void sendMessage(action)}
+                    className="shrink-0 rounded-full border border-[var(--line)] bg-white px-3 py-2 text-left text-[0.72rem] font-bold text-[var(--steel)] shadow-[var(--shadow-soft)] hover:border-[var(--gold)] hover:text-[var(--ink)] disabled:opacity-60"
                   >
                     {action}
                   </button>
@@ -197,16 +274,18 @@ export function FloatingChatbot() {
                 type="text"
                 value={inputValue}
                 onChange={(event) => setInputValue(event.target.value)}
-                placeholder="Ask about scanning, tickets..."
+                placeholder={isSending ? "King Sparkon AI is thinking..." : "Ask about scanning, tickets..."}
                 aria-label="Chatbot message"
-                className="min-h-10 flex-1 rounded-full border-0 bg-transparent px-3 text-sm font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--muted)]"
+                disabled={isSending}
+                className="min-h-10 flex-1 rounded-full border-0 bg-transparent px-3 text-sm font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--muted)] disabled:cursor-not-allowed"
               />
               <button
                 type="submit"
                 aria-label="Send chatbot message"
-                className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[var(--gold)] text-[var(--ink)] shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] hover:text-white"
+                disabled={isSending || !inputValue.trim()}
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[var(--gold)] text-[var(--ink)] shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] hover:text-white disabled:opacity-60"
               >
-                <Send className="h-4 w-4" />
+                {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               </button>
             </form>
           </div>
