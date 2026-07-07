@@ -139,7 +139,7 @@ export function FloatingChatbot() {
                 onClick={() => setIsOpen(false)}
                 className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/12 bg-white/[0.08] text-white/70 hover:bg-white/[0.14] hover:text-white"
               >
-                <X className="h-4.5 w-4.5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
           </div>
