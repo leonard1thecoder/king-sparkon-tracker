@@ -1,6 +1,7 @@
 "use client";
 
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import type { ChangeEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Barcode, Camera, CheckCircle2, ImageUp, Loader2, ScanLine, ShieldCheck, XCircle } from "lucide-react";
 
 type BarcodeMatchType = "PRODUCT_BARCODE" | "STOCK_UNIT" | "NOT_FOUND";
@@ -61,12 +62,14 @@ export function AiBarcodeVerify() {
     };
   }, []);
 
-  const authHeaders = () => {
-    if (!authToken.trim()) {
+  const authHeaders = (): Record<string, string> => {
+    const token = authToken.trim();
+
+    if (!token) {
       return {};
     }
 
-    return { Authorization: `Bearer ${authToken.trim()}` };
+    return { Authorization: `Bearer ${token}` };
   };
 
   const verifyValue = async (value: string, decoder = "MANUAL") => {
@@ -116,6 +119,8 @@ export function AiBarcodeVerify() {
       const { BrowserMultiFormatReader } = await import("@zxing/browser");
       const reader = new BrowserMultiFormatReader();
       const controls = await reader.decodeFromVideoDevice(undefined, videoElement, (scanResult, scanError, activeControls) => {
+        void scanError;
+
         if (!scanResult) {
           return;
         }

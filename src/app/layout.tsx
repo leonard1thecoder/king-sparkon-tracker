@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import type { ReactNode } from "react";
+import { FloatingChatbot } from "@/components/chatbot/FloatingChatbot";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import "./globals.css";
 import "./brand-polish.css";
@@ -112,6 +113,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         {children}
         <SiteFooter marketingOnly />
+        <FloatingChatbot />
       </body>
     </html>
   );
