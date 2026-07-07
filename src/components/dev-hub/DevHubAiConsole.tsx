@@ -37,7 +37,7 @@ type PageResponse<T> = {
   last: boolean;
 };
 
-const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "").replace(/\/$/, "");
+const devHubRequestsPath = "/api/dev-hub/requests";
 
 function tokenFromStorage() {
   if (typeof window === "undefined") return "";
@@ -93,7 +93,7 @@ export function DevHubAiConsole() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${apiBaseUrl}/api/dev-hub/requests`, {
+      const response = await fetch(devHubRequestsPath, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(form),
@@ -124,7 +124,7 @@ export function DevHubAiConsole() {
       if (query.trim()) params.set("q", query.trim());
       if (status.trim()) params.set("status", status.trim());
 
-      const response = await fetch(`${apiBaseUrl}/api/dev-hub/requests?${params.toString()}`, {
+      const response = await fetch(`${devHubRequestsPath}?${params.toString()}`, {
         headers: authHeaders(),
       });
 
@@ -134,7 +134,7 @@ export function DevHubAiConsole() {
       setPage(data.page);
     } catch (error) {
       console.error("Dev Hub request search failed", error);
-      setErrorMessage("Unable to search Dev Hub requests. Owner/Admin token is required for review workflow.");
+      setErrorMessage("Unable to search Dev Hub requests. Admin token is required for review workflow.");
     } finally {
       setIsSearching(false);
     }
@@ -143,7 +143,7 @@ export function DevHubAiConsole() {
   const decide = async (id: number, action: "accept" | "reject") => {
     setErrorMessage("");
     try {
-      const response = await fetch(`${apiBaseUrl}/api/dev-hub/requests/${id}/${action}`, {
+      const response = await fetch(`${devHubRequestsPath}/${id}/${action}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", ...authHeaders() },
         body: JSON.stringify({ reason: action === "accept" ? "Accepted from Full King Sparkon AI Dev Hub console." : "Rejected from Full King Sparkon AI Dev Hub console." }),
@@ -153,7 +153,7 @@ export function DevHubAiConsole() {
       await searchRequests(page);
     } catch (error) {
       console.error("Dev Hub decision failed", error);
-      setErrorMessage("Unable to update Dev Hub request decision. Owner/Admin token is required.");
+      setErrorMessage("Unable to update Dev Hub request decision. Admin token is required.");
     }
   };
 
@@ -162,7 +162,7 @@ export function DevHubAiConsole() {
       <div className="rounded-[2rem] border border-white/70 bg-[var(--ink)] p-6 text-white shadow-[0_34px_120px_rgba(7,19,31,0.24)] sm:p-8">
         <p className="font-mono text-xs font-black uppercase tracking-[0.28em] text-[var(--gold)]">Full King Sparkon AI Dev Hub</p>
         <h1 className="mt-3 max-w-4xl text-3xl font-black tracking-[-0.06em] sm:text-5xl">Automated software quotes, development plans, and accept/reject workflow.</h1>
-        <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-white/62 sm:text-base">Clients submit development requests and instantly receive an AI-backed price range plus project plan. Owners review, search, sort, page, accept, or reject the request.</p>
+        <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-white/62 sm:text-base">Clients submit development requests and instantly receive an AI-backed price range plus project plan. Admins review, search, sort, page, accept, or reject the request.</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
@@ -189,7 +189,7 @@ export function DevHubAiConsole() {
       </div>
 
       <div className="rounded-[2rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)]">
-        <p className="font-mono text-xs font-black uppercase tracking-[0.22em] text-[var(--signal)]">Owner/Admin review</p>
+        <p className="font-mono text-xs font-black uppercase tracking-[0.22em] text-[var(--signal)]">Admin review</p>
         <div className="mt-4 grid gap-3 lg:grid-cols-6">
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search request" className="h-11 rounded-full border border-[var(--line)] px-4 text-sm font-semibold lg:col-span-2" />
           <select value={status} onChange={(event) => setStatus(event.target.value)} className="h-11 rounded-full border border-[var(--line)] px-4 text-sm font-semibold"><option value="">All statuses</option><option value="AI_QUOTED">AI_QUOTED</option><option value="ACCEPTED">ACCEPTED</option><option value="REJECTED">REJECTED</option></select>
@@ -197,7 +197,7 @@ export function DevHubAiConsole() {
           <select value={direction} onChange={(event) => setDirection(event.target.value)} className="h-11 rounded-full border border-[var(--line)] px-4 text-sm font-semibold"><option value="desc">DESC</option><option value="asc">ASC</option></select>
           <button onClick={() => void searchRequests(0)} disabled={isSearching} className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[var(--ink)] px-5 text-sm font-black text-white disabled:opacity-60">{isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}Search</button>
         </div>
-        <input value={authToken} onChange={(event) => setAuthToken(event.target.value)} placeholder="Owner/Admin bearer token" className="mt-3 h-11 w-full rounded-full border border-[var(--line)] px-4 text-sm font-semibold" />
+        <input value={authToken} onChange={(event) => setAuthToken(event.target.value)} placeholder="Admin bearer token" className="mt-3 h-11 w-full rounded-full border border-[var(--line)] px-4 text-sm font-semibold" />
         {errorMessage ? <div className="mt-4 rounded-3xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-700">{errorMessage}</div> : null}
         <div className="mt-5 overflow-auto rounded-[1.5rem] border border-[var(--line)]"><table className="min-w-full text-left text-sm"><thead className="bg-[var(--surface)] text-xs uppercase tracking-[0.14em] text-[var(--steel)]"><tr><th className="px-4 py-3">Client</th><th className="px-4 py-3">Project</th><th className="px-4 py-3">Price</th><th className="px-4 py-3">Status</th><th className="px-4 py-3">Actions</th></tr></thead><tbody>{rows.map((item) => <tr key={item.id} className="border-t border-[var(--line)] align-top"><td className="px-4 py-3 font-bold text-[var(--ink)]">{item.clientName}<br /><span className="text-xs text-[var(--muted)]">{item.emailAddress}</span></td><td className="max-w-[360px] px-4 py-3 font-semibold text-[var(--ink)]">{item.title}<br /><span className="text-xs text-[var(--muted)]">{item.projectType}</span></td><td className="px-4 py-3 font-black text-[var(--ink)]">{item.currency} {item.estimatedMinPrice} - {item.estimatedMaxPrice}</td><td className="px-4 py-3 font-black text-[var(--steel)]">{item.status}</td><td className="px-4 py-3"><div className="flex gap-2"><button onClick={() => void decide(item.id, "accept")} className="inline-flex h-9 items-center gap-1 rounded-full bg-emerald-50 px-3 text-xs font-black text-emerald-700"><CheckCircle2 className="h-3.5 w-3.5" />Accept</button><button onClick={() => void decide(item.id, "reject")} className="inline-flex h-9 items-center gap-1 rounded-full bg-red-50 px-3 text-xs font-black text-red-700"><XCircle className="h-3.5 w-3.5" />Reject</button></div></td></tr>)}</tbody></table></div>
         {requests ? <div className="mt-4 flex items-center justify-between text-sm font-bold text-[var(--muted)]"><span>Page {requests.page + 1} of {Math.max(requests.totalPages, 1)} · {requests.totalElements} requests</span><div className="flex gap-2"><button disabled={requests.first} onClick={() => void searchRequests(Math.max(page - 1, 0))} className="rounded-full border border-[var(--line)] px-4 py-2 disabled:opacity-50">Prev</button><button disabled={requests.last} onClick={() => void searchRequests(page + 1)} className="rounded-full border border-[var(--line)] px-4 py-2 disabled:opacity-50">Next</button></div></div> : null}
