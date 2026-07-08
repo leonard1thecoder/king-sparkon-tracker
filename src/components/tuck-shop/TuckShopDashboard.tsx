@@ -215,7 +215,7 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card id="checkout" className="scroll-mt-32">
         <CardHeader>
           <CardTitle>Checkout</CardTitle>
           <p className="mt-2 text-sm leading-6 text-[var(--steel)]">Checkout creates a backend barcode transaction and returns a Stripe payment link. Add worker ID only when tipping or crediting a worker.</p>
