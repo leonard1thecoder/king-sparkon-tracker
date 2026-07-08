@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Calendar, MapPin, Plus, Ticket } from "lucide-react";
@@ -57,7 +56,7 @@ export function DashboardOwnerEventDetails({ eventId }: DashboardOwnerEventDetai
       <DashboardHeader role="OWNER WORKSPACE" title={event.name} description="Inspect capacity, class availability, and sales context from inside the owner dashboard." />
       <main className="grid gap-7 bg-[var(--surface)] p-5 md:p-8">
         <section className="grid gap-6 rounded-[2.5rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-7 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-          <div className="overflow-hidden rounded-[2.4rem] border border-[var(--line)] bg-[var(--ink)] shadow-[var(--shadow-depth)]"><div className="relative min-h-[24rem]">{event.bannerUrl ? <Image src={event.bannerUrl} alt={`${event.name} banner`} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover opacity-86" /> : <div className="absolute inset-0 scan-grid" />}<div className="absolute inset-0 bg-gradient-to-t from-[var(--ink)] via-[var(--ink)]/30 to-transparent" /><div className="absolute bottom-6 left-6 right-6"><div className="barcode-rule mb-6 text-white" /><TicketStatusBadge status={event.status} /></div></div></div>
+          <div className="overflow-hidden rounded-[2.4rem] border border-[var(--line)] bg-[var(--ink)] shadow-[var(--shadow-depth)]"><div className="relative min-h-[24rem]">{event.bannerUrl ? <img src={event.bannerUrl} alt={`${event.name} banner`} className="absolute inset-0 h-full w-full object-cover opacity-86" loading="lazy" /> : <div className="absolute inset-0 scan-grid" />}<div className="absolute inset-0 bg-gradient-to-t from-[var(--ink)] via-[var(--ink)]/30 to-transparent" /><div className="absolute bottom-6 left-6 right-6"><div className="barcode-rule mb-6 text-white" /><TicketStatusBadge status={event.status} /></div></div></div>
           <div>
             <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Owner event record</p>
             <h1 className="mt-4 text-5xl font-black leading-[0.96] tracking-[-0.07em] md:text-7xl">{event.name}</h1>
