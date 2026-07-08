@@ -1,5 +1,5 @@
-import { DashboardTicketsWorkspace } from "@/components/tickets/DashboardTicketsWorkspace";
+import { DashboardOwnerTickets } from "@/components/tickets/DashboardOwnerTickets";
 
 export default function BusinessTicketsRoute() {
-  return <DashboardTicketsWorkspace role="Owner" />;
+  return <DashboardOwnerTickets />;
 }
