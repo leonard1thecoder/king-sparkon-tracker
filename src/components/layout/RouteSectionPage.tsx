@@ -20,7 +20,7 @@ export function RouteSectionPage({
       <DashboardHeader role={role} title={title} description={description} />
       <main className="grid gap-5 p-5 md:p-8">
         {children ? children : null}
-        {endpoint ? <ContractDataWorkspace endpoint={endpoint} title={title} /> : null}
+        {endpoint ? <ContractDataWorkspace endpoint={endpoint} role={role} title={title} /> : null}
       </main>
     </>
   );
