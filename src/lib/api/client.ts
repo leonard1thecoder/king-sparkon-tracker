@@ -12,7 +12,15 @@ export const apiClient = axios.create({
   },
 });
 
+function isNormalizedBackendError(error: unknown): error is NormalizedBackendError {
+  return error instanceof Error && ("status" in error || "code" in error || "retryAfterSeconds" in error || "policy" in error);
+}
+
 export function normalizeApiError(error: unknown): NormalizedBackendError {
+  if (isNormalizedBackendError(error)) {
+    return error;
+  }
+
   if (!axios.isAxiosError(error)) {
     return backendError({ message: error instanceof Error ? error.message : "Unexpected frontend error" });
   }
