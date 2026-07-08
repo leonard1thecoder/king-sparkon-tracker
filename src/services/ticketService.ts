@@ -22,6 +22,21 @@ const PLATFORM_FEE_RATE = 0.04;
 // Change to false when you want the live backend API to drive dashboard ticket data again.
 const USE_TICKET_PREVIEW_MOCK = true;
 
+type TicketTypeSeed = { type: TicketType; price: number; capacity: number; sold: number };
+type PreviewEventSeed = {
+  id: string;
+  name: string;
+  description: string;
+  location: string;
+  daysFromNow: number;
+  eventTime: string;
+  bannerUrl: string;
+  status: EventStatus;
+  createdDaysAgo: number;
+  ownerId?: string;
+  ticketTypes: TicketTypeSeed[];
+};
+
 function nowIso() {
   return new Date().toISOString();
 }
@@ -50,37 +65,28 @@ function createTicketType(eventId: string, type: TicketType, price: number, capa
   };
 }
 
-function createPreviewEvent(input: Omit<TicketEvent, "ownerId" | "ticketTypes" | "createdAt" | "updatedAt"> & {
-  ownerId?: string;
-  daysFromNow: number;
-  ticketTypes: Array<{ type: TicketType; price: number; capacity: number; sold: number }>;
-  createdDaysAgo?: number;
-}): TicketEvent {
-  const event: TicketEvent = {
-    id: input.id,
-    ownerId: input.ownerId ?? DEFAULT_OWNER_ID,
-    name: input.name,
-    description: input.description,
-    location: input.location,
-    eventDate: futureDate(input.daysFromNow),
-    eventTime: input.eventTime,
-    bannerUrl: input.bannerUrl,
-    status: input.status,
-    ticketTypes: [],
-    createdAt: pastIso(input.createdDaysAgo ?? input.daysFromNow),
+function createPreviewEvent(seed: PreviewEventSeed): TicketEvent {
+  return {
+    id: seed.id,
+    ownerId: seed.ownerId ?? DEFAULT_OWNER_ID,
+    name: seed.name,
+    description: seed.description,
+    location: seed.location,
+    eventDate: futureDate(seed.daysFromNow),
+    eventTime: seed.eventTime,
+    bannerUrl: seed.bannerUrl,
+    status: seed.status,
+    ticketTypes: seed.ticketTypes.map((ticketType) => createTicketType(seed.id, ticketType.type, ticketType.price, ticketType.capacity, ticketType.sold)),
+    createdAt: pastIso(seed.createdDaysAgo),
     updatedAt: nowIso(),
   };
-
-  event.ticketTypes = input.ticketTypes.map((ticketType) => createTicketType(event.id, ticketType.type, ticketType.price, ticketType.capacity, ticketType.sold));
-  return event;
 }
 
-const initialEvents: TicketEvent[] = [
-  createPreviewEvent({
+const previewEventSeeds: PreviewEventSeed[] = [
+  {
     id: "event-sparkon-summit-bulk",
     name: "King Sparkon Barcode Summit 2026",
-    description:
-      "A premium operations night for retail owners, stock teams, scanner workers, and ticket crews to learn barcode verification, QR entry, and audit-ready event workflows.",
+    description: "A premium operations night for retail owners, stock teams, scanner workers, and ticket crews to learn barcode verification, QR entry, and audit-ready event workflows.",
     location: "Johannesburg Expo Centre, Nasrec",
     daysFromNow: 14,
     eventTime: "18:00",
@@ -92,12 +98,11 @@ const initialEvents: TicketEvent[] = [
       { type: "VIP", price: 450, capacity: 300, sold: 214 },
       { type: "VVIP", price: 980, capacity: 80, sold: 67 },
     ],
-  }),
-  createPreviewEvent({
+  },
+  {
     id: "event-soweto-night-market",
     name: "Soweto Night Market Tickets",
-    description:
-      "Food stalls, live DJs, tuck shop promos, worker scan gates, and QR ticket access for a high-volume township night market preview.",
+    description: "Food stalls, live DJs, tuck shop promos, worker scan gates, and QR ticket access for a high-volume township night market preview.",
     location: "Soweto Theatre Precinct",
     daysFromNow: 7,
     eventTime: "19:30",
@@ -109,12 +114,11 @@ const initialEvents: TicketEvent[] = [
       { type: "VIP", price: 180, capacity: 480, sold: 301 },
       { type: "VVIP", price: 420, capacity: 120, sold: 87 },
     ],
-  }),
-  createPreviewEvent({
+  },
+  {
     id: "event-cape-town-scanfest",
     name: "ScanFest Cape Town",
-    description:
-      "A QR-first product showcase with live ticket verification, staff access control demos, owner dashboards, and VIP networking for tech-enabled businesses.",
+    description: "A QR-first product showcase with live ticket verification, staff access control demos, owner dashboards, and VIP networking for tech-enabled businesses.",
     location: "Cape Town International Convention Centre",
     daysFromNow: 30,
     eventTime: "15:30",
@@ -126,12 +130,11 @@ const initialEvents: TicketEvent[] = [
       { type: "VIP", price: 380, capacity: 200, sold: 106 },
       { type: "VVIP", price: 760, capacity: 60, sold: 21 },
     ],
-  }),
-  createPreviewEvent({
+  },
+  {
     id: "event-durban-gate-masterclass",
     name: "Worker Gate Verification Masterclass",
-    description:
-      "A serious worker and staff training session focused on fast QR scanning, manual ticket lookup, fraud prevention, and clean entry reporting.",
+    description: "A serious worker and staff training session focused on fast QR scanning, manual ticket lookup, fraud prevention, and clean entry reporting.",
     location: "Durban ICC Gate B",
     daysFromNow: 45,
     eventTime: "10:00",
@@ -143,12 +146,11 @@ const initialEvents: TicketEvent[] = [
       { type: "VIP", price: 220, capacity: 160, sold: 54 },
       { type: "VVIP", price: 520, capacity: 40, sold: 12 },
     ],
-  }),
-  createPreviewEvent({
+  },
+  {
     id: "event-pretoria-business-expo",
     name: "Pretoria Business Owner Expo",
-    description:
-      "Owner-focused ticketing expo for product stock, QR payments, dashboard control, promotions, and customer entry analytics.",
+    description: "Owner-focused ticketing expo for product stock, QR payments, dashboard control, promotions, and customer entry analytics.",
     location: "Time Square Pretoria",
     daysFromNow: 21,
     eventTime: "12:00",
@@ -160,12 +162,11 @@ const initialEvents: TicketEvent[] = [
       { type: "VIP", price: 320, capacity: 360, sold: 198 },
       { type: "VVIP", price: 690, capacity: 90, sold: 63 },
     ],
-  }),
-  createPreviewEvent({
+  },
+  {
     id: "event-mamelodi-tuckshop-festival",
     name: "Mamelodi Tuck Shop Festival",
-    description:
-      "A community trading event showing how products, barcodes, tickets, workers, and owner revenue can run together in one dashboard.",
+    description: "A community trading event showing how products, barcodes, tickets, workers, and owner revenue can run together in one dashboard.",
     location: "Mamelodi West Stadium",
     daysFromNow: 18,
     eventTime: "13:00",
@@ -177,12 +178,11 @@ const initialEvents: TicketEvent[] = [
       { type: "VIP", price: 150, capacity: 520, sold: 384 },
       { type: "VVIP", price: 350, capacity: 100, sold: 91 },
     ],
-  }),
-  createPreviewEvent({
+  },
+  {
     id: "event-sandton-founder-night",
     name: "Sandton Founder Night",
-    description:
-      "Premium invite-style event with bulk ticket pressure, executive seating, sponsor access, and VVIP ticket scarcity.",
+    description: "Premium invite-style event with bulk ticket pressure, executive seating, sponsor access, and VVIP ticket scarcity.",
     location: "Sandton Convention Centre",
     daysFromNow: 36,
     eventTime: "20:00",
@@ -194,12 +194,11 @@ const initialEvents: TicketEvent[] = [
       { type: "VIP", price: 850, capacity: 160, sold: 141 },
       { type: "VVIP", price: 1800, capacity: 35, sold: 31 },
     ],
-  }),
-  createPreviewEvent({
+  },
+  {
     id: "event-limpopo-scanner-roadshow",
     name: "Limpopo Scanner Roadshow",
-    description:
-      "Regional QR ticket roadshow for businesses that want entry scanning, simple product inventory, and reliable worker operations.",
+    description: "Regional QR ticket roadshow for businesses that want entry scanning, simple product inventory, and reliable worker operations.",
     location: "Polokwane Civic Centre",
     daysFromNow: 52,
     eventTime: "09:30",
@@ -211,12 +210,11 @@ const initialEvents: TicketEvent[] = [
       { type: "VIP", price: 190, capacity: 120, sold: 0 },
       { type: "VVIP", price: 430, capacity: 25, sold: 0 },
     ],
-  }),
-  createPreviewEvent({
+  },
+  {
     id: "event-bloemfontein-qa-conference",
     name: "Bloemfontein QA & Scanner Conference",
-    description:
-      "Technical conference for testers, developers, and operations owners reviewing scan errors, fraud checks, and payment workflow quality.",
+    description: "Technical conference for testers, developers, and operations owners reviewing scan errors, fraud checks, and payment workflow quality.",
     location: "Bloemfontein Civic Theatre",
     daysFromNow: 60,
     eventTime: "11:00",
@@ -228,12 +226,11 @@ const initialEvents: TicketEvent[] = [
       { type: "VIP", price: 360, capacity: 180, sold: 73 },
       { type: "VVIP", price: 740, capacity: 45, sold: 18 },
     ],
-  }),
-  createPreviewEvent({
+  },
+  {
     id: "event-east-london-cloud-night",
     name: "East London Cloud Night",
-    description:
-      "A compact event for cloud deployment, payment links, QR ticket delivery, and operational support packages.",
+    description: "A compact event for cloud deployment, payment links, QR ticket delivery, and operational support packages.",
     location: "East London ICC",
     daysFromNow: 27,
     eventTime: "17:00",
@@ -245,12 +242,11 @@ const initialEvents: TicketEvent[] = [
       { type: "VIP", price: 260, capacity: 100, sold: 66 },
       { type: "VVIP", price: 580, capacity: 20, sold: 14 },
     ],
-  }),
-  createPreviewEvent({
+  },
+  {
     id: "event-sold-out-vvip-preview",
     name: "Sold-Out VVIP Preview Night",
-    description:
-      "Deliberate mock event to test sold-out visual states, high demand, disabled purchase actions, and owner capacity numbers.",
+    description: "Deliberate mock event to test sold-out visual states, high demand, disabled purchase actions, and owner capacity numbers.",
     location: "Rosebank Rooftop Venue",
     daysFromNow: 10,
     eventTime: "21:00",
@@ -262,12 +258,11 @@ const initialEvents: TicketEvent[] = [
       { type: "VIP", price: 700, capacity: 80, sold: 80 },
       { type: "VVIP", price: 1500, capacity: 25, sold: 25 },
     ],
-  }),
-  createPreviewEvent({
+  },
+  {
     id: "event-completed-history-preview",
     name: "Completed Ticket History Preview",
-    description:
-      "Mock completed event used to check how owner tables and filters behave when historical ticket sales are included.",
+    description: "Mock completed event used to check how owner tables and filters behave when historical ticket sales are included.",
     location: "Midrand Demo Hall",
     daysFromNow: -14,
     eventTime: "16:00",
@@ -279,12 +274,11 @@ const initialEvents: TicketEvent[] = [
       { type: "VIP", price: 240, capacity: 140, sold: 117 },
       { type: "VVIP", price: 500, capacity: 35, sold: 28 },
     ],
-  }),
-  createPreviewEvent({
+  },
+  {
     id: "event-cancelled-weather-preview",
     name: "Cancelled Weather Preview",
-    description:
-      "Mock cancelled event used to check cancellation badges, table filtering, and event states without touching backend data.",
+    description: "Mock cancelled event used to check cancellation badges, table filtering, and event states without touching backend data.",
     location: "Outdoor Park, Centurion",
     daysFromNow: 25,
     eventTime: "14:00",
@@ -296,8 +290,10 @@ const initialEvents: TicketEvent[] = [
       { type: "VIP", price: 160, capacity: 180, sold: 71 },
       { type: "VVIP", price: 360, capacity: 35, sold: 9 },
     ],
-  }),
+  },
 ];
+
+const initialEvents: TicketEvent[] = previewEventSeeds.map(createPreviewEvent);
 
 const initialTickets: UserTicket[] = [
   ...buildBulkTickets(initialEvents[0], "VIP", 8, "ACTIVE", "KST-BULK-VIP"),
