@@ -1,3 +1,5 @@
+import { RouteSectionPage } from "@/components/layout/RouteSectionPage";
+
 export default function AffiliatePerformancePage() {
-  return <main className="p-5 md:p-8"><h1 className="font-mono text-3xl font-black uppercase">Performance</h1><p className="mt-3 text-sm text-[var(--steel)]">Referral metrics page.</p></main>;
+  return <RouteSectionPage role="AFFILIATE" title="Performance" description="Referral metrics, promotion activity, conversion readiness, and backend-visible affiliate profile data." endpoint="GET /api/affiliate/performance · GET /api/users/me" />;
 }
