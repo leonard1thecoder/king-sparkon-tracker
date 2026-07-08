@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
-import { Barcode, Building2, CalendarDays, Crown, QrCode, ShieldCheck, Ticket, UserRound } from "lucide-react";
+import { Barcode, Building2, Crown, QrCode, ShieldCheck, Ticket, UserRound } from "lucide-react";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { getTicketSession, setDemoTicketRole, ticketRoleOptions } from "@/services/ticketAuthService";
 import type { TicketRole, TicketSession } from "@/types/tickets";
@@ -14,8 +14,7 @@ type TicketLayoutProps = {
 };
 
 const links = [
-  { label: "Tickets", href: "/tickets", icon: Ticket },
-  { label: "All Events", href: "/tickets/events", icon: CalendarDays },
+  { label: "All Events", href: "/tickets", icon: Ticket },
   { label: "My Tickets", href: "/tickets/my-tickets", icon: UserRound },
   { label: "Catalog", href: "/tickets/business-catalog", icon: Building2 },
   { label: "Scan Ticket", href: "/tickets/scan", icon: QrCode },
