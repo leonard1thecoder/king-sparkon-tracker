@@ -63,12 +63,20 @@ const navByRole: Record<UserRole, NavItem[]> = {
   ],
 };
 
+function isDashboardRoot(cleanHref: string) {
+  return /^\/dashboard\/[^/]+$/.test(cleanHref);
+}
+
 function isActive(pathname: string, searchParams: URLSearchParams, href: string) {
   const [cleanHref, query = ""] = href.split("?");
 
   if (query) {
     const hrefParams = new URLSearchParams(query);
     return pathname === cleanHref && Array.from(hrefParams.entries()).every(([key, value]) => searchParams.get(key) === value);
+  }
+
+  if (isDashboardRoot(cleanHref)) {
+    return pathname === cleanHref && !searchParams.has("tab");
   }
 
   if (pathname !== cleanHref && !pathname.startsWith(`${cleanHref}/`)) {
