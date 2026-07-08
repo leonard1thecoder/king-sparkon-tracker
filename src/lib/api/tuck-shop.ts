@@ -1,4 +1,5 @@
 import { apiGet, apiPatch, apiPost } from "@/lib/api/client";
+import { createMockTuckShopPurchase, getMockTuckShopProducts } from "@/lib/mock/tuck-shop-products";
 import type {
   CreateProductPayload,
   CreateTuckShopPurchasePayload,
@@ -21,26 +22,42 @@ function queryString(params: Record<string, string | number | undefined | null>)
   return query ? `?${query}` : "";
 }
 
-export function listTuckShopProducts(params: {
+export async function listTuckShopProducts(params: {
   page?: number;
   size?: number;
   businessId?: number | null;
   category?: string | null;
   search?: string | null;
 }) {
-  return apiGet<PageResponse<Product>>(`/v1/tuck-shop/products${queryString(params)}`);
+  try {
+    return await apiGet<PageResponse<Product>>(`/v1/tuck-shop/products${queryString(params)}`);
+  } catch {
+    return getMockTuckShopProducts(params);
+  }
 }
 
-export function createTuckShopPurchase(payload: CreateTuckShopPurchasePayload) {
-  return apiPost<TuckShopPurchase, CreateTuckShopPurchasePayload>("/v1/tuck-shop/purchases", payload);
+export async function createTuckShopPurchase(payload: CreateTuckShopPurchasePayload) {
+  try {
+    return await apiPost<TuckShopPurchase, CreateTuckShopPurchasePayload>("/v1/tuck-shop/purchases", payload);
+  } catch {
+    return createMockTuckShopPurchase(payload);
+  }
 }
 
-export function createWorkerTuckShopBarcodePurchase(payload: CreateTuckShopPurchasePayload) {
-  return apiPost<TuckShopPurchase, CreateTuckShopPurchasePayload>("/v1/tuck-shop/workers/barcode-purchases", payload);
+export async function createWorkerTuckShopBarcodePurchase(payload: CreateTuckShopPurchasePayload) {
+  try {
+    return await apiPost<TuckShopPurchase, CreateTuckShopPurchasePayload>("/v1/tuck-shop/workers/barcode-purchases", payload);
+  } catch {
+    return createMockTuckShopPurchase(payload);
+  }
 }
 
-export function listOwnerProducts(params: { page?: number; size?: number }) {
-  return apiGet<PageResponse<Product>>(`/products${queryString(params)}`);
+export async function listOwnerProducts(params: { page?: number; size?: number }) {
+  try {
+    return await apiGet<PageResponse<Product>>(`/products${queryString(params)}`);
+  } catch {
+    return getMockTuckShopProducts(params);
+  }
 }
 
 export function createOwnerProduct(payload: CreateProductPayload) {
