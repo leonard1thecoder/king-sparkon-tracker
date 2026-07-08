@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="720" viewBox="0 0 1400 720" role="img" aria-label="Owner Expo ticket banner">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14532d"/><stop offset="0.5" stop-color="#166534"/><stop offset="1" stop-color="#84cc16"/></linearGradient></defs>
+  <rect width="1400" height="720" fill="url(#bg)"/>
+  <circle cx="1110" cy="140" r="260" fill="#bef264" opacity="0.24"/>
+  <rect x="130" y="130" width="1120" height="460" rx="42" fill="#fff" opacity="0.12"/>
+  <path d="M960 455h250v-170l-125-90-125 90z" fill="#fff" opacity="0.24"/><rect x="1010" y="330" width="55" height="125" fill="#fff" opacity="0.52"/><rect x="1100" y="330" width="55" height="125" fill="#fff" opacity="0.52"/>
+  <text x="165" y="285" font-family="Arial, Helvetica, sans-serif" font-size="70" font-weight="900" fill="#fff">Business Owner Expo</text>
+  <text x="165" y="365" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="800" fill="#ecfccb">Capacity · revenue · withdrawals</text>
+  <text x="165" y="452" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#f7fee7">Owner dashboard preview for bulk ticket management</text>
+  <rect x="165" y="510" width="520" height="64" rx="32" fill="#facc15"/><text x="202" y="551" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="900" fill="#111827">OWNER TICKET METRICS</text>
+</svg>
