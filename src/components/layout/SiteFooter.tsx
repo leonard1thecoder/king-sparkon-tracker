@@ -28,17 +28,18 @@ const footerGroups = [
     links: [
       { label: "Login", href: "/login" },
       { label: "Register Business", href: "/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" },
-      { label: "My Tickets", href: "/tickets/my-tickets" },
-      { label: "Scan Ticket", href: "/tickets/scan" },
+      { label: "Buy Tickets", href: "/dashboard/user/tickets/buy" },
+      { label: "My Tickets", href: "/dashboard/user/tickets" },
+      { label: "Scan Ticket", href: "/dashboard/worker/tickets/scan" },
     ],
   },
   {
     title: "Operations",
     links: [
       { label: "Owner Dashboard", href: "/dashboard/owner" },
-      { label: "Owner Tickets", href: "/tickets/owner" },
-      { label: "Create Event", href: "/tickets/owner/create" },
-      { label: "Scan Verification", href: "/dashboard/worker/scan" },
+      { label: "Owner Tickets", href: "/dashboard/owner/tickets" },
+      { label: "Create Event", href: "/dashboard/owner/tickets/create" },
+      { label: "Scan Verification", href: "/dashboard/worker/tickets/scan" },
     ],
   },
 ] as const;
@@ -76,8 +77,8 @@ export function SiteFooter({ marketingOnly = false }: SiteFooterProps) {
             </p>
 
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link href="/tickets" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]">
-                Explore tickets <ArrowRight className="h-4 w-4" />
+              <Link href="/dashboard/user/tickets/buy" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]">
+                Buy tickets <ArrowRight className="h-4 w-4" />
               </Link>
               <Link href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--gold)] bg-[var(--gold)] px-5 text-sm font-black text-[var(--ink)] shadow-[var(--shadow-soft)] hover:bg-white">
                 Start business free 14 trial
