@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="720" viewBox="0 0 1400 720" role="img" aria-label="Scanner roadshow ticket banner">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#064e3b"/><stop offset="0.5" stop-color="#0f766e"/><stop offset="1" stop-color="#99f6e4"/></linearGradient><pattern id="dots" width="42" height="42" patternUnits="userSpaceOnUse"><circle cx="8" cy="8" r="3" fill="#fff" opacity="0.18"/></pattern></defs>
+  <rect width="1400" height="720" fill="url(#bg)"/><rect width="1400" height="720" fill="url(#dots)"/>
+  <rect x="840" y="155" width="310" height="410" rx="45" fill="#111827" opacity="0.72"/><rect x="895" y="220" width="200" height="200" rx="22" fill="#fff" opacity="0.92"/><rect x="925" y="250" width="55" height="55" fill="#0f766e"/><rect x="1010" y="250" width="55" height="55" fill="#0f766e"/><rect x="925" y="335" width="55" height="55" fill="#0f766e"/><rect x="1010" y="335" width="28" height="28" fill="#0f766e"/>
+  <text x="140" y="280" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="900" fill="#fff">Scanner Roadshow</text>
+  <text x="140" y="360" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="800" fill="#ccfbf1">Regional QR ticket rollout</text>
+  <text x="140" y="445" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#ecfdf5">Draft state + future owner planning view</text>
+</svg>
