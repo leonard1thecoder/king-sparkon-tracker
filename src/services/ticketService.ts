@@ -18,8 +18,18 @@ const DEFAULT_USER_ID = "user-demo-001";
 const DEFAULT_WORKER_ID = "worker-demo-001";
 const PLATFORM_FEE_RATE = 0.04;
 
+// Temporary UI preview switch. Keep true while reviewing bulk ticket/event screens.
+// Change to false when you want the live backend API to drive dashboard ticket data again.
+const USE_TICKET_PREVIEW_MOCK = true;
+
 function nowIso() {
   return new Date().toISOString();
+}
+
+function pastIso(daysAgo: number) {
+  const date = new Date();
+  date.setDate(date.getDate() - daysAgo);
+  return date.toISOString();
 }
 
 function futureDate(daysFromNow: number) {
@@ -40,99 +50,263 @@ function createTicketType(eventId: string, type: TicketType, price: number, capa
   };
 }
 
+function createPreviewEvent(input: Omit<TicketEvent, "ownerId" | "ticketTypes" | "createdAt" | "updatedAt"> & {
+  ownerId?: string;
+  daysFromNow: number;
+  ticketTypes: Array<{ type: TicketType; price: number; capacity: number; sold: number }>;
+  createdDaysAgo?: number;
+}): TicketEvent {
+  const event: TicketEvent = {
+    id: input.id,
+    ownerId: input.ownerId ?? DEFAULT_OWNER_ID,
+    name: input.name,
+    description: input.description,
+    location: input.location,
+    eventDate: futureDate(input.daysFromNow),
+    eventTime: input.eventTime,
+    bannerUrl: input.bannerUrl,
+    status: input.status,
+    ticketTypes: [],
+    createdAt: pastIso(input.createdDaysAgo ?? input.daysFromNow),
+    updatedAt: nowIso(),
+  };
+
+  event.ticketTypes = input.ticketTypes.map((ticketType) => createTicketType(event.id, ticketType.type, ticketType.price, ticketType.capacity, ticketType.sold));
+  return event;
+}
+
 const initialEvents: TicketEvent[] = [
-  {
-    id: "event-sparkon-summit",
-    ownerId: DEFAULT_OWNER_ID,
-    name: "King Sparkon Barcode Summit",
+  createPreviewEvent({
+    id: "event-sparkon-summit-bulk",
+    name: "King Sparkon Barcode Summit 2026",
     description:
-      "A premium operations night for retail owners, stock teams, and scanner workers to learn barcode verification, QR ticket entry, and audit-ready event workflows.",
+      "A premium operations night for retail owners, stock teams, scanner workers, and ticket crews to learn barcode verification, QR entry, and audit-ready event workflows.",
     location: "Johannesburg Expo Centre, Nasrec",
-    eventDate: futureDate(21),
+    daysFromNow: 14,
     eventTime: "18:00",
     bannerUrl: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1400&q=80",
     status: "PUBLISHED",
-    ticketTypes: [],
-    createdAt: nowIso(),
-    updatedAt: nowIso(),
-  },
-  {
-    id: "event-scanfest-cape-town",
-    ownerId: DEFAULT_OWNER_ID,
+    createdDaysAgo: 9,
+    ticketTypes: [
+      { type: "REGULAR", price: 180, capacity: 1200, sold: 843 },
+      { type: "VIP", price: 450, capacity: 300, sold: 214 },
+      { type: "VVIP", price: 980, capacity: 80, sold: 67 },
+    ],
+  }),
+  createPreviewEvent({
+    id: "event-soweto-night-market",
+    name: "Soweto Night Market Tickets",
+    description:
+      "Food stalls, live DJs, tuck shop promos, worker scan gates, and QR ticket access for a high-volume township night market preview.",
+    location: "Soweto Theatre Precinct",
+    daysFromNow: 7,
+    eventTime: "19:30",
+    bannerUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1400&q=80",
+    status: "PUBLISHED",
+    createdDaysAgo: 12,
+    ticketTypes: [
+      { type: "REGULAR", price: 75, capacity: 2400, sold: 1888 },
+      { type: "VIP", price: 180, capacity: 480, sold: 301 },
+      { type: "VVIP", price: 420, capacity: 120, sold: 87 },
+    ],
+  }),
+  createPreviewEvent({
+    id: "event-cape-town-scanfest",
     name: "ScanFest Cape Town",
     description:
       "A QR-first product showcase with live ticket verification, staff access control demos, owner dashboards, and VIP networking for tech-enabled businesses.",
     location: "Cape Town International Convention Centre",
-    eventDate: futureDate(42),
+    daysFromNow: 30,
     eventTime: "15:30",
     bannerUrl: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1400&q=80",
     status: "PUBLISHED",
-    ticketTypes: [],
-    createdAt: nowIso(),
-    updatedAt: nowIso(),
-  },
-  {
-    id: "event-worker-gate-masterclass",
-    ownerId: DEFAULT_OWNER_ID,
+    createdDaysAgo: 18,
+    ticketTypes: [
+      { type: "REGULAR", price: 150, capacity: 900, sold: 412 },
+      { type: "VIP", price: 380, capacity: 200, sold: 106 },
+      { type: "VVIP", price: 760, capacity: 60, sold: 21 },
+    ],
+  }),
+  createPreviewEvent({
+    id: "event-durban-gate-masterclass",
     name: "Worker Gate Verification Masterclass",
     description:
-      "A serious worker/staff training session focused on fast QR scanning, manual ticket lookup, fraud prevention, and clean entry reporting.",
+      "A serious worker and staff training session focused on fast QR scanning, manual ticket lookup, fraud prevention, and clean entry reporting.",
     location: "Durban ICC Gate B",
-    eventDate: futureDate(63),
+    daysFromNow: 45,
     eventTime: "10:00",
     bannerUrl: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1400&q=80",
+    status: "PUBLISHED",
+    createdDaysAgo: 4,
+    ticketTypes: [
+      { type: "REGULAR", price: 90, capacity: 650, sold: 128 },
+      { type: "VIP", price: 220, capacity: 160, sold: 54 },
+      { type: "VVIP", price: 520, capacity: 40, sold: 12 },
+    ],
+  }),
+  createPreviewEvent({
+    id: "event-pretoria-business-expo",
+    name: "Pretoria Business Owner Expo",
+    description:
+      "Owner-focused ticketing expo for product stock, QR payments, dashboard control, promotions, and customer entry analytics.",
+    location: "Time Square Pretoria",
+    daysFromNow: 21,
+    eventTime: "12:00",
+    bannerUrl: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1400&q=80",
+    status: "PUBLISHED",
+    createdDaysAgo: 6,
+    ticketTypes: [
+      { type: "REGULAR", price: 120, capacity: 1400, sold: 977 },
+      { type: "VIP", price: 320, capacity: 360, sold: 198 },
+      { type: "VVIP", price: 690, capacity: 90, sold: 63 },
+    ],
+  }),
+  createPreviewEvent({
+    id: "event-mamelodi-tuckshop-festival",
+    name: "Mamelodi Tuck Shop Festival",
+    description:
+      "A community trading event showing how products, barcodes, tickets, workers, and owner revenue can run together in one dashboard.",
+    location: "Mamelodi West Stadium",
+    daysFromNow: 18,
+    eventTime: "13:00",
+    bannerUrl: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=1400&q=80",
+    status: "PUBLISHED",
+    createdDaysAgo: 11,
+    ticketTypes: [
+      { type: "REGULAR", price: 60, capacity: 3200, sold: 2410 },
+      { type: "VIP", price: 150, capacity: 520, sold: 384 },
+      { type: "VVIP", price: 350, capacity: 100, sold: 91 },
+    ],
+  }),
+  createPreviewEvent({
+    id: "event-sandton-founder-night",
+    name: "Sandton Founder Night",
+    description:
+      "Premium invite-style event with bulk ticket pressure, executive seating, sponsor access, and VVIP ticket scarcity.",
+    location: "Sandton Convention Centre",
+    daysFromNow: 36,
+    eventTime: "20:00",
+    bannerUrl: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1400&q=80",
+    status: "PUBLISHED",
+    createdDaysAgo: 20,
+    ticketTypes: [
+      { type: "REGULAR", price: 260, capacity: 700, sold: 529 },
+      { type: "VIP", price: 850, capacity: 160, sold: 141 },
+      { type: "VVIP", price: 1800, capacity: 35, sold: 31 },
+    ],
+  }),
+  createPreviewEvent({
+    id: "event-limpopo-scanner-roadshow",
+    name: "Limpopo Scanner Roadshow",
+    description:
+      "Regional QR ticket roadshow for businesses that want entry scanning, simple product inventory, and reliable worker operations.",
+    location: "Polokwane Civic Centre",
+    daysFromNow: 52,
+    eventTime: "09:30",
+    bannerUrl: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1400&q=80",
     status: "DRAFT",
-    ticketTypes: [],
-    createdAt: nowIso(),
-    updatedAt: nowIso(),
-  },
-];
-
-initialEvents[0].ticketTypes = [
-  createTicketType(initialEvents[0].id, "REGULAR", 180, 400, 186),
-  createTicketType(initialEvents[0].id, "VIP", 450, 120, 54),
-  createTicketType(initialEvents[0].id, "VVIP", 980, 40, 17),
-];
-
-initialEvents[1].ticketTypes = [
-  createTicketType(initialEvents[1].id, "REGULAR", 150, 350, 91),
-  createTicketType(initialEvents[1].id, "VIP", 380, 90, 22),
-  createTicketType(initialEvents[1].id, "VVIP", 760, 30, 8),
-];
-
-initialEvents[2].ticketTypes = [
-  createTicketType(initialEvents[2].id, "REGULAR", 90, 220, 0),
-  createTicketType(initialEvents[2].id, "VIP", 220, 70, 0),
-  createTicketType(initialEvents[2].id, "VVIP", 520, 20, 0),
+    createdDaysAgo: 2,
+    ticketTypes: [
+      { type: "REGULAR", price: 80, capacity: 500, sold: 0 },
+      { type: "VIP", price: 190, capacity: 120, sold: 0 },
+      { type: "VVIP", price: 430, capacity: 25, sold: 0 },
+    ],
+  }),
+  createPreviewEvent({
+    id: "event-bloemfontein-qa-conference",
+    name: "Bloemfontein QA & Scanner Conference",
+    description:
+      "Technical conference for testers, developers, and operations owners reviewing scan errors, fraud checks, and payment workflow quality.",
+    location: "Bloemfontein Civic Theatre",
+    daysFromNow: 60,
+    eventTime: "11:00",
+    bannerUrl: "https://images.unsplash.com/photo-1515169067865-5387ec356754?auto=format&fit=crop&w=1400&q=80",
+    status: "PUBLISHED",
+    createdDaysAgo: 16,
+    ticketTypes: [
+      { type: "REGULAR", price: 140, capacity: 750, sold: 268 },
+      { type: "VIP", price: 360, capacity: 180, sold: 73 },
+      { type: "VVIP", price: 740, capacity: 45, sold: 18 },
+    ],
+  }),
+  createPreviewEvent({
+    id: "event-east-london-cloud-night",
+    name: "East London Cloud Night",
+    description:
+      "A compact event for cloud deployment, payment links, QR ticket delivery, and operational support packages.",
+    location: "East London ICC",
+    daysFromNow: 27,
+    eventTime: "17:00",
+    bannerUrl: "https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=1400&q=80",
+    status: "PUBLISHED",
+    createdDaysAgo: 7,
+    ticketTypes: [
+      { type: "REGULAR", price: 110, capacity: 420, sold: 184 },
+      { type: "VIP", price: 260, capacity: 100, sold: 66 },
+      { type: "VVIP", price: 580, capacity: 20, sold: 14 },
+    ],
+  }),
+  createPreviewEvent({
+    id: "event-sold-out-vvip-preview",
+    name: "Sold-Out VVIP Preview Night",
+    description:
+      "Deliberate mock event to test sold-out visual states, high demand, disabled purchase actions, and owner capacity numbers.",
+    location: "Rosebank Rooftop Venue",
+    daysFromNow: 10,
+    eventTime: "21:00",
+    bannerUrl: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=1400&q=80",
+    status: "PUBLISHED",
+    createdDaysAgo: 30,
+    ticketTypes: [
+      { type: "REGULAR", price: 300, capacity: 300, sold: 300 },
+      { type: "VIP", price: 700, capacity: 80, sold: 80 },
+      { type: "VVIP", price: 1500, capacity: 25, sold: 25 },
+    ],
+  }),
+  createPreviewEvent({
+    id: "event-completed-history-preview",
+    name: "Completed Ticket History Preview",
+    description:
+      "Mock completed event used to check how owner tables and filters behave when historical ticket sales are included.",
+    location: "Midrand Demo Hall",
+    daysFromNow: -14,
+    eventTime: "16:00",
+    bannerUrl: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=1400&q=80",
+    status: "COMPLETED",
+    createdDaysAgo: 60,
+    ticketTypes: [
+      { type: "REGULAR", price: 95, capacity: 600, sold: 512 },
+      { type: "VIP", price: 240, capacity: 140, sold: 117 },
+      { type: "VVIP", price: 500, capacity: 35, sold: 28 },
+    ],
+  }),
+  createPreviewEvent({
+    id: "event-cancelled-weather-preview",
+    name: "Cancelled Weather Preview",
+    description:
+      "Mock cancelled event used to check cancellation badges, table filtering, and event states without touching backend data.",
+    location: "Outdoor Park, Centurion",
+    daysFromNow: 25,
+    eventTime: "14:00",
+    bannerUrl: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80",
+    status: "CANCELLED",
+    createdDaysAgo: 22,
+    ticketTypes: [
+      { type: "REGULAR", price: 70, capacity: 900, sold: 244 },
+      { type: "VIP", price: 160, capacity: 180, sold: 71 },
+      { type: "VVIP", price: 360, capacity: 35, sold: 9 },
+    ],
+  }),
 ];
 
 const initialTickets: UserTicket[] = [
-  buildTicket({
-    id: "ticket-demo-active-001",
-    eventId: initialEvents[0].id,
-    userId: DEFAULT_USER_ID,
-    buyerName: "Sizolwakhe Ticket Buyer",
-    buyerEmail: "buyer@kingsparkon.co.za",
-    ticketType: "VIP",
-    pricePaid: 450,
-    ticketReference: "KST-EVENT-DEMO-001",
-    status: "ACTIVE",
-    purchasedAt: nowIso(),
-  }),
-  buildTicket({
-    id: "ticket-demo-used-001",
-    eventId: initialEvents[0].id,
-    userId: DEFAULT_USER_ID,
-    buyerName: "Sizolwakhe Ticket Buyer",
-    buyerEmail: "buyer@kingsparkon.co.za",
-    ticketType: "REGULAR",
-    pricePaid: 180,
-    ticketReference: "KST-EVENT-DEMO-USED",
-    status: "USED",
-    purchasedAt: nowIso(),
-    usedAt: nowIso(),
-    scannedByWorkerId: DEFAULT_WORKER_ID,
-  }),
+  ...buildBulkTickets(initialEvents[0], "VIP", 8, "ACTIVE", "KST-BULK-VIP"),
+  ...buildBulkTickets(initialEvents[0], "REGULAR", 12, "USED", "KST-BULK-REG"),
+  ...buildBulkTickets(initialEvents[1], "REGULAR", 6, "ACTIVE", "KST-SOWETO-REG"),
+  ...buildBulkTickets(initialEvents[1], "VIP", 4, "ACTIVE", "KST-SOWETO-VIP"),
+  ...buildBulkTickets(initialEvents[4], "VVIP", 3, "ACTIVE", "KST-PTA-VVIP"),
+  ...buildBulkTickets(initialEvents[6], "VVIP", 2, "USED", "KST-SANDTON-VVIP"),
+  ...buildBulkTickets(initialEvents[10], "REGULAR", 2, "CANCELLED", "KST-SOLDOUT-CAN"),
 ];
 
 let events = cloneEvents(initialEvents);
@@ -198,6 +372,29 @@ function buildTicket(input: Omit<UserTicket, "qrCodeValue">): UserTicket {
     ...input,
     qrCodeValue: buildQrCodeValue(input.id, input.eventId, input.ticketReference, input.userId),
   };
+}
+
+function buildBulkTickets(event: TicketEvent, ticketType: TicketType, count: number, status: UserTicket["status"], prefix: string): UserTicket[] {
+  const match = event.ticketTypes.find((candidate) => candidate.type === ticketType);
+  const pricePaid = match?.price ?? 0;
+
+  return Array.from({ length: count }, (_, index) => {
+    const ticketNumber = index + 1;
+    return buildTicket({
+      id: `${prefix.toLowerCase()}-${ticketNumber.toString().padStart(3, "0")}`,
+      eventId: event.id,
+      userId: DEFAULT_USER_ID,
+      buyerName: ticketNumber % 2 === 0 ? "Sizolwakhe Ticket Buyer" : "King Sparkon Guest",
+      buyerEmail: ticketNumber % 2 === 0 ? "buyer@kingsparkon.co.za" : "guest@kingsparkon.co.za",
+      ticketType,
+      pricePaid,
+      ticketReference: `${prefix}-${ticketNumber.toString().padStart(5, "0")}`,
+      status,
+      purchasedAt: pastIso(ticketNumber),
+      usedAt: status === "USED" ? pastIso(ticketNumber - 1) : undefined,
+      scannedByWorkerId: status === "USED" ? DEFAULT_WORKER_ID : undefined,
+    });
+  });
 }
 
 function ticketTypeOrder(type: TicketType) {
@@ -275,13 +472,15 @@ export function calculateCheckoutQuote(price: number, quantity: number): TicketC
 }
 
 export async function getUpcomingEvents() {
-  if (typeof window === "undefined") {
+  if (USE_TICKET_PREVIEW_MOCK || typeof window === "undefined") {
+    await delay();
     return getMockUpcomingEvents();
   }
 
   try {
     const { data } = await apiClient.get<TicketEvent[]>("/v1/tickets/events");
-    return normalizeTicketEvents(Array.isArray(data) ? data : []);
+    const nextEvents = normalizeTicketEvents(Array.isArray(data) ? data : []);
+    return nextEvents.length ? nextEvents : getMockUpcomingEvents();
   } catch {
     await delay();
     return getMockUpcomingEvents();
@@ -289,13 +488,14 @@ export async function getUpcomingEvents() {
 }
 
 export async function getEventById(eventId: string) {
-  if (typeof window === "undefined") {
+  if (USE_TICKET_PREVIEW_MOCK || typeof window === "undefined") {
+    await delay();
     return getMockEventById(eventId);
   }
 
   try {
     const { data } = await apiClient.get<TicketEvent>(`/v1/tickets/events/${eventId}`);
-    return data ? normalizeTicketEvent(data) : null;
+    return data ? normalizeTicketEvent(data) : getMockEventById(eventId);
   } catch {
     await delay();
     return getMockEventById(eventId);
