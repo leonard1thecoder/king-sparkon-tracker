@@ -7,15 +7,19 @@ import { TicketStatusBadge } from "./TicketStatusBadge";
 
 type TicketEventCardProps = {
   event: TicketEvent;
+  detailsHref?: string;
+  checkoutHref?: string;
 };
 
 function formatDate(eventDate: string, eventTime: string) {
   return new Intl.DateTimeFormat("en-ZA", { dateStyle: "medium", timeStyle: "short" }).format(new Date(`${eventDate}T${eventTime}`));
 }
 
-export function TicketEventCard({ event }: TicketEventCardProps) {
+export function TicketEventCard({ event, detailsHref, checkoutHref }: TicketEventCardProps) {
   const totals = getEventTotals(event);
   const hasImage = Boolean(event.bannerUrl);
+  const eventDetailsHref = detailsHref ?? `/dashboard/user/tickets/events/${event.id}`;
+  const eventCheckoutHref = checkoutHref ?? `/dashboard/user/tickets/checkout/${event.id}`;
 
   return (
     <article className="group overflow-hidden rounded-[2rem] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
@@ -47,10 +51,10 @@ export function TicketEventCard({ event }: TicketEventCardProps) {
         </div>
 
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-          <Link href={`/tickets/events/${event.id}`} className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]">
+          <Link href={eventDetailsHref} className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]">
             View Event <ArrowRight className="h-4 w-4" />
           </Link>
-          <Link href={`/tickets/checkout/${event.id}`} className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--signal)]">
+          <Link href={eventCheckoutHref} className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--signal)]">
             <ShieldCheck className="h-4 w-4" /> Buy Ticket
           </Link>
         </div>
