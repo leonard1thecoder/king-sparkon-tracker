@@ -38,6 +38,7 @@ type PageResponse<T> = {
 };
 
 const devHubRequestsPath = "/api/dev-hub/requests";
+const backendBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "").replace(/\/$/, "");
 
 function tokenFromStorage() {
   if (typeof window === "undefined") return "";
@@ -48,6 +49,70 @@ function tokenFromStorage() {
     window.localStorage.getItem("jwt") ??
     ""
   );
+}
+
+function devHubUrls(pathAndQuery: string) {
+  const urls = [pathAndQuery];
+
+  if (backendBaseUrl) {
+    urls.push(`${backendBaseUrl}${pathAndQuery}`);
+  }
+
+  return Array.from(new Set(urls));
+}
+
+async function fetchJsonWithTableFallback<T>(pathAndQuery: string, init?: RequestInit): Promise<T> {
+  let lastError: Error | null = null;
+
+  for (const url of devHubUrls(pathAndQuery)) {
+    try {
+      const response = await fetch(url, { ...init, cache: "no-store" });
+
+      if (!response.ok) {
+        let body = "";
+        try {
+          body = await response.text();
+        } catch {
+          body = "";
+        }
+        throw new Error(`${url} responded ${response.status}${body ? `: ${body.slice(0, 220)}` : ""}`);
+      }
+
+      return (await response.json()) as T;
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+    }
+  }
+
+  throw lastError ?? new Error("Dev Hub API request failed");
+}
+
+function pageFromCreatedRequest(request: DevHubRequest): PageResponse<DevHubRequest> {
+  return {
+    content: [request],
+    page: 0,
+    size: 10,
+    totalElements: 1,
+    totalPages: 1,
+    first: true,
+    last: true,
+  };
+}
+
+function upsertTableRow(current: PageResponse<DevHubRequest> | null, request: DevHubRequest): PageResponse<DevHubRequest> {
+  if (!current) {
+    return pageFromCreatedRequest(request);
+  }
+
+  const size = current.size || 10;
+  const existingRows = current.content.filter((item) => item.id !== request.id);
+
+  return {
+    ...current,
+    content: [request, ...existingRows].slice(0, size),
+    totalElements: Math.max(current.totalElements, existingRows.length + 1),
+    totalPages: Math.max(current.totalPages, 1),
+  };
 }
 
 const emptyForm = {
@@ -75,8 +140,13 @@ export function DevHubAiConsole() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [tableNotice, setTableNotice] = useState("");
 
   const rows = useMemo(() => requests?.content ?? [], [requests]);
+  const visibleRows = useMemo(() => {
+    if (rows.length > 0) return rows;
+    return createdRequest ? [createdRequest] : [];
+  }, [createdRequest, rows]);
 
   const authHeaders = () => ({
     Accept: "application/json",
@@ -90,22 +160,24 @@ export function DevHubAiConsole() {
   const submitRequest = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage("");
+    setTableNotice("");
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(devHubRequestsPath, {
+      const data = await fetchJsonWithTableFallback<DevHubRequest>(devHubRequestsPath, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(form),
       });
 
-      if (!response.ok) throw new Error(`Dev Hub request failed with status ${response.status}`);
-      const data = (await response.json()) as DevHubRequest;
       setCreatedRequest(data);
+      setRequests((current) => upsertTableRow(current, data));
+      setPage(0);
       setForm(emptyForm);
+      setTableNotice("Table fallback is showing the saved Dev Hub request. Admin search can refresh the full JPA table when the token is valid.");
     } catch (error) {
       console.error("Dev Hub AI request failed", error);
-      setErrorMessage("Unable to create Dev Hub AI request. Check required fields and backend deployment.");
+      setErrorMessage("Unable to create Dev Hub request. Check required fields and backend deployment.");
     } finally {
       setIsSubmitting(false);
     }
@@ -113,6 +185,7 @@ export function DevHubAiConsole() {
 
   const searchRequests = async (nextPage = page) => {
     setErrorMessage("");
+    setTableNotice("");
     setIsSearching(true);
 
     try {
@@ -124,17 +197,15 @@ export function DevHubAiConsole() {
       if (query.trim()) params.set("q", query.trim());
       if (status.trim()) params.set("status", status.trim());
 
-      const response = await fetch(`${devHubRequestsPath}?${params.toString()}`, {
+      const data = await fetchJsonWithTableFallback<PageResponse<DevHubRequest>>(`${devHubRequestsPath}?${params.toString()}`, {
         headers: authHeaders(),
       });
 
-      if (!response.ok) throw new Error(`Dev Hub search failed with status ${response.status}`);
-      const data = (await response.json()) as PageResponse<DevHubRequest>;
       setRequests(data);
       setPage(data.page);
     } catch (error) {
       console.error("Dev Hub request search failed", error);
-      setErrorMessage("Unable to search Dev Hub requests. Admin token is required for review workflow.");
+      setTableNotice("Could not refresh the full Dev Hub table. Showing the last loaded or newly created request instead of replacing the table with an error.");
     } finally {
       setIsSearching(false);
     }
@@ -142,14 +213,17 @@ export function DevHubAiConsole() {
 
   const decide = async (id: number, action: "accept" | "reject") => {
     setErrorMessage("");
+    setTableNotice("");
+
     try {
-      const response = await fetch(`${devHubRequestsPath}/${id}/${action}`, {
+      const data = await fetchJsonWithTableFallback<DevHubRequest>(`${devHubRequestsPath}/${id}/${action}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", ...authHeaders() },
         body: JSON.stringify({ reason: action === "accept" ? "Accepted from Full King Sparkon AI Dev Hub console." : "Rejected from Full King Sparkon AI Dev Hub console." }),
       });
 
-      if (!response.ok) throw new Error(`Dev Hub decision failed with status ${response.status}`);
+      setCreatedRequest((current) => (current?.id === data.id ? data : current));
+      setRequests((current) => upsertTableRow(current, data));
       await searchRequests(page);
     } catch (error) {
       console.error("Dev Hub decision failed", error);
@@ -199,7 +273,17 @@ export function DevHubAiConsole() {
         </div>
         <input value={authToken} onChange={(event) => setAuthToken(event.target.value)} placeholder="Admin bearer token" className="mt-3 h-11 w-full rounded-full border border-[var(--line)] px-4 text-sm font-semibold" />
         {errorMessage ? <div className="mt-4 rounded-3xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-700">{errorMessage}</div> : null}
-        <div className="mt-5 overflow-auto rounded-[1.5rem] border border-[var(--line)]"><table className="min-w-full text-left text-sm"><thead className="bg-[var(--surface)] text-xs uppercase tracking-[0.14em] text-[var(--steel)]"><tr><th className="px-4 py-3">Client</th><th className="px-4 py-3">Project</th><th className="px-4 py-3">Price</th><th className="px-4 py-3">Status</th><th className="px-4 py-3">Actions</th></tr></thead><tbody>{rows.map((item) => <tr key={item.id} className="border-t border-[var(--line)] align-top"><td className="px-4 py-3 font-bold text-[var(--ink)]">{item.clientName}<br /><span className="text-xs text-[var(--muted)]">{item.emailAddress}</span></td><td className="max-w-[360px] px-4 py-3 font-semibold text-[var(--ink)]">{item.title}<br /><span className="text-xs text-[var(--muted)]">{item.projectType}</span></td><td className="px-4 py-3 font-black text-[var(--ink)]">{item.currency} {item.estimatedMinPrice} - {item.estimatedMaxPrice}</td><td className="px-4 py-3 font-black text-[var(--steel)]">{item.status}</td><td className="px-4 py-3"><div className="flex gap-2"><button onClick={() => void decide(item.id, "accept")} className="inline-flex h-9 items-center gap-1 rounded-full bg-emerald-50 px-3 text-xs font-black text-emerald-700"><CheckCircle2 className="h-3.5 w-3.5" />Accept</button><button onClick={() => void decide(item.id, "reject")} className="inline-flex h-9 items-center gap-1 rounded-full bg-red-50 px-3 text-xs font-black text-red-700"><XCircle className="h-3.5 w-3.5" />Reject</button></div></td></tr>)}</tbody></table></div>
+        {tableNotice ? <div className="mt-4 rounded-3xl border border-amber-200 bg-amber-50 p-4 text-sm font-bold text-amber-800">{tableNotice}</div> : null}
+        <div className="mt-5 overflow-auto rounded-[1.5rem] border border-[var(--line)]">
+          <table className="min-w-full text-left text-sm">
+            <thead className="bg-[var(--surface)] text-xs uppercase tracking-[0.14em] text-[var(--steel)]">
+              <tr><th className="px-4 py-3">Client</th><th className="px-4 py-3">Project</th><th className="px-4 py-3">Price</th><th className="px-4 py-3">Status</th><th className="px-4 py-3">Actions</th></tr>
+            </thead>
+            <tbody>
+              {visibleRows.length > 0 ? visibleRows.map((item) => <tr key={item.id} className="border-t border-[var(--line)] align-top"><td className="px-4 py-3 font-bold text-[var(--ink)]">{item.clientName}<br /><span className="text-xs text-[var(--muted)]">{item.emailAddress}</span></td><td className="max-w-[360px] px-4 py-3 font-semibold text-[var(--ink)]">{item.title}<br /><span className="text-xs text-[var(--muted)]">{item.projectType}</span></td><td className="px-4 py-3 font-black text-[var(--ink)]">{item.currency} {item.estimatedMinPrice} - {item.estimatedMaxPrice}</td><td className="px-4 py-3 font-black text-[var(--steel)]">{item.status}</td><td className="px-4 py-3"><div className="flex gap-2"><button onClick={() => void decide(item.id, "accept")} className="inline-flex h-9 items-center gap-1 rounded-full bg-emerald-50 px-3 text-xs font-black text-emerald-700"><CheckCircle2 className="h-3.5 w-3.5" />Accept</button><button onClick={() => void decide(item.id, "reject")} className="inline-flex h-9 items-center gap-1 rounded-full bg-red-50 px-3 text-xs font-black text-red-700"><XCircle className="h-3.5 w-3.5" />Reject</button></div></td></tr>) : <tr className="border-t border-[var(--line)]"><td colSpan={5} className="px-4 py-8 text-center text-sm font-bold text-[var(--muted)]">No Dev Hub table rows loaded yet. Create a request or search with an admin token.</td></tr>}
+            </tbody>
+          </table>
+        </div>
         {requests ? <div className="mt-4 flex items-center justify-between text-sm font-bold text-[var(--muted)]"><span>Page {requests.page + 1} of {Math.max(requests.totalPages, 1)} · {requests.totalElements} requests</span><div className="flex gap-2"><button disabled={requests.first} onClick={() => void searchRequests(Math.max(page - 1, 0))} className="rounded-full border border-[var(--line)] px-4 py-2 disabled:opacity-50">Prev</button><button disabled={requests.last} onClick={() => void searchRequests(page + 1)} className="rounded-full border border-[var(--line)] px-4 py-2 disabled:opacity-50">Next</button></div></div> : null}
       </div>
     </section>
