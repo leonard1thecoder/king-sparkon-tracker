@@ -22,6 +22,16 @@ function queryString(params: Record<string, string | number | undefined | null>)
   return query ? `?${query}` : "";
 }
 
+function withMockFallback(response: PageResponse<Product>, params: {
+  page?: number;
+  size?: number;
+  businessId?: number | null;
+  category?: string | null;
+  search?: string | null;
+}) {
+  return response.content?.length ? response : getMockTuckShopProducts(params);
+}
+
 export async function listTuckShopProducts(params: {
   page?: number;
   size?: number;
@@ -30,7 +40,8 @@ export async function listTuckShopProducts(params: {
   search?: string | null;
 }) {
   try {
-    return await apiGet<PageResponse<Product>>(`/v1/tuck-shop/products${queryString(params)}`);
+    const response = await apiGet<PageResponse<Product>>(`/v1/tuck-shop/products${queryString(params)}`);
+    return withMockFallback(response, params);
   } catch {
     return getMockTuckShopProducts(params);
   }
@@ -54,7 +65,8 @@ export async function createWorkerTuckShopBarcodePurchase(payload: CreateTuckSho
 
 export async function listOwnerProducts(params: { page?: number; size?: number }) {
   try {
-    return await apiGet<PageResponse<Product>>(`/products${queryString(params)}`);
+    const response = await apiGet<PageResponse<Product>>(`/products${queryString(params)}`);
+    return withMockFallback(response, params);
   } catch {
     return getMockTuckShopProducts(params);
   }
