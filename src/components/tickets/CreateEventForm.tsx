@@ -121,7 +121,7 @@ export function CreateEventForm() {
       setIsSubmitting(true);
       await createEvent(payload);
       setStatusMessage({ tone: "success", message: "Event created. Redirecting to owner dashboard." });
-      window.setTimeout(() => router.push("/tickets/owner"), 450);
+      window.setTimeout(() => router.push("/dashboard/owner/tickets"), 450);
     } catch (error) {
       setStatusMessage({ tone: "error", message: error instanceof Error ? error.message : "Unable to create event." });
     } finally {
