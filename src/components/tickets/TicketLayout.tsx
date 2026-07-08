@@ -14,11 +14,11 @@ type TicketLayoutProps = {
 };
 
 const links = [
-  { label: "All Events", href: "/tickets", icon: Ticket },
-  { label: "My Tickets", href: "/tickets/my-tickets", icon: UserRound },
-  { label: "Catalog", href: "/tickets/business-catalog", icon: Building2 },
-  { label: "Scan Ticket", href: "/tickets/scan", icon: QrCode },
-  { label: "Owner Tickets", href: "/tickets/owner", icon: Crown },
+  { label: "Buy Tickets", href: "/dashboard/user/tickets/buy", icon: Ticket },
+  { label: "My Tickets", href: "/dashboard/user/tickets", icon: UserRound },
+  { label: "Catalog", href: "/dashboard/user/tickets/buy", icon: Building2 },
+  { label: "Scan Ticket", href: "/dashboard/worker/tickets/scan", icon: QrCode },
+  { label: "Owner Tickets", href: "/dashboard/owner/tickets", icon: Crown },
 ] as const;
 
 export function TicketLayout({ children }: TicketLayoutProps) {
@@ -48,7 +48,7 @@ export function TicketLayout({ children }: TicketLayoutProps) {
 
           <div className="flex gap-2 overflow-x-auto pb-1 lg:pb-0">
             {links.map(({ label, href, icon: Icon }) => {
-              const active = pathname === href || (href !== "/tickets" && pathname.startsWith(href));
+              const active = pathname === href || pathname.startsWith(`${href}/`);
               return (
                 <Link key={href} href={href} className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full border px-4 text-sm font-black ${active ? "border-[var(--signal)] bg-[var(--signal)] text-white shadow-[var(--shadow-soft)]" : "border-[var(--line)] bg-white text-[var(--steel)] hover:border-[var(--signal)] hover:text-[var(--ink)]"}`}>
                   <Icon className="h-4 w-4" /> {label}
