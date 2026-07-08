@@ -79,8 +79,8 @@ function displayValue(key: string, value: unknown) {
   }
   if (typeof value === "string" && /^https?:\/\//i.test(value)) {
     return (
-      <a href={value} target="_blank" rel="noreferrer" className="inline-flex max-w-48 items-center gap-1 truncate font-black text-[var(--signal)] hover:text-[var(--ink)]">
-        Open <ExternalLink className="h-3.5 w-3.5" />
+      <a href={value} target="_blank" rel="noreferrer" className="inline-flex max-w-full items-center gap-1 break-all font-black text-[var(--signal)] hover:text-[var(--ink)]">
+        Open <ExternalLink className="h-3.5 w-3.5 shrink-0" />
       </a>
     );
   }
@@ -173,11 +173,11 @@ function LiveTable({ title, rows, searchQuery, statusFilter }: { title: string; 
         <span className="rounded-full bg-[var(--confirm)] px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-white">{filteredRows.length} rows</span>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-[var(--line)] text-left text-sm">
+        <table className="min-w-[860px] table-fixed divide-y divide-[var(--line)] text-left text-sm lg:min-w-full">
           <thead className="bg-white">
             <tr>
               {keys.map((key) => (
-                <th key={key} className="whitespace-nowrap px-4 py-3 font-mono text-[0.65rem] font-black uppercase tracking-[0.14em] text-[var(--steel)]">
+                <th key={key} className="w-[11rem] whitespace-normal break-words px-4 py-3 align-top font-mono text-[0.65rem] font-black uppercase leading-5 tracking-[0.12em] text-[var(--steel)]">
                   {labelFor(key)}
                 </th>
               ))}
@@ -187,7 +187,7 @@ function LiveTable({ title, rows, searchQuery, statusFilter }: { title: string; 
             {filteredRows.map((row, index) => (
               <tr key={`${title}-${index}`} className="hover:bg-[var(--surface)]">
                 {keys.map((key) => (
-                  <td key={key} className={cn("max-w-56 whitespace-nowrap px-4 py-3 font-semibold text-[var(--ink)]", /status/i.test(key) ? "font-black uppercase tracking-[0.08em]" : "")}>{displayValue(key, row[key])}</td>
+                  <td key={key} className={cn("w-[11rem] whitespace-normal break-words px-4 py-4 align-top text-sm font-semibold leading-6 text-[var(--ink)]", /status/i.test(key) ? "font-black uppercase tracking-[0.06em]" : "")}>{displayValue(key, row[key])}</td>
                 ))}
               </tr>
             ))}
@@ -301,7 +301,7 @@ export function ContractDataWorkspace({ endpoint, role, title }: { endpoint?: st
           <option value="">All statuses/types</option>
           {statusOptions.map((status) => <option key={status} value={status}>{labelFor(status)}</option>)}
         </select>
-        <div className="md:col-span-2 flex items-center gap-2 text-xs font-bold text-[var(--steel)]">
+        <div className="flex items-center gap-2 text-xs font-bold text-[var(--steel)] md:col-span-2">
           <ShieldCheck className="h-4 w-4 text-[var(--confirm)]" /> Table filtering is local fallback logic. It does not call AI and does not retry forbidden production endpoints.
         </div>
       </div>
