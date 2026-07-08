@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Calendar, MapPin, ShieldCheck } from "lucide-react";
 import type { TicketEvent } from "@/types/tickets";
@@ -25,7 +24,7 @@ export function TicketEventCard({ event, detailsHref, checkoutHref }: TicketEven
     <article className="group overflow-hidden rounded-[2rem] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
       <div className="relative min-h-52 overflow-hidden bg-[var(--ink)]">
         {hasImage ? (
-          <Image src={event.bannerUrl as string} alt={`${event.name} banner`} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover opacity-86 transition duration-300 group-hover:scale-105" />
+          <img src={event.bannerUrl as string} alt={`${event.name} banner`} className="absolute inset-0 h-full w-full object-cover opacity-86 transition duration-300 group-hover:scale-105" loading="lazy" />
         ) : (
           <div className="absolute inset-0 scan-grid bg-[var(--ink)]" />
         )}
