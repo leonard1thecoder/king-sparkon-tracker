@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { DashboardTicketsWorkspace } from "@/components/tickets/DashboardTicketsWorkspace";
+import { DashboardMyTickets } from "@/components/tickets/DashboardMyTickets";
 
 export const metadata: Metadata = {
-  title: "My Tickets | King Sparkon Tracker",
+  title: "My Tickets | User Dashboard",
   description: "User dashboard route for issued QR ticket access without leaving the dashboard shell.",
 };
 
 export default function UserTicketsPage() {
-  return <DashboardTicketsWorkspace role="User" />;
+  return <DashboardMyTickets />;
 }
