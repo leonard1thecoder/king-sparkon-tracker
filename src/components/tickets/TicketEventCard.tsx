@@ -3,6 +3,7 @@ import { ArrowRight, Calendar, MapPin, ShieldCheck } from "lucide-react";
 import type { TicketEvent } from "@/types/tickets";
 import { getEventTotals } from "@/services/ticketService";
 import { TicketStatusBadge } from "./TicketStatusBadge";
+import { getTicketBannerImage } from "./ticketBannerImage";
 
 type TicketEventCardProps = {
   event: TicketEvent;
@@ -16,7 +17,8 @@ function formatDate(eventDate: string, eventTime: string) {
 
 export function TicketEventCard({ event, detailsHref, checkoutHref }: TicketEventCardProps) {
   const totals = getEventTotals(event);
-  const hasImage = Boolean(event.bannerUrl);
+  const bannerSrc = getTicketBannerImage(event);
+  const hasImage = Boolean(bannerSrc);
   const eventDetailsHref = detailsHref ?? `/dashboard/user/tickets/events/${event.id}`;
   const eventCheckoutHref = checkoutHref ?? `/dashboard/user/tickets/checkout/${event.id}`;
 
@@ -24,7 +26,7 @@ export function TicketEventCard({ event, detailsHref, checkoutHref }: TicketEven
     <article className="group overflow-hidden rounded-[2rem] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
       <div className="relative min-h-52 overflow-hidden bg-[var(--ink)]">
         {hasImage ? (
-          <img src={event.bannerUrl as string} alt={`${event.name} banner`} className="absolute inset-0 h-full w-full object-cover opacity-86 transition duration-300 group-hover:scale-105" loading="lazy" />
+          <img src={bannerSrc} alt={`${event.name} banner`} className="absolute inset-0 h-full w-full object-cover opacity-86 transition duration-300 group-hover:scale-105" loading="lazy" />
         ) : (
           <div className="absolute inset-0 scan-grid bg-[var(--ink)]" />
         )}
