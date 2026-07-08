@@ -76,6 +76,14 @@ function isActive(pathname: string, searchParams: URLSearchParams, href: string)
     return pathname === cleanHref && Array.from(hrefParams.entries()).every(([key, value]) => searchParams.get(key) === value);
   }
 
+  if (cleanHref === "/dashboard/user/tickets/buy") {
+    return pathname === cleanHref || pathname.startsWith("/dashboard/user/tickets/events") || pathname.startsWith("/dashboard/user/tickets/checkout");
+  }
+
+  if (cleanHref === "/dashboard/user/tickets") {
+    return pathname === cleanHref && !searchParams.has("tab");
+  }
+
   if (isDashboardRoot(cleanHref)) {
     return pathname === cleanHref && !searchParams.has("tab");
   }
