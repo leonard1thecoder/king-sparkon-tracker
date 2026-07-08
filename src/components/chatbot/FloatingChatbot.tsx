@@ -35,6 +35,9 @@ const defaultQuickActions = [
 ] as const;
 
 const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "").replace(/\/$/, "");
+const chatbotEnabled = !["0", "false", "off", "disabled", "no"].includes(
+  (process.env.NEXT_PUBLIC_AI_CHATBOT_ENABLED ?? "true").trim().toLowerCase(),
+);
 const conversationStorageKey = "king-sparkon-chatbot-conversation-id";
 
 const createMessageId = () => {
@@ -63,9 +66,17 @@ const getStoredConversationId = () => {
 };
 
 const fallbackAssistantReply =
-  "King Sparkon Assistant is having trouble reaching the AI backend right now. Please try again, or use the contact section for urgent implementation support.";
+  "King Sparkon Assistant could not reach the backend right now. Please try again, or use the contact section for urgent implementation support.";
 
 export function FloatingChatbot() {
+  if (!chatbotEnabled) {
+    return null;
+  }
+
+  return <FloatingChatbotPanel />;
+}
+
+function FloatingChatbotPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>(starterMessages);
   const [inputValue, setInputValue] = useState("");
@@ -155,7 +166,7 @@ export function FloatingChatbot() {
       );
     } catch (error) {
       console.error("King Sparkon chatbot request failed", error);
-      setErrorMessage("AI backend unavailable. Check backend/Ollama config and try again.");
+      setErrorMessage("Assistant backend unavailable. Check backend deployment or hide the widget with NEXT_PUBLIC_AI_CHATBOT_ENABLED=false.");
       setMessages((currentMessages) =>
         currentMessages.map((chatMessage) =>
           chatMessage.id === pendingMessageId
