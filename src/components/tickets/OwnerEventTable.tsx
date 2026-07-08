@@ -64,7 +64,7 @@ export function OwnerEventTable({ events, onStatusChange }: OwnerEventTableProps
                   <td className="money text-sm font-black">{regular} / {vip} / {vvip}</td>
                   <td>
                     <div className="flex flex-wrap gap-2">
-                      <Link href={`/dashboard/user/tickets/events/${event.id}`} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-3 text-xs font-black text-[var(--steel)] hover:border-[var(--signal)] hover:text-[var(--ink)]">
+                      <Link href={`/dashboard/owner/tickets/events/${event.id}`} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-3 text-xs font-black text-[var(--steel)] hover:border-[var(--signal)] hover:text-[var(--ink)]">
                         <Eye className="h-3.5 w-3.5" /> View
                       </Link>
                       <button type="button" onClick={() => onStatusChange(event.id, "PUBLISHED")} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-3 text-xs font-black text-[var(--steel)] hover:border-[var(--confirm)] hover:text-[var(--confirm)]">
