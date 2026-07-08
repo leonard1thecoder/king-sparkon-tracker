@@ -1,3 +1,4 @@
+import { apiClient } from "@/lib/api/client";
 import type {
   CreateTicketEventPayload,
   EventStatus,
@@ -150,7 +151,7 @@ function windowSafeTimeout(callback: () => void, milliseconds: number) {
 }
 
 function cloneEvents(source: TicketEvent[]) {
-  return source.map((event) => ({ ...event, ticketTypes: event.ticketTypes.map((ticketType) => ({ ...ticketType })) }));
+  return source.map((event) => ({ ...event, ticketTypes: (event.ticketTypes ?? []).map((ticketType) => ({ ...ticketType })) }));
 }
 
 function cloneTickets(source: UserTicket[]) {
@@ -159,6 +160,28 @@ function cloneTickets(source: UserTicket[]) {
 
 function cloneEvent(event: TicketEvent) {
   return cloneEvents([event])[0];
+}
+
+function normalizeTicketEvent(event: TicketEvent): TicketEvent {
+  return {
+    ...event,
+    ticketTypes: (event.ticketTypes ?? []).map((ticketType) => ({ ...ticketType })),
+  };
+}
+
+function normalizeTicketEvents(nextEvents: TicketEvent[]) {
+  return nextEvents.map(normalizeTicketEvent);
+}
+
+function getMockUpcomingEvents() {
+  return cloneEvents(events)
+    .filter((event) => event.status !== "CANCELLED")
+    .sort((left, right) => `${left.eventDate}T${left.eventTime}`.localeCompare(`${right.eventDate}T${right.eventTime}`));
+}
+
+function getMockEventById(eventId: string) {
+  const event = events.find((candidate) => candidate.id === eventId);
+  return event ? cloneEvent(event) : null;
 }
 
 function normalizeReference(value: string) {
@@ -225,7 +248,7 @@ export function getTicketTypeLabel(type: TicketType) {
 }
 
 export function getEventTotals(event: TicketEvent) {
-  return event.ticketTypes.reduce(
+  return (event.ticketTypes ?? []).reduce(
     (totals, ticketType) => ({
       totalCapacity: totals.totalCapacity + ticketType.capacity,
       totalSold: totals.totalSold + ticketType.sold,
@@ -252,16 +275,31 @@ export function calculateCheckoutQuote(price: number, quantity: number): TicketC
 }
 
 export async function getUpcomingEvents() {
-  await delay();
-  return cloneEvents(events)
-    .filter((event) => event.status !== "CANCELLED")
-    .sort((left, right) => `${left.eventDate}T${left.eventTime}`.localeCompare(`${right.eventDate}T${right.eventTime}`));
+  if (typeof window === "undefined") {
+    return getMockUpcomingEvents();
+  }
+
+  try {
+    const { data } = await apiClient.get<TicketEvent[]>("/v1/tickets/events");
+    return normalizeTicketEvents(Array.isArray(data) ? data : []);
+  } catch {
+    await delay();
+    return getMockUpcomingEvents();
+  }
 }
 
 export async function getEventById(eventId: string) {
-  await delay();
-  const event = events.find((candidate) => candidate.id === eventId);
-  return event ? cloneEvent(event) : null;
+  if (typeof window === "undefined") {
+    return getMockEventById(eventId);
+  }
+
+  try {
+    const { data } = await apiClient.get<TicketEvent>(`/v1/tickets/events/${eventId}`);
+    return data ? normalizeTicketEvent(data) : null;
+  } catch {
+    await delay();
+    return getMockEventById(eventId);
+  }
 }
 
 export async function purchaseTickets(request: TicketPurchaseRequest) {
