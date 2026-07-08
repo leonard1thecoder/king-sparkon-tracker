@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="720" viewBox="0 0 1400 720" role="img" aria-label="Premium VVIP event banner">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#020617"/><stop offset="0.54" stop-color="#3b0764"/><stop offset="1" stop-color="#f59e0b"/></linearGradient></defs>
+  <rect width="1400" height="720" fill="url(#bg)"/>
+  <circle cx="1040" cy="250" r="260" fill="#fbbf24" opacity="0.20"/>
+  <path d="M910 145l95 105 95-105 95 105 95-105-35 190H945z" fill="#facc15" opacity="0.86"/>
+  <text x="145" y="295" font-family="Arial, Helvetica, sans-serif" font-size="74" font-weight="900" fill="#fff">Founder Night</text>
+  <text x="145" y="375" font-family="Arial, Helvetica, sans-serif" font-size="48" font-weight="800" fill="#fde68a">VIP / VVIP scarcity preview</text>
+  <text x="145" y="458" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#fff7ed">Premium ticket tiers and sold-out states</text>
+  <rect x="145" y="525" width="510" height="58" rx="29" fill="#facc15"/><text x="183" y="564" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="900" fill="#111827">PREMIUM ENTRY</text>
+</svg>
