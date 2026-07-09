@@ -1,8 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
-export function LogoutButton({ className = "" }: { className?: string }) {
+type LogoutButtonProps = {
+  className?: string;
+  children?: ReactNode;
+  ariaLabel?: string;
+};
+
+export function LogoutButton({ className = "", children, ariaLabel = "Sign out" }: LogoutButtonProps) {
   const [busy, setBusy] = useState(false);
 
   async function signOut() {
@@ -12,8 +18,8 @@ export function LogoutButton({ className = "" }: { className?: string }) {
   }
 
   return (
-    <button type="button" onClick={signOut} disabled={busy} className={className || "rounded-full border border-[var(--danger)] bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.1em] text-[var(--danger)] hover:bg-[var(--danger)] hover:text-white disabled:opacity-60"}>
-      {busy ? "Signing out" : "Logout"}
+    <button type="button" onClick={signOut} disabled={busy} aria-label={ariaLabel} title={ariaLabel} className={className || "rounded-full border border-[var(--danger)] bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.1em] text-[var(--danger)] hover:bg-[var(--danger)] hover:text-white disabled:opacity-60"}>
+      {children ?? (busy ? "Signing out" : "Logout")}
     </button>
   );
 }
