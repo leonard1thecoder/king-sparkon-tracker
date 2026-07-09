@@ -19,7 +19,6 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Promotions", href: "/dashboard/admin/promotions", icon: Megaphone },
     { label: "Reports", href: "/dashboard/admin/reports", icon: BarChart3 },
     { label: "Settings", href: "/dashboard/admin/settings", icon: Settings },
-    { label: "Profile", href: "/dashboard/admin/profile", icon: UserRound },
   ],
   Owner: [
     { label: "Overview", href: "/dashboard/owner", icon: Building2 },
@@ -35,7 +34,6 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Reports", href: "/dashboard/owner/reports", icon: BarChart3 },
     { label: "Billing", href: "/dashboard/owner/billing", icon: CreditCard },
     { label: "Settings", href: "/dashboard/owner/settings", icon: Settings },
-    { label: "Profile", href: "/dashboard/owner/profile", icon: UserRound },
   ],
   Worker: [
     { label: "Overview", href: "/dashboard/worker", icon: UserRound },
@@ -43,7 +41,6 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Ticket Scan", href: "/dashboard/worker/tickets/scan", icon: QrCode },
     { label: "Transactions", href: "/dashboard/worker/transactions", icon: CreditCard },
     { label: "Tips", href: "/dashboard/worker/tips", icon: WalletCards },
-    { label: "Profile", href: "/dashboard/worker/profile", icon: Settings },
   ],
   Affiliate: [
     { label: "Overview", href: "/dashboard/affiliate", icon: QrCode },
@@ -51,13 +48,11 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Campaign Assets", href: "/dashboard/affiliate/assets", icon: Megaphone },
     { label: "Commissions", href: "/dashboard/affiliate/commissions", icon: BarChart3 },
     { label: "Payouts", href: "/dashboard/affiliate/payouts", icon: WalletCards },
-    { label: "Profile", href: "/dashboard/affiliate/profile", icon: Settings },
   ],
   User: [
     { label: "Buy Products", href: "/dashboard/user/shop", icon: ShoppingCart },
     { label: "Buy Tickets", href: "/dashboard/user/tickets/buy", icon: Ticket },
     { label: "Tip Worker", href: "/dashboard/user/tips/scan", icon: WalletCards },
-    { label: "Profile", href: "/dashboard/user/profile", icon: UserRound },
   ],
 };
 
