@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CreditCard, ExternalLink, Loader2, LockKeyhole, ShoppingBag, ShoppingCart, Ticket, Trash2 } from "lucide-react";
 import { createTuckShopPurchase } from "@/lib/api/tuck-shop";
 import type { TuckShopPurchase } from "@/lib/types/backend";
@@ -34,6 +34,8 @@ type CheckoutUser = {
   emailAddress: string;
 };
 
+type StripeElementType = "cardNumber" | "cardExpiry" | "cardCvc";
+
 type StripeCardElement = {
   mount: (selectorOrElement: string | HTMLElement) => void;
   unmount: () => void;
@@ -42,7 +44,7 @@ type StripeCardElement = {
 };
 
 type StripeElements = {
-  create: (type: "card", options?: Record<string, unknown>) => StripeCardElement;
+  create: (type: StripeElementType, options?: Record<string, unknown>) => StripeCardElement;
 };
 
 type StripeInstance = {
@@ -54,6 +56,12 @@ declare global {
     Stripe?: (publishableKey: string) => StripeInstance;
   }
 }
+
+const initialStripeFields: Record<StripeElementType, boolean> = {
+  cardNumber: false,
+  cardExpiry: false,
+  cardCvc: false,
+};
 
 async function loadCheckoutUser(): Promise<CheckoutUser> {
   const response = await fetch("/api/auth/session", { cache: "no-store" });
@@ -91,17 +99,32 @@ function loadStripeScript() {
   });
 }
 
+function stripeFieldShell(label: string, children: React.ReactNode) {
+  return (
+    <label className="grid gap-2">
+      <span className="text-xs font-black uppercase tracking-[0.12em] text-[var(--steel)]">{label}</span>
+      <span className="block min-h-12 rounded-[1.05rem] border border-[var(--line)] bg-white px-4 py-3 shadow-[var(--shadow-soft)] focus-within:border-[var(--signal)]">
+        {children}
+      </span>
+    </label>
+  );
+}
+
 export function TuckShopCartDashboard() {
-  const stripeCardContainerRef = useRef<HTMLDivElement | null>(null);
-  const stripeCardRef = useRef<StripeCardElement | null>(null);
+  const stripeNumberRef = useRef<HTMLDivElement | null>(null);
+  const stripeExpiryRef = useRef<HTMLDivElement | null>(null);
+  const stripeCvcRef = useRef<HTMLDivElement | null>(null);
+  const stripeElementRefs = useRef<Partial<Record<StripeElementType, StripeCardElement>>>({});
   const [cart, setCart] = useState<TuckShopCartLine[]>([]);
   const [purchase, setPurchase] = useState<TuckShopPurchase | null>(null);
   const [ticketPurchaseCount, setTicketPurchaseCount] = useState(0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [stripeReady, setStripeReady] = useState(false);
-  const [stripeCardComplete, setStripeCardComplete] = useState(false);
+  const [stripeFieldsComplete, setStripeFieldsComplete] = useState<Record<StripeElementType, boolean>>({ ...initialStripeFields });
   const [stripeMessage, setStripeMessage] = useState<string | null>(null);
+
+  const stripeCardComplete = useMemo(() => Object.values(stripeFieldsComplete).every(Boolean), [stripeFieldsComplete]);
 
   useEffect(() => {
     setCart(readTuckShopCart());
@@ -123,51 +146,58 @@ export function TuckShopCartDashboard() {
     let active = true;
 
     if (!STRIPE_PUBLISHABLE_KEY) {
-      setStripeMessage("Set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY to activate the secure Stripe card input.");
+      setStripeMessage("Set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY to activate the secure Stripe card inputs.");
       return;
     }
 
     const stripePublishableKey = STRIPE_PUBLISHABLE_KEY;
 
-    async function mountStripeCard() {
+    async function mountStripeFields() {
       try {
         await loadStripeScript();
-        if (!active || !stripeCardContainerRef.current || !window.Stripe || stripeCardRef.current) return;
+        if (!active || !window.Stripe || stripeElementRefs.current.cardNumber) return;
 
         const stripe = window.Stripe(stripePublishableKey);
         const elements = stripe.elements();
-        const card = elements.create("card", {
-          hidePostalCode: true,
-          style: {
-            base: {
-              fontSize: "16px",
-              color: "#111827",
-              fontWeight: "700",
-              "::placeholder": { color: "#7c8794" },
-            },
-            invalid: { color: "#dc2626" },
+        const style = {
+          base: {
+            fontSize: "16px",
+            color: "#111827",
+            fontWeight: "700",
+            "::placeholder": { color: "#7c8794" },
           },
-        });
+          invalid: { color: "#dc2626" },
+        };
 
-        card.on("change", (event) => {
-          setStripeCardComplete(event.complete);
-          setStripeMessage(event.error?.message ?? null);
-        });
-        card.mount(stripeCardContainerRef.current);
-        stripeCardRef.current = card;
+        function mountField(type: StripeElementType, target: HTMLDivElement | null) {
+          if (!target) return;
+          const field = elements.create(type, { style });
+          field.on("change", (event) => {
+            setStripeFieldsComplete((current) => ({ ...current, [type]: event.complete }));
+            setStripeMessage(event.error?.message ?? null);
+          });
+          field.mount(target);
+          stripeElementRefs.current[type] = field;
+        }
+
+        mountField("cardNumber", stripeNumberRef.current);
+        mountField("cardExpiry", stripeExpiryRef.current);
+        mountField("cardCvc", stripeCvcRef.current);
         setStripeReady(true);
       } catch (stripeError) {
-        setStripeMessage(stripeError instanceof Error ? stripeError.message : "Stripe card input could not load.");
+        setStripeMessage(stripeError instanceof Error ? stripeError.message : "Stripe card inputs could not load.");
       }
     }
 
-    void mountStripeCard();
+    void mountStripeFields();
 
     return () => {
       active = false;
-      stripeCardRef.current?.unmount();
-      stripeCardRef.current?.destroy?.();
-      stripeCardRef.current = null;
+      Object.values(stripeElementRefs.current).forEach((field) => {
+        field?.unmount();
+        field?.destroy?.();
+      });
+      stripeElementRefs.current = {};
     };
   }, []);
 
@@ -196,7 +226,7 @@ export function TuckShopCartDashboard() {
     }
 
     if (STRIPE_PUBLISHABLE_KEY && !stripeCardComplete) {
-      setError("Complete the Stripe card number, expiry date, and CVC before checkout.");
+      setError("Complete the card number, expiry date/year, and CVC before checkout.");
       return;
     }
 
@@ -234,7 +264,7 @@ export function TuckShopCartDashboard() {
       setTicketPurchaseCount(ticketLines.reduce((total, line) => total + line.quantity, 0));
       clearTuckShopCart();
       setCart([]);
-      setStripeCardComplete(false);
+      setStripeFieldsComplete({ ...initialStripeFields });
     } catch (exception) {
       setError(normalizeApiError(exception).message);
     } finally {
@@ -247,7 +277,7 @@ export function TuckShopCartDashboard() {
       <SectionHeader
         eyebrow="User Cart"
         title="Review products and tickets before checkout."
-        description="Products and tickets share the same cart. Stripe card details are handled by Stripe Elements, not stored by King Sparkon Tracker."
+        description="Products and tickets share the same cart. Stripe card details are separated into card number, expiry, and CVC fields."
       />
 
       <Card>
@@ -322,14 +352,18 @@ export function TuckShopCartDashboard() {
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">Stripe secure card</p>
-                  <p className="mt-1 text-sm font-bold text-[var(--steel)]">Card number, expiry date, and CVC are entered inside Stripe.</p>
+                  <p className="mt-1 text-sm font-bold text-[var(--steel)]">Card, expiry year/date, and CVC are separate but stay inside Stripe.</p>
                 </div>
                 <div className="grid h-11 w-11 place-items-center rounded-full bg-[var(--ink)] text-[var(--gold)]"><CreditCard className="h-5 w-5" /></div>
               </div>
-              <div className="mt-4 min-h-13 rounded-[1.2rem] border border-[var(--line)] bg-white px-4 py-4 shadow-[var(--shadow-soft)]">
-                <div ref={stripeCardContainerRef} />
-                {!stripeReady && !stripeMessage ? <p className="text-sm font-bold text-[var(--steel)]">Loading Stripe card input...</p> : null}
+
+              <div className="mt-4 grid gap-3 md:grid-cols-[1.45fr_0.85fr_0.7fr]">
+                {stripeFieldShell("Card number", <div ref={stripeNumberRef} />)}
+                {stripeFieldShell("Expiry / year", <div ref={stripeExpiryRef} />)}
+                {stripeFieldShell("CVC", <div ref={stripeCvcRef} />)}
               </div>
+
+              {!stripeReady && !stripeMessage ? <p className="mt-3 text-sm font-bold text-[var(--steel)]">Loading Stripe card fields...</p> : null}
               {stripeMessage ? <p className="mt-3 text-xs font-bold text-[var(--danger)]">{stripeMessage}</p> : null}
               <p className="mt-3 inline-flex items-center gap-2 text-xs font-bold text-[var(--steel)]"><LockKeyhole className="h-3.5 w-3.5 text-[var(--confirm)]" /> Raw card details never touch this app.</p>
             </div>
