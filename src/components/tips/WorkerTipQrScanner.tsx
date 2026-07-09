@@ -46,7 +46,7 @@ function readWorkerFromJson(value: string) {
 function readWorkerFromUrl(value: string) {
   try {
     const url = new URL(value, typeof window === "undefined" ? "https://king-sparkon.local" : window.location.origin);
-    const pathMatch = url.pathname.match(/\/tips\/workers\/([^/?#]+)/i);
+    const pathMatch = url.pathname.match(/\/(?:dashboard\/user\/tips\/workers|tips\/workers)\/([^/?#]+)/i);
     if (pathMatch?.[1]) {
       return cleanWorkerId(pathMatch[1]);
     }
@@ -85,7 +85,7 @@ export function WorkerTipQrScanner() {
 
   const tipHref = useMemo(() => {
     if (!result) return null;
-    return `/tips/workers/${encodeURIComponent(result.workerId)}`;
+    return `/dashboard/user/tips/workers/${encodeURIComponent(result.workerId)}`;
   }, [result]);
 
   function handleScan(value: string) {
@@ -115,7 +115,7 @@ export function WorkerTipQrScanner() {
           <div>
             <CardTitle>Scan worker QR to tip</CardTitle>
             <p className="mt-2 text-sm leading-6 text-[var(--steel)]">
-              Scan the worker QR code, confirm the worker, then continue into the secure worker tip page with the worker locked in.
+              Scan the worker QR code, confirm the worker, then continue into the secure user-dashboard tip page with the worker locked in.
             </p>
           </div>
           <StatusPill label="TIP SCANNER" tone="confirm" />
@@ -137,7 +137,7 @@ export function WorkerTipQrScanner() {
                 <Keyboard className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--signal)]" />
                 <input
                   name="workerId"
-                  placeholder="Worker ID or /tips/workers/{workerId}"
+                  placeholder="Worker ID or dashboard worker tip URL"
                   className="min-h-12 w-full rounded-full border border-[var(--line)] bg-[var(--surface)] pl-11 pr-4 text-sm font-bold outline-none focus:border-[var(--signal)]"
                 />
               </label>
@@ -187,7 +187,7 @@ export function WorkerTipQrScanner() {
                   <div className="rounded-[1.35rem] border border-[var(--line)] bg-[var(--surface)] p-4">
                     <ShieldCheck className="h-5 w-5 text-[var(--confirm)]" />
                     <p className="mt-3 text-sm font-black text-[var(--ink)]">Worker locked</p>
-                    <p className="mt-1 text-xs leading-5 text-[var(--steel)]">Tip URL carries this worker ID.</p>
+                    <p className="mt-1 text-xs leading-5 text-[var(--steel)]">Dashboard tip URL carries this worker ID.</p>
                   </div>
                   <div className="rounded-[1.35rem] border border-[var(--line)] bg-[var(--surface)] p-4">
                     <WalletCards className="h-5 w-5 text-[var(--signal)]" />
@@ -211,7 +211,7 @@ export function WorkerTipQrScanner() {
               <div className="rounded-[2rem] border border-dashed border-[var(--line-strong)] bg-[var(--surface)] p-8 text-center">
                 <QrCode className="mx-auto h-12 w-12 text-[var(--signal)]" />
                 <h3 className="mt-4 text-2xl font-black tracking-[-0.04em] text-[var(--ink)]">Scan a worker QR</h3>
-                <p className="mt-2 text-sm leading-6 text-[var(--steel)]">Accepted values include raw worker IDs, full /tips/workers links, and JSON QR payloads containing workerId.</p>
+                <p className="mt-2 text-sm leading-6 text-[var(--steel)]">Accepted values include raw worker IDs, dashboard worker tip links, old public worker links, and JSON QR payloads containing workerId.</p>
               </div>
             )}
           </CardContent>
