@@ -46,7 +46,7 @@ export function TuckShopProductDetails({ productId }: { productId: string }) {
   }, [productId]);
 
   const maxQuantity = Math.max(product?.stockQuantity ?? 1, 1);
-  const lineTotal = useMemo(() => productPrice(product as Product) * quantity, [product, quantity]);
+  const lineTotal = useMemo(() => (product ? productPrice(product) * quantity : 0), [product, quantity]);
 
   function addToCart() {
     if (!product) return;
