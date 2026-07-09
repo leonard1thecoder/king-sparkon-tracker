@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent, useEffect, useMemo, useState } from "react";
-import { AlertCircle, ArrowRight, CreditCard, Mail, Minus, Plus, UserRound } from "lucide-react";
+import { AlertCircle, ArrowRight, CreditCard, Minus, Plus, ShoppingCart } from "lucide-react";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { TicketStatusBadge } from "@/components/tickets/TicketStatusBadge";
-import { calculateCheckoutQuote, getEventById, getTicketTypeLabel, purchaseTickets } from "@/services/ticketService";
+import { calculateCheckoutQuote, getEventById, getTicketTypeLabel } from "@/services/ticketService";
 import type { TicketEvent, TicketType } from "@/types/tickets";
+import { addTicketToCart } from "@/lib/tuck-shop/cart";
 
 type DashboardTicketCheckoutProps = {
   eventId: string;
@@ -28,8 +29,6 @@ export function DashboardTicketCheckout({ eventId }: DashboardTicketCheckoutProp
   const [event, setEvent] = useState<TicketEvent | null>(null);
   const [ticketType, setTicketType] = useState<TicketType>(isTicketType(initialRequestedType) ? initialRequestedType : "REGULAR");
   const [quantity, setQuantity] = useState(1);
-  const [buyerName, setBuyerName] = useState("");
-  const [buyerEmail, setBuyerEmail] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,21 +59,20 @@ export function DashboardTicketCheckout({ eventId }: DashboardTicketCheckoutProp
       setError(`${getTicketTypeLabel(selectedTicketType.type)} tickets are sold out.`);
       return;
     }
-    if (!buyerName.trim()) {
-      setError("Enter the buyer full name.");
-      return;
-    }
-    if (!buyerEmail.includes("@")) {
-      setError("Enter a valid buyer email address.");
-      return;
-    }
 
     try {
       setIsSubmitting(true);
-      await purchaseTickets({ eventId: event.id, ticketType: selectedTicketType.type, quantity, buyerName, buyerEmail });
-      router.push("/dashboard/user/tickets?purchase=success");
-    } catch (purchaseError) {
-      setError(purchaseError instanceof Error ? purchaseError.message : "Unable to complete ticket purchase.");
+      addTicketToCart({
+        kind: "TICKET",
+        event,
+        ticketType: selectedTicketType.type,
+        ticketTypeLabel: getTicketTypeLabel(selectedTicketType.type),
+        unitPrice: selectedTicketType.price,
+        quantity,
+      });
+      router.push("/dashboard/user/shop/cart");
+    } catch (cartError) {
+      setError(cartError instanceof Error ? cartError.message : "Unable to add ticket to cart.");
     } finally {
       setIsSubmitting(false);
     }
@@ -82,7 +80,7 @@ export function DashboardTicketCheckout({ eventId }: DashboardTicketCheckoutProp
 
   return (
     <>
-      <DashboardHeader role="USER WORKSPACE" title="Ticket checkout" description="Select ticket class, buyer details, and issue QR tickets without leaving the user dashboard." />
+      <DashboardHeader role="USER WORKSPACE" title="Ticket checkout" description="Select ticket class and quantity, then add the ticket package to the shared user cart. Registered user details are used at final checkout." />
       <main className="bg-[var(--surface)] p-5 md:p-8">
         {isLoading ? <div className="h-[34rem] animate-pulse rounded-[2.4rem] border border-[var(--line)] bg-white" /> : null}
         {!isLoading && !event ? (
@@ -98,7 +96,7 @@ export function DashboardTicketCheckout({ eventId }: DashboardTicketCheckoutProp
                 <div>
                   <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Dashboard ticket checkout</p>
                   <h1 className="mt-3 text-4xl font-black tracking-[-0.05em] md:text-5xl">Buy tickets for {event.name}</h1>
-                  <p className="mt-3 text-sm leading-7 text-[var(--steel)]">Checkout stays in the user dashboard. Swap this placeholder call to Stripe, Yoco, Ozow, or backend checkout when payment API is ready.</p>
+                  <p className="mt-3 text-sm leading-7 text-[var(--steel)]">Choose the ticket class and quantity. The ticket will be added to the same user cart used for products.</p>
                 </div>
                 <TicketStatusBadge status={event.status} />
               </div>
@@ -118,29 +116,28 @@ export function DashboardTicketCheckout({ eventId }: DashboardTicketCheckoutProp
                     <button type="button" onClick={() => setQuantity((current) => Math.min(current + 1, selectedTicketType.available))} className="grid h-9 w-9 place-items-center rounded-full border border-[var(--line)] text-[var(--ink)]"><Plus className="h-4 w-4" /></button>
                   </div>
                 </div>
-                <label className="grid gap-2">
-                  <span className="text-sm font-black">Buyer full name</span>
-                  <span className="flex min-h-13 items-center gap-3 rounded-[1.35rem] border border-[var(--line)] bg-white px-4 focus-within:border-[var(--signal)] focus-within:shadow-[var(--focus-ring)]"><UserRound className="h-4 w-4 text-[var(--signal)]" /><input value={buyerName} onChange={(changeEvent) => setBuyerName(changeEvent.target.value)} placeholder="Example: Sizolwakhe Nkosi" className="w-full bg-transparent text-sm font-bold outline-none placeholder:text-[var(--muted)]" /></span>
-                </label>
-                <label className="grid gap-2">
-                  <span className="text-sm font-black">Buyer email address</span>
-                  <span className="flex min-h-13 items-center gap-3 rounded-[1.35rem] border border-[var(--line)] bg-white px-4 focus-within:border-[var(--signal)] focus-within:shadow-[var(--focus-ring)]"><Mail className="h-4 w-4 text-[var(--signal)]" /><input type="email" value={buyerEmail} onChange={(changeEvent) => setBuyerEmail(changeEvent.target.value)} placeholder="Example: buyer@example.com" className="w-full bg-transparent text-sm font-bold outline-none placeholder:text-[var(--muted)]" /></span>
-                </label>
+                <div className="rounded-[1.4rem] border border-[var(--line)] bg-[var(--surface)] p-4">
+                  <p className="text-sm font-black text-[var(--ink)]">Registered user details</p>
+                  <p className="mt-2 text-sm leading-6 text-[var(--steel)]">Buyer full name and email are no longer collected here. The final cart checkout uses the logged-in user account details automatically.</p>
+                </div>
               </div>
               {error ? <div className="mt-5 flex gap-3 rounded-[1.4rem] border border-[var(--danger)]/25 bg-[var(--danger)]/10 px-4 py-3 text-sm font-bold text-[var(--danger)]"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />{error}</div> : null}
             </section>
 
             <aside className="h-fit rounded-[2.35rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-8">
               <div className="grid h-14 w-14 place-items-center rounded-[1.25rem] bg-[var(--ink)] text-[var(--gold)]"><CreditCard className="h-6 w-6" /></div>
-              <h2 className="mt-5 text-3xl font-black tracking-[-0.05em]">Payment summary</h2>
+              <h2 className="mt-5 text-3xl font-black tracking-[-0.05em]">Cart summary</h2>
               <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{getTicketTypeLabel(selectedTicketType.type)} · {quantity} ticket{quantity === 1 ? "" : "s"}</p>
               <dl className="mt-6 grid gap-3 text-sm font-bold">
                 <div className="flex justify-between rounded-[1.15rem] border border-[var(--line)] bg-[var(--surface)] p-3"><dt>Ticket price</dt><dd className="money">{formatCurrency(selectedTicketType.price)}</dd></div>
                 <div className="flex justify-between rounded-[1.15rem] border border-[var(--line)] bg-[var(--surface)] p-3"><dt>Subtotal</dt><dd className="money">{formatCurrency(quote.subtotal)}</dd></div>
-                <div className="flex justify-between rounded-[1.15rem] border border-[var(--line)] bg-[var(--surface)] p-3"><dt>Platform fee</dt><dd className="money">{formatCurrency(quote.serviceFee)}</dd></div>
-                <div className="flex justify-between rounded-[1.25rem] border border-[var(--signal)] bg-white p-4 text-lg"><dt>Total</dt><dd className="money font-black">{formatCurrency(quote.total)}</dd></div>
+                <div className="flex justify-between rounded-[1.15rem] border border-[var(--line)] bg-[var(--surface)] p-3"><dt>Platform fee preview</dt><dd className="money">{formatCurrency(quote.serviceFee)}</dd></div>
+                <div className="flex justify-between rounded-[1.25rem] border border-[var(--signal)] bg-white p-4 text-lg"><dt>Total preview</dt><dd className="money font-black">{formatCurrency(quote.total)}</dd></div>
               </dl>
-              <button type="submit" disabled={isSubmitting || soldOut} className="mt-6 inline-flex min-h-13 w-full items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] disabled:opacity-50">{soldOut ? "Sold out" : isSubmitting ? "Processing payment..." : "Pay placeholder & issue QR"} <ArrowRight className="h-4 w-4" /></button>
+              <button type="submit" disabled={isSubmitting || soldOut} className="mt-6 inline-flex min-h-13 w-full items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] disabled:opacity-50">{soldOut ? "Sold out" : isSubmitting ? "Adding to cart..." : "Add to cart"} <ShoppingCart className="h-4 w-4" /></button>
+              <Link href="/dashboard/user/shop/cart" className="mt-3 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-6 text-sm font-black text-[var(--ink)] hover:border-[var(--gold)]">
+                Open cart <ArrowRight className="h-4 w-4" />
+              </Link>
             </aside>
           </form>
         ) : null}
