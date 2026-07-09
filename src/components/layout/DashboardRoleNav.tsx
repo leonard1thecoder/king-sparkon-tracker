@@ -55,10 +55,11 @@ const navByRole: Record<UserRole, NavItem[]> = {
   ],
   User: [
     { label: "Overview", href: "/dashboard/user", icon: UserRound },
-    { label: "Tuck Shop", href: "/dashboard/user/shop", icon: ShoppingCart },
-    { label: "Tip Worker", href: "/dashboard/user/tips/scan", icon: WalletCards },
+    { label: "Buy Products", href: "/dashboard/user/shop", icon: ShoppingCart },
+    { label: "Cart", href: "/dashboard/user/shop/cart", icon: ShoppingCart },
     { label: "Buy Tickets", href: "/dashboard/user/tickets/buy", icon: Ticket },
     { label: "My Tickets", href: "/dashboard/user/tickets", icon: QrCode },
+    { label: "Tip Worker", href: "/dashboard/user/tips/scan", icon: WalletCards },
     { label: "Jobs", href: "/dashboard/user/jobs", icon: BriefcaseBusiness },
     { label: "Applications", href: "/dashboard/user/applications", icon: FileCheck2 },
     { label: "Profile", href: "/dashboard/user/profile", icon: Settings },
@@ -75,6 +76,14 @@ function isActive(pathname: string, searchParams: URLSearchParams, href: string)
   if (query) {
     const hrefParams = new URLSearchParams(query);
     return pathname === cleanHref && Array.from(hrefParams.entries()).every(([key, value]) => searchParams.get(key) === value);
+  }
+
+  if (cleanHref === "/dashboard/user/shop") {
+    return pathname === cleanHref;
+  }
+
+  if (cleanHref === "/dashboard/user/shop/cart") {
+    return pathname === cleanHref || pathname.startsWith("/dashboard/user/shop/cart/");
   }
 
   if (cleanHref === "/dashboard/user/tickets/buy") {
