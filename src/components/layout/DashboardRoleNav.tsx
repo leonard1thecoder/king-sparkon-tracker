@@ -51,6 +51,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
   ],
   User: [
     { label: "Buy Products", href: "/dashboard/user/shop", icon: ShoppingCart },
+    { label: "Cart", href: "/dashboard/user/shop/cart", icon: ShoppingCart },
     { label: "Buy Tickets", href: "/dashboard/user/tickets/buy", icon: Ticket },
     { label: "Tip Worker", href: "/dashboard/user/tips/scan", icon: WalletCards },
   ],
@@ -70,6 +71,10 @@ function isActive(pathname: string, searchParams: URLSearchParams, href: string)
 
   if (cleanHref === "/dashboard/user/shop") {
     return pathname === cleanHref || pathname.startsWith("/dashboard/user/shop/products");
+  }
+
+  if (cleanHref === "/dashboard/user/shop/cart") {
+    return pathname === cleanHref || pathname.startsWith("/dashboard/user/carts");
   }
 
   if (cleanHref === "/dashboard/user/tickets/buy") {
