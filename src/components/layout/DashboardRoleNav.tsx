@@ -54,15 +54,10 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Profile", href: "/dashboard/affiliate/profile", icon: Settings },
   ],
   User: [
-    { label: "Overview", href: "/dashboard/user", icon: UserRound },
     { label: "Buy Products", href: "/dashboard/user/shop", icon: ShoppingCart },
-    { label: "Cart", href: "/dashboard/user/shop/cart", icon: ShoppingCart },
     { label: "Buy Tickets", href: "/dashboard/user/tickets/buy", icon: Ticket },
-    { label: "My Tickets", href: "/dashboard/user/tickets", icon: QrCode },
     { label: "Tip Worker", href: "/dashboard/user/tips/scan", icon: WalletCards },
-    { label: "Jobs", href: "/dashboard/user/jobs", icon: BriefcaseBusiness },
-    { label: "Applications", href: "/dashboard/user/applications", icon: FileCheck2 },
-    { label: "Profile", href: "/dashboard/user/profile", icon: Settings },
+    { label: "Profile", href: "/dashboard/user/profile", icon: UserRound },
   ],
 };
 
@@ -79,19 +74,11 @@ function isActive(pathname: string, searchParams: URLSearchParams, href: string)
   }
 
   if (cleanHref === "/dashboard/user/shop") {
-    return pathname === cleanHref;
-  }
-
-  if (cleanHref === "/dashboard/user/shop/cart") {
-    return pathname === cleanHref || pathname.startsWith("/dashboard/user/shop/cart/");
+    return pathname === cleanHref || pathname.startsWith("/dashboard/user/shop/products");
   }
 
   if (cleanHref === "/dashboard/user/tickets/buy") {
     return pathname === cleanHref || pathname.startsWith("/dashboard/user/tickets/events") || pathname.startsWith("/dashboard/user/tickets/checkout");
-  }
-
-  if (cleanHref === "/dashboard/user/tickets") {
-    return pathname === cleanHref && !searchParams.has("tab");
   }
 
   if (isDashboardRoot(cleanHref)) {
