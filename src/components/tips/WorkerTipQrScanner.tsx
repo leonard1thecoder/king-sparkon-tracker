@@ -16,8 +16,16 @@ type WorkerQrResult = {
 
 const demoWorkerIds = ["demo-worker", "worker-demo-001", "sparkon-waiter-17"];
 
+function safeDecode(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 function cleanWorkerId(value: string) {
-  return decodeURIComponent(value).trim().replace(/^@+/, "");
+  return safeDecode(value).trim().replace(/^@+/, "");
 }
 
 function readWorkerFromJson(value: string) {
