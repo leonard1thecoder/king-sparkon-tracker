@@ -95,11 +95,16 @@ export function isTicketLine(line: TuckShopCartLine): line is TuckShopCartTicket
   return line.kind === "TICKET";
 }
 
+function ticketLineMaxQuantity(line: TuckShopCartTicketLine) {
+  return Math.max(line.event.ticketTypes.find((candidate) => candidate.type === line.ticketType)?.available ?? line.quantity, 1);
+}
+
 function normalizeCartLine(line: Partial<TuckShopCartLine>): TuckShopCartLine | null {
   const quantity = Math.max(Number(line.quantity ?? 0), 1);
 
   if (line.kind === "TICKET" && line.event?.id && line.ticketType) {
-    return { ...line, quantity } as TuckShopCartTicketLine;
+    const nextLine = { ...line, quantity } as TuckShopCartTicketLine;
+    return { ...nextLine, quantity: Math.min(nextLine.quantity, ticketLineMaxQuantity(nextLine)) };
   }
 
   if ((line.kind === "PRODUCT" || !line.kind) && "product" in line && line.product?.id) {
@@ -147,13 +152,14 @@ export function addTuckShopProductToCart(product: Product) {
 
 export function addTicketToCart(line: TuckShopCartTicketLine) {
   const current = readTuckShopCart();
+  const maxQuantity = ticketLineMaxQuantity(line);
   const nextCart = current.some((cartLine) => isTicketLine(cartLine) && cartLine.event.id === line.event.id && cartLine.ticketType === line.ticketType)
     ? current.map((cartLine) =>
         isTicketLine(cartLine) && cartLine.event.id === line.event.id && cartLine.ticketType === line.ticketType
-          ? { ...cartLine, ...line, quantity: cartLine.quantity + line.quantity }
+          ? { ...cartLine, ...line, quantity: Math.min(cartLine.quantity + line.quantity, maxQuantity) }
           : cartLine,
       )
-    : [...current, line];
+    : [...current, { ...line, quantity: Math.min(line.quantity, maxQuantity) }];
 
   writeTuckShopCart(nextCart);
   return nextCart;
@@ -167,9 +173,7 @@ export function updateTuckShopCartQuantity(kind: TuckShopCartLine["kind"], id: s
     }
 
     if (isTicketLine(line) && kind === "TICKET" && line.event.id === id && line.ticketType === ticketType) {
-      const selectedType = line.event.ticketTypes.find((candidate) => candidate.type === line.ticketType);
-      const maxQuantity = Math.max(selectedType?.available ?? quantity, 1);
-      return { ...line, quantity: Math.min(Math.max(quantity, 1), maxQuantity) };
+      return { ...line, quantity: Math.min(Math.max(quantity, 1), ticketLineMaxQuantity(line)) };
     }
 
     return line;
