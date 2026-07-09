@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { ShoppingCart, Ticket } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowLeft, ArrowRight, ShoppingCart, Ticket } from "lucide-react";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { TicketQrCard } from "@/components/tickets/TicketQrCard";
 import { getEventById, getMyTickets } from "@/services/ticketService";
@@ -13,8 +13,11 @@ type TicketWithEvent = {
   event: TicketEvent | null;
 };
 
+const TICKETS_PER_PAGE = 6;
+
 export function DashboardMyTickets() {
   const [items, setItems] = useState<TicketWithEvent[]>([]);
+  const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -24,6 +27,7 @@ export function DashboardMyTickets() {
       const ticketsWithEvents = await Promise.all(nextTickets.map(async (ticket) => ({ ticket, event: await getEventById(ticket.eventId) })));
       if (!mounted) return;
       setItems(ticketsWithEvents);
+      setPage(0);
       setIsLoading(false);
     }
     void loadTickets();
@@ -31,6 +35,9 @@ export function DashboardMyTickets() {
       mounted = false;
     };
   }, []);
+
+  const totalPages = Math.max(Math.ceil(items.length / TICKETS_PER_PAGE), 1);
+  const visibleItems = useMemo(() => items.slice(page * TICKETS_PER_PAGE, page * TICKETS_PER_PAGE + TICKETS_PER_PAGE), [items, page]);
 
   return (
     <>
@@ -49,7 +56,14 @@ export function DashboardMyTickets() {
 
         {!isLoading && items.length > 0 ? (
           <div className="mt-8 grid gap-5">
-            {items.map(({ ticket, event }) => event ? <TicketQrCard key={ticket.id} ticket={ticket} eventName={event.name} eventDate={event.eventDate} eventLocation={event.location} /> : null)}
+            <div className="flex flex-col gap-3 rounded-[1.5rem] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)] sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm font-black text-[var(--steel)]">Showing ticket page {page + 1} of {totalPages} · {visibleItems.length} of {items.length} tickets</p>
+              <div className="flex gap-2">
+                <button type="button" onClick={() => setPage((current) => Math.max(current - 1, 0))} disabled={page === 0} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-4 text-xs font-black uppercase tracking-[0.08em] text-[var(--ink)] hover:border-[var(--gold)] disabled:opacity-40"><ArrowLeft className="h-4 w-4" /> Prev</button>
+                <button type="button" onClick={() => setPage((current) => Math.min(current + 1, totalPages - 1))} disabled={page >= totalPages - 1} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-4 text-xs font-black uppercase tracking-[0.08em] text-white hover:bg-[var(--ink)] disabled:opacity-40">Next <ArrowRight className="h-4 w-4" /></button>
+              </div>
+            </div>
+            {visibleItems.map(({ ticket, event }) => event ? <TicketQrCard key={ticket.id} ticket={ticket} eventName={event.name} eventDate={event.eventDate} eventLocation={event.location} /> : null)}
           </div>
         ) : null}
       </main>
