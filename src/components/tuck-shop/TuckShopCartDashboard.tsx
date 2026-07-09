@@ -26,6 +26,9 @@ import {
   updateTuckShopCartQuantity,
 } from "@/lib/tuck-shop/cart";
 
+const STRIPE_JS_URL = "https://js.stripe.com/v3/";
+const STRIPE_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+
 type CheckoutUser = {
   name: string;
   emailAddress: string;
@@ -43,7 +46,7 @@ type StripeElements = {
 };
 
 type StripeInstance = {
-  elements: (options?: Record<string, unknown>) => StripeElements;
+  elements: () => StripeElements;
 };
 
 declare global {
@@ -72,7 +75,7 @@ function loadStripeScript() {
       return;
     }
 
-    const existingScript = document.querySelector<HTMLScriptElement>('script[src="https://js.stripe.com/v3/"]');
+    const existingScript = document.querySelector<HTMLScriptElement>(`script[src="${STRIPE_JS_URL}"]`);
     if (existingScript) {
       existingScript.addEventListener("load", () => resolve(), { once: true });
       existingScript.addEventListener("error", () => reject(new Error("Stripe.js could not load.")), { once: true });
@@ -80,7 +83,7 @@ function loadStripeScript() {
     }
 
     const script = document.createElement("script");
-    script.src = "https://js.stripe.com/v3/";
+    script.src = STRIPE_JS_URL;
     script.async = true;
     script.onload = () => resolve();
     script.onerror = () => reject(new Error("Stripe.js could not load."));
@@ -118,20 +121,21 @@ export function TuckShopCartDashboard() {
 
   useEffect(() => {
     let active = true;
-    const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
-    if (!publishableKey) {
+    if (!STRIPE_PUBLISHABLE_KEY) {
       setStripeMessage("Set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY to activate the secure Stripe card input.");
       return;
     }
+
+    const stripePublishableKey = STRIPE_PUBLISHABLE_KEY;
 
     async function mountStripeCard() {
       try {
         await loadStripeScript();
         if (!active || !stripeCardContainerRef.current || !window.Stripe || stripeCardRef.current) return;
 
-        const stripe = window.Stripe(publishableKey);
-        const elements = stripe.elements({ appearance: { theme: "stripe" } });
+        const stripe = window.Stripe(stripePublishableKey);
+        const elements = stripe.elements();
         const card = elements.create("card", {
           hidePostalCode: true,
           style: {
@@ -191,7 +195,7 @@ export function TuckShopCartDashboard() {
       return;
     }
 
-    if (process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY && !stripeCardComplete) {
+    if (STRIPE_PUBLISHABLE_KEY && !stripeCardComplete) {
       setError("Complete the Stripe card number, expiry date, and CVC before checkout.");
       return;
     }
