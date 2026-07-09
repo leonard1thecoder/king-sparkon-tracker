@@ -3,7 +3,8 @@
 import { useRef, useState } from "react";
 import { AlertCircle, Camera, CheckCircle2, Keyboard, QrCode, ShieldCheck } from "lucide-react";
 import type { TicketVerificationResult } from "@/types/tickets";
-import { getTicketTypeLabel, verifyTicketByQr, verifyTicketByReference } from "@/services/ticketService";
+import { getTicketTypeLabel } from "@/services/ticketService";
+import { verifyWorkerTicketByQr, verifyWorkerTicketByReference } from "@/services/ticketVerificationService";
 
 type DecodeControls = {
   stop: () => void;
@@ -36,7 +37,7 @@ export function TicketScannerPanel() {
 
   async function verifyQrValue(qrValue: string) {
     setIsVerifying(true);
-    await handleResult(await verifyTicketByQr(qrValue));
+    await handleResult(await verifyWorkerTicketByQr(qrValue));
   }
 
   async function verifyReference() {
@@ -45,7 +46,7 @@ export function TicketScannerPanel() {
       return;
     }
     setIsVerifying(true);
-    await handleResult(await verifyTicketByReference(manualReference));
+    await handleResult(await verifyWorkerTicketByReference(manualReference));
   }
 
   async function startCamera() {
@@ -84,7 +85,7 @@ export function TicketScannerPanel() {
             <div>
               <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--gold)]">Gate verification camera</p>
               <h2 className="mt-3 text-3xl font-black tracking-[-0.05em]">Scan user ticket QR codes</h2>
-              <p className="mt-3 text-sm leading-7 text-white/62">Uses the existing QR scanner dependency and falls back to manual references when the device camera is unavailable.</p>
+              <p className="mt-3 text-sm leading-7 text-white/62">Uses backend ticket verification first and falls back to local preview tickets only if the backend is unavailable.</p>
             </div>
             <div className="grid h-13 w-13 shrink-0 place-items-center rounded-[1.25rem] bg-white/10 text-[var(--gold)]"><QrCode className="h-6 w-6" /></div>
           </div>
