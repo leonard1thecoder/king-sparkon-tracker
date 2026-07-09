@@ -108,11 +108,14 @@ export function DashboardHeaderActions({ role }: { role: string }) {
       <div className="flex flex-wrap justify-end gap-2 rounded-[1.2rem] border border-[var(--line)] bg-white/80 p-2 shadow-[var(--shadow-soft)] backdrop-blur">
         {showCheckout ? (
           <>
+            <Link href="/dashboard/user/shop" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-4 text-xs font-black uppercase tracking-[0.1em] text-white hover:bg-[var(--ink)]">
+              <ShoppingCart className="h-4 w-4" /> Buy products
+            </Link>
             <Link href="/dashboard/user/tickets/buy" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--gold)] px-4 text-xs font-black uppercase tracking-[0.1em] text-[var(--ink)] hover:bg-white">
               <Ticket className="h-4 w-4" /> Buy tickets
             </Link>
-            <Link href="/dashboard/user/shop#checkout" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-4 text-xs font-black uppercase tracking-[0.1em] text-white hover:bg-[var(--ink)]">
-              <ShoppingCart className="h-4 w-4" /> Cart checkout
+            <Link href="/dashboard/user/shop/cart" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-4 text-xs font-black uppercase tracking-[0.1em] text-[var(--ink)] hover:border-[var(--gold)]">
+              <ShoppingCart className="h-4 w-4" /> Cart
             </Link>
           </>
         ) : null}
