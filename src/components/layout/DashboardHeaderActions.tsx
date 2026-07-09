@@ -19,7 +19,7 @@ const userProfileShortcuts: ProfileShortcut[] = [
   { label: "Jobs", href: "/dashboard/user/jobs", icon: BriefcaseBusiness },
   { label: "My Tickets", href: "/dashboard/user/tickets", icon: Ticket },
   { label: "Applications", href: "/dashboard/user/applications", icon: FileCheck2 },
-  { label: "My Cart", href: "/dashboard/user/shop/cart", icon: ShoppingCart },
+  { label: "My Carts", href: "/dashboard/user/carts", icon: ShoppingCart },
 ];
 
 function money(value: number) {
