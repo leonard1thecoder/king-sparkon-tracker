@@ -1,4 +1,4 @@
-import type { Product } from "@/lib/types/backend";
+import type { Product, TuckShopPurchase } from "@/lib/types/backend";
 import type { TicketEvent, TicketType } from "@/types/tickets";
 
 export type TuckShopCartProductLine = {
@@ -18,7 +18,27 @@ export type TuckShopCartTicketLine = {
 
 export type TuckShopCartLine = TuckShopCartProductLine | TuckShopCartTicketLine;
 
+export type TuckShopPurchaseHistoryItem = {
+  id: string;
+  transactionId?: number;
+  createdAt: string;
+  businessId?: number | null;
+  businessName?: string | null;
+  paymentStatus?: string | null;
+  paymentReference?: string | null;
+  productTotal: number;
+  items: Array<{
+    productId: number;
+    productName: string;
+    productImageUrl?: string | null;
+    quantity: number;
+    unitPrice: number;
+    lineTotal: number;
+  }>;
+};
+
 const TUCK_SHOP_CART_KEY = "king-sparkon-tuck-shop-cart";
+const TUCK_SHOP_PURCHASE_HISTORY_KEY = "king-sparkon-user-purchase-history";
 
 export function money(value?: number | null) {
   return new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(Number(value ?? 0));
@@ -118,6 +138,29 @@ function normalizeCartLine(line: Partial<TuckShopCartLine>): TuckShopCartLine | 
   return null;
 }
 
+function normalizePurchaseHistoryItem(item: Partial<TuckShopPurchaseHistoryItem>): TuckShopPurchaseHistoryItem | null {
+  if (!item.id || !Array.isArray(item.items)) return null;
+
+  return {
+    id: item.id,
+    transactionId: item.transactionId,
+    createdAt: item.createdAt || new Date().toISOString(),
+    businessId: item.businessId,
+    businessName: item.businessName,
+    paymentStatus: item.paymentStatus,
+    paymentReference: item.paymentReference,
+    productTotal: Number(item.productTotal ?? 0),
+    items: item.items.map((line) => ({
+      productId: Number(line.productId),
+      productName: String(line.productName ?? "Product"),
+      productImageUrl: line.productImageUrl,
+      quantity: Number(line.quantity ?? 0),
+      unitPrice: Number(line.unitPrice ?? 0),
+      lineTotal: Number(line.lineTotal ?? 0),
+    })),
+  };
+}
+
 export function readTuckShopCart(): TuckShopCartLine[] {
   if (typeof window === "undefined") return [];
 
@@ -134,10 +177,54 @@ export function readTuckShopCart(): TuckShopCartLine[] {
   }
 }
 
+export function readTuckShopPurchaseHistory(): TuckShopPurchaseHistoryItem[] {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const rawHistory = window.localStorage.getItem(TUCK_SHOP_PURCHASE_HISTORY_KEY);
+    if (!rawHistory) return [];
+
+    const parsed = JSON.parse(rawHistory) as Array<Partial<TuckShopPurchaseHistoryItem>>;
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed.map(normalizePurchaseHistoryItem).filter((item): item is TuckShopPurchaseHistoryItem => Boolean(item));
+  } catch {
+    return [];
+  }
+}
+
 export function writeTuckShopCart(cart: TuckShopCartLine[]) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(TUCK_SHOP_CART_KEY, JSON.stringify(cart));
   window.dispatchEvent(new CustomEvent("king-sparkon:tuck-shop-cart", { detail: { cart } }));
+}
+
+export function saveTuckShopPurchaseHistory(purchase: TuckShopPurchase) {
+  if (typeof window === "undefined") return [];
+
+  const historyItem: TuckShopPurchaseHistoryItem = {
+    id: String(purchase.transactionId ?? `${Date.now()}`),
+    transactionId: purchase.transactionId,
+    createdAt: purchase.createdAt ?? new Date().toISOString(),
+    businessId: purchase.businessId,
+    businessName: purchase.businessName,
+    paymentStatus: purchase.paymentStatus,
+    paymentReference: purchase.paymentReference,
+    productTotal: Number(purchase.productTotal ?? 0),
+    items: (purchase.items ?? []).map((item) => ({
+      productId: item.productId,
+      productName: item.productName,
+      productImageUrl: item.productImageUrl,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      lineTotal: item.lineTotal,
+    })),
+  };
+
+  const nextHistory = [historyItem, ...readTuckShopPurchaseHistory().filter((item) => item.id !== historyItem.id)].slice(0, 30);
+  window.localStorage.setItem(TUCK_SHOP_PURCHASE_HISTORY_KEY, JSON.stringify(nextHistory));
+  window.dispatchEvent(new CustomEvent("king-sparkon:tuck-shop-purchase-history", { detail: { history: nextHistory } }));
+  return nextHistory;
 }
 
 export function addTuckShopProductToCart(product: Product, quantity = 1) {
