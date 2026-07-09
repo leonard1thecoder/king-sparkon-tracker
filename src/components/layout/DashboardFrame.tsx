@@ -76,7 +76,7 @@ export function DashboardFrame({ role, nav, children }: { role: string; nav: Rea
         </div>
       </aside>
 
-      <div className="min-w-0 lg:h-screen lg:overflow-y-auto lg:overflow-x-hidden">
+      <div className="h-[calc(100vh-4.5rem)] min-w-0 overflow-y-auto overflow-x-hidden lg:h-screen">
         {children}
       </div>
     </div>
