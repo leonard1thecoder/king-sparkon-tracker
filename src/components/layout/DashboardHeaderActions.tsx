@@ -2,12 +2,25 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, ShoppingCart, Ticket, WalletCards } from "lucide-react";
+import { BriefcaseBusiness, ChevronDown, FileCheck2, Loader2, ShoppingCart, Ticket, UserRound, WalletCards } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { apiGet, normalizeApiError } from "@/lib/api/client";
 
 type TipRow = Record<string, unknown>;
 type TipPayload = TipRow[] | { content?: TipRow[]; data?: TipRow[]; items?: TipRow[]; withdrawableAmount?: number; accountTotal?: number; totalWithdrawable?: number; availableToWithdraw?: number };
+
+type ProfileShortcut = {
+  label: string;
+  href: string;
+  icon: typeof UserRound;
+};
+
+const userProfileShortcuts: ProfileShortcut[] = [
+  { label: "Jobs", href: "/dashboard/user/jobs", icon: BriefcaseBusiness },
+  { label: "My Tickets", href: "/dashboard/user/tickets", icon: Ticket },
+  { label: "Applications", href: "/dashboard/user/applications", icon: FileCheck2 },
+  { label: "My Cart", href: "/dashboard/user/shop/cart", icon: ShoppingCart },
+];
 
 function money(value: number) {
   return new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(value);
@@ -98,6 +111,30 @@ function OwnerWithdrawAction() {
   );
 }
 
+function UserProfileDropdown() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="relative">
+      <button type="button" onClick={() => setOpen((current) => !current)} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-4 text-xs font-black uppercase tracking-[0.1em] text-[var(--ink)] hover:border-[var(--gold)]">
+        <UserRound className="h-4 w-4" /> Profile <ChevronDown className="h-4 w-4" />
+      </button>
+      {open ? (
+        <div className="absolute right-0 z-30 mt-2 grid min-w-64 gap-1 rounded-[1.25rem] border border-[var(--line)] bg-white p-2 shadow-[var(--shadow-ledger)]">
+          {userProfileShortcuts.map(({ label, href, icon: Icon }) => (
+            <Link key={href} href={href} onClick={() => setOpen(false)} className="inline-flex min-h-11 items-center gap-3 rounded-[1rem] px-3 text-sm font-black text-[var(--ink)] hover:bg-[var(--surface)]">
+              <Icon className="h-4 w-4 text-[var(--signal)]" /> {label}
+            </Link>
+          ))}
+          <Link href="/dashboard/user/profile" onClick={() => setOpen(false)} className="inline-flex min-h-11 items-center gap-3 rounded-[1rem] px-3 text-sm font-black text-[var(--ink)] hover:bg-[var(--surface)]">
+            <UserRound className="h-4 w-4 text-[var(--signal)]" /> Profile settings
+          </Link>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export function DashboardHeaderActions({ role }: { role: string }) {
   const showCheckout = useMemo(() => userRole(role), [role]);
   const showWithdraw = useMemo(() => ownerRole(role), [role]);
@@ -114,9 +151,7 @@ export function DashboardHeaderActions({ role }: { role: string }) {
             <Link href="/dashboard/user/tickets/buy" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--gold)] px-4 text-xs font-black uppercase tracking-[0.1em] text-[var(--ink)] hover:bg-white">
               <Ticket className="h-4 w-4" /> Buy tickets
             </Link>
-            <Link href="/dashboard/user/shop/cart" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-4 text-xs font-black uppercase tracking-[0.1em] text-[var(--ink)] hover:border-[var(--gold)]">
-              <ShoppingCart className="h-4 w-4" /> Cart
-            </Link>
+            <UserProfileDropdown />
           </>
         ) : null}
         <LogoutButton className="inline-flex min-h-10 items-center justify-center rounded-full border border-[var(--danger)] bg-white px-4 text-xs font-black uppercase tracking-[0.1em] text-[var(--danger)] hover:bg-[var(--danger)] hover:text-white disabled:opacity-60" />
