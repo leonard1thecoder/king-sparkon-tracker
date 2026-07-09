@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { BriefcaseBusiness, ChevronDown, FileCheck2, Loader2, ShoppingCart, Ticket, UserRound, WalletCards } from "lucide-react";
+import { BriefcaseBusiness, ChevronDown, FileCheck2, Loader2, Power, ShoppingCart, Ticket, UserRound, WalletCards } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { apiGet, normalizeApiError } from "@/lib/api/client";
 
@@ -21,6 +21,8 @@ const userProfileShortcuts: ProfileShortcut[] = [
   { label: "Applications", href: "/dashboard/user/applications", icon: FileCheck2 },
   { label: "My Carts", href: "/dashboard/user/carts", icon: ShoppingCart },
 ];
+
+const iconButtonClass = "inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--gold)] hover:bg-[var(--surface)]";
 
 function money(value: number) {
   return new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(value);
@@ -98,16 +100,11 @@ function OwnerWithdrawAction() {
   }, []);
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-[1.2rem] border border-[var(--gold)]/40 bg-[var(--ink)] px-4 py-3 text-white shadow-[var(--shadow-soft)]">
-      <div className="min-w-0">
-        <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.14em] text-[var(--gold)]">Account total to withdraw</p>
-        <p className="money mt-1 text-xl font-black tracking-[-0.03em]">{loading ? "Loading..." : money(total)}</p>
-      </div>
-      <Link href="/dashboard/owner/tips#withdraw" className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full bg-[var(--gold)] px-4 text-xs font-black uppercase tracking-[0.1em] text-[var(--ink)] hover:bg-white">
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <WalletCards className="h-4 w-4" />}
-        Withdraw
-      </Link>
-    </div>
+    <Link href="/dashboard/owner/tips#withdraw" className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--ink)] px-4 text-xs font-black uppercase tracking-[0.1em] text-[var(--gold)] shadow-[var(--shadow-soft)] hover:bg-white" aria-label="Withdraw tips" title={`Withdraw tips · ${loading ? "Loading" : money(total)}`}>
+      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <WalletCards className="h-4 w-4" />}
+      <span className="sr-only">Withdraw tips</span>
+      <span className="money hidden text-white/90 lg:inline">{loading ? "..." : money(total)}</span>
+    </Link>
   );
 }
 
@@ -116,11 +113,12 @@ function UserProfileDropdown() {
 
   return (
     <div className="relative">
-      <button type="button" onClick={() => setOpen((current) => !current)} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-4 text-xs font-black uppercase tracking-[0.1em] text-[var(--ink)] hover:border-[var(--gold)]">
-        <UserRound className="h-4 w-4" /> Profile <ChevronDown className="h-4 w-4" />
+      <button type="button" onClick={() => setOpen((current) => !current)} className={iconButtonClass} aria-label="Open profile menu" title="Profile menu">
+        <UserRound className="h-4 w-4" />
+        <ChevronDown className="h-3.5 w-3.5" />
       </button>
       {open ? (
-        <div className="absolute right-0 z-30 mt-2 grid min-w-64 gap-1 rounded-[1.25rem] border border-[var(--line)] bg-white p-2 shadow-[var(--shadow-ledger)]">
+        <div className="absolute right-0 z-50 mt-2 grid min-w-64 gap-1 rounded-[1.25rem] border border-[var(--line)] bg-white p-2 shadow-[var(--shadow-ledger)]">
           {userProfileShortcuts.map(({ label, href, icon: Icon }) => (
             <Link key={href} href={href} onClick={() => setOpen(false)} className="inline-flex min-h-11 items-center gap-3 rounded-[1rem] px-3 text-sm font-black text-[var(--ink)] hover:bg-[var(--surface)]">
               <Icon className="h-4 w-4 text-[var(--signal)]" /> {label}
@@ -140,22 +138,22 @@ export function DashboardHeaderActions({ role }: { role: string }) {
   const showWithdraw = useMemo(() => ownerRole(role), [role]);
 
   return (
-    <div className="flex w-full flex-col gap-3 md:w-auto md:min-w-[23rem] xl:min-w-[28rem]">
+    <div className="flex items-center justify-end gap-2">
       {showWithdraw ? <OwnerWithdrawAction /> : null}
-      <div className="flex flex-wrap justify-end gap-2 rounded-[1.2rem] border border-[var(--line)] bg-white/80 p-2 shadow-[var(--shadow-soft)] backdrop-blur">
-        {showCheckout ? (
-          <>
-            <Link href="/dashboard/user/shop" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-4 text-xs font-black uppercase tracking-[0.1em] text-white hover:bg-[var(--ink)]">
-              <ShoppingCart className="h-4 w-4" /> Buy products
-            </Link>
-            <Link href="/dashboard/user/tickets/buy" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--gold)] px-4 text-xs font-black uppercase tracking-[0.1em] text-[var(--ink)] hover:bg-white">
-              <Ticket className="h-4 w-4" /> Buy tickets
-            </Link>
-            <UserProfileDropdown />
-          </>
-        ) : null}
-        <LogoutButton className="inline-flex min-h-10 items-center justify-center rounded-full border border-[var(--danger)] bg-white px-4 text-xs font-black uppercase tracking-[0.1em] text-[var(--danger)] hover:bg-[var(--danger)] hover:text-white disabled:opacity-60" />
-      </div>
+      {showCheckout ? (
+        <>
+          <Link href="/dashboard/user/shop" className={iconButtonClass} aria-label="Buy products" title="Buy products">
+            <ShoppingCart className="h-4 w-4" />
+          </Link>
+          <Link href="/dashboard/user/tickets/buy" className={iconButtonClass} aria-label="Buy tickets" title="Buy tickets">
+            <Ticket className="h-4 w-4" />
+          </Link>
+          <UserProfileDropdown />
+        </>
+      ) : null}
+      <LogoutButton className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--danger)] bg-white text-[var(--danger)] shadow-[var(--shadow-soft)] hover:bg-[var(--danger)] hover:text-white disabled:opacity-60" ariaLabel="Sign out">
+        <Power className="h-4 w-4" />
+      </LogoutButton>
     </div>
   );
 }
