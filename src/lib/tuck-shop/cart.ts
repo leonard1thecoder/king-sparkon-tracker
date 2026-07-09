@@ -95,6 +95,10 @@ export function isTicketLine(line: TuckShopCartLine): line is TuckShopCartTicket
   return line.kind === "TICKET";
 }
 
+function productLineMaxQuantity(product: Product) {
+  return Math.max(product.stockQuantity ?? 1, 1);
+}
+
 function ticketLineMaxQuantity(line: TuckShopCartTicketLine) {
   return Math.max(line.event.ticketTypes.find((candidate) => candidate.type === line.ticketType)?.available ?? line.quantity, 1);
 }
@@ -108,7 +112,7 @@ function normalizeCartLine(line: Partial<TuckShopCartLine>): TuckShopCartLine | 
   }
 
   if ((line.kind === "PRODUCT" || !line.kind) && "product" in line && line.product?.id) {
-    return { kind: "PRODUCT", product: line.product, quantity } as TuckShopCartProductLine;
+    return { kind: "PRODUCT", product: line.product, quantity: Math.min(quantity, productLineMaxQuantity(line.product)) } as TuckShopCartProductLine;
   }
 
   return null;
@@ -136,15 +140,17 @@ export function writeTuckShopCart(cart: TuckShopCartLine[]) {
   window.dispatchEvent(new CustomEvent("king-sparkon:tuck-shop-cart", { detail: { cart } }));
 }
 
-export function addTuckShopProductToCart(product: Product) {
+export function addTuckShopProductToCart(product: Product, quantity = 1) {
   const current = readTuckShopCart();
+  const safeQuantity = Math.max(Number(quantity || 1), 1);
+  const maxQuantity = productLineMaxQuantity(product);
   const nextCart = current.some((line) => isProductLine(line) && line.product.id === product.id)
     ? current.map((line) =>
         isProductLine(line) && line.product.id === product.id
-          ? { ...line, product, quantity: Math.min(line.quantity + 1, Math.max(product.stockQuantity, 1)) }
+          ? { ...line, product, quantity: Math.min(line.quantity + safeQuantity, maxQuantity) }
           : line,
       )
-    : [...current, { kind: "PRODUCT" as const, product, quantity: 1 }];
+    : [...current, { kind: "PRODUCT" as const, product, quantity: Math.min(safeQuantity, maxQuantity) }];
 
   writeTuckShopCart(nextCart);
   return nextCart;
@@ -169,7 +175,7 @@ export function updateTuckShopCartQuantity(kind: TuckShopCartLine["kind"], id: s
   const current = readTuckShopCart();
   const nextCart = current.map((line) => {
     if (isProductLine(line) && kind === "PRODUCT" && line.product.id === id) {
-      return { ...line, quantity: Math.min(Math.max(quantity, 1), Math.max(line.product.stockQuantity, 1)) };
+      return { ...line, quantity: Math.min(Math.max(quantity, 1), productLineMaxQuantity(line.product)) };
     }
 
     if (isTicketLine(line) && kind === "TICKET" && line.event.id === id && line.ticketType === ticketType) {
