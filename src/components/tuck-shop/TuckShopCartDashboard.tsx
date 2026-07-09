@@ -22,6 +22,7 @@ import {
   productPrice,
   readTuckShopCart,
   removeTuckShopCartLine,
+  saveTuckShopPurchaseHistory,
   type TuckShopCartLine,
   updateTuckShopCartQuantity,
 } from "@/lib/tuck-shop/cart";
@@ -245,6 +246,7 @@ export function TuckShopCartDashboard() {
         productPurchase = await createTuckShopPurchase({
           items: productLines.map((line) => ({ productId: line.product.id, quantity: line.quantity })),
         });
+        saveTuckShopPurchaseHistory(productPurchase);
       }
 
       if (ticketLines.length > 0) {
