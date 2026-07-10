@@ -1,4 +1,4 @@
-import { DashboardHeaderActions } from "@/components/layout/DashboardHeaderActions";
+import { UserAwareDashboardHeaderActions } from "@/components/layout/UserAwareDashboardHeaderActions";
 import { Badge } from "@/components/ui/Badge";
 
 export function DashboardHeader({ title, description, role }: { title: string; description: string; role: string }) {
@@ -11,7 +11,7 @@ export function DashboardHeader({ title, description, role }: { title: string; d
           <h1 className="mt-2 truncate text-2xl font-black tracking-[-0.05em] md:text-3xl">{title}</h1>
           <p className="mt-1 line-clamp-2 max-w-4xl text-sm leading-6 text-[var(--steel)]">{description}</p>
         </div>
-        <DashboardHeaderActions role={role} />
+        <UserAwareDashboardHeaderActions role={role} />
       </div>
     </header>
   );
