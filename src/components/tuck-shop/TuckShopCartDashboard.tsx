@@ -2,14 +2,24 @@
 
 import Link from "next/link";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import { CreditCard, ExternalLink, Loader2, LockKeyhole, ShoppingBag, ShoppingCart, Ticket, Trash2 } from "lucide-react";
-import { createTuckShopPurchase } from "@/lib/api/tuck-shop";
-import type { TuckShopPurchase } from "@/lib/types/backend";
+import {
+  CheckCircle2,
+  CreditCard,
+  Loader2,
+  LockKeyhole,
+  ReceiptText,
+  ShieldCheck,
+  ShoppingBag,
+  ShoppingCart,
+  Ticket,
+  Trash2,
+} from "lucide-react";
+import { createEmbeddedCartPaymentIntent, getEmbeddedCartPaymentStatus } from "@/lib/api/tuck-shop";
+import type { EmbeddedCartPaymentStatus } from "@/lib/types/backend";
 import { normalizeApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { purchaseTickets } from "@/services/ticketService";
 import {
   cartLineCount,
   cartTicketTotal,
@@ -29,6 +39,8 @@ import {
 
 const STRIPE_JS_URL = "https://js.stripe.com/v3/";
 const STRIPE_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+const FULFILMENT_ATTEMPTS = 45;
+const FULFILMENT_INTERVAL_MS = 1000;
 
 type CheckoutUser = {
   name: string;
@@ -49,8 +61,22 @@ type StripeElements = {
   create: (type: StripeElementType, options?: Record<string, unknown>) => StripeCardElement;
 };
 
+type StripePaymentResult = {
+  error?: { message?: string; type?: string };
+  paymentIntent?: { id: string; status: string };
+};
+
 type StripeInstance = {
   elements: () => StripeElements;
+  confirmCardPayment: (
+    clientSecret: string,
+    data: {
+      payment_method: {
+        card: StripeCardElement;
+        billing_details: { name: string; email: string };
+      };
+    },
+  ) => Promise<StripePaymentResult>;
 };
 
 declare global {
@@ -71,10 +97,10 @@ async function loadCheckoutUser(): Promise<CheckoutUser> {
     return { name: "Registered user", emailAddress: "registered-user@king-sparkon.local" };
   }
 
-  const data = (await response.json()) as Partial<CheckoutUser>;
+  const data = (await response.json()) as Partial<CheckoutUser> & { email?: string; username?: string };
   return {
-    name: data.name || "Registered user",
-    emailAddress: data.emailAddress || "registered-user@king-sparkon.local",
+    name: data.name || data.username || "Registered user",
+    emailAddress: data.emailAddress || data.email || "registered-user@king-sparkon.local",
   };
 }
 
@@ -105,21 +131,49 @@ function stripeFieldShell(label: string, children: ReactNode) {
   return (
     <label className="grid gap-2 text-sm font-bold text-[var(--steel)]">
       {label}
-      <span className="block min-h-12 rounded-[1rem] border border-[var(--line)] bg-[var(--surface)] px-4 py-3.5 shadow-[var(--shadow-soft)] transition focus-within:border-[var(--signal)] focus-within:bg-white">
+      <span className="block min-h-12 rounded-[1rem] border border-[var(--line)] bg-[var(--surface)] px-4 py-3.5 shadow-[var(--shadow-soft)] transition focus-within:border-[var(--signal)] focus-within:bg-white focus-within:ring-4 focus-within:ring-[var(--signal)]/10">
         {children}
       </span>
     </label>
   );
 }
 
+function delay(milliseconds: number) {
+  return new Promise<void>((resolve) => window.setTimeout(resolve, milliseconds));
+}
+
+function checkoutIdempotencyKey() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+async function waitForVerifiedFulfilment(paymentIntentId: string) {
+  for (let attempt = 0; attempt < FULFILMENT_ATTEMPTS; attempt += 1) {
+    const status = await getEmbeddedCartPaymentStatus(paymentIntentId);
+    if (status.fulfilled) return status;
+
+    const paymentStatus = status.paymentStatus.toLowerCase();
+    if (["requires_payment_method", "canceled", "cancelled"].includes(paymentStatus)) {
+      throw new Error("Stripe did not complete the card payment. Your cart has not been cleared.");
+    }
+
+    await delay(FULFILMENT_INTERVAL_MS);
+  }
+
+  throw new Error("Stripe confirmed the payment, but the receipt is still being prepared. Keep this cart open and refresh shortly; it has not been cleared.");
+}
+
 export function TuckShopCartDashboard() {
   const stripeNumberRef = useRef<HTMLDivElement | null>(null);
   const stripeExpiryRef = useRef<HTMLDivElement | null>(null);
   const stripeCvcRef = useRef<HTMLDivElement | null>(null);
+  const stripeInstanceRef = useRef<StripeInstance | null>(null);
   const stripeElementRefs = useRef<Partial<Record<StripeElementType, StripeCardElement>>>({});
   const [cart, setCart] = useState<TuckShopCartLine[]>([]);
-  const [purchase, setPurchase] = useState<TuckShopPurchase | null>(null);
-  const [ticketPurchaseCount, setTicketPurchaseCount] = useState(0);
+  const [receipt, setReceipt] = useState<EmbeddedCartPaymentStatus | null>(null);
+  const [paymentStage, setPaymentStage] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [stripeReady, setStripeReady] = useState(false);
@@ -148,7 +202,7 @@ export function TuckShopCartDashboard() {
     let active = true;
 
     if (!STRIPE_PUBLISHABLE_KEY) {
-      setStripeMessage("Set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY to activate the secure Stripe card inputs.");
+      setStripeMessage("Set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY to activate secure Stripe card payments.");
       return;
     }
 
@@ -160,6 +214,7 @@ export function TuckShopCartDashboard() {
         if (!active || !window.Stripe || stripeElementRefs.current.cardNumber) return;
 
         const stripe = window.Stripe(stripePublishableKey);
+        stripeInstanceRef.current = stripe;
         const elements = stripe.elements();
         const style = {
           base: {
@@ -200,6 +255,7 @@ export function TuckShopCartDashboard() {
         field?.destroy?.();
       });
       stripeElementRefs.current = {};
+      stripeInstanceRef.current = null;
     };
   }, []);
 
@@ -227,50 +283,71 @@ export function TuckShopCartDashboard() {
       return;
     }
 
-    if (STRIPE_PUBLISHABLE_KEY && !stripeCardComplete) {
+    if (!STRIPE_PUBLISHABLE_KEY || !stripeReady || !stripeInstanceRef.current) {
+      setError("Secure Stripe card payment is not ready. Check the publishable key and reload the page.");
+      return;
+    }
+
+    if (!stripeCardComplete) {
       setError("Complete the card number, expiry date, and CVC before checkout.");
+      return;
+    }
+
+    const cardNumber = stripeElementRefs.current.cardNumber;
+    if (!cardNumber) {
+      setError("The Stripe card-number field is unavailable. Reload the page and try again.");
       return;
     }
 
     setSaving(true);
     setError(null);
-    setPurchase(null);
-    setTicketPurchaseCount(0);
+    setReceipt(null);
 
     const productLines = cart.filter(isProductLine);
     const ticketLines = cart.filter(isTicketLine);
 
     try {
-      let productPurchase: TuckShopPurchase | null = null;
+      setPaymentStage("Securing your cart total...");
+      const user = await loadCheckoutUser();
+      const payment = await createEmbeddedCartPaymentIntent({
+        idempotencyKey: checkoutIdempotencyKey(),
+        buyerName: user.name,
+        buyerEmail: user.emailAddress,
+        products: productLines.map((line) => ({ productId: line.product.id, quantity: line.quantity })),
+        tickets: ticketLines.map((line) => ({ eventId: line.event.id, ticketType: line.ticketType, quantity: line.quantity })),
+      });
 
-      if (productLines.length > 0) {
-        productPurchase = await createTuckShopPurchase({
-          items: productLines.map((line) => ({ productId: line.product.id, quantity: line.quantity })),
-        });
-        saveTuckShopPurchaseHistory(productPurchase);
+      setPaymentStage("Authorising your card with Stripe...");
+      const confirmation = await stripeInstanceRef.current.confirmCardPayment(payment.clientSecret, {
+        payment_method: {
+          card: cardNumber,
+          billing_details: { name: user.name, email: user.emailAddress },
+        },
+      });
+
+      if (confirmation.error) {
+        throw new Error(confirmation.error.message || "Stripe could not complete the card payment.");
       }
 
-      if (ticketLines.length > 0) {
-        const user = await loadCheckoutUser();
-        for (const line of ticketLines) {
-          await purchaseTickets({
-            eventId: line.event.id,
-            ticketType: line.ticketType,
-            quantity: line.quantity,
-            buyerName: user.name,
-            buyerEmail: user.emailAddress,
-          });
-        }
+      const confirmedIntentId = confirmation.paymentIntent?.id || payment.paymentIntentId;
+      const confirmedStatus = confirmation.paymentIntent?.status;
+      if (confirmedStatus && !["succeeded", "processing"].includes(confirmedStatus)) {
+        throw new Error(`Stripe returned payment status ${confirmedStatus}. Your cart has not been cleared.`);
       }
 
-      setPurchase(productPurchase);
-      setTicketPurchaseCount(ticketLines.reduce((total, line) => total + line.quantity, 0));
+      setPaymentStage("Payment confirmed. Waiting for the verified receipt...");
+      const verifiedReceipt = await waitForVerifiedFulfilment(confirmedIntentId);
+
+      verifiedReceipt.productPurchases.forEach(saveTuckShopPurchaseHistory);
+      setReceipt(verifiedReceipt);
       clearTuckShopCart();
       setCart([]);
       Object.values(stripeElementRefs.current).forEach((field) => field?.clear?.());
       setStripeFieldsComplete({ ...initialStripeFields });
+      setPaymentStage(null);
     } catch (exception) {
       setError(normalizeApiError(exception).message);
+      setPaymentStage(null);
     } finally {
       setSaving(false);
     }
@@ -279,16 +356,16 @@ export function TuckShopCartDashboard() {
   return (
     <section className="grid gap-5">
       <SectionHeader
-        eyebrow="User Cart"
-        title="Review products and tickets before checkout."
-        description="The cart now uses the same polished secure card layout as the worker tip flow while Stripe keeps raw card details outside King Sparkon Tracker."
+        eyebrow="Verified Stripe Cart"
+        title="Pay for products and tickets securely in one cart."
+        description="Stripe processes the card and any required 3D Secure challenge. King Sparkon clears the cart only after the signed backend webhook confirms payment and completes fulfilment."
       />
 
       <Card>
         <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <CardTitle>Cart</CardTitle>
-            <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{cartLineCount(cart)} item{cartLineCount(cart) === 1 ? "" : "s"} ready for checkout.</p>
+            <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{cartLineCount(cart)} item{cartLineCount(cart) === 1 ? "" : "s"} ready for verified checkout.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Link href="/dashboard/user/shop" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black uppercase tracking-[0.08em] text-[var(--ink)] hover:border-[var(--gold)]">
@@ -338,9 +415,10 @@ export function TuckShopCartDashboard() {
                       max={maxQuantity}
                       value={line.quantity}
                       onChange={(event) => updateQuantity(line, Number(event.target.value))}
-                      className="min-h-11 w-24 rounded-full border border-[var(--line)] bg-[var(--surface)] px-4 text-sm font-black outline-none focus:border-[var(--signal)]"
+                      disabled={saving}
+                      className="min-h-11 w-24 rounded-full border border-[var(--line)] bg-[var(--surface)] px-4 text-sm font-black outline-none focus:border-[var(--signal)] disabled:opacity-50"
                     />
-                    <button type="button" onClick={() => removeFromCart(line)} className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--danger)] hover:border-[var(--danger)]">
+                    <button type="button" onClick={() => removeFromCart(line)} disabled={saving} className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--danger)] hover:border-[var(--danger)] disabled:opacity-50">
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
@@ -350,22 +428,23 @@ export function TuckShopCartDashboard() {
           </div>
 
           <aside className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)] lg:sticky lg:top-5">
-            <div className="flex items-center gap-3 border-b border-[var(--line)] bg-[var(--surface)]/55 p-5">
+            <div className="flex items-center gap-3 border-b border-[var(--line)] bg-[var(--gold)] p-5">
               <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[1rem] bg-[var(--ink)] text-[var(--gold)]">
                 <CreditCard className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-black text-[var(--ink)]">Card payment details</h3>
-                <p className="mt-1 text-xs leading-5 text-[var(--steel)]">Secure Stripe fields for your complete cart payment.</p>
+                <h3 className="font-black text-[var(--ink)]">Secure card payment</h3>
+                <p className="mt-1 text-xs leading-5 text-[var(--ink)]/65">Stripe confirmation, 3D Secure, webhook verification, then receipt.</p>
               </div>
             </div>
 
             <div className="grid gap-4 p-5">
               {error ? <p className="rounded-[1rem] border border-[var(--danger)]/25 bg-[var(--danger)]/10 p-3 text-sm font-bold text-[var(--danger)]">{error}</p> : null}
+              {paymentStage ? <p className="flex items-center gap-2 rounded-[1rem] border border-[var(--signal)]/25 bg-[var(--signal)]/10 p-3 text-sm font-bold text-[var(--ink)]"><Loader2 className="h-4 w-4 animate-spin text-[var(--signal)]" /> {paymentStage}</p> : null}
 
               {stripeFieldShell("Card number", <div ref={stripeNumberRef} />)}
 
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-2 gap-4">
                 {stripeFieldShell("Expiry date", <div ref={stripeExpiryRef} />)}
                 {stripeFieldShell("CVC", <div ref={stripeCvcRef} />)}
               </div>
@@ -383,41 +462,66 @@ export function TuckShopCartDashboard() {
                   <span>Order summary</span>
                   <span>{cartLineCount(cart)} items</span>
                 </div>
-                {cartTicketTotal(cart) > 0 ? <div className="flex justify-between gap-3 text-sm font-bold"><span>Tickets</span><span className="money">{money(cartTicketTotal(cart))}</span></div> : null}
-                <div className="flex justify-between gap-3 border-t border-white/10 pt-3 text-xl font-black"><span>Cart total</span><span className="money text-[var(--gold)]">{money(cartTotal(cart))}</span></div>
-                <p className="text-xs leading-5 text-white/62">Ticket holder details come from the registered user account.</p>
+                {cartTicketTotal(cart) > 0 ? <div className="flex justify-between gap-3 text-sm font-bold"><span>Tickets preview</span><span className="money">{money(cartTicketTotal(cart))}</span></div> : null}
+                <div className="flex justify-between gap-3 border-t border-white/10 pt-3 text-xl font-black"><span>Cart preview</span><span className="money text-[var(--gold)]">{money(cartTotal(cart))}</span></div>
+                <p className="text-xs leading-5 text-white/62">The backend recalculates the trusted amount before Stripe payment.</p>
               </div>
 
-              <Button onClick={checkout} disabled={saving || cart.length === 0} className="w-full">
+              <Button onClick={checkout} disabled={saving || cart.length === 0 || !stripeReady} className="w-full">
                 {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
-                {saving ? "Processing cart..." : "Pay cart"}
+                {saving ? "Processing secure payment..." : "Pay cart"}
               </Button>
             </div>
           </aside>
         </CardContent>
       </Card>
 
-      {purchase || ticketPurchaseCount > 0 ? (
-        <Card className="border-[var(--confirm)]/40 bg-white">
-          <CardHeader>
-            <CardTitle>Checkout completed</CardTitle>
-            <p className="mt-2 text-sm leading-6 text-[var(--steel)]">
-              {purchase ? `Product transaction #${purchase.transactionId} is ${purchase.paymentStatus ?? "PENDING"}. ` : ""}
-              {ticketPurchaseCount > 0 ? `${ticketPurchaseCount} ticket QR ${ticketPurchaseCount === 1 ? "was" : "were"} issued to the registered user account.` : ""}
-            </p>
-          </CardHeader>
-          {purchase?.paymentUrl ? (
-            <CardContent className="grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
+      {receipt ? (
+        <Card className="overflow-hidden border-[var(--confirm)]/40 bg-white">
+          <div className="flex flex-col gap-4 border-b border-[var(--confirm)]/25 bg-[var(--confirm)]/10 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-[1rem] bg-[var(--confirm)] text-white"><CheckCircle2 className="h-6 w-6" /></div>
               <div>
-                <p className="money text-3xl font-black text-[var(--ink)]">{money(purchase.productTotal)}</p>
-                <p className="mt-2 break-all text-sm font-semibold text-[var(--steel)]">{purchase.paymentReference}</p>
-                {purchase.tip?.paymentUrl ? <p className="mt-2 text-xs font-bold text-[var(--signal)]">Separate worker tip link was also created.</p> : null}
+                <p className="font-mono text-xs font-black uppercase tracking-[0.16em] text-[var(--confirm)]">Verified payment receipt</p>
+                <h2 className="mt-1 text-3xl font-black tracking-[-0.04em] text-[var(--ink)]">Payment confirmed and order fulfilled</h2>
+                <p className="mt-2 text-sm leading-6 text-[var(--steel)]">Stripe confirmed the card payment and the signed backend webhook completed the product and ticket records before this cart was cleared.</p>
               </div>
-              <a href={purchase.paymentUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black uppercase tracking-[0.08em] text-white hover:bg-[var(--ink)]">
-                Open Stripe link <ExternalLink className="h-4 w-4" />
-              </a>
-            </CardContent>
-          ) : null}
+            </div>
+            <ShieldCheck className="h-9 w-9 shrink-0 text-[var(--confirm)]" />
+          </div>
+          <CardContent className="grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">
+            <div className="rounded-[1.5rem] bg-[var(--ink)] p-5 text-white">
+              <ReceiptText className="h-7 w-7 text-[var(--gold)]" />
+              <p className="mt-5 font-mono text-xs font-black uppercase tracking-[0.14em] text-white/55">Amount paid</p>
+              <p className="money mt-2 text-4xl font-black text-[var(--gold)]">{money(receipt.amount)}</p>
+              <p className="mt-4 break-all text-xs font-bold leading-5 text-white/65">PaymentIntent: {receipt.paymentIntentId}</p>
+              <p className="mt-2 text-xs font-bold uppercase tracking-[0.1em] text-[var(--confirm)]">{receipt.paymentStatus} · webhook fulfilled</p>
+            </div>
+
+            <div className="grid gap-3">
+              {receipt.productPurchases.map((purchase) => (
+                <div key={purchase.transactionId} className="rounded-[1.25rem] border border-[var(--line)] bg-[var(--surface)] p-4">
+                  <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.14em] text-[var(--signal)]">Product transaction</p>
+                  <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div><p className="font-black text-[var(--ink)]">#{purchase.transactionId} · {purchase.businessName ?? `Business #${purchase.businessId ?? "-"}`}</p><p className="mt-1 text-xs font-bold text-[var(--steel)]">{purchase.items.length} product line{purchase.items.length === 1 ? "" : "s"} · {purchase.paymentStatus ?? "PAID"}</p></div>
+                    <p className="money text-xl font-black text-[var(--ink)]">{money(purchase.productTotal)}</p>
+                  </div>
+                </div>
+              ))}
+
+              {receipt.ticketPaymentIds.length > 0 ? (
+                <div className="rounded-[1.25rem] border border-[var(--line)] bg-[var(--surface)] p-4">
+                  <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.14em] text-[var(--signal)]">Issued ticket payments</p>
+                  <div className="mt-3 flex flex-wrap gap-2">{receipt.ticketPaymentIds.map((id) => <span key={id} className="rounded-full border border-[var(--line)] bg-white px-3 py-1.5 text-xs font-black text-[var(--ink)]">{id}</span>)}</div>
+                </div>
+              ) : null}
+
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Link href="/dashboard/user/carts" className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)] hover:border-[var(--gold)]">View my carts</Link>
+                {receipt.ticketPaymentIds.length > 0 ? <Link href="/dashboard/user/tickets" className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white hover:bg-[var(--ink)]">Open issued tickets</Link> : null}
+              </div>
+            </div>
+          </CardContent>
         </Card>
       ) : null}
     </section>
