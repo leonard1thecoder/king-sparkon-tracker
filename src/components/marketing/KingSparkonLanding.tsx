@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
@@ -26,6 +28,7 @@ import { AffiliateProgramSection } from "@/components/marketing/AffiliateProgram
 import { DevHubSection } from "@/components/marketing/DevHubSection";
 import { SubscriptionSection } from "@/components/marketing/SubscriptionSection";
 import { BUSINESS_PRICING_PLANS } from "@/lib/config/business-policy";
+import { useEffect, useState } from "react";
 
 const navLinks = [
   ["Vision", "#vision"],
@@ -116,19 +119,36 @@ function planRegisterHref(plan: (typeof BUSINESS_PRICING_PLANS)[number]) {
 }
 
 export function KingSparkonLanding() {
+  const [activeSection, setActiveSection] = useState("#vision");
+
+  useEffect(() => {
+    const sections = navLinks
+      .map(([, href]) => document.querySelector(href))
+      .filter((section): section is Element => Boolean(section));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible?.target.id) setActiveSection(`#${visible.target.id}`);
+      },
+      { rootMargin: "-20% 0px -62% 0px", threshold: [0.1, 0.35, 0.7] },
+    );
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <main className="bg-white text-[var(--ink)]">
-      <section className="relative overflow-hidden bg-white pt-24 enterprise-grid">
+      <section className="relative overflow-hidden bg-white pt-36 enterprise-grid">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute left-[-18rem] top-[-18rem] h-[44rem] w-[44rem] rounded-full bg-[var(--gold)]/20 blur-3xl" />
           <div className="absolute right-[-12rem] top-8 h-[34rem] w-[34rem] rounded-full bg-[var(--ember)]/16 blur-3xl" />
         </div>
 
         <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--line)] bg-white/88 shadow-[0_18px_60px_rgba(7,19,31,0.08)] backdrop-blur-xl">
-          <div className="border-b border-[var(--line)] bg-[var(--ink)] px-5 py-2 text-center text-xs font-black text-white/78">
+          <div className="border-b border-[var(--gold)]/30 bg-[#8e3f68] px-5 py-2 text-center text-white/90 text-xs font-black">
             <span className="text-[var(--gold)]">Sparks evolved:</span> King Sparkon powers scanning, tickets, jobs, Dev Hub, free affiliates, and role-safe dashboards.
           </div>
-          <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 md:px-8" aria-label="Primary navigation">
+          <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3 md:px-8" aria-label="Primary navigation">
             <Link href="/" className="flex min-w-0 items-center gap-3">
               <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker barcode logo" width={48} height={48} className="rounded-[1.15rem] border border-[var(--line)] bg-white p-1 shadow-[var(--shadow-soft)]" priority />
               <div>
@@ -136,19 +156,14 @@ export function KingSparkonLanding() {
                 <p className="font-black uppercase tracking-[-0.02em]">King Sparkon Tracker</p>
               </div>
             </Link>
-            <div className="hidden items-center gap-3 text-xs font-semibold text-[var(--steel)] xl:flex xl:gap-5 xl:text-sm">
-              {navLinks.map(([label, href]) => (
-                <a key={href} href={href} className="rounded-full px-2 py-1 transition hover:bg-[var(--surface)] hover:text-[var(--ink)]">{label}</a>
-              ))}
-            </div>
             <div className="flex items-center gap-2">
               <Link href="/login" className="hidden min-h-11 items-center justify-center rounded-full border border-[var(--line)] px-4 text-sm font-bold text-[var(--steel)] hover:border-[var(--gold)] sm:inline-flex">Login</Link>
-              <Link href="/register?plan=FREE_USER&privilege=USER&service=FREE_USER_ACCESS" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-4 text-sm font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ink)]">Start free <ArrowRight className="h-4 w-4" /></Link>
+              <Link href="/register?plan=FREE_USER&privilege=USER&service=FREE_USER_ACCESS" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-4 text-sm font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[#8e3f68]">Start free <ArrowRight className="h-4 w-4" /></Link>
             </div>
           </nav>
-          <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-5 pb-3 text-xs font-black uppercase tracking-[0.08em] text-[var(--steel)] md:px-8 xl:hidden" aria-label="Mobile section navigation">
+          <div className="mx-auto flex max-w-7xl gap-1.5 overflow-x-auto border-t border-[var(--line)] px-5 py-2.5 text-[0.68rem] font-black uppercase tracking-[0.08em] text-[var(--steel)] md:px-8" aria-label="Section navigation">
             {navLinks.map(([label, href]) => (
-              <a key={href} href={href} className="shrink-0 rounded-full border border-[var(--line)] bg-white px-3 py-2 shadow-[var(--shadow-soft)] transition hover:border-[var(--gold)] hover:text-[var(--ink)]">{label}</a>
+              <a key={href} href={href} aria-current={activeSection === href ? "location" : undefined} className={`shrink-0 rounded-full border px-3 py-1.5 transition ${activeSection === href ? "border-[var(--gold)] bg-[var(--gold)]/45 text-[var(--ink)] shadow-[0_8px_18px_rgba(255,179,107,0.2)]" : "border-[var(--gold)]/35 bg-[var(--gold)]/12 text-[var(--ink)]/70 hover:border-[var(--gold)] hover:bg-[var(--gold)]/30 hover:text-[var(--ink)]"}`}>{label}</a>
             ))}
           </div>
         </header>
@@ -164,7 +179,7 @@ export function KingSparkonLanding() {
             <FounderVerificationCard />
             <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--steel)]">Barcode inventory, QR tickets, cart checkout, job opportunities, worker tips, Dev Hub software delivery, free affiliates, promotions, payments, capacity views, and role-safe dashboards.</p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/register?plan=FREE_USER&privilege=USER&service=FREE_USER_ACCESS" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 py-2 text-sm font-bold text-white shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[var(--ink)]">Create free user <ArrowRight className="h-4 w-4" /></Link>
+              <Link href="/register?plan=FREE_USER&privilege=USER&service=FREE_USER_ACCESS" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 py-2 text-sm font-bold text-white shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[#8e3f68]">Create free user <ArrowRight className="h-4 w-4" /></Link>
               <Link href="/register?plan=FREE_AFFILIATE&privilege=AFFILIATE&service=FREE_AFFILIATE_ACCESS" className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 py-2 text-sm font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--gold)]">Join free affiliate</Link>
               <Link href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--gold)] bg-[var(--gold)] px-5 py-2 text-sm font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--ink)]">Start business free 14 trial</Link>
             </div>
@@ -199,7 +214,7 @@ export function KingSparkonLanding() {
           <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {visionPillars.map(({ icon: Icon, title, copy }) => (
               <article key={title} className="rounded-[2rem] border border-[var(--line)] bg-white p-6 shadow-[var(--shadow-soft)] transition duration-200 ease-out hover:-translate-y-1 hover:border-[var(--gold)] hover:shadow-[var(--shadow-ledger)]">
-                <div className="grid h-14 w-14 place-items-center rounded-[1.25rem] bg-[var(--ink)] text-[var(--gold)]">
+                <div className="grid h-14 w-14 place-items-center rounded-[1.25rem] bg-[#8e3f68] text-[var(--gold)]">
                   <Icon className="h-6 w-6" />
                 </div>
                 <h3 className="mt-6 text-2xl font-black tracking-[-0.04em]">{title}</h3>
@@ -211,7 +226,7 @@ export function KingSparkonLanding() {
       </section>
 
       <section id="sponsor" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
-        <div className="mx-auto grid max-w-7xl gap-8 overflow-hidden rounded-[2.75rem] bg-[var(--ink)] p-6 text-white shadow-[var(--shadow-depth)] enterprise-grid lg:grid-cols-[0.9fr_1.1fr] lg:p-8">
+        <div className="mx-auto grid max-w-7xl gap-8 overflow-hidden rounded-[2.75rem] bg-[#8e3f68] p-6 text-white shadow-[var(--shadow-depth)] enterprise-grid lg:grid-cols-[0.9fr_1.1fr] lg:p-8">
           <div>
             <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">02 / Sponsor or Tip King Sparkon</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Support the platform that keeps QR commerce alive.</h2>
@@ -241,7 +256,7 @@ export function KingSparkonLanding() {
               <div className="rounded-[1.85rem] bg-white p-4 text-[var(--ink)] shadow-[var(--shadow-soft)]">
                 <div className="grid grid-cols-9 gap-1 rounded-[1.25rem] border border-[var(--line)] bg-white p-3">
                   {Array.from({ length: 81 }).map((_, index) => (
-                    <span key={index} className={`aspect-square rounded-[0.18rem] ${qrCells.has(index) ? "bg-[var(--ink)]" : "bg-[var(--surface)]"}`} />
+                    <span key={index} className={`aspect-square rounded-[0.18rem] ${qrCells.has(index) ? "bg-[#8e3f68]" : "bg-[var(--surface)]"}`} />
                   ))}
                 </div>
                 <p className="mt-4 text-center font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">King Sparkon QR Support</p>
@@ -269,7 +284,7 @@ export function KingSparkonLanding() {
           <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {features.map(({ icon: Icon, title, copy, tags }) => (
               <article key={title} className="rounded-[2rem] border border-[var(--line)] bg-white p-6 shadow-[var(--shadow-soft)] hover:-translate-y-1 hover:border-[var(--gold)]">
-                <div className="grid h-14 w-14 place-items-center rounded-[1.25rem] bg-[var(--ink)] text-[var(--gold)]">
+                <div className="grid h-14 w-14 place-items-center rounded-[1.25rem] bg-[#8e3f68] text-[var(--gold)]">
                   <Icon className="h-6 w-6" />
                 </div>
                 <h3 className="mt-6 text-2xl font-black tracking-[-0.04em]">{title}</h3>
@@ -290,7 +305,7 @@ export function KingSparkonLanding() {
       <DevHubSection />
 
       <section id="roles" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
-        <div className="mx-auto grid max-w-7xl gap-8 rounded-[2.75rem] bg-[var(--ink)] p-6 text-white shadow-[var(--shadow-depth)] enterprise-grid lg:p-8">
+        <div className="mx-auto grid max-w-7xl gap-8 rounded-[2.75rem] bg-[#8e3f68] p-6 text-white shadow-[var(--shadow-depth)] enterprise-grid lg:p-8">
           <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <div className="max-w-4xl">
               <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">07 / choose your form</p>
@@ -331,7 +346,7 @@ export function KingSparkonLanding() {
             <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Dashboards show how much the system can hold.</h2>
             <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[var(--steel)] md:text-base">Capacity is workers, stock, jobs, tickets, campaigns, reports, and platform control.</p>
             <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-              <Link href="/dashboard/admin/capacity" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ink)]">View admin capacity <ArrowRight className="h-4 w-4" /></Link>
+              <Link href="/dashboard/admin/capacity" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[#8e3f68]">View admin capacity <ArrowRight className="h-4 w-4" /></Link>
               <Link href="/dashboard/owner/capacity" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--line)] bg-white px-6 font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--gold)]">Owner capacity</Link>
             </div>
           </div>
@@ -343,7 +358,7 @@ export function KingSparkonLanding() {
               <div className="capacity-hero-deck relative min-h-[32rem] overflow-hidden rounded-[2rem] border border-white/80 bg-white/42 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur sm:min-h-[36rem]">
                 <div className="absolute inset-x-8 bottom-10 h-36 rounded-[50%] border border-[var(--signal)]/20 bg-[linear-gradient(135deg,rgba(29,92,131,0.10),rgba(255,217,102,0.18))] shadow-[0_42px_90px_rgba(7,19,31,0.18)] [transform:rotateX(64deg)_rotateZ(-2deg)_translateZ(-80px)]" />
                 <div className="absolute left-5 top-6 z-20 rounded-full border border-[var(--line)] bg-white/86 px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--signal)] shadow-[var(--shadow-soft)]">Live capacity cockpit</div>
-                <div className="absolute right-5 top-6 z-20 rounded-full border border-[var(--gold)]/50 bg-[var(--ink)] px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--gold)] shadow-[var(--shadow-soft)]">Admin + owner views</div>
+                <div className="absolute right-5 top-6 z-20 rounded-full border border-[var(--gold)]/50 bg-[#8e3f68] px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--gold)] shadow-[var(--shadow-soft)]">Admin + owner views</div>
                 <div className="capacity-card-3d capacity-card-3d-admin absolute left-2 top-20 z-10 w-[72%] max-w-[25rem] rounded-[1.85rem] border border-white/80 bg-white/78 p-3 shadow-[0_32px_90px_rgba(7,19,31,0.26)] backdrop-blur sm:left-8 sm:w-[60%]">
                   <div className="relative overflow-hidden rounded-[1.45rem] bg-[var(--surface)]">
                     <img src={ADMIN_CAPACITY_IMAGE} alt="3D admin capacity dashboard visual" loading="lazy" decoding="async" className="h-56 w-full object-contain p-2 sm:h-72" />
@@ -357,7 +372,7 @@ export function KingSparkonLanding() {
                     <BarChart3 className="h-7 w-7 text-[var(--signal)]" />
                   </div>
                 </div>
-                <div className="capacity-card-3d capacity-card-3d-owner absolute bottom-16 right-2 z-30 w-[72%] max-w-[25rem] rounded-[1.85rem] border border-[var(--gold)]/45 bg-[var(--ink)]/94 p-3 text-white shadow-[0_34px_100px_rgba(7,19,31,0.34)] backdrop-blur sm:right-8 sm:w-[58%]">
+                <div className="capacity-card-3d capacity-card-3d-owner absolute bottom-16 right-2 z-30 w-[72%] max-w-[25rem] rounded-[1.85rem] border border-[var(--gold)]/45 bg-[#8e3f68]/94 p-3 text-white shadow-[0_34px_100px_rgba(7,19,31,0.34)] backdrop-blur sm:right-8 sm:w-[58%]">
                   <div className="relative overflow-hidden rounded-[1.45rem] bg-[radial-gradient(circle_at_50%_20%,rgba(255,217,102,0.22),rgba(255,255,255,0.06)_54%,rgba(7,19,31,0.38))]">
                     <img src={OWNER_CAPACITY_IMAGE} alt="3D owner capacity dashboard visual" loading="lazy" decoding="async" className="h-56 w-full object-contain p-2 sm:h-72" />
                     <div className="capacity-signal-line absolute inset-y-0 w-24 bg-[linear-gradient(90deg,transparent,rgba(255,217,102,0.7),transparent)]" />
@@ -400,7 +415,7 @@ export function KingSparkonLanding() {
             <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">09 / application complaints</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">A complaint from 2018 becomes product discipline now.</h2>
             <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[var(--steel)] md:text-base">From the uploaded complaint note: software should comply with South African law, protect public health, safety, and welfare, serve clients ethically, keep products at a high professional standard, and promote integrity, colleagues, and lifelong learning.</p>
-            <a href={FACEBOOK_COMPLAINT_LINK} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ink)]">
+            <a href={FACEBOOK_COMPLAINT_LINK} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[#8e3f68]">
               Read Facebook complaint <ArrowRight className="h-4 w-4" />
             </a>
           </div>
@@ -422,7 +437,7 @@ export function KingSparkonLanding() {
               <div className="capacity-hero-deck relative min-h-[32rem] overflow-hidden rounded-[2rem] border border-white/80 bg-white/44 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur sm:min-h-[36rem]">
                 <div className="absolute inset-x-8 bottom-10 h-36 rounded-[50%] border border-[var(--signal)]/20 bg-[linear-gradient(135deg,rgba(29,92,131,0.10),rgba(255,217,102,0.18))] shadow-[0_42px_90px_rgba(7,19,31,0.18)] [transform:rotateX(64deg)_rotateZ(-2deg)_translateZ(-80px)]" />
                 <div className="absolute left-5 top-6 z-20 rounded-full border border-[var(--line)] bg-white/86 px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--signal)] shadow-[var(--shadow-soft)]">2018 complaint memory</div>
-                <div className="absolute right-5 top-6 z-20 rounded-full border border-[var(--gold)]/50 bg-[var(--ink)] px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--gold)] shadow-[var(--shadow-soft)]">Build from friction</div>
+                <div className="absolute right-5 top-6 z-20 rounded-full border border-[var(--gold)]/50 bg-[#8e3f68] px-4 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--gold)] shadow-[var(--shadow-soft)]">Build from friction</div>
                 <div className="capacity-card-3d capacity-card-3d-admin absolute left-2 top-20 z-10 w-[72%] max-w-[25rem] rounded-[1.85rem] border border-white/80 bg-white/78 p-3 shadow-[0_32px_90px_rgba(7,19,31,0.26)] backdrop-blur sm:left-8 sm:w-[60%]">
                   <div className="relative overflow-hidden rounded-[1.45rem] bg-[var(--surface)]">
                     <img src={APPLICATION_COMPLAINT_PRIMARY_IMAGE} alt="3D application complaint visual" loading="lazy" decoding="async" className="h-56 w-full object-contain p-2 sm:h-72" />
@@ -436,7 +451,7 @@ export function KingSparkonLanding() {
                     <Megaphone className="h-7 w-7 text-[var(--signal)]" />
                   </div>
                 </div>
-                <div className="capacity-card-3d capacity-card-3d-owner absolute bottom-16 right-2 z-30 w-[72%] max-w-[25rem] rounded-[1.85rem] border border-[var(--gold)]/45 bg-[var(--ink)]/94 p-3 text-white shadow-[0_34px_100px_rgba(7,19,31,0.34)] backdrop-blur sm:right-8 sm:w-[58%]">
+                <div className="capacity-card-3d capacity-card-3d-owner absolute bottom-16 right-2 z-30 w-[72%] max-w-[25rem] rounded-[1.85rem] border border-[var(--gold)]/45 bg-[#8e3f68]/94 p-3 text-white shadow-[0_34px_100px_rgba(7,19,31,0.34)] backdrop-blur sm:right-8 sm:w-[58%]">
                   <div className="relative overflow-hidden rounded-[1.45rem] bg-[radial-gradient(circle_at_50%_20%,rgba(255,217,102,0.22),rgba(255,255,255,0.06)_54%,rgba(7,19,31,0.38))]">
                     <img src={APPLICATION_COMPLAINT_SECONDARY_IMAGE} alt="3D application complaint evidence visual" loading="lazy" decoding="async" className="h-56 w-full object-contain p-2 sm:h-72" />
                     <div className="capacity-signal-line absolute inset-y-0 w-24 bg-[linear-gradient(90deg,transparent,rgba(255,217,102,0.7),transparent)]" />
@@ -479,7 +494,7 @@ export function KingSparkonLanding() {
           <div className="mt-10 grid gap-4 lg:grid-cols-5">
             {BUSINESS_PRICING_PLANS.map((plan) => (
               <article key={plan.planCode} className={`relative overflow-hidden rounded-[2rem] border p-5 shadow-[var(--shadow-soft)] ${plan.highlight ? "border-[var(--gold)] bg-[var(--surface)]" : "border-[var(--line)] bg-white"}`}>
-                {plan.highlight ? <span className="absolute right-4 top-4 rounded-full bg-[var(--ink)] px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-[var(--gold)]">Best grow</span> : null}
+                {plan.highlight ? <span className="absolute right-4 top-4 rounded-full bg-[#8e3f68] px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-[var(--gold)]">Best grow</span> : null}
                 <p className="font-mono text-xs font-black uppercase tracking-[0.16em] text-[var(--signal)]">{plan.caption}</p>
                 <h3 className="mt-3 text-2xl font-black tracking-[-0.05em]">{plan.name}</h3>
                 <p className="money mt-4 text-4xl font-black">{plan.priceDisplay}</p>
@@ -489,7 +504,7 @@ export function KingSparkonLanding() {
                     <li key={feature} className="flex gap-2 text-sm font-bold text-[var(--steel)]"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--signal)]" />{feature}</li>
                   ))}
                 </ul>
-                <Link href={planRegisterHref(plan)} className="mt-6 inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[var(--signal)] bg-[var(--signal)] px-4 text-sm font-black text-white hover:bg-[var(--ink)]">Choose {plan.name}</Link>
+                <Link href={planRegisterHref(plan)} className="mt-6 inline-flex min-h-11 w-full items-center justify-center rounded-full border border-[var(--signal)] bg-[var(--signal)] px-4 text-sm font-black text-white hover:bg-[#8e3f68]">Choose {plan.name}</Link>
               </article>
             ))}
           </div>
@@ -497,7 +512,7 @@ export function KingSparkonLanding() {
       </section>
 
       <section id="contact" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.75rem] border border-white/10 bg-[var(--ink)] p-5 text-white shadow-[var(--shadow-depth)] enterprise-grid md:p-8">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.75rem] border border-white/20 bg-[#8e3f68] p-5 text-white shadow-[var(--shadow-depth)] enterprise-grid md:p-8">
           <div className="mx-auto max-w-4xl text-center">
             <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">11 / contact</p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Build the King Sparkon operation properly.</h2>
