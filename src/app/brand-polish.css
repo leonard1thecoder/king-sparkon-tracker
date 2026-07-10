@@ -16,6 +16,11 @@ main > section:first-child header nav a[href="/"] p:last-child::after {
   width: fit-content;
 }
 
+main.relative.min-h-screen form > button[type="submit"] {
+  width: min(100%, 20rem) !important;
+  justify-self: center !important;
+}
+
 @media (min-width: 1024px) {
   main > section:first-child header > div[aria-label="Section navigation"] {
     justify-content: center;
