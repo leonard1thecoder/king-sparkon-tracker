@@ -1,8 +1,11 @@
 import { apiGet, apiPatch, apiPost } from "@/lib/api/client";
 import { createApplicationMockPurchase, getApplicationMockProducts } from "@/lib/mock/application-products";
 import type {
+  CreateEmbeddedCartPaymentPayload,
   CreateProductPayload,
   CreateTuckShopPurchasePayload,
+  EmbeddedCartPaymentIntent,
+  EmbeddedCartPaymentStatus,
   PageResponse,
   Product,
   ProductImageUpdatePayload,
@@ -56,6 +59,19 @@ export async function createTuckShopPurchase(payload: CreateTuckShopPurchasePayl
   } catch {
     return createApplicationMockPurchase(payload);
   }
+}
+
+export function createEmbeddedCartPaymentIntent(payload: CreateEmbeddedCartPaymentPayload) {
+  return apiPost<EmbeddedCartPaymentIntent, CreateEmbeddedCartPaymentPayload>(
+    "/v1/tuck-shop/cart-payments/payment-intents",
+    payload,
+  );
+}
+
+export function getEmbeddedCartPaymentStatus(paymentIntentId: string) {
+  return apiGet<EmbeddedCartPaymentStatus>(
+    `/v1/tuck-shop/cart-payments/payment-intents/${encodeURIComponent(paymentIntentId)}`,
+  );
 }
 
 export async function createWorkerTuckShopBarcodePurchase(payload: CreateTuckShopPurchasePayload) {
