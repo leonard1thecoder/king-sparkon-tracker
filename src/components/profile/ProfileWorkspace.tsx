@@ -1,9 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import type { LucideIcon } from "lucide-react";
-import { BriefcaseBusiness, FileCheck2, LockKeyhole, Mail, Phone, Settings, ShoppingCart, Ticket, UserRound } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  FileCheck2,
+  LockKeyhole,
+  Mail,
+  Phone,
+  Settings,
+  ShoppingCart,
+  Ticket,
+  UserRound,
+} from "lucide-react";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { apiGet, apiPatch, normalizeApiError } from "@/lib/api/client";
 import type { TrackerUser, UserRole } from "@/lib/types/backend";
@@ -11,7 +21,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { MetricCard } from "@/components/ui/MetricCard";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { Button } from "@/components/ui/Button";
-import { money, readTuckShopPurchaseHistory, type TuckShopPurchaseHistoryItem } from "@/lib/tuck-shop/cart";
 
 type ProfileShortcut = {
   label: string;
@@ -34,7 +43,7 @@ type PasswordForm = {
 const userShortcuts: ProfileShortcut[] = [
   { label: "Jobs", href: "/dashboard/user/jobs", detail: "Browse roles from businesses you follow.", icon: BriefcaseBusiness },
   { label: "Applications", href: "/dashboard/user/applications", detail: "Track submitted job applications.", icon: FileCheck2 },
-  { label: "My Carts", href: "/dashboard/user/carts", detail: "Open the active cart and checkout.", icon: ShoppingCart },
+  { label: "My Carts", href: "/dashboard/user/carts", detail: "Review completed carts and product purchases.", icon: ShoppingCart },
   { label: "My Tickets", href: "/dashboard/user/tickets", detail: "View purchased ticket QR codes.", icon: Ticket },
 ];
 
@@ -55,7 +64,6 @@ function displayValue(value?: string | number | null) {
 
 export function ProfileWorkspace({ role }: { role: UserRole }) {
   const [user, setUser] = useState<TrackerUser | null>(null);
-  const [purchaseHistory, setPurchaseHistory] = useState<TuckShopPurchaseHistoryItem[]>([]);
   const [profileForm, setProfileForm] = useState<ProfileForm>({ emailAddress: "", cellphoneNumber: "" });
   const [passwordForm, setPasswordForm] = useState<PasswordForm>({ currentPassword: "", newPassword: "", confirmPassword: "" });
   const [error, setError] = useState<string | null>(null);
@@ -83,26 +91,16 @@ export function ProfileWorkspace({ role }: { role: UserRole }) {
       }
     }
 
-    setPurchaseHistory(readTuckShopPurchaseHistory());
     void loadProfile();
-
-    function refreshPurchaseHistory() {
-      setPurchaseHistory(readTuckShopPurchaseHistory());
-    }
-
-    window.addEventListener("storage", refreshPurchaseHistory);
-    window.addEventListener("king-sparkon:tuck-shop-purchase-history", refreshPurchaseHistory);
 
     return () => {
       mounted = false;
-      window.removeEventListener("storage", refreshPurchaseHistory);
-      window.removeEventListener("king-sparkon:tuck-shop-purchase-history", refreshPurchaseHistory);
     };
   }, []);
 
   const accountRoles = roles(user);
-  const totalPurchased = useMemo(() => purchaseHistory.reduce((total, item) => total + item.productTotal, 0), [purchaseHistory]);
-  const purchasedBusinesses = useMemo(() => new Set(purchaseHistory.map((item) => item.businessName ?? item.businessId ?? "Unknown business")).size, [purchaseHistory]);
+  const primaryRole = accountRoles[0] ?? role;
+  const emailVerified = user?.emailVerified !== false;
 
   async function updateProfile(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -113,7 +111,10 @@ export function ProfileWorkspace({ role }: { role: UserRole }) {
     try {
       const updatedUser = await apiPatch<TrackerUser, ProfileForm>("/users/me", profileForm);
       setUser(updatedUser);
-      setProfileForm({ emailAddress: updatedUser.emailAddress ?? profileForm.emailAddress, cellphoneNumber: userPhone(updatedUser) || profileForm.cellphoneNumber });
+      setProfileForm({
+        emailAddress: updatedUser.emailAddress ?? profileForm.emailAddress,
+        cellphoneNumber: userPhone(updatedUser) || profileForm.cellphoneNumber,
+      });
       setNotice("Profile contact details updated.");
     } catch (exception) {
       setError(normalizeApiError(exception).message);
@@ -147,8 +148,12 @@ export function ProfileWorkspace({ role }: { role: UserRole }) {
 
   return (
     <>
-      <DashboardHeader role={`${role.toUpperCase()} PROFILE`} title="Profile settings" description="View account details, update email address, cellphone number and password, then jump back to jobs, applications, carts and tickets." />
-      <main className="grid gap-6 p-5 md:p-8">
+      <DashboardHeader
+        role={`${role.toUpperCase()} PROFILE`}
+        title="Profile settings"
+        description="View your account identity, update contact details and password, then open jobs, applications, carts, and tickets from one user workspace."
+      />
+      <main className="grid gap-6 bg-[var(--surface)] p-5 md:p-8">
         {error ? <p className="rounded-[var(--radius-lg)] border border-[var(--danger)]/30 bg-white p-4 text-sm font-bold text-[var(--danger)]">{error}</p> : null}
         {notice ? <p className="rounded-[var(--radius-lg)] border border-[var(--confirm)]/30 bg-[var(--confirm)]/10 p-4 text-sm font-bold text-[var(--ink)]">{notice}</p> : null}
 
@@ -160,7 +165,7 @@ export function ProfileWorkspace({ role }: { role: UserRole }) {
               </div>
               <p className="mt-5 font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--gold)]">User details</p>
               <h1 className="mt-2 text-3xl font-black tracking-[-0.05em]">{loading ? "Loading profile" : displayValue(user?.username)}</h1>
-              <p className="mt-2 break-all text-sm font-semibold text-white/70">{displayValue(user?.emailAddress)}</p>
+              <p className="mt-2 break-all text-sm font-semibold text-white/70">{loading ? "Checking account details" : displayValue(user?.emailAddress)}</p>
             </div>
             <CardContent className="grid gap-3">
               {[
@@ -175,7 +180,9 @@ export function ProfileWorkspace({ role }: { role: UserRole }) {
               ))}
               <div className="rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--surface)] p-4">
                 <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.14em] text-[var(--muted)]">Roles</p>
-                <div className="mt-3 flex flex-wrap gap-2">{(accountRoles.length ? accountRoles : [role]).map((item) => <StatusPill key={item} label={item} tone="confirm" />)}</div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {(accountRoles.length ? accountRoles : [role]).map((item) => <StatusPill key={item} label={item} tone="confirm" />)}
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -183,8 +190,8 @@ export function ProfileWorkspace({ role }: { role: UserRole }) {
           <div className="grid gap-4">
             <div className="grid gap-4 md:grid-cols-3">
               <MetricCard label="Profile status" value={loading ? "..." : user ? "Loaded" : "Unavailable"} detail="Protected session profile" tone={user ? "confirm" : "neutral"} icon={<UserRound className="h-5 w-5" />} />
-              <MetricCard label="Purchased carts" value={String(purchaseHistory.length)} detail={`${purchasedBusinesses} business${purchasedBusinesses === 1 ? "" : "es"}`} tone="signal" icon={<ShoppingCart className="h-5 w-5" />} />
-              <MetricCard label="Total spent" value={money(totalPurchased)} detail="Saved product cart history" icon={<Ticket className="h-5 w-5" />} />
+              <MetricCard label="Account role" value={String(primaryRole)} detail="Current dashboard access" tone="signal" icon={<Settings className="h-5 w-5" />} />
+              <MetricCard label="Email status" value={emailVerified ? "Verified" : "Action needed"} detail={emailVerified ? "Account email is verified" : "Verify your email address"} tone={emailVerified ? "confirm" : "neutral"} icon={<Mail className="h-5 w-5" />} />
             </div>
 
             <Card>
@@ -249,47 +256,6 @@ export function ProfileWorkspace({ role }: { role: UserRole }) {
             </CardContent>
           </Card>
         </section>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>My carts and purchases</CardTitle>
-            <p className="mt-2 text-sm leading-6 text-[var(--steel)]">Product checkout history saved on this device, showing what was purchased and from which business.</p>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            {purchaseHistory.length === 0 ? (
-              <div className="rounded-[1.5rem] border border-dashed border-[var(--line)] bg-white p-8 text-center">
-                <ShoppingCart className="mx-auto h-10 w-10 text-[var(--signal)]" />
-                <p className="mt-3 text-xl font-black text-[var(--ink)]">No purchased carts yet</p>
-                <p className="mt-2 text-sm leading-6 text-[var(--steel)]">After checkout, purchased product carts will appear here with business and product details.</p>
-                <Link href="/dashboard/user/shop" className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white hover:bg-[var(--ink)]">Buy products</Link>
-              </div>
-            ) : (
-              purchaseHistory.map((purchase) => (
-                <article key={purchase.id} className="rounded-[1.5rem] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)]">
-                  <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                    <div>
-                      <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">{purchase.businessName ?? `Business #${purchase.businessId ?? "-"}`}</p>
-                      <h3 className="mt-1 text-xl font-black text-[var(--ink)]">Cart #{purchase.transactionId ?? purchase.id}</h3>
-                      <p className="mt-1 text-xs font-bold text-[var(--steel)]">{new Date(purchase.createdAt).toLocaleString()} · {purchase.paymentStatus ?? "PENDING"}</p>
-                    </div>
-                    <p className="money text-2xl font-black text-[var(--ink)]">{money(purchase.productTotal)}</p>
-                  </div>
-                  <div className="mt-4 grid gap-2">
-                    {purchase.items.map((item) => (
-                      <div key={`${purchase.id}-${item.productId}`} className="flex flex-col gap-2 rounded-[1rem] border border-[var(--line)] bg-[var(--surface)] p-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                          <p className="font-black text-[var(--ink)]">{item.productName}</p>
-                          <p className="text-xs font-bold text-[var(--steel)]">Qty {item.quantity} · {money(item.unitPrice)} each</p>
-                        </div>
-                        <p className="money font-black text-[var(--ink)]">{money(item.lineTotal)}</p>
-                      </div>
-                    ))}
-                  </div>
-                </article>
-              ))
-            )}
-          </CardContent>
-        </Card>
       </main>
     </>
   );
