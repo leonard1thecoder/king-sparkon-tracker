@@ -20,8 +20,8 @@ import { BarcodeScanner } from "@/components/scanner/BarcodeScanner";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { StatusPill } from "@/components/ui/StatusPill";
-import { listTips } from "@/lib/api/tips";
 import { normalizeApiError } from "@/lib/api/client";
+import { listTips } from "@/lib/api/tips";
 import type { PageResponse, Tip } from "@/lib/types/backend";
 
 type WorkerQrResult = {
@@ -81,9 +81,11 @@ function readWorkerFromJson(value: string) {
     const parsed = JSON.parse(value) as Record<string, unknown>;
     const candidates = [parsed.workerId, parsed.worker_id, parsed.tipWorkerId, parsed.id, parsed.userId];
     const nestedWorker = parsed.worker && typeof parsed.worker === "object" ? (parsed.worker as Record<string, unknown>) : null;
+
     if (nestedWorker) {
       candidates.push(nestedWorker.id, nestedWorker.workerId, nestedWorker.worker_id);
     }
+
     const match = candidates.find((candidate) => typeof candidate === "string" && candidate.trim());
     return typeof match === "string" ? cleanWorkerId(match) : null;
   } catch {
@@ -95,11 +97,17 @@ function readWorkerFromUrl(value: string) {
   try {
     const url = new URL(value, typeof window === "undefined" ? "https://king-sparkon.local" : window.location.origin);
     const pathMatch = url.pathname.match(/\/(?:dashboard\/user\/tips\/workers|tips\/workers)\/([^/?#]+)/i);
+
     if (pathMatch?.[1]) {
       return cleanWorkerId(pathMatch[1]);
     }
 
-    const queryMatch = url.searchParams.get("workerId") || url.searchParams.get("worker") || url.searchParams.get("tipWorkerId") || url.searchParams.get("w");
+    const queryMatch =
+      url.searchParams.get("workerId")
+      || url.searchParams.get("worker")
+      || url.searchParams.get("tipWorkerId")
+      || url.searchParams.get("w");
+
     return queryMatch ? cleanWorkerId(queryMatch) : null;
   } catch {
     return null;
@@ -111,8 +119,7 @@ export function parseWorkerTipQr(rawValue: string): WorkerQrResult | null {
   if (!raw) return null;
 
   const prefixedValue = raw.match(/^(KST[-_:]?)?(WORKER[-_:]?TIP|TIP[-_:]?WORKER)[-_:](.+)$/i)?.[3];
-  const value = prefixedValue ? prefixedValue.trim() : raw;
-  const decoded = cleanWorkerId(value);
+  const decoded = cleanWorkerId(prefixedValue ? prefixedValue.trim() : raw);
 
   const jsonWorkerId = readWorkerFromJson(decoded);
   if (jsonWorkerId) return { workerId: jsonWorkerId, source: "JSON", rawValue: raw };
@@ -227,6 +234,7 @@ export function WorkerTipQrScanner() {
 
   function handleScan(value: string) {
     const parsed = parseWorkerTipQr(value);
+
     if (!parsed) {
       setResult(null);
       setError("This QR code does not look like a worker tip QR. Scan a worker QR or enter a worker ID manually.");
@@ -241,6 +249,7 @@ export function WorkerTipQrScanner() {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const workerId = String(formData.get("workerId") ?? "").trim();
+
     handleScan(workerId);
     event.currentTarget.reset();
   }
@@ -252,20 +261,18 @@ export function WorkerTipQrScanner() {
           <div>
             <CardTitle>Scan worker QR to tip</CardTitle>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--steel)]">
-              Scan the worker QR, use the worker-specific manual fallback when needed, confirm the worker, and continue to the secure tip payment.
+              Find and confirm the worker on the left, or use the compact QR scanner on the right.
             </p>
           </div>
           <StatusPill label="TIP SCANNER" tone="confirm" />
         </CardHeader>
 
-        <CardContent className="grid gap-6">
-          <BarcodeScanner onScan={handleScan} hideResult hideManualFallback />
-
-          <div className="grid gap-5 border-t border-[var(--line)] pt-6 xl:grid-cols-[0.9fr_1.1fr]">
-            <section className="rounded-[1.75rem] border border-[var(--line)] bg-[var(--surface)] p-5">
+        <CardContent className="grid gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(18rem,0.55fr)] xl:items-start">
+          <div className="grid gap-5">
+            <section className="rounded-[1.5rem] border border-[var(--line)] bg-[var(--surface)] p-4 md:p-5">
               <div className="flex items-center gap-3">
-                <div className="grid h-11 w-11 place-items-center rounded-[1rem] bg-white text-[var(--signal)] shadow-[var(--shadow-soft)]">
-                  <Keyboard className="h-5 w-5" />
+                <div className="grid h-10 w-10 place-items-center rounded-[0.9rem] bg-white text-[var(--signal)] shadow-[var(--shadow-soft)]">
+                  <Keyboard className="h-4 w-4" />
                 </div>
                 <div>
                   <h3 className="font-black tracking-[-0.03em] text-[var(--ink)]">Manual worker fallback</h3>
@@ -273,22 +280,22 @@ export function WorkerTipQrScanner() {
                 </div>
               </div>
 
-              <form onSubmit={submitManualWorker} className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto]">
+              <form onSubmit={submitManualWorker} className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto]">
                 <input
                   name="workerId"
                   placeholder="Worker ID or dashboard worker tip URL"
-                  className="min-h-12 w-full rounded-full border border-[var(--line)] bg-white px-5 text-sm font-bold outline-none focus:border-[var(--signal)]"
+                  className="min-h-11 w-full rounded-full border border-[var(--line)] bg-white px-5 text-sm font-bold outline-none focus:border-[var(--signal)]"
                 />
                 <Button type="submit" variant="secondary">Find worker</Button>
               </form>
 
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="mt-3 flex flex-wrap gap-2">
                 {demoWorkerIds.map((workerId) => (
                   <button
                     key={workerId}
                     type="button"
                     onClick={() => handleScan(workerId)}
-                    className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black text-[var(--ink)] hover:border-[var(--gold)] hover:bg-[var(--gold)]/20"
+                    className="rounded-full border border-[var(--line)] bg-white px-3 py-1.5 text-xs font-black text-[var(--ink)] hover:border-[var(--gold)] hover:bg-[var(--gold)]/20"
                   >
                     {workerId}
                   </button>
@@ -296,7 +303,7 @@ export function WorkerTipQrScanner() {
               </div>
             </section>
 
-            <section className="rounded-[1.75rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)]">
+            <section className="rounded-[1.5rem] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)] md:p-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">Worker confirmation</p>
@@ -305,38 +312,38 @@ export function WorkerTipQrScanner() {
                     {result ? "The worker is locked into the next tip step." : "Scan a QR or enter a worker ID to continue."}
                   </p>
                 </div>
-                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-[1.2rem] bg-[var(--ink)] text-[var(--gold)]">
-                  {result ? <CheckCircle2 className="h-6 w-6" /> : <QrCode className="h-6 w-6" />}
+                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[1rem] bg-[var(--ink)] text-[var(--gold)]">
+                  {result ? <CheckCircle2 className="h-5 w-5" /> : <QrCode className="h-5 w-5" />}
                 </div>
               </div>
 
               {error ? <p className="mt-4 rounded-[var(--radius-lg)] border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-4 text-sm font-bold text-[var(--danger)]">{error}</p> : null}
 
               {result ? (
-                <div className="mt-5 grid gap-4">
-                  <div className="rounded-[1.5rem] border border-white/10 bg-[var(--ink)] p-5 text-white">
-                    <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.18em] text-[var(--gold)]">Worker ID</p>
-                    <p className="code mt-3 break-all text-2xl font-black">{result.workerId}</p>
-                    <p className="mt-3 text-xs font-bold uppercase tracking-[0.12em] text-white/55">Detected from {result.source}</p>
+                <div className="mt-4 grid gap-4">
+                  <div className="rounded-[1.35rem] border border-white/10 bg-[var(--ink)] p-4 text-white">
+                    <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.18em] text-[var(--gold)]">Worker ID</p>
+                    <p className="code mt-2 break-all text-xl font-black">{result.workerId}</p>
+                    <p className="mt-2 text-xs font-bold uppercase tracking-[0.12em] text-white/55">Detected from {result.source}</p>
                   </div>
 
                   <div className="grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-[1.2rem] border border-[var(--line)] bg-[var(--surface)] p-3">
+                    <div className="rounded-[1.1rem] border border-[var(--line)] bg-[var(--surface)] p-3">
                       <ShieldCheck className="h-4 w-4 text-[var(--confirm)]" />
                       <p className="mt-2 text-xs font-black text-[var(--ink)]">Worker locked</p>
                     </div>
-                    <div className="rounded-[1.2rem] border border-[var(--line)] bg-[var(--surface)] p-3">
+                    <div className="rounded-[1.1rem] border border-[var(--line)] bg-[var(--surface)] p-3">
                       <WalletCards className="h-4 w-4 text-[var(--signal)]" />
                       <p className="mt-2 text-xs font-black text-[var(--ink)]">Amount next</p>
                     </div>
-                    <div className="rounded-[1.2rem] border border-[var(--line)] bg-[var(--surface)] p-3">
+                    <div className="rounded-[1.1rem] border border-[var(--line)] bg-[var(--surface)] p-3">
                       <QrCode className="h-4 w-4 text-[var(--gold)]" />
                       <p className="mt-2 text-xs font-black text-[var(--ink)]">QR verified</p>
                     </div>
                   </div>
 
                   {tipHref ? (
-                    <Link href={tipHref} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ink)]">
+                    <Link href={tipHref} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ink)]">
                       Continue to tip this worker <ArrowRight className="h-4 w-4" />
                     </Link>
                   ) : null}
@@ -344,6 +351,10 @@ export function WorkerTipQrScanner() {
               ) : null}
             </section>
           </div>
+
+          <aside className="w-full xl:justify-self-end">
+            <BarcodeScanner onScan={handleScan} hideResult hideManualFallback compact />
+          </aside>
         </CardContent>
       </Card>
 
@@ -386,7 +397,7 @@ export function WorkerTipQrScanner() {
           ) : (
             <>
               <div className="overflow-x-auto">
-                <table className="min-w-[760px] w-full border-collapse text-left">
+                <table className="w-full min-w-[760px] border-collapse text-left">
                   <thead className="bg-[var(--surface)] text-[0.68rem] font-black uppercase tracking-[0.12em] text-[var(--steel)]">
                     <tr>
                       <th className="px-5 py-4">Worker</th>
