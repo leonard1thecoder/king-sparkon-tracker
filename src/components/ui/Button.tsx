@@ -8,7 +8,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const variants: Record<ButtonVariant, string> = {
-  primary: "border-[var(--signal)] bg-[var(--signal)] text-white shadow-[0_12px_28px_rgba(29,92,131,0.18)] hover:-translate-y-0.5 hover:border-[var(--gold)] hover:bg-[var(--ink)] hover:text-white hover:shadow-[0_18px_36px_rgba(7,19,31,0.2)]",
+  primary: "border-[var(--signal)] bg-[var(--signal)] text-white shadow-[0_12px_28px_rgba(74,169,223,0.2)] hover:-translate-y-0.5 hover:border-[var(--gold)] hover:bg-[var(--ink)] hover:text-white hover:shadow-[0_18px_36px_rgba(7,19,31,0.2)]",
   secondary: "border-[var(--ink)] bg-[var(--ink)] text-white hover:-translate-y-0.5 hover:border-[var(--gold)] hover:bg-[var(--ink-2)] hover:text-white",
   quiet: "border-[var(--line)] bg-white text-[var(--ink)] hover:-translate-y-0.5 hover:border-[var(--gold)] hover:bg-[var(--surface)]",
   danger: "border-[var(--danger)] bg-white text-[var(--danger)] hover:-translate-y-0.5 hover:bg-[var(--danger)] hover:text-white",

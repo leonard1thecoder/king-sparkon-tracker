@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { KingSparkonLanding } from "@/components/marketing/KingSparkonLanding";
 
 const landingDescription =
-  "King Sparkon Tracker is a trademark platform of Sizolwakhe Leonard Mthimunye, known as King Sparkon, for barcode inventory, QR tickets, cart checkout, job opportunities, affiliate marketing, Dev Hub software development, CI/CD, Quality Assurance, cloud maintenance, worker tips, promotions, capacity views, and role-safe dashboards.";
+  "King Sparkon is a commerce and operations platform for barcode inventory, QR tickets, checkout, jobs, affiliates, worker tips, promotions, and role-safe dashboards.";
 
 const softwareApplicationJsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "King Sparkon Tracker",
+  name: "King Sparkon",
   alternateName: "King Sparkon",
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web",
@@ -20,7 +20,7 @@ const softwareApplicationJsonLd = {
   },
   brand: {
     "@type": "Brand",
-    name: "King Sparkon Tracker",
+    name: "King Sparkon",
     slogan: "King Sparkon is the best king.",
   },
   offers: {
@@ -49,8 +49,8 @@ export const metadata: Metadata = {
   title: "King Sparkon Tracker™ | Trademark Platform by Sizolwakhe Mthimunye",
   description: landingDescription,
   keywords: [
-    "King Sparkon Tracker",
-    "King Sparkon trademark",
+    "King Sparkon",
+    "King Sparkon platform",
     "Sizolwakhe Leonard Mthimunye",
     "Sizolwakhe Mthimunye King Sparkon",
     "barcode inventory software",
@@ -72,7 +72,7 @@ export const metadata: Metadata = {
     title: "King Sparkon Tracker™ | King Sparkon is the best king",
     description: landingDescription,
     type: "website",
-    siteName: "King Sparkon Tracker",
+    siteName: "King Sparkon",
     locale: "en_ZA",
     images: [{ url: "/king-sparkon-logo.png", width: 512, height: 512, alt: "King Sparkon Tracker trademark barcode logo" }],
   },

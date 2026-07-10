@@ -4,10 +4,10 @@
   --paper: #ffffff;
   --surface: #f7fafc;
   --surface-strong: #ffffff;
-  --signal: #1d5c83;
-  --gold: #28d6c6;
-  --ember: #7c5cff;
-  --confirm: #32d583;
+  --signal: #4aa9df;
+  --gold: #ffb36b;
+  --ember: #ff8f5a;
+  --confirm: #55c7f2;
   --warning: #f59e0b;
   --danger: #dc2626;
   --steel: #667085;
@@ -23,5 +23,5 @@
   --shadow-soft: 0 18px 54px rgba(7, 19, 31, 0.08);
   --shadow-ledger: 0 28px 90px rgba(7, 19, 31, 0.12);
   --shadow-depth: 0 38px 110px rgba(7, 19, 31, 0.2);
-  --focus-ring: 0 0 0 4px rgba(40, 214, 198, 0.22);
+  --focus-ring: 0 0 0 4px rgba(85, 199, 242, 0.24);
 }

@@ -24,8 +24,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://king-sparkon-tracker.com"),
   applicationName: "King Sparkon Tracker",
   title: {
-    default: "King Sparkon Tracker™ | Trademark of Sizolwakhe Leonard Mthimunye",
-    template: "%s | King Sparkon Tracker™",
+    default: "King Sparkon | Commerce, tickets and team operations",
+    template: "%s | King Sparkon",
   },
   description:
     "King Sparkon Tracker is a trademark platform of Sizolwakhe Leonard Mthimunye, known as King Sparkon: barcode inventory, QR tickets, jobs, affiliate marketing, Dev Hub software development, CI/CD, QA, cloud maintenance, worker tips, capacity dashboards, and role-safe business operations.",
@@ -70,10 +70,10 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "King Sparkon Tracker™ | Trademark of Sizolwakhe Leonard Mthimunye",
+    title: "King Sparkon | Commerce, tickets and team operations",
     description:
       "A King Sparkon trademark platform for barcode inventory, QR tickets, jobs, affiliates, Dev Hub software development, CI/CD, QA, cloud maintenance, capacity dashboards, and role-safe business operations.",
-    siteName: "King Sparkon Tracker",
+    siteName: "King Sparkon",
     type: "website",
     locale: "en_ZA",
     images: [
@@ -87,7 +87,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "King Sparkon Tracker™ | King Sparkon is the best king",
+    title: "King Sparkon | Commerce, tickets and team operations",
     description:
       "Trademark platform of Sizolwakhe Leonard Mthimunye: barcode scanning, QR tickets, jobs, affiliates, Dev Hub, QA, CI/CD, cloud maintenance, and capacity dashboards.",
     images: ["/king-sparkon-logo.png"],

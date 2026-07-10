@@ -105,13 +105,13 @@ export function DashboardRoleNav({ role }: { role: UserRole }) {
             key={`${role}-${href}-${label}`}
             href={href}
             className={cn(
-              "inline-flex min-h-11 shrink-0 items-center gap-3 rounded-full border px-4 py-2 text-sm font-black transition duration-200 ease-out hover:-translate-y-0.5 lg:w-full lg:rounded-[1.15rem]",
+              "group inline-flex min-h-11 shrink-0 items-center gap-3 rounded-[1.1rem] border px-4 py-2 text-sm font-black transition duration-200 ease-out hover:-translate-y-0.5 lg:w-full lg:rounded-[1.15rem]",
               active
-                ? "border-[var(--gold)] bg-white text-[var(--ink)] shadow-[var(--shadow-soft)]"
-                : "border-white/10 bg-white/[0.04] text-white/68 hover:border-[var(--gold)] hover:bg-white/10 hover:text-white",
+                ? "border-[var(--gold)] bg-[var(--gold)]/12 text-white shadow-[0_14px_30px_rgba(255,179,107,0.12)]"
+                : "border-white/10 bg-white/[0.04] text-white/68 hover:border-[var(--signal)] hover:bg-[var(--signal)]/12 hover:text-white",
             )}
           >
-            <Icon className={cn("h-4 w-4", active ? "text-[var(--signal)]" : "text-[var(--gold)]")} />
+            <Icon className={cn("h-4 w-4 transition-colors", active ? "text-[var(--gold)]" : "text-[var(--signal)] group-hover:text-[var(--gold)]")} />
             <span>{label}</span>
           </Link>
         );

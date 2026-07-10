@@ -14,7 +14,7 @@
 
 html {
   min-height: 100%;
-  background: #ffffff;
+  background: #f8fbff;
   scroll-behavior: smooth;
 }
 
@@ -22,9 +22,9 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at top left, rgba(40, 214, 198, 0.16), transparent 28rem),
-    radial-gradient(circle at top right, rgba(124, 92, 255, 0.12), transparent 30rem),
-    linear-gradient(180deg, #ffffff 0%, #f7fafc 52%, #ffffff 100%);
+    radial-gradient(circle at top left, rgba(255, 179, 107, 0.2), transparent 28rem),
+    radial-gradient(circle at top right, rgba(74, 169, 223, 0.16), transparent 30rem),
+    linear-gradient(180deg, #ffffff 0%, #f4f9fd 52%, #ffffff 100%);
   color: var(--ink);
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
   text-rendering: geometricPrecision;
