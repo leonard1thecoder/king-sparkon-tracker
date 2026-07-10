@@ -187,29 +187,31 @@ function UserProfileDropdown() {
         <ChevronDown className="h-3.5 w-3.5" />
       </button>
       {open ? (
-        <div id="user-profile-menu" className="absolute right-0 z-50 mt-2 grid min-w-[19rem] gap-1 rounded-[1.35rem] border border-[var(--line)] bg-white p-2 shadow-[var(--shadow-ledger)]" role="menu">
-          <section className="mb-1 overflow-hidden rounded-[1.15rem] border border-[var(--line)] bg-[var(--surface)]" aria-label="Signed-in user information">
-            <div className="bg-[var(--ink)] p-4 text-white enterprise-grid">
+        <div id="user-profile-menu" className="absolute right-0 z-50 mt-2 grid w-[min(22rem,calc(100vw-2rem))] gap-1 rounded-[1.35rem] border border-[var(--line)] bg-white p-2 shadow-[var(--shadow-ledger)]" role="menu">
+          <section className="mb-1 overflow-hidden rounded-[1.15rem] border border-[var(--ink)]/15 bg-[var(--gold)]/18 shadow-[var(--shadow-soft)]" aria-label="Signed-in user information">
+            <div className="border-b border-[var(--ink)]/15 bg-[var(--gold)] p-4 text-[var(--ink)]">
               <div className="flex items-start gap-3">
-                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[1rem] border border-white/15 bg-white/10 text-[var(--gold)]">
+                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-[1rem] border border-[var(--ink)]/15 bg-white/75 text-[var(--ink)] shadow-[var(--shadow-soft)]">
                   {loadingProfile ? <Loader2 className="h-5 w-5 animate-spin" /> : <UserRound className="h-5 w-5" />}
                 </div>
-                <div className="min-w-0">
-                  <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--gold)]">Signed in as</p>
-                  <p className="mt-1 truncate text-base font-black tracking-[-0.02em]">{loadingProfile ? "Loading your profile" : displayName}</p>
-                  <p className="mt-1 flex min-w-0 items-center gap-1.5 text-xs font-semibold text-white/65">
-                    <Mail className="h-3.5 w-3.5 shrink-0" />
-                    <span className="truncate">{loadingProfile ? "Checking account details" : emailAddress}</span>
+                <div className="min-w-0 flex-1">
+                  <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">Signed in as</p>
+                  <p className="mt-1 break-words text-lg font-black leading-tight tracking-[-0.025em] text-[var(--ink)]">
+                    {loadingProfile ? "Loading your profile" : displayName}
+                  </p>
+                  <p className="mt-2 flex min-w-0 items-start gap-1.5 text-xs font-bold leading-5 text-[var(--ink)]/65">
+                    <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                    <span className="break-all">{loadingProfile ? "Checking account details" : emailAddress}</span>
                   </p>
                 </div>
               </div>
             </div>
-            <div className="grid gap-3 p-3">
+            <div className="grid gap-3 bg-white/72 p-3">
               <p className="text-xs font-semibold leading-5 text-[var(--steel)]">
                 Your personal workspace for shopping, tickets, worker tips, job opportunities, and application tracking.
               </p>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full bg-[var(--gold)] px-2.5 py-1 text-[0.62rem] font-black uppercase tracking-[0.1em] text-[var(--ink)]">{accountRole}</span>
+                <span className="rounded-full border border-[var(--ink)]/15 bg-[var(--gold)] px-2.5 py-1 text-[0.62rem] font-black uppercase tracking-[0.1em] text-[var(--ink)]">{accountRole}</span>
                 <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[0.62rem] font-black uppercase tracking-[0.1em] ${verified ? "bg-[var(--confirm)]/12 text-[var(--confirm)]" : "bg-[var(--signal)]/12 text-[var(--signal)]"}`}>
                   <ShieldCheck className="h-3 w-3" /> {verified ? "Verified account" : "Verify email"}
                 </span>
