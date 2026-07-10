@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { DashboardFrame } from "@/components/layout/DashboardFrame";
-import { DashboardRoleNav } from "@/components/layout/DashboardRoleNav";
 import { JobApplicationsPanel } from "@/components/jobs/JobApplicationsPanel";
 import { JobOpportunityBoard } from "@/components/jobs/JobOpportunityBoard";
 
@@ -13,10 +11,8 @@ export default async function OwnerJobsPage({ searchParams }: { searchParams: Pr
   const { tab } = await searchParams;
 
   return (
-    <DashboardFrame role="Owner" nav={<DashboardRoleNav role="Owner" />}>
-      <main className="grid gap-6 bg-[var(--surface)] p-5 md:p-8">
-        {tab === "applications" ? <JobApplicationsPanel scope="manage" /> : <JobOpportunityBoard audience="owner" />}
-      </main>
-    </DashboardFrame>
+    <main className="grid gap-6 bg-[var(--surface)] p-5 md:p-8">
+      {tab === "applications" ? <JobApplicationsPanel scope="manage" /> : <JobOpportunityBoard audience="owner" />}
+    </main>
   );
 }
