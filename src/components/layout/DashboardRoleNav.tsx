@@ -24,7 +24,7 @@ import {
 import { cn } from "@/lib/utils/cn";
 import type { UserRole } from "@/lib/types/backend";
 
-type NavItem = { label: string; href: string; icon: LucideIcon };
+type NavItem = { label: string; href: string; icon: LucideIcon; description?: string };
 
 const navByRole: Record<UserRole, NavItem[]> = {
   Admin: [
@@ -59,11 +59,11 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Tips", href: "/dashboard/worker/tips", icon: WalletCards },
   ],
   Affiliate: [
-    { label: "Overview", href: "/dashboard/affiliate", icon: QrCode },
-    { label: "Referral Links", href: "/dashboard/affiliate/referrals", icon: QrCode },
-    { label: "Campaign Assets", href: "/dashboard/affiliate/assets", icon: Megaphone },
-    { label: "Commissions", href: "/dashboard/affiliate/commissions", icon: BarChart3 },
-    { label: "Payouts", href: "/dashboard/affiliate/payouts", icon: WalletCards },
+    { label: "Overview", href: "/dashboard/affiliate", icon: QrCode, description: "Funnel and earnings" },
+    { label: "Referral Links", href: "/dashboard/affiliate/referrals", icon: QrCode, description: "Share link and QR" },
+    { label: "Campaign Assets", href: "/dashboard/affiliate/assets", icon: Megaphone, description: "Copy-ready promotion" },
+    { label: "Commissions", href: "/dashboard/affiliate/commissions", icon: BarChart3, description: "Earned value ledger" },
+    { label: "Payouts", href: "/dashboard/affiliate/payouts", icon: WalletCards, description: "Provider settlements" },
   ],
   User: [
     { label: "Buy Products", href: "/dashboard/user/shop", icon: ShoppingCart },
@@ -115,7 +115,7 @@ export function DashboardRoleNav({ role }: { role: UserRole }) {
 
   return (
     <>
-      {items.map(({ label, href, icon: Icon }) => {
+      {items.map(({ label, href, icon: Icon, description }) => {
         const active = isActive(pathname, searchParams, href);
 
         return (
@@ -125,6 +125,7 @@ export function DashboardRoleNav({ role }: { role: UserRole }) {
             aria-current={active ? "page" : undefined}
             className={cn(
               "group inline-flex min-h-11 w-full shrink-0 items-center gap-3 rounded-[1rem] border px-3.5 py-2.5 text-sm font-black transition duration-200 ease-out hover:-translate-y-0.5",
+              description ? "min-h-[3.65rem]" : "",
               active
                 ? "border-[var(--ink)] bg-[var(--ink)] text-white shadow-[0_12px_24px_rgba(7,19,31,0.2)]"
                 : "border-[var(--ink)]/10 bg-white/45 text-[var(--ink)]/75 hover:border-[var(--ink)]/25 hover:bg-white/75 hover:text-[var(--ink)]",
@@ -140,7 +141,10 @@ export function DashboardRoleNav({ role }: { role: UserRole }) {
             >
               <Icon className="h-4 w-4" />
             </span>
-            <span className="min-w-0 truncate">{label}</span>
+            <span className="min-w-0">
+              <span className="block truncate">{label}</span>
+              {description ? <span className={cn("mt-0.5 block truncate text-[0.65rem] font-bold tracking-normal", active ? "text-white/55" : "text-[var(--muted)]")}>{description}</span> : null}
+            </span>
           </Link>
         );
       })}
