@@ -16,6 +16,12 @@ main > section:first-child header nav a[href="/"] p:last-child::after {
   width: fit-content;
 }
 
+@media (min-width: 1024px) {
+  main > section:first-child header > div[aria-label="Section navigation"] {
+    justify-content: center;
+  }
+}
+
 @media (max-width: 640px) {
   #complaints .capacity-hero-deck {
     min-height: 39rem !important;
