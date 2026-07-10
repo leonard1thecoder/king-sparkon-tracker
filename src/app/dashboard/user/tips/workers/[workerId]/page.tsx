@@ -1,24 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, CreditCard, QrCode, ShieldCheck, WalletCards } from "lucide-react";
+import { CheckCircle2, CreditCard, QrCode, ShieldCheck } from "lucide-react";
 import { RouteSectionPage } from "@/components/layout/RouteSectionPage";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { WorkerTipCheckout } from "@/components/tips/WorkerTipCheckout";
+import { Card } from "@/components/ui/Card";
 import { StatusPill } from "@/components/ui/StatusPill";
 
 type WorkerTipPageProps = {
   params: Promise<{ workerId: string }>;
 };
 
-const tipOptions = [
-  ["R20", "Quick thanks", "A small thank-you for fast service."],
-  ["R50", "Great support", "Reward helpful service and good attitude."],
-  ["R100", "Excellent work", "For workers who went above expectation."],
-  ["Custom", "Own amount", "Let the payment step collect a custom tip value."],
-] as const;
-
 const trustSignals = [
   ["Worker locked", "This dashboard tip page is tied to the worker ID found from the QR code."],
-  ["Payment ready", "Checkout can generate the worker tip payment link once the backend payment handoff is active."],
+  ["Payment ready", "The selected amount is sent to the existing tip payment handoff."],
   ["Owner review", "Owners can review gross tips, platform fee, net amount, and paid state."],
 ] as const;
 
@@ -43,16 +37,15 @@ export async function generateMetadata({ params }: WorkerTipPageProps): Promise<
 export default async function DashboardUserWorkerTipPage({ params }: WorkerTipPageProps) {
   const { workerId } = await params;
   const workerLabel = safeDecode(workerId);
-  const encodedWorkerId = encodeURIComponent(workerLabel);
 
   return (
     <RouteSectionPage
       role="USER WORKSPACE"
       title="Tip worker"
-      description={`Worker ${workerLabel} was found from the QR scan. Confirm the worker and continue with the tip flow without leaving the user dashboard.`}
-      endpoint="POST /api/tips/workers/{workerId}/paypal/checkout"
+      description={`Worker ${workerLabel} was found from the QR scan. Choose an amount, enter secure payment details, and tip the worker without leaving the user dashboard.`}
+      endpoint="POST /api/tips"
     >
-      <section className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+      <section className="grid gap-6 xl:grid-cols-[0.82fr_1.18fr]">
         <div className="relative overflow-hidden rounded-[2.5rem] bg-[var(--ink)] p-6 text-white shadow-[var(--shadow-depth)] enterprise-grid md:p-8">
           <div className="pointer-events-none absolute -right-24 -top-28 h-72 w-72 rounded-full bg-[var(--gold)]/20 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-28 left-10 h-72 w-72 rounded-full bg-[var(--ember)]/16 blur-3xl" />
@@ -69,7 +62,7 @@ export default async function DashboardUserWorkerTipPage({ params }: WorkerTipPa
               <h2 className="code mt-3 break-all text-3xl font-black tracking-[-0.04em] md:text-5xl">{workerLabel}</h2>
               <div className="barcode-rule mt-5 h-10 text-white" />
               <p className="mt-4 text-sm leading-6 text-white/64">
-                This worker was found from the QR scan and the tip flow now stays inside the user dashboard.
+                The scanned worker remains visible while you choose and confirm the tip amount.
               </p>
             </div>
 
@@ -84,63 +77,14 @@ export default async function DashboardUserWorkerTipPage({ params }: WorkerTipPa
                 </div>
               ))}
             </div>
+
+            <Link href="/dashboard/user/tips/scan" className="mt-6 inline-flex min-h-11 w-full items-center justify-center rounded-full border border-white/15 bg-white/[0.08] px-5 text-sm font-black text-white hover:bg-white/15">
+              Scan another worker
+            </Link>
           </div>
         </div>
 
-        <Card className="overflow-hidden">
-          <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <CardTitle>Choose a tip amount</CardTitle>
-              <p className="mt-2 text-sm leading-6 text-[var(--steel)]">
-                Keep the payment decision simple on mobile. The backend can convert the selected value into a worker tip payment link.
-              </p>
-            </div>
-            <div className="grid h-12 w-12 place-items-center rounded-[1.2rem] bg-[var(--ink)] text-[var(--gold)]">
-              <WalletCards className="h-6 w-6" />
-            </div>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            <div className="grid gap-3 sm:grid-cols-2">
-              {tipOptions.map(([amount, title, detail]) => (
-                <Link
-                  key={amount}
-                  href={`/dashboard/user/tips/workers/${encodedWorkerId}?amount=${encodeURIComponent(amount)}`}
-                  className="group rounded-[1.5rem] border border-[var(--line)] bg-[var(--surface)] p-4 hover:border-[var(--gold)] hover:bg-white"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="money text-2xl font-black text-[var(--ink)]">{amount}</p>
-                      <h3 className="mt-2 font-black tracking-[-0.02em] text-[var(--ink)]">{title}</h3>
-                    </div>
-                    <ArrowRight className="mt-1 h-5 w-5 text-[var(--signal)] group-hover:text-[var(--ember)]" />
-                  </div>
-                  <p className="mt-3 text-sm leading-6 text-[var(--steel)]">{detail}</p>
-                </Link>
-              ))}
-            </div>
-
-            <div className="rounded-[1.5rem] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)]">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                  <p className="font-mono text-[0.66rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">Payment handoff</p>
-                  <p className="mt-2 text-sm leading-6 text-[var(--steel)]">
-                    Continue when you are ready to generate a live payment link for worker {workerLabel}.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ink)]"
-                >
-                  Continue to payment <CreditCard className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-
-            <Link href="/dashboard/user/tips/scan" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)] hover:border-[var(--gold)]">
-              Scan another worker
-            </Link>
-          </CardContent>
-        </Card>
+        <WorkerTipCheckout workerId={workerLabel} />
       </section>
 
       <section className="grid gap-4 lg:grid-cols-3">
@@ -166,9 +110,9 @@ export default async function DashboardUserWorkerTipPage({ params }: WorkerTipPa
           <div className="grid h-12 w-12 place-items-center rounded-[1.2rem] bg-[var(--ink)] text-[var(--gold)]">
             <CreditCard className="h-6 w-6" />
           </div>
-          <h3 className="mt-5 text-xl font-black tracking-[-0.03em]">Payment link ready</h3>
+          <h3 className="mt-5 text-xl font-black tracking-[-0.03em]">Payment handoff ready</h3>
           <p className="mt-3 text-sm leading-6 text-[var(--steel)]">
-            The UI is ready for backend checkout generation, email fallback, and WhatsApp payment link sharing.
+            Card details remain browser-only while the backend creates the worker tip and secure provider handoff.
           </p>
         </Card>
       </section>
