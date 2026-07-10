@@ -1,5 +1,5 @@
 import { apiGet, apiPatch, apiPost } from "@/lib/api/client";
-import { createMockTuckShopPurchase, getMockTuckShopProducts } from "@/lib/mock/tuck-shop-products";
+import { createApplicationMockPurchase, getApplicationMockProducts } from "@/lib/mock/application-products";
 import type {
   CreateProductPayload,
   CreateTuckShopPurchasePayload,
@@ -22,14 +22,17 @@ function queryString(params: Record<string, string | number | undefined | null>)
   return query ? `?${query}` : "";
 }
 
-function withMockFallback(response: PageResponse<Product>, params: {
-  page?: number;
-  size?: number;
-  businessId?: number | null;
-  category?: string | null;
-  search?: string | null;
-}) {
-  return response.content?.length ? response : getMockTuckShopProducts(params);
+function withMockFallback(
+  response: PageResponse<Product>,
+  params: {
+    page?: number;
+    size?: number;
+    businessId?: number | null;
+    category?: string | null;
+    search?: string | null;
+  },
+) {
+  return response.content?.length ? response : getApplicationMockProducts(params);
 }
 
 export async function listTuckShopProducts(params: {
@@ -43,7 +46,7 @@ export async function listTuckShopProducts(params: {
     const response = await apiGet<PageResponse<Product>>(`/v1/tuck-shop/products${queryString(params)}`);
     return withMockFallback(response, params);
   } catch {
-    return getMockTuckShopProducts(params);
+    return getApplicationMockProducts(params);
   }
 }
 
@@ -51,7 +54,7 @@ export async function createTuckShopPurchase(payload: CreateTuckShopPurchasePayl
   try {
     return await apiPost<TuckShopPurchase, CreateTuckShopPurchasePayload>("/v1/tuck-shop/purchases", payload);
   } catch {
-    return createMockTuckShopPurchase(payload);
+    return createApplicationMockPurchase(payload);
   }
 }
 
@@ -59,7 +62,7 @@ export async function createWorkerTuckShopBarcodePurchase(payload: CreateTuckSho
   try {
     return await apiPost<TuckShopPurchase, CreateTuckShopPurchasePayload>("/v1/tuck-shop/workers/barcode-purchases", payload);
   } catch {
-    return createMockTuckShopPurchase(payload);
+    return createApplicationMockPurchase(payload);
   }
 }
 
@@ -68,7 +71,7 @@ export async function listOwnerProducts(params: { page?: number; size?: number }
     const response = await apiGet<PageResponse<Product>>(`/products${queryString(params)}`);
     return withMockFallback(response, params);
   } catch {
-    return getMockTuckShopProducts(params);
+    return getApplicationMockProducts(params);
   }
 }
 
