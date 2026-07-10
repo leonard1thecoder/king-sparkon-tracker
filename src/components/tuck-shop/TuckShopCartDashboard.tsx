@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { CreditCard, ExternalLink, Loader2, LockKeyhole, ShoppingBag, ShoppingCart, Ticket, Trash2 } from "lucide-react";
 import { createTuckShopPurchase } from "@/lib/api/tuck-shop";
 import type { TuckShopPurchase } from "@/lib/types/backend";
@@ -41,6 +41,7 @@ type StripeCardElement = {
   mount: (selectorOrElement: string | HTMLElement) => void;
   unmount: () => void;
   destroy?: () => void;
+  clear?: () => void;
   on: (event: "change", handler: (event: { complete: boolean; error?: { message?: string } }) => void) => void;
 };
 
@@ -100,11 +101,11 @@ function loadStripeScript() {
   });
 }
 
-function stripeFieldShell(label: string, children: React.ReactNode) {
+function stripeFieldShell(label: string, children: ReactNode) {
   return (
-    <label className="grid gap-2">
-      <span className="text-xs font-black uppercase tracking-[0.12em] text-[var(--steel)]">{label}</span>
-      <span className="block min-h-12 rounded-[1.05rem] border border-[var(--line)] bg-white px-4 py-3 shadow-[var(--shadow-soft)] focus-within:border-[var(--signal)]">
+    <label className="grid gap-2 text-sm font-bold text-[var(--steel)]">
+      {label}
+      <span className="block min-h-12 rounded-[1rem] border border-[var(--line)] bg-[var(--surface)] px-4 py-3.5 shadow-[var(--shadow-soft)] transition focus-within:border-[var(--signal)] focus-within:bg-white">
         {children}
       </span>
     </label>
@@ -227,7 +228,7 @@ export function TuckShopCartDashboard() {
     }
 
     if (STRIPE_PUBLISHABLE_KEY && !stripeCardComplete) {
-      setError("Complete the card number, expiry date/year, and CVC before checkout.");
+      setError("Complete the card number, expiry date, and CVC before checkout.");
       return;
     }
 
@@ -266,6 +267,7 @@ export function TuckShopCartDashboard() {
       setTicketPurchaseCount(ticketLines.reduce((total, line) => total + line.quantity, 0));
       clearTuckShopCart();
       setCart([]);
+      Object.values(stripeElementRefs.current).forEach((field) => field?.clear?.());
       setStripeFieldsComplete({ ...initialStripeFields });
     } catch (exception) {
       setError(normalizeApiError(exception).message);
@@ -279,7 +281,7 @@ export function TuckShopCartDashboard() {
       <SectionHeader
         eyebrow="User Cart"
         title="Review products and tickets before checkout."
-        description="Products and tickets share the same cart. Stripe card details are separated into card number, expiry, and CVC fields."
+        description="The cart now uses the same polished secure card layout as the worker tip flow while Stripe keeps raw card details outside King Sparkon Tracker."
       />
 
       <Card>
@@ -297,7 +299,7 @@ export function TuckShopCartDashboard() {
             </Link>
           </div>
         </CardHeader>
-        <CardContent className="grid gap-5 lg:grid-cols-[1fr_0.85fr]">
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_0.9fr] lg:items-start">
           <div className="grid gap-3">
             {cart.length === 0 ? (
               <div className="rounded-[2rem] border border-dashed border-[var(--line)] bg-white p-8 text-center">
@@ -347,36 +349,51 @@ export function TuckShopCartDashboard() {
             )}
           </div>
 
-          <div className="grid gap-4 rounded-[1.5rem] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)]">
-            {error ? <p className="rounded-[var(--radius-lg)] border border-[var(--danger)]/30 bg-white p-4 text-sm font-bold text-[var(--danger)]">{error}</p> : null}
-
-            <div className="rounded-[1.4rem] border border-[var(--line)] bg-[var(--surface)] p-4">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">Stripe secure card</p>
-                  <p className="mt-1 text-sm font-bold text-[var(--steel)]">Card, expiry year/date, and CVC are separate but stay inside Stripe.</p>
-                </div>
-                <div className="grid h-11 w-11 place-items-center rounded-full bg-[var(--ink)] text-[var(--gold)]"><CreditCard className="h-5 w-5" /></div>
+          <aside className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)] lg:sticky lg:top-5">
+            <div className="flex items-center gap-3 border-b border-[var(--line)] bg-[var(--surface)]/55 p-5">
+              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[1rem] bg-[var(--ink)] text-[var(--gold)]">
+                <CreditCard className="h-5 w-5" />
               </div>
+              <div>
+                <h3 className="font-black text-[var(--ink)]">Card payment details</h3>
+                <p className="mt-1 text-xs leading-5 text-[var(--steel)]">Secure Stripe fields for your complete cart payment.</p>
+              </div>
+            </div>
 
-              <div className="mt-4 grid gap-3 md:grid-cols-[1.45fr_0.85fr_0.7fr]">
-                {stripeFieldShell("Card number", <div ref={stripeNumberRef} />)}
-                {stripeFieldShell("Expiry / year", <div ref={stripeExpiryRef} />)}
+            <div className="grid gap-4 p-5">
+              {error ? <p className="rounded-[1rem] border border-[var(--danger)]/25 bg-[var(--danger)]/10 p-3 text-sm font-bold text-[var(--danger)]">{error}</p> : null}
+
+              {stripeFieldShell("Card number", <div ref={stripeNumberRef} />)}
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                {stripeFieldShell("Expiry date", <div ref={stripeExpiryRef} />)}
                 {stripeFieldShell("CVC", <div ref={stripeCvcRef} />)}
               </div>
 
-              {!stripeReady && !stripeMessage ? <p className="mt-3 text-sm font-bold text-[var(--steel)]">Loading Stripe card fields...</p> : null}
-              {stripeMessage ? <p className="mt-3 text-xs font-bold text-[var(--danger)]">{stripeMessage}</p> : null}
-              <p className="mt-3 inline-flex items-center gap-2 text-xs font-bold text-[var(--steel)]"><LockKeyhole className="h-3.5 w-3.5 text-[var(--confirm)]" /> Raw card details never touch this app.</p>
-            </div>
+              {!stripeReady && !stripeMessage ? <p className="text-sm font-bold text-[var(--steel)]"><Loader2 className="mr-2 inline h-4 w-4 animate-spin" /> Loading secure card fields...</p> : null}
+              {stripeMessage ? <p className="rounded-[1rem] border border-[var(--danger)]/25 bg-[var(--danger)]/10 p-3 text-xs font-bold text-[var(--danger)]">{stripeMessage}</p> : null}
 
-            <div className="grid gap-2 rounded-[var(--radius-lg)] bg-[var(--ink)] p-4 text-white">
-              {cartTicketTotal(cart) > 0 ? <div className="flex justify-between gap-3 text-sm font-bold"><span>Tickets</span><span className="money">{money(cartTicketTotal(cart))}</span></div> : null}
-              <div className="flex justify-between gap-3 text-xl font-black"><span>Cart total</span><span className="money">{money(cartTotal(cart))}</span></div>
-              <p className="text-xs leading-5 text-white/62">Ticket holder details are taken from the registered user account.</p>
+              <div className="flex items-start gap-2 rounded-[1rem] bg-[var(--surface)] p-3 text-xs font-semibold leading-5 text-[var(--steel)]">
+                <LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-[var(--confirm)]" />
+                Card number, expiry, and CVC are hosted by Stripe and are never stored by King Sparkon Tracker.
+              </div>
+
+              <div className="grid gap-3 rounded-[1.35rem] bg-[var(--ink)] p-4 text-white">
+                <div className="flex items-center justify-between gap-3 text-xs font-black uppercase tracking-[0.12em] text-white/55">
+                  <span>Order summary</span>
+                  <span>{cartLineCount(cart)} items</span>
+                </div>
+                {cartTicketTotal(cart) > 0 ? <div className="flex justify-between gap-3 text-sm font-bold"><span>Tickets</span><span className="money">{money(cartTicketTotal(cart))}</span></div> : null}
+                <div className="flex justify-between gap-3 border-t border-white/10 pt-3 text-xl font-black"><span>Cart total</span><span className="money text-[var(--gold)]">{money(cartTotal(cart))}</span></div>
+                <p className="text-xs leading-5 text-white/62">Ticket holder details come from the registered user account.</p>
+              </div>
+
+              <Button onClick={checkout} disabled={saving || cart.length === 0} className="w-full">
+                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
+                {saving ? "Processing cart..." : "Pay cart"}
+              </Button>
             </div>
-            <Button onClick={checkout} disabled={saving || cart.length === 0}>{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />} Checkout with Stripe</Button>
-          </div>
+          </aside>
         </CardContent>
       </Card>
 
