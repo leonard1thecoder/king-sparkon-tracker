@@ -13,6 +13,7 @@ type BarcodeScannerProps = {
   hideIdleResult?: boolean;
   hideManualFallback?: boolean;
   hideResult?: boolean;
+  compact?: boolean;
 };
 
 export function BarcodeScanner({
@@ -20,6 +21,7 @@ export function BarcodeScanner({
   hideIdleResult = false,
   hideManualFallback = false,
   hideResult = false,
+  compact = false,
 }: BarcodeScannerProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const isStartingRef = useRef(false);
@@ -46,12 +48,9 @@ export function BarcodeScanner({
   }
 
   async function start() {
-    if (controls || isStartingRef.current) {
-      return;
-    }
+    if (controls || isStartingRef.current) return;
 
     const videoElement = videoRef.current;
-
     if (!videoElement) {
       setStatus("CAMERA_NOT_READY");
       return;
@@ -64,11 +63,11 @@ export function BarcodeScanner({
       const reader = new BrowserMultiFormatReader();
       const nextControls = await reader.decodeFromVideoDevice(undefined, videoElement, (result) => {
         const value = result?.getText();
-        if (value) {
-          setLastScan(value);
-          setStatus("VERIFIED");
-          onScan?.(value);
-        }
+        if (!value) return;
+
+        setLastScan(value);
+        setStatus("VERIFIED");
+        onScan?.(value);
       });
       setControls(nextControls);
     } catch {
@@ -86,32 +85,39 @@ export function BarcodeScanner({
   function submitManualBarcode(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const barcode = String(formData.get("barcode") ?? "").trim();
+    const barcodeValue = String(formData.get("barcode") ?? "").trim();
 
-    if (!barcode) {
-      return;
-    }
+    if (!barcodeValue) return;
 
-    setLastScan(barcode);
+    setLastScan(barcodeValue);
     setStatus("VERIFIED");
-    onScan?.(barcode);
+    onScan?.(barcodeValue);
     event.currentTarget.reset();
   }
 
   return (
     <div className={`grid gap-5 ${showSidePanel ? "lg:grid-cols-[1.2fr_0.8fr]" : ""}`}>
-      <div className="rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface-strong)] p-4 shadow-[var(--shadow-soft)]">
+      <div
+        className={`w-full rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface-strong)] shadow-[var(--shadow-soft)] ${
+          compact ? "max-w-[22rem] justify-self-end p-3" : "p-4"
+        }`}
+      >
         <div className="relative overflow-hidden rounded-[var(--radius-lg)] bg-[var(--ink)] scan-grid">
-          <video ref={videoRef} className="aspect-video w-full object-cover opacity-85" muted playsInline />
-          <div className="pointer-events-none absolute inset-6 rounded-[var(--radius-xl)] border border-white/35">
+          <video
+            ref={videoRef}
+            className={`${compact ? "aspect-[4/3] max-h-64" : "aspect-video"} w-full object-cover opacity-85`}
+            muted
+            playsInline
+          />
+          <div className={`pointer-events-none absolute ${compact ? "inset-4" : "inset-6"} rounded-[var(--radius-xl)] border border-white/35`}>
             <div className="scan-sweep absolute inset-x-0 top-0 h-1 bg-[var(--signal)] shadow-[0_0_28px_var(--signal)]" />
           </div>
-          <div className="absolute left-4 top-4 rounded-full border border-white/12 bg-black/30 px-3 py-1.5 font-mono text-[0.62rem] uppercase tracking-[0.16em] text-white/70">
+          <div className={`${compact ? "left-3 top-3" : "left-4 top-4"} absolute rounded-full border border-white/12 bg-black/30 px-3 py-1.5 font-mono text-[0.62rem] uppercase tracking-[0.16em] text-white/70`}>
             {isCameraActive ? "Camera active" : "Camera frame"}
           </div>
         </div>
 
-        <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+        <div className={`flex flex-col gap-2 sm:flex-row ${compact ? "mt-3" : "mt-4 gap-3"}`}>
           <Button onClick={start} disabled={isCameraActive} className="sm:flex-1">
             <ScanLine className="h-4 w-4" /> {isCameraActive ? "Scanner running" : "Start scan"}
           </Button>
