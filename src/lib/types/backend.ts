@@ -170,9 +170,43 @@ export type TuckShopPurchase = {
   paymentReference?: string | null;
   paymentUrl?: string | null;
   paymentQrCodeUrl?: string | null;
+  clientSecret?: string | null;
   tip?: Tip | null;
   createdAt?: string;
   items: TuckShopPurchaseItem[];
+};
+
+export type EmbeddedCartTicketItem = {
+  eventId: string;
+  ticketType: "REGULAR" | "VIP" | "VVIP" | string;
+  quantity: number;
+};
+
+export type CreateEmbeddedCartPaymentPayload = {
+  idempotencyKey: string;
+  buyerName: string;
+  buyerEmail: string;
+  products: TuckShopPurchaseItemPayload[];
+  tickets: EmbeddedCartTicketItem[];
+};
+
+export type EmbeddedCartPaymentIntent = {
+  paymentIntentId: string;
+  clientSecret: string;
+  amount: number;
+  currency: string;
+  status: string;
+};
+
+export type EmbeddedCartPaymentStatus = {
+  paymentIntentId: string;
+  amount: number;
+  currency: string;
+  paymentStatus: string;
+  fulfilled: boolean;
+  productPurchases: TuckShopPurchase[];
+  ticketPaymentIds: string[];
+  message: string;
 };
 
 export type Withdrawal = {
