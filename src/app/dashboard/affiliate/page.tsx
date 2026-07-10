@@ -1,5 +1,5 @@
-import { DashboardShell } from "../dashboard-shell";
+import { AffiliateWorkspace } from "@/components/affiliate/AffiliateWorkspace";
 
 export default function AffiliateDashboardPage() {
-  return <DashboardShell role="Affiliate" />;
+  return <AffiliateWorkspace section="overview" />;
 }
