@@ -260,3 +260,36 @@ export function addTicketToCart(line: TuckShopCartTicketLine) {
   writeTuckShopCart(nextCart);
   return nextCart;
 }
+
+export function updateTuckShopCartQuantity(kind: TuckShopCartLine["kind"], id: string | number, quantity: number, ticketType?: TicketType) {
+  const current = readTuckShopCart();
+  const nextCart = current.map((line) => {
+    if (isProductLine(line) && kind === "PRODUCT" && line.product.id === id) {
+      return { ...line, quantity: Math.min(Math.max(quantity, 1), productLineMaxQuantity(line.product)) };
+    }
+
+    if (isTicketLine(line) && kind === "TICKET" && line.event.id === id && line.ticketType === ticketType) {
+      return { ...line, quantity: Math.min(Math.max(quantity, 1), ticketLineMaxQuantity(line)) };
+    }
+
+    return line;
+  });
+
+  writeTuckShopCart(nextCart);
+  return nextCart;
+}
+
+export function removeTuckShopCartLine(kind: TuckShopCartLine["kind"], id: string | number, ticketType?: TicketType) {
+  const nextCart = readTuckShopCart().filter((line) => {
+    if (isProductLine(line) && kind === "PRODUCT") return line.product.id !== id;
+    if (isTicketLine(line) && kind === "TICKET") return line.event.id !== id || line.ticketType !== ticketType;
+    return true;
+  });
+
+  writeTuckShopCart(nextCart);
+  return nextCart;
+}
+
+export function clearTuckShopCart() {
+  writeTuckShopCart([]);
+}
