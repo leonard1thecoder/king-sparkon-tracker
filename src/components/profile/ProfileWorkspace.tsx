@@ -62,6 +62,8 @@ function displayValue(value?: string | number | null) {
   return String(value);
 }
 
+const inputClass = "min-h-12 min-w-0 w-full rounded-[1.1rem] border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none focus:border-[var(--signal)]";
+
 export function ProfileWorkspace({ role }: { role: UserRole }) {
   const [user, setUser] = useState<TrackerUser | null>(null);
   const [profileForm, setProfileForm] = useState<ProfileForm>({ emailAddress: "", cellphoneNumber: "" });
@@ -92,7 +94,6 @@ export function ProfileWorkspace({ role }: { role: UserRole }) {
     }
 
     void loadProfile();
-
     return () => {
       mounted = false;
     };
@@ -153,6 +154,7 @@ export function ProfileWorkspace({ role }: { role: UserRole }) {
         title="Profile settings"
         description="View your account identity, update contact details and password, then open jobs, applications, carts, and tickets from one user workspace."
       />
+
       <main className="grid gap-6 bg-[var(--surface)] p-5 md:p-8">
         {error ? <p className="rounded-[var(--radius-lg)] border border-[var(--danger)]/30 bg-white p-4 text-sm font-bold text-[var(--danger)]">{error}</p> : null}
         {notice ? <p className="rounded-[var(--radius-lg)] border border-[var(--confirm)]/30 bg-[var(--confirm)]/10 p-4 text-sm font-bold text-[var(--ink)]">{notice}</p> : null}
@@ -167,6 +169,7 @@ export function ProfileWorkspace({ role }: { role: UserRole }) {
               <h1 className="mt-2 text-3xl font-black tracking-[-0.05em]">{loading ? "Loading profile" : displayValue(user?.username)}</h1>
               <p className="mt-2 break-all text-sm font-semibold text-white/70">{loading ? "Checking account details" : displayValue(user?.emailAddress)}</p>
             </div>
+
             <CardContent className="grid gap-3">
               {[
                 ["Username", user?.username],
@@ -178,6 +181,7 @@ export function ProfileWorkspace({ role }: { role: UserRole }) {
                   <p className="mt-2 break-all text-sm font-bold text-[var(--ink)]">{loading ? "Loading..." : displayValue(value)}</p>
                 </div>
               ))}
+
               <div className="rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--surface)] p-4">
                 <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.14em] text-[var(--muted)]">Roles</p>
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -220,37 +224,39 @@ export function ProfileWorkspace({ role }: { role: UserRole }) {
               <form onSubmit={updateProfile} className="grid gap-4">
                 <label className="grid gap-2">
                   <span className="inline-flex items-center gap-2 text-sm font-black text-[var(--ink)]"><Mail className="h-4 w-4 text-[var(--signal)]" /> Email address</span>
-                  <input value={profileForm.emailAddress} onChange={(event) => setProfileForm((current) => ({ ...current, emailAddress: event.target.value }))} type="email" className="min-h-12 rounded-[1.1rem] border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none focus:border-[var(--signal)]" placeholder="user@example.com" />
+                  <input value={profileForm.emailAddress} onChange={(event) => setProfileForm((current) => ({ ...current, emailAddress: event.target.value }))} type="email" name="emailAddress" autoComplete="email" className={inputClass} placeholder="user@example.com" />
                 </label>
                 <label className="grid gap-2">
                   <span className="inline-flex items-center gap-2 text-sm font-black text-[var(--ink)]"><Phone className="h-4 w-4 text-[var(--signal)]" /> Cellphone number</span>
-                  <input value={profileForm.cellphoneNumber} onChange={(event) => setProfileForm((current) => ({ ...current, cellphoneNumber: event.target.value }))} type="tel" className="min-h-12 rounded-[1.1rem] border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none focus:border-[var(--signal)]" placeholder="+27 00 000 0000" />
+                  <input value={profileForm.cellphoneNumber} onChange={(event) => setProfileForm((current) => ({ ...current, cellphoneNumber: event.target.value }))} type="tel" name="cellphoneNumber" autoComplete="tel" className={inputClass} placeholder="+27 00 000 0000" />
                 </label>
                 <Button type="submit" disabled={savingProfile}><Settings className="h-4 w-4" /> {savingProfile ? "Saving..." : "Save contact details"}</Button>
               </form>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="min-w-0">
             <CardHeader>
               <CardTitle>Update password</CardTitle>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={updatePassword} className="grid gap-4">
-                <label className="grid gap-2">
+            <CardContent className="min-w-0">
+              <form onSubmit={updatePassword} className="grid min-w-0 gap-4">
+                <label className="grid min-w-0 gap-2">
                   <span className="inline-flex items-center gap-2 text-sm font-black text-[var(--ink)]"><LockKeyhole className="h-4 w-4 text-[var(--signal)]" /> Current password</span>
-                  <input value={passwordForm.currentPassword} onChange={(event) => setPasswordForm((current) => ({ ...current, currentPassword: event.target.value }))} type="password" className="min-h-12 rounded-[1.1rem] border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none focus:border-[var(--signal)]" />
+                  <input value={passwordForm.currentPassword} onChange={(event) => setPasswordForm((current) => ({ ...current, currentPassword: event.target.value }))} type="password" name="currentPassword" autoComplete="current-password" className={inputClass} />
                 </label>
-                <div className="grid grid-cols-2 gap-3">
+
+                <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-3">
                   <label className="grid min-w-0 gap-2">
                     <span className="text-sm font-black text-[var(--ink)]">New password</span>
-                    <input value={passwordForm.newPassword} onChange={(event) => setPasswordForm((current) => ({ ...current, newPassword: event.target.value }))} type="password" className="min-h-12 min-w-0 w-full rounded-[1.1rem] border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none focus:border-[var(--signal)]" />
+                    <input value={passwordForm.newPassword} onChange={(event) => setPasswordForm((current) => ({ ...current, newPassword: event.target.value }))} type="password" name="newPassword" autoComplete="new-password" className={inputClass} />
                   </label>
                   <label className="grid min-w-0 gap-2">
                     <span className="text-sm font-black text-[var(--ink)]">Confirm password</span>
-                    <input value={passwordForm.confirmPassword} onChange={(event) => setPasswordForm((current) => ({ ...current, confirmPassword: event.target.value }))} type="password" className="min-h-12 min-w-0 w-full rounded-[1.1rem] border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none focus:border-[var(--signal)]" />
+                    <input value={passwordForm.confirmPassword} onChange={(event) => setPasswordForm((current) => ({ ...current, confirmPassword: event.target.value }))} type="password" name="confirmPassword" autoComplete="new-password" className={inputClass} />
                   </label>
                 </div>
+
                 <Button type="submit" disabled={savingPassword}><LockKeyhole className="h-4 w-4" /> {savingPassword ? "Updating..." : "Update password"}</Button>
               </form>
             </CardContent>
