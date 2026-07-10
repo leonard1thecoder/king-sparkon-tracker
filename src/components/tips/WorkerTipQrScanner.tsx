@@ -121,7 +121,7 @@ export function WorkerTipQrScanner() {
           <StatusPill label="TIP SCANNER" tone="confirm" />
         </CardHeader>
         <CardContent>
-          <BarcodeScanner onScan={handleScan} />
+          <BarcodeScanner onScan={handleScan} hideIdleResult />
         </CardContent>
       </Card>
 
