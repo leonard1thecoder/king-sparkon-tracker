@@ -1,4 +1,4 @@
-import { apiGet, apiPatch, apiPost } from "@/lib/api/client";
+import { apiClient, apiGet, apiPatch, apiPost } from "@/lib/api/client";
 import { createApplicationMockPurchase, getApplicationMockProducts } from "@/lib/mock/application-products";
 import type {
   CreateEmbeddedCartPaymentPayload,
@@ -97,4 +97,11 @@ export function createOwnerProduct(payload: CreateProductPayload) {
 
 export function updateOwnerProductImage(productId: number, payload: ProductImageUpdatePayload) {
   return apiPatch<Product, ProductImageUpdatePayload>(`/products/${productId}/image`, payload);
+}
+
+export async function uploadProductImage(productId: number, file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await apiClient.patch<Product>(`/products/${productId}/image-file`, formData);
+  return response.data;
 }
