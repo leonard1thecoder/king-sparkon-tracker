@@ -99,25 +99,25 @@ export function BarcodeScanner({
     <div className={`grid gap-5 ${showSidePanel ? "lg:grid-cols-[1.2fr_0.8fr]" : ""}`}>
       <div
         className={`w-full rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface-strong)] shadow-[var(--shadow-soft)] ${
-          compact ? "max-w-[22rem] justify-self-end p-3" : "p-4"
+          compact ? "max-w-[28rem] justify-self-end p-3.5" : "p-4"
         }`}
       >
         <div className="relative overflow-hidden rounded-[var(--radius-lg)] bg-[var(--ink)] scan-grid">
           <video
             ref={videoRef}
-            className={`${compact ? "aspect-[4/3] max-h-64" : "aspect-video"} w-full object-cover opacity-85`}
+            className={`${compact ? "aspect-video max-h-80" : "aspect-video"} w-full object-cover opacity-85`}
             muted
             playsInline
           />
-          <div className={`pointer-events-none absolute ${compact ? "inset-4" : "inset-6"} rounded-[var(--radius-xl)] border border-white/35`}>
+          <div className={`pointer-events-none absolute ${compact ? "inset-5" : "inset-6"} rounded-[var(--radius-xl)] border border-white/35`}>
             <div className="scan-sweep absolute inset-x-0 top-0 h-1 bg-[var(--signal)] shadow-[0_0_28px_var(--signal)]" />
           </div>
-          <div className={`${compact ? "left-3 top-3" : "left-4 top-4"} absolute rounded-full border border-white/12 bg-black/30 px-3 py-1.5 font-mono text-[0.62rem] uppercase tracking-[0.16em] text-white/70`}>
+          <div className={`${compact ? "left-3.5 top-3.5" : "left-4 top-4"} absolute rounded-full border border-white/12 bg-black/30 px-3 py-1.5 font-mono text-[0.62rem] uppercase tracking-[0.16em] text-white/70`}>
             {isCameraActive ? "Camera active" : "Camera frame"}
           </div>
         </div>
 
-        <div className={`flex flex-col gap-2 sm:flex-row ${compact ? "mt-3" : "mt-4 gap-3"}`}>
+        <div className={`flex flex-col gap-2 sm:flex-row ${compact ? "mt-3.5" : "mt-4 gap-3"}`}>
           <Button onClick={start} disabled={isCameraActive} className="sm:flex-1">
             <ScanLine className="h-4 w-4" /> {isCameraActive ? "Scanner running" : "Start scan"}
           </Button>
