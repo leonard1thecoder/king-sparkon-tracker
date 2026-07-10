@@ -2,17 +2,48 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { BriefcaseBusiness, ChevronDown, FileCheck2, Loader2, Power, ShoppingCart, Ticket, UserRound, WalletCards } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  ChevronDown,
+  FileCheck2,
+  Loader2,
+  Mail,
+  Power,
+  ShieldCheck,
+  ShoppingCart,
+  Ticket,
+  UserRound,
+  WalletCards,
+} from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { apiGet, normalizeApiError } from "@/lib/api/client";
+import type { TrackerUser } from "@/lib/types/backend";
 
 type TipRow = Record<string, unknown>;
-type TipPayload = TipRow[] | { content?: TipRow[]; data?: TipRow[]; items?: TipRow[]; withdrawableAmount?: number; accountTotal?: number; totalWithdrawable?: number; availableToWithdraw?: number };
+type TipPayload = TipRow[] | {
+  content?: TipRow[];
+  data?: TipRow[];
+  items?: TipRow[];
+  withdrawableAmount?: number;
+  accountTotal?: number;
+  totalWithdrawable?: number;
+  availableToWithdraw?: number;
+};
 
 type ProfileShortcut = {
   label: string;
   href: string;
   icon: typeof UserRound;
+};
+
+type SessionProfile = {
+  username?: string;
+  name?: string;
+  emailAddress?: string;
+  email?: string;
+  privilege?: string;
+  role?: string;
+  emailVerified?: boolean;
 };
 
 const userProfileShortcuts: ProfileShortcut[] = [
@@ -110,6 +141,44 @@ function OwnerWithdrawAction() {
 
 function UserProfileDropdown() {
   const [open, setOpen] = useState(false);
+  const [profile, setProfile] = useState<TrackerUser | SessionProfile | null>(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadProfile() {
+      setLoadingProfile(true);
+
+      try {
+        const user = await apiGet<TrackerUser>("/users/me");
+        if (active) setProfile(user);
+      } catch {
+        try {
+          const response = await fetch("/api/auth/session", { cache: "no-store" });
+          if (!response.ok) throw new Error("Session profile unavailable");
+          const session = (await response.json()) as SessionProfile;
+          if (active) setProfile(session);
+        } catch {
+          if (active) setProfile(null);
+        }
+      } finally {
+        if (active) setLoadingProfile(false);
+      }
+    }
+
+    void loadProfile();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const source = (profile ?? {}) as TrackerUser & SessionProfile;
+  const displayName = source.username || source.name || "King Sparkon user";
+  const emailAddress = source.emailAddress || source.email || "Email address not available";
+  const accountRole = String(source.roles?.[0] ?? source.privilege ?? source.role ?? "User");
+  const verified = source.emailVerified !== false;
 
   return (
     <div className="relative">
@@ -118,13 +187,42 @@ function UserProfileDropdown() {
         <ChevronDown className="h-3.5 w-3.5" />
       </button>
       {open ? (
-        <div id="user-profile-menu" className="absolute right-0 z-50 mt-2 grid min-w-64 gap-1 rounded-[1.25rem] border border-[var(--line)] bg-white p-2 shadow-[var(--shadow-ledger)]" role="menu">
+        <div id="user-profile-menu" className="absolute right-0 z-50 mt-2 grid min-w-[19rem] gap-1 rounded-[1.35rem] border border-[var(--line)] bg-white p-2 shadow-[var(--shadow-ledger)]" role="menu">
+          <section className="mb-1 overflow-hidden rounded-[1.15rem] border border-[var(--line)] bg-[var(--surface)]" aria-label="Signed-in user information">
+            <div className="bg-[var(--ink)] p-4 text-white enterprise-grid">
+              <div className="flex items-start gap-3">
+                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[1rem] border border-white/15 bg-white/10 text-[var(--gold)]">
+                  {loadingProfile ? <Loader2 className="h-5 w-5 animate-spin" /> : <UserRound className="h-5 w-5" />}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--gold)]">Signed in as</p>
+                  <p className="mt-1 truncate text-base font-black tracking-[-0.02em]">{loadingProfile ? "Loading your profile" : displayName}</p>
+                  <p className="mt-1 flex min-w-0 items-center gap-1.5 text-xs font-semibold text-white/65">
+                    <Mail className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{loadingProfile ? "Checking account details" : emailAddress}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="grid gap-3 p-3">
+              <p className="text-xs font-semibold leading-5 text-[var(--steel)]">
+                Your personal workspace for shopping, tickets, worker tips, job opportunities, and application tracking.
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-[var(--gold)] px-2.5 py-1 text-[0.62rem] font-black uppercase tracking-[0.1em] text-[var(--ink)]">{accountRole}</span>
+                <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[0.62rem] font-black uppercase tracking-[0.1em] ${verified ? "bg-[var(--confirm)]/12 text-[var(--confirm)]" : "bg-[var(--signal)]/12 text-[var(--signal)]"}`}>
+                  <ShieldCheck className="h-3 w-3" /> {verified ? "Verified account" : "Verify email"}
+                </span>
+              </div>
+            </div>
+          </section>
+
           {userProfileShortcuts.map(({ label, href, icon: Icon }) => (
             <Link key={href} href={href} onClick={() => setOpen(false)} className="inline-flex min-h-11 items-center gap-3 rounded-[1rem] px-3 text-sm font-black text-[var(--ink)] transition hover:bg-[var(--surface)]" role="menuitem">
               <Icon className="h-4 w-4 text-[var(--signal)]" /> {label}
             </Link>
           ))}
-          <Link href="/dashboard/user/profile" onClick={() => setOpen(false)} className="inline-flex min-h-11 items-center gap-3 rounded-[1rem] px-3 text-sm font-black text-[var(--ink)] transition hover:bg-[var(--surface)]" role="menuitem">
+          <Link href="/dashboard/user/profile" onClick={() => setOpen(false)} className="inline-flex min-h-11 items-center gap-3 rounded-[1rem] border-t border-[var(--line)] px-3 pt-2 text-sm font-black text-[var(--ink)] transition hover:bg-[var(--surface)]" role="menuitem">
             <UserRound className="h-4 w-4 text-[var(--signal)]" /> Profile settings
           </Link>
         </div>
