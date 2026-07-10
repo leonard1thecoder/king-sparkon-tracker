@@ -36,12 +36,13 @@ async function proxy(request: NextRequest, path: string[]) {
   const incomingUrl = new URL(request.url);
   const backendPath = path.map((segment) => encodeURIComponent(segment)).join("/");
   const backendUrl = new URL(`/api/${backendPath}${incomingUrl.search}`, backendBaseUrl());
+  const hasBody = !["GET", "HEAD"].includes(request.method);
 
   try {
     const backendResponse = await fetch(backendUrl, {
       method: request.method,
       headers: backendHeaders(request),
-      body: ["GET", "HEAD"].includes(request.method) ? undefined : await request.text(),
+      body: hasBody ? await request.arrayBuffer() : undefined,
       cache: "no-store",
     });
     const text = await backendResponse.text();
