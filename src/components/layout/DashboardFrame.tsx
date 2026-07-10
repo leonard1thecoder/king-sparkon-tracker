@@ -17,18 +17,25 @@ export function DashboardFrame({ role, nav, children }: { role: string; nav: Rea
 
   return (
     <div className="h-screen overflow-hidden bg-[var(--paper)] text-[var(--ink)] lg:grid lg:grid-cols-[292px_minmax(0,1fr)]">
-      <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-[var(--line)] bg-white/92 px-4 py-3 shadow-[0_12px_40px_rgba(7,19,31,0.08)] backdrop-blur-xl lg:hidden">
+      <header className="sticky top-0 z-40 flex min-h-[4.5rem] items-center justify-between gap-3 border-b border-[var(--line)] bg-white/95 px-4 py-3 shadow-[0_12px_40px_rgba(7,19,31,0.08)] backdrop-blur-xl lg:hidden">
         <Link href="/" className="flex min-w-0 items-center gap-3">
-          <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker" width={42} height={42} className="rounded-2xl border border-[var(--line)] bg-white p-1 shadow-[var(--shadow-soft)]" />
+          <Image
+            src="/king-sparkon-logo.png"
+            alt="King Sparkon Tracker"
+            width={42}
+            height={42}
+            className="rounded-[1rem] border border-[var(--line)] bg-white p-1 shadow-[var(--shadow-soft)]"
+          />
           <div className="min-w-0">
             <p className="truncate font-mono text-[0.58rem] font-bold uppercase tracking-[0.16em] text-[var(--signal)]">{role}</p>
             <p className="truncate text-sm font-black uppercase tracking-[-0.02em]">King Sparkon</p>
           </div>
         </Link>
+
         <button
           type="button"
           onClick={() => setOpen((value) => !value)}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--ink)] text-[var(--gold)] shadow-[var(--shadow-soft)]"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-[1rem] border border-[var(--ink)] bg-[var(--gold)] text-[var(--ink)] shadow-[var(--shadow-soft)] hover:bg-[var(--ink)] hover:text-white"
           aria-label={open ? "Close dashboard navigation" : "Open dashboard navigation"}
           aria-expanded={open}
         >
@@ -36,42 +43,62 @@ export function DashboardFrame({ role, nav, children }: { role: string; nav: Rea
         </button>
       </header>
 
-      {open ? <button type="button" aria-label="Close dashboard navigation overlay" className="fixed inset-0 z-40 bg-black/45 backdrop-blur-sm lg:hidden" onClick={() => setOpen(false)} /> : null}
+      {open ? (
+        <button
+          type="button"
+          aria-label="Close dashboard navigation overlay"
+          className="fixed inset-0 z-40 bg-[var(--ink)]/45 backdrop-blur-sm lg:hidden"
+          onClick={() => setOpen(false)}
+        />
+      ) : null}
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex h-screen w-[min(88vw,292px)] -translate-x-full flex-col border-r border-white/10 bg-[var(--ink)] text-white shadow-[0_30px_100px_rgba(0,0,0,0.35)] transition-transform duration-300 lg:sticky lg:top-0 lg:z-30 lg:w-auto lg:translate-x-0 lg:shadow-none",
+          "fixed inset-y-0 left-0 z-50 flex h-screen w-[min(88vw,292px)] -translate-x-full flex-col border-r border-[var(--ink)]/15 bg-[var(--gold)] text-[var(--ink)] shadow-[0_30px_100px_rgba(0,0,0,0.28)] transition-transform duration-300 lg:sticky lg:top-0 lg:z-30 lg:w-auto lg:translate-x-0 lg:shadow-none",
           open ? "translate-x-0" : "",
         )}
       >
-        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-white/10 p-4 lg:block lg:p-5">
+        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-[var(--ink)]/15 p-4 lg:block lg:p-5">
           <Link href="/" className="flex min-w-0 items-center gap-3">
-            <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker" width={48} height={48} className="rounded-2xl border border-white/15 bg-white/5 p-1" />
+            <Image
+              src="/king-sparkon-logo.png"
+              alt="King Sparkon Tracker"
+              width={50}
+              height={50}
+              className="rounded-[1rem] border border-[var(--ink)]/15 bg-white p-1 shadow-[var(--shadow-soft)]"
+            />
             <div className="min-w-0">
-              <p className="truncate font-mono text-[0.65rem] font-bold uppercase tracking-[0.18em] text-[var(--gold)]">{role}</p>
+              <p className="truncate font-mono text-[0.65rem] font-black uppercase tracking-[0.18em] text-[var(--signal)]">{role}</p>
               <p className="truncate text-sm font-black uppercase tracking-[-0.01em]">King Sparkon</p>
             </div>
           </Link>
-          <button type="button" onClick={() => setOpen(false)} className="grid h-10 w-10 place-items-center rounded-full border border-white/10 text-white/70 lg:hidden" aria-label="Close dashboard navigation">
+
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="grid h-10 w-10 place-items-center rounded-[1rem] border border-[var(--ink)]/15 bg-white/60 text-[var(--ink)] lg:hidden"
+            aria-label="Close dashboard navigation"
+          >
             <X className="h-5 w-5" />
           </button>
-          <div className="hidden rounded-full border border-white/15 px-3 py-1 font-mono text-[0.62rem] uppercase tracking-[0.14em] text-white/60 lg:mt-5 lg:inline-flex">
+
+          <div className="hidden rounded-full border border-[var(--ink)]/15 bg-white/45 px-3 py-1 font-mono text-[0.62rem] font-black uppercase tracking-[0.14em] text-[var(--ink)]/70 lg:mt-5 lg:inline-flex">
             Live ops console
           </div>
         </div>
 
-        <nav className="grid flex-1 content-start gap-1 overflow-y-auto px-3 py-3 lg:p-4" onClick={() => setOpen(false)}>
+        <nav className="grid flex-1 content-start gap-1.5 overflow-y-auto px-3 py-3 lg:p-4" onClick={() => setOpen(false)}>
           {nav}
         </nav>
 
-        <div className="shrink-0 border-t border-white/10 p-4 lg:p-5">
-          <div className="hidden rounded-[var(--radius-lg)] border border-white/10 bg-white/[0.04] p-4 lg:block">
-            <p className="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-white/45">Scanner health</p>
-            <div className="mt-4 flex items-center justify-between">
-              <span className="text-sm text-white/70">Terminal sync</span>
-              <span className="rounded-full bg-[var(--confirm)] px-2.5 py-1 text-xs font-bold text-white">Online</span>
+        <div className="shrink-0 border-t border-[var(--ink)]/15 p-4 lg:p-5">
+          <div className="hidden rounded-[1.25rem] border border-[var(--ink)]/15 bg-white/55 p-4 shadow-[var(--shadow-soft)] lg:block">
+            <p className="font-mono text-[0.68rem] font-black uppercase tracking-[0.16em] text-[var(--ink)]/55">Scanner health</p>
+            <div className="mt-4 flex items-center justify-between gap-3">
+              <span className="text-sm font-bold text-[var(--ink)]/75">Terminal sync</span>
+              <span className="rounded-full bg-[var(--confirm)] px-2.5 py-1 text-xs font-black text-white">Online</span>
             </div>
-            <div className="barcode-rule mt-5 text-white" />
+            <div className="barcode-rule mt-5 text-[var(--ink)]" />
           </div>
         </div>
       </aside>
