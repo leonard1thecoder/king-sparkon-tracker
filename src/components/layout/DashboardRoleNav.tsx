@@ -3,7 +3,24 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
-import { BarChart3, Boxes, BriefcaseBusiness, Building2, CreditCard, FileCheck2, Megaphone, QrCode, ScanLine, Settings, ShieldCheck, ShoppingCart, Ticket, UserRound, UsersRound, WalletCards } from "lucide-react";
+import {
+  BarChart3,
+  Boxes,
+  BriefcaseBusiness,
+  Building2,
+  CreditCard,
+  FileCheck2,
+  Megaphone,
+  QrCode,
+  ScanLine,
+  Settings,
+  ShieldCheck,
+  ShoppingCart,
+  Ticket,
+  UserRound,
+  UsersRound,
+  WalletCards,
+} from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import type { UserRole } from "@/lib/types/backend";
 
@@ -100,19 +117,30 @@ export function DashboardRoleNav({ role }: { role: UserRole }) {
     <>
       {items.map(({ label, href, icon: Icon }) => {
         const active = isActive(pathname, searchParams, href);
+
         return (
           <Link
             key={`${role}-${href}-${label}`}
             href={href}
+            aria-current={active ? "page" : undefined}
             className={cn(
-              "group inline-flex min-h-11 shrink-0 items-center gap-3 rounded-[1.1rem] border px-4 py-2 text-sm font-black transition duration-200 ease-out hover:-translate-y-0.5 lg:w-full lg:rounded-[1.15rem]",
+              "group inline-flex min-h-11 w-full shrink-0 items-center gap-3 rounded-[1rem] border px-3.5 py-2.5 text-sm font-black transition duration-200 ease-out hover:-translate-y-0.5",
               active
-                ? "border-[var(--gold)] bg-[var(--gold)]/12 text-white shadow-[0_14px_30px_rgba(255,179,107,0.12)]"
-                : "border-white/10 bg-white/[0.04] text-white/68 hover:border-[var(--signal)] hover:bg-[var(--signal)]/12 hover:text-white",
+                ? "border-[var(--ink)] bg-[var(--ink)] text-white shadow-[0_12px_24px_rgba(7,19,31,0.2)]"
+                : "border-[var(--ink)]/10 bg-white/45 text-[var(--ink)]/75 hover:border-[var(--ink)]/25 hover:bg-white/75 hover:text-[var(--ink)]",
             )}
           >
-            <Icon className={cn("h-4 w-4 transition-colors", active ? "text-[var(--gold)]" : "text-[var(--signal)] group-hover:text-[var(--gold)]")} />
-            <span>{label}</span>
+            <span
+              className={cn(
+                "grid h-8 w-8 shrink-0 place-items-center rounded-[0.8rem] border transition-colors",
+                active
+                  ? "border-white/15 bg-white/10 text-[var(--gold)]"
+                  : "border-[var(--ink)]/10 bg-white/55 text-[var(--signal)] group-hover:text-[var(--ink)]",
+              )}
+            >
+              <Icon className="h-4 w-4" />
+            </span>
+            <span className="min-w-0 truncate">{label}</span>
           </Link>
         );
       })}
