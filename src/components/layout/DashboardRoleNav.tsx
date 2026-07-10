@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
-import { BarChart3, Boxes, BriefcaseBusiness, Building2, CreditCard, FileCheck2, Megaphone, QrCode, ScanLine, Settings, ShieldCheck, Ticket, UserRound, UsersRound, WalletCards } from "lucide-react";
+import { BarChart3, Boxes, BriefcaseBusiness, Building2, CreditCard, FileCheck2, Megaphone, QrCode, ScanLine, Settings, ShieldCheck, ShoppingCart, Ticket, UserRound, UsersRound, WalletCards } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import type { UserRole } from "@/lib/types/backend";
 
