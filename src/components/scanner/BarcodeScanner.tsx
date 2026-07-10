@@ -8,13 +8,19 @@ import { ScanResultCard } from "./ScanResultCard";
 
 type ScannerStatus = "IDLE" | "SCANNING" | "VERIFIED" | "CAMERA_NOT_READY" | "CAMERA_BLOCKED";
 
-export function BarcodeScanner({ onScan }: { onScan?: (value: string) => void }) {
+type BarcodeScannerProps = {
+  onScan?: (value: string) => void;
+  hideIdleResult?: boolean;
+};
+
+export function BarcodeScanner({ onScan, hideIdleResult = false }: BarcodeScannerProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const isStartingRef = useRef(false);
   const [controls, setControls] = useState<IScannerControls | null>(null);
   const [lastScan, setLastScan] = useState<string>();
   const [status, setStatus] = useState<ScannerStatus>("IDLE");
   const isCameraActive = status === "SCANNING" || Boolean(controls);
+  const showResult = !hideIdleResult || status !== "IDLE" || Boolean(lastScan);
 
   useEffect(() => {
     return () => {
@@ -107,8 +113,8 @@ export function BarcodeScanner({ onScan }: { onScan?: (value: string) => void })
         </div>
       </div>
 
-      <div className="grid gap-5">
-        <ScanResultCard barcode={lastScan} status={status} />
+      <div className="grid content-start gap-5">
+        {showResult ? <ScanResultCard barcode={lastScan} status={status} /> : null}
         <form onSubmit={submitManualBarcode} className="rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-[var(--shadow-soft)]">
           <div className="flex items-center gap-2 text-[var(--ink)]">
             <Keyboard className="h-4 w-4 text-[var(--signal)]" />
