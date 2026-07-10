@@ -11,16 +11,24 @@ type ScannerStatus = "IDLE" | "SCANNING" | "VERIFIED" | "CAMERA_NOT_READY" | "CA
 type BarcodeScannerProps = {
   onScan?: (value: string) => void;
   hideIdleResult?: boolean;
+  hideManualFallback?: boolean;
+  hideResult?: boolean;
 };
 
-export function BarcodeScanner({ onScan, hideIdleResult = false }: BarcodeScannerProps) {
+export function BarcodeScanner({
+  onScan,
+  hideIdleResult = false,
+  hideManualFallback = false,
+  hideResult = false,
+}: BarcodeScannerProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const isStartingRef = useRef(false);
   const [controls, setControls] = useState<IScannerControls | null>(null);
   const [lastScan, setLastScan] = useState<string>();
   const [status, setStatus] = useState<ScannerStatus>("IDLE");
   const isCameraActive = status === "SCANNING" || Boolean(controls);
-  const showResult = !hideIdleResult || status !== "IDLE" || Boolean(lastScan);
+  const showResult = !hideResult && (!hideIdleResult || status !== "IDLE" || Boolean(lastScan));
+  const showSidePanel = showResult || !hideManualFallback;
 
   useEffect(() => {
     return () => {
@@ -91,7 +99,7 @@ export function BarcodeScanner({ onScan, hideIdleResult = false }: BarcodeScanne
   }
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+    <div className={`grid gap-5 ${showSidePanel ? "lg:grid-cols-[1.2fr_0.8fr]" : ""}`}>
       <div className="rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface-strong)] p-4 shadow-[var(--shadow-soft)]">
         <div className="relative overflow-hidden rounded-[var(--radius-lg)] bg-[var(--ink)] scan-grid">
           <video ref={videoRef} className="aspect-video w-full object-cover opacity-85" muted playsInline />
@@ -113,27 +121,31 @@ export function BarcodeScanner({ onScan, hideIdleResult = false }: BarcodeScanne
         </div>
       </div>
 
-      <div className="grid content-start gap-5">
-        {showResult ? <ScanResultCard barcode={lastScan} status={status} /> : null}
-        <form onSubmit={submitManualBarcode} className="rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-[var(--shadow-soft)]">
-          <div className="flex items-center gap-2 text-[var(--ink)]">
-            <Keyboard className="h-4 w-4 text-[var(--signal)]" />
-            <h3 className="font-black tracking-[-0.02em]">Manual barcode fallback</h3>
-          </div>
-          <label className="mt-4 grid gap-2 text-sm font-semibold text-[var(--steel)]">
-            Barcode number
-            <input
-              name="barcode"
-              className="h-12 rounded-[var(--radius-md)] border border-[var(--line)] bg-[var(--paper)] px-4 font-mono text-sm outline-none placeholder:text-[var(--muted)] focus:border-[var(--signal)]"
-              placeholder="Enter or paste barcode"
-              inputMode="text"
-            />
-          </label>
-          <Button type="submit" variant="secondary" className="mt-4 w-full">
-            Verify manually
-          </Button>
-        </form>
-      </div>
+      {showSidePanel ? (
+        <div className="grid content-start gap-5">
+          {showResult ? <ScanResultCard barcode={lastScan} status={status} /> : null}
+          {!hideManualFallback ? (
+            <form onSubmit={submitManualBarcode} className="rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-[var(--shadow-soft)]">
+              <div className="flex items-center gap-2 text-[var(--ink)]">
+                <Keyboard className="h-4 w-4 text-[var(--signal)]" />
+                <h3 className="font-black tracking-[-0.02em]">Manual barcode fallback</h3>
+              </div>
+              <label className="mt-4 grid gap-2 text-sm font-semibold text-[var(--steel)]">
+                Barcode number
+                <input
+                  name="barcode"
+                  className="h-12 rounded-[var(--radius-md)] border border-[var(--line)] bg-[var(--paper)] px-4 font-mono text-sm outline-none placeholder:text-[var(--muted)] focus:border-[var(--signal)]"
+                  placeholder="Enter or paste barcode"
+                  inputMode="text"
+                />
+              </label>
+              <Button type="submit" variant="secondary" className="mt-4 w-full">
+                Verify manually
+              </Button>
+            </form>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }
