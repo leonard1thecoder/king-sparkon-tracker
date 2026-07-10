@@ -12,6 +12,7 @@ import {
   Building2,
   CheckCircle2,
   Eye,
+  EyeOff,
   Fingerprint,
   KeyRound,
   LockKeyhole,
@@ -149,6 +150,8 @@ function successMessage(mode: AuthMode, responseBody: Record<string, unknown>) {
 }
 
 function FieldInput({ field, onValueChange }: { field: AuthField; onValueChange?: (name: string, value: string) => void }) {
+  const [showPassword, setShowPassword] = useState(false);
+
   if (field.type === "hidden") {
     return <input type="hidden" name={field.name} value={field.defaultValue ?? ""} />;
   }
@@ -157,11 +160,13 @@ function FieldInput({ field, onValueChange }: { field: AuthField; onValueChange?
   const icon = iconMap[field.icon ?? ""] ?? <Fingerprint className="h-4 w-4" />;
   const isTextarea = field.type === "textarea";
   const helperId = field.helper ? `${field.name}-helper` : undefined;
+  const isPassword = field.type === "password";
+  const inputType = isPassword && showPassword ? "text" : field.type;
 
   return (
-    <label className="grid gap-2" htmlFor={field.name}>
+    <div className="grid gap-2">
       <span className="flex items-center justify-between gap-3">
-        <span className="text-sm font-black text-[var(--ink)]">{field.label}</span>
+        <label htmlFor={field.name} className="text-sm font-black text-[var(--ink)]">{field.label}</label>
         {!required ? <span className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Optional</span> : null}
       </span>
       <span className={`flex border border-[var(--line)] bg-white px-4 shadow-[var(--shadow-soft)] focus-within:border-[var(--gold)] focus-within:shadow-[var(--focus-ring)] ${isTextarea ? "min-h-32 items-start gap-3 rounded-[1.65rem] py-4" : "min-h-12 items-center gap-3 rounded-[1.65rem]"}`}>
@@ -182,13 +187,17 @@ function FieldInput({ field, onValueChange }: { field: AuthField; onValueChange?
           <textarea id={field.name} name={field.name} placeholder={field.placeholder} defaultValue={field.defaultValue} required={required} readOnly={field.readOnly} aria-describedby={helperId} className="min-h-28 w-full resize-none bg-transparent text-sm font-semibold leading-6 text-[var(--ink)] outline-none placeholder:text-[var(--muted)] read-only:text-[var(--steel)]" />
         ) : (
           <>
-            <input id={field.name} name={field.name} type={field.type} autoComplete={field.autoComplete} placeholder={field.placeholder} defaultValue={field.defaultValue} required={required} readOnly={field.readOnly} aria-describedby={helperId} className="min-h-12 w-full bg-transparent text-sm font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--muted)] read-only:text-[var(--steel)]" />
-            {field.type === "password" ? <Eye className="h-4 w-4 shrink-0 text-[var(--muted)]" aria-hidden="true" /> : null}
+            <input id={field.name} name={field.name} type={inputType} autoComplete={field.autoComplete} placeholder={field.placeholder} defaultValue={field.defaultValue} required={required} readOnly={field.readOnly} aria-describedby={helperId} className="min-h-12 w-full bg-transparent text-sm font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--muted)] read-only:text-[var(--steel)]" />
+            {isPassword ? (
+              <button type="button" onClick={() => setShowPassword((current) => !current)} className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[var(--muted)] transition hover:bg-[var(--surface)] hover:text-[var(--signal)]" aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword}>
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            ) : null}
           </>
         )}
       </span>
       {field.helper ? <span id={helperId} className="text-xs font-semibold leading-5 text-[var(--steel)]">{field.helper}</span> : null}
-    </label>
+    </div>
   );
 }
 
@@ -282,8 +291,8 @@ export function AuthShell({ mode, eyebrow, title, description, fields, submitLab
               <div className={isRegister ? "grid gap-5 md:grid-cols-2" : "grid gap-5"}>{visibleFields.map((field) => <FieldInput key={field.name} field={field} onValueChange={(name, value) => { if (name === "serviceRegisteringFor") setSelectedPrivilege(value); }} />)}</div>
               {isLogin ? <div className="flex flex-col gap-3 text-sm font-bold text-[var(--steel)] sm:flex-row sm:items-center sm:justify-between"><label className="inline-flex items-center gap-2"><input type="checkbox" name="remember" className="h-4 w-4 rounded border-[var(--line)] accent-[var(--signal)]" />Remember this device</label><div className="flex flex-wrap gap-3"><Link href="/resend-verification" className="text-[var(--signal)] hover:text-[var(--ember)]">Resend verification</Link><Link href="/forgot-password" className="text-[var(--signal)] hover:text-[var(--ember)]">Forgot password?</Link></div></div> : null}
               {isRegister ? <label className="flex items-start gap-3 rounded-[1.5rem] border border-[var(--line)] bg-[var(--surface)] p-4 text-sm font-semibold leading-6 text-[var(--steel)]"><input type="checkbox" name="terms" required className="mt-1 h-4 w-4 accent-[var(--signal)]" /><span>I confirm this account is being created for the selected King Sparkon role and service.</span></label> : null}
-              {status ? <div aria-live="polite" className={`flex gap-3 rounded-[1.5rem] border px-4 py-3 text-sm font-semibold leading-6 ${status.tone === "error" ? "border-[var(--danger)] bg-[var(--danger)]/10 text-[var(--danger)]" : "border-[var(--confirm)] bg-[var(--confirm)]/10 text-[var(--confirm)]"}`}>{status.tone === "error" ? <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /> : <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />}<span>{status.message}</span></div> : null}
-              <button type="submit" disabled={isSubmitting} className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-black text-white shadow-[0_18px_42px_rgba(29,92,131,0.24)] hover:border-[var(--gold)] hover:bg-[var(--ink)] disabled:opacity-55">
+              {status ? <div aria-live="polite" role={status.tone === "error" ? "alert" : "status"} className={`flex gap-3 rounded-[1.5rem] border px-4 py-3 text-sm font-semibold leading-6 ${status.tone === "error" ? "border-[var(--danger)] bg-[var(--danger)]/10 text-[var(--danger)]" : "border-[var(--confirm)] bg-[var(--confirm)]/10 text-[var(--confirm)]"}`}>{status.tone === "error" ? <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /> : <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />}<span>{status.message}</span></div> : null}
+              <button type="submit" disabled={isSubmitting} className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 py-2 text-sm font-black text-white shadow-[0_12px_28px_rgba(29,92,131,0.18)] transition duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--gold)] hover:bg-[var(--ink)] disabled:opacity-55 sm:w-auto sm:justify-self-start">
                 {isSubmitting ? "Submitting..." : submitLabel} <ArrowRight className="h-4 w-4" />
               </button>
             </form>

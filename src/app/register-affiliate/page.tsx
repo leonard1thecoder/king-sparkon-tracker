@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AuthPage } from "@/components/auth/AuthPage";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Register Affiliate | King Sparkon Tracker Referral Program",
@@ -35,5 +35,5 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterAffiliatePage() {
-  return <AuthPage mode="affiliate" />;
+  redirect("/register?plan=FREE_AFFILIATE&privilege=AFFILIATE&service=FREE_AFFILIATE_ACCESS");
 }

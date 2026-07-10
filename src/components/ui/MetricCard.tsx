@@ -15,11 +15,11 @@ export function MetricCard({
   icon?: ReactNode;
 }) {
   return (
-    <div className="group relative overflow-hidden rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-[var(--shadow-soft)] ring-1 ring-white/70 hover:-translate-y-0.5 hover:border-[var(--gold)]">
+    <div className="group relative overflow-hidden rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-[var(--shadow-soft)] ring-1 ring-white/70 transition duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--gold)] hover:shadow-[var(--shadow-ledger)]">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[var(--signal)] via-[var(--gold)] to-[var(--ember)] opacity-70" />
       <div className="flex items-start justify-between gap-4">
         <p className="font-mono text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--steel)]">{label}</p>
-        {icon ? <div className="grid h-10 w-10 place-items-center rounded-[var(--radius-md)] border border-[var(--line)] bg-[var(--surface)] text-[var(--signal)] group-hover:border-[var(--gold)]">{icon}</div> : null}
+        {icon ? <div className="grid h-10 w-10 place-items-center rounded-[var(--radius-md)] border border-[var(--line)] bg-[var(--surface)] text-[var(--signal)] transition duration-200 ease-out group-hover:border-[var(--gold)] group-hover:bg-white">{icon}</div> : null}
       </div>
       <p
         className={cn(

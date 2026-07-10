@@ -138,7 +138,7 @@ export function KingSparkonLanding() {
             </Link>
             <div className="hidden items-center gap-3 text-xs font-semibold text-[var(--steel)] xl:flex xl:gap-5 xl:text-sm">
               {navLinks.map(([label, href]) => (
-                <a key={href} href={href} className="hover:text-[var(--ink)]">{label}</a>
+                <a key={href} href={href} className="rounded-full px-2 py-1 transition hover:bg-[var(--surface)] hover:text-[var(--ink)]">{label}</a>
               ))}
             </div>
             <div className="flex items-center gap-2">
@@ -146,6 +146,11 @@ export function KingSparkonLanding() {
               <Link href="/register?plan=FREE_USER&privilege=USER&service=FREE_USER_ACCESS" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-4 text-sm font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ink)]">Start free <ArrowRight className="h-4 w-4" /></Link>
             </div>
           </nav>
+          <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-5 pb-3 text-xs font-black uppercase tracking-[0.08em] text-[var(--steel)] md:px-8 xl:hidden" aria-label="Mobile section navigation">
+            {navLinks.map(([label, href]) => (
+              <a key={href} href={href} className="shrink-0 rounded-full border border-[var(--line)] bg-white px-3 py-2 shadow-[var(--shadow-soft)] transition hover:border-[var(--gold)] hover:text-[var(--ink)]">{label}</a>
+            ))}
+          </div>
         </header>
 
         <div className="relative z-10 mx-auto grid max-w-7xl gap-12 px-5 pb-16 pt-12 md:px-8 lg:grid-cols-[1.02fr_0.98fr] lg:pb-24 lg:pt-18">
@@ -154,14 +159,14 @@ export function KingSparkonLanding() {
               <Flame className="h-4 w-4 text-[var(--ember)]" /> Real product discipline. Crown-level energy.
             </div>
             <h1 className="mt-6 max-w-4xl text-4xl font-black leading-[1.02] tracking-[-0.055em] md:text-6xl xl:text-7xl">
-              <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">King Sparkon</span> tracker <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">is</span> not <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">just</span> a scanner. It is <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">the</span> <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">best</span> operating <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">king</span>.
+              Trademark <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">not brand</span>. It is <span className="mx-1 rounded-[0.16em] bg-[var(--gold)] px-[0.14em] text-[#000]">all in</span> platform.
             </h1>
             <FounderVerificationCard />
             <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--steel)]">Barcode inventory, QR tickets, cart checkout, job opportunities, worker tips, Dev Hub software delivery, free affiliates, promotions, payments, capacity views, and role-safe dashboards.</p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/register?plan=FREE_USER&privilege=USER&service=FREE_USER_ACCESS" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ink)]">Create free user <ArrowRight className="h-4 w-4" /></Link>
-              <Link href="/register?plan=FREE_AFFILIATE&privilege=AFFILIATE&service=FREE_AFFILIATE_ACCESS" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--line)] bg-white px-6 font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--gold)]">Join free affiliate</Link>
-              <Link href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--gold)] bg-[var(--gold)] px-6 font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--ink)]">Start business free 14 trial</Link>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/register?plan=FREE_USER&privilege=USER&service=FREE_USER_ACCESS" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 py-2 text-sm font-bold text-white shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[var(--ink)]">Create free user <ArrowRight className="h-4 w-4" /></Link>
+              <Link href="/register?plan=FREE_AFFILIATE&privilege=AFFILIATE&service=FREE_AFFILIATE_ACCESS" className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 py-2 text-sm font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--gold)]">Join free affiliate</Link>
+              <Link href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--gold)] bg-[var(--gold)] px-5 py-2 text-sm font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--ink)]">Start business free 14 trial</Link>
             </div>
           </div>
 
@@ -193,7 +198,7 @@ export function KingSparkonLanding() {
 
           <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {visionPillars.map(({ icon: Icon, title, copy }) => (
-              <article key={title} className="rounded-[2rem] border border-[var(--line)] bg-white p-6 shadow-[var(--shadow-soft)] hover:-translate-y-1 hover:border-[var(--gold)]">
+              <article key={title} className="rounded-[2rem] border border-[var(--line)] bg-white p-6 shadow-[var(--shadow-soft)] transition duration-200 ease-out hover:-translate-y-1 hover:border-[var(--gold)] hover:shadow-[var(--shadow-ledger)]">
                 <div className="grid h-14 w-14 place-items-center rounded-[1.25rem] bg-[var(--ink)] text-[var(--gold)]">
                   <Icon className="h-6 w-6" />
                 </div>

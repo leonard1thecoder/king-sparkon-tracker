@@ -113,18 +113,18 @@ function UserProfileDropdown() {
 
   return (
     <div className="relative">
-      <button type="button" onClick={() => setOpen((current) => !current)} className={iconButtonClass} aria-label="Open profile menu" title="Profile menu">
+      <button type="button" onClick={() => setOpen((current) => !current)} className={iconButtonClass} aria-label="Open profile menu" aria-expanded={open} aria-controls="user-profile-menu" aria-haspopup="menu" title="Profile menu">
         <UserRound className="h-4 w-4" />
         <ChevronDown className="h-3.5 w-3.5" />
       </button>
       {open ? (
-        <div className="absolute right-0 z-50 mt-2 grid min-w-64 gap-1 rounded-[1.25rem] border border-[var(--line)] bg-white p-2 shadow-[var(--shadow-ledger)]">
+        <div id="user-profile-menu" className="absolute right-0 z-50 mt-2 grid min-w-64 gap-1 rounded-[1.25rem] border border-[var(--line)] bg-white p-2 shadow-[var(--shadow-ledger)]" role="menu">
           {userProfileShortcuts.map(({ label, href, icon: Icon }) => (
-            <Link key={href} href={href} onClick={() => setOpen(false)} className="inline-flex min-h-11 items-center gap-3 rounded-[1rem] px-3 text-sm font-black text-[var(--ink)] hover:bg-[var(--surface)]">
+            <Link key={href} href={href} onClick={() => setOpen(false)} className="inline-flex min-h-11 items-center gap-3 rounded-[1rem] px-3 text-sm font-black text-[var(--ink)] transition hover:bg-[var(--surface)]" role="menuitem">
               <Icon className="h-4 w-4 text-[var(--signal)]" /> {label}
             </Link>
           ))}
-          <Link href="/dashboard/user/profile" onClick={() => setOpen(false)} className="inline-flex min-h-11 items-center gap-3 rounded-[1rem] px-3 text-sm font-black text-[var(--ink)] hover:bg-[var(--surface)]">
+          <Link href="/dashboard/user/profile" onClick={() => setOpen(false)} className="inline-flex min-h-11 items-center gap-3 rounded-[1rem] px-3 text-sm font-black text-[var(--ink)] transition hover:bg-[var(--surface)]" role="menuitem">
             <UserRound className="h-4 w-4 text-[var(--signal)]" /> Profile settings
           </Link>
         </div>

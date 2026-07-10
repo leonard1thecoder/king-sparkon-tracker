@@ -4,7 +4,7 @@ import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import { type FormEvent, type ReactNode, useMemo, useState } from "react";
-import { AlertCircle, ArrowDown, ArrowRight, CheckCircle2, Eye, Gift, KeyRound, LockKeyhole, Mail, MapPin, ShieldCheck, Sparkles, UserRound, WalletCards } from "lucide-react";
+import { AlertCircle, ArrowDown, ArrowRight, CheckCircle2, Eye, EyeOff, Gift, KeyRound, LockKeyhole, Mail, MapPin, ShieldCheck, Sparkles, UserRound, WalletCards } from "lucide-react";
 import { messageFromBackendPayload } from "@/lib/utils/errors";
 
 type RegisterField = {
@@ -52,31 +52,40 @@ function iconFor(field: RegisterField) {
 }
 
 function Field({ field, onRoleChange }: { field: RegisterField; onRoleChange?: (value: string) => void }) {
+  const [showPassword, setShowPassword] = useState(false);
+
   if (field.type === "hidden") return <input type="hidden" name={field.name} value={field.defaultValue ?? ""} />;
   const required = field.required !== false;
   const showPayPalHelp = field.name.toLowerCase().includes("paypal");
+  const isPassword = field.type === "password";
+  const inputType = isPassword && showPassword ? "text" : field.type;
+  const helperId = field.helper ? `${field.name}-helper` : undefined;
   return (
-    <label className="grid gap-2" htmlFor={field.name}>
-      <span className="flex items-center justify-between gap-3"><span className="text-sm font-black text-[var(--ink)]">{field.label}</span>{!required ? <span className="rounded-full bg-[var(--surface)] px-2 py-1 text-[0.65rem] font-black uppercase tracking-[0.12em] text-[var(--muted)]">Optional</span> : null}</span>
+    <div className="grid gap-2">
+      <span className="flex items-center justify-between gap-3"><label htmlFor={field.name} className="text-sm font-black text-[var(--ink)]">{field.label}</label>{!required ? <span className="rounded-full bg-[var(--surface)] px-2 py-1 text-[0.65rem] font-black uppercase tracking-[0.12em] text-[var(--muted)]">Optional</span> : null}</span>
       <span className="flex min-h-12 items-center gap-3 rounded-[1.35rem] border border-[var(--line)] bg-white px-4 shadow-[var(--shadow-soft)] transition focus-within:border-[var(--gold)] focus-within:shadow-[var(--focus-ring)]">
         {iconFor(field)}
-        {field.options ? <select id={field.name} name={field.name} defaultValue={field.defaultValue ?? field.options[0]?.value} required={required} onChange={(event) => onRoleChange?.(event.target.value)} className="min-h-12 w-full bg-transparent text-sm font-semibold text-[var(--ink)] outline-none">{field.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select> : <input id={field.name} name={field.name} type={field.type} autoComplete={field.autoComplete} placeholder={field.placeholder} defaultValue={field.defaultValue} required={required} readOnly={field.readOnly} className="min-h-12 w-full bg-transparent text-sm font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--muted)] read-only:text-[var(--steel)]" />}
-        {field.type === "password" ? <Eye className="h-4 w-4 shrink-0 text-[var(--muted)]" /> : null}
+        {field.options ? <select id={field.name} name={field.name} defaultValue={field.defaultValue ?? field.options[0]?.value} required={required} aria-describedby={helperId} onChange={(event) => onRoleChange?.(event.target.value)} className="min-h-12 w-full bg-transparent text-sm font-semibold text-[var(--ink)] outline-none">{field.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select> : <input id={field.name} name={field.name} type={inputType} autoComplete={field.autoComplete} placeholder={field.placeholder} defaultValue={field.defaultValue} required={required} readOnly={field.readOnly} aria-describedby={helperId} className="min-h-12 w-full bg-transparent text-sm font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--muted)] read-only:text-[var(--steel)]" />}
+        {isPassword ? (
+          <button type="button" onClick={() => setShowPassword((current) => !current)} className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[var(--muted)] transition hover:bg-[var(--surface)] hover:text-[var(--signal)]" aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword}>
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        ) : null}
       </span>
-      {field.helper ? <span className="text-xs font-semibold leading-5 text-[var(--steel)]">{field.helper}</span> : null}
+      {field.helper ? <span id={helperId} className="text-xs font-semibold leading-5 text-[var(--steel)]">{field.helper}</span> : null}
       {showPayPalHelp ? <a href="https://www.paypal.com/paypalme" target="_blank" rel="noreferrer" className="text-xs font-black text-[var(--signal)] underline decoration-[var(--gold)] decoration-2 underline-offset-4 hover:text-[var(--ember)]">Don&apos;t know PayPal? Create or find your PayPal.me link</a> : null}
-    </label>
+    </div>
   );
 }
 
-function ToggleSection({ title, copy, required, open, onClick, children }: { title: string; copy: string; required?: boolean; open: boolean; onClick: () => void; children: ReactNode }) {
+function ToggleSection({ title, copy, required, open, onClick, children, id }: { title: string; copy: string; required?: boolean; open: boolean; onClick: () => void; children: ReactNode; id: string }) {
   return (
     <section className="overflow-hidden rounded-[1.65rem] border border-[var(--line)] bg-[var(--surface)] shadow-[var(--shadow-soft)]">
-      <button type="button" onClick={onClick} aria-expanded={open} className="flex w-full items-center justify-between gap-4 p-4 text-left md:p-5">
+      <button type="button" onClick={onClick} aria-expanded={open} aria-controls={id} className="flex w-full items-center justify-between gap-4 p-4 text-left transition hover:bg-white/60 md:p-5">
         <span><span className="flex flex-wrap items-center gap-2"><span className="text-base font-black text-[var(--ink)]">{title}</span><span className={required ? "rounded-full bg-[var(--gold)] px-2 py-1 text-[0.65rem] font-black uppercase tracking-[0.12em] text-[var(--ink)]" : "rounded-full bg-white px-2 py-1 text-[0.65rem] font-black uppercase tracking-[0.12em] text-[var(--steel)]"}>{required ? "Required" : "Optional"}</span></span><span className="mt-1 block text-sm font-semibold leading-6 text-[var(--steel)]">{copy}</span></span>
         <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[var(--line)] bg-white text-[var(--signal)] transition ${open ? "rotate-180" : ""}`}><ArrowDown className="h-4 w-4" /></span>
       </button>
-      {open ? <div className="grid gap-4 border-t border-[var(--line)] bg-white/70 p-4 md:grid-cols-2 md:p-5">{children}</div> : null}
+      {open ? <div id={id} className="grid gap-4 border-t border-[var(--line)] bg-white/70 p-4 md:grid-cols-2 md:p-5">{children}</div> : null}
     </section>
   );
 }
@@ -99,7 +108,7 @@ function buildPayload(formData: FormData) {
 export function InteractiveRegisterShell({ endpoint, title, description, note, fields, allowedEmailAddress, extraPayload }: Props) {
   const initialRole = fields.find((field) => field.name === "serviceRegisteringFor")?.defaultValue ?? "USER";
   const [role, setRole] = useState(initialRole);
-  const [addressOpen, setAddressOpen] = useState(false);
+  const [addressOpen, setAddressOpen] = useState(initialRole !== "AFFILIATE");
   const [referralOpen, setReferralOpen] = useState(false);
   const [status, setStatus] = useState<{ tone: "success" | "error"; message: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -147,12 +156,12 @@ export function InteractiveRegisterShell({ endpoint, title, description, note, f
         <section className="rounded-[2rem] border border-[var(--line)] bg-white/94 p-5 shadow-[var(--shadow-ledger)] backdrop-blur md:p-7">
           <div className="flex items-start justify-between gap-4 border-b border-[var(--line)] pb-5"><div><p className="font-mono text-xs font-black uppercase tracking-[0.16em] text-[var(--signal)]">Simple beautiful form</p><h2 className="mt-2 text-2xl font-black tracking-[-0.04em]">Choose role, then complete what matters.</h2></div><div className="grid h-12 w-12 place-items-center rounded-[1.2rem] bg-[var(--ink)] text-[var(--gold)]"><ShieldCheck className="h-6 w-6" /></div></div>
           <form className="mt-6 grid gap-5" onSubmit={handleSubmit}>
-            <div className="grid gap-4 md:grid-cols-2">{mainFields.map((field) => <Field key={field.name} field={field} onRoleChange={(value) => { if (field.name === "serviceRegisteringFor") { setRole(value); setAddressOpen(false); setReferralOpen(false); } }} />)}</div>
-            {addressFields.length ? <ToggleSection title="Physical address" copy="Open and complete the full address. It is required for User and Business Owner accounts." required={addressRequired} open={addressOpen} onClick={() => setAddressOpen((open) => !open)}>{addressFields.map((field) => <Field key={field.name} field={field} />)}</ToggleSection> : null}
-            {showReferral ? <ToggleSection title="Who referred you? Promo code" copy="Optional. Use this only when an affiliate or promoter referred the business owner registration." open={referralOpen} onClick={() => setReferralOpen((open) => !open)}>{referralFields.map((field) => <Field key={field.name} field={field} />)}</ToggleSection> : null}
+            <div className="grid gap-4 md:grid-cols-2">{mainFields.map((field) => <Field key={field.name} field={field} onRoleChange={(value) => { if (field.name === "serviceRegisteringFor") { setRole(value); setAddressOpen(value !== "AFFILIATE"); setReferralOpen(false); } }} />)}</div>
+            {addressFields.length ? <ToggleSection id="register-address-fields" title="Physical address" copy="Complete the full address. It is required for User and Business Owner accounts." required={addressRequired} open={addressOpen} onClick={() => setAddressOpen((open) => !open)}>{addressFields.map((field) => <Field key={field.name} field={field} />)}</ToggleSection> : null}
+            {showReferral ? <ToggleSection id="register-referral-fields" title="Who referred you? Promo code" copy="Optional. Use this only when an affiliate or promoter referred the business owner registration." open={referralOpen} onClick={() => setReferralOpen((open) => !open)}>{referralFields.map((field) => <Field key={field.name} field={field} />)}</ToggleSection> : null}
             <label className="flex items-start gap-3 rounded-[1.35rem] border border-[var(--line)] bg-[var(--surface)] p-4 text-sm font-semibold leading-6 text-[var(--steel)]"><input type="checkbox" name="terms" required className="mt-1 h-4 w-4 accent-[var(--signal)]" />I confirm this account is being created for the selected King Sparkon role and service.</label>
-            {status ? <div className={`flex gap-3 rounded-[1.35rem] border px-4 py-3 text-sm font-semibold leading-6 ${status.tone === "error" ? "border-[var(--danger)] bg-[var(--danger)]/10 text-[var(--danger)]" : "border-[var(--confirm)] bg-[var(--confirm)]/10 text-[var(--confirm)]"}`}>{status.tone === "error" ? <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /> : <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />}<span>{status.message}</span></div> : null}
-            <button type="submit" disabled={submitting} className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-black text-white shadow-[0_18px_42px_rgba(29,92,131,0.24)] transition hover:border-[var(--gold)] hover:bg-[var(--ink)] disabled:opacity-55">{submitting ? "Submitting..." : "Create account"} <ArrowRight className="h-4 w-4" /></button>
+            {status ? <div aria-live="polite" role={status.tone === "error" ? "alert" : "status"} className={`flex gap-3 rounded-[1.35rem] border px-4 py-3 text-sm font-semibold leading-6 ${status.tone === "error" ? "border-[var(--danger)] bg-[var(--danger)]/10 text-[var(--danger)]" : "border-[var(--confirm)] bg-[var(--confirm)]/10 text-[var(--confirm)]"}`}>{status.tone === "error" ? <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /> : <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />}<span>{status.message}</span></div> : null}
+            <button type="submit" disabled={submitting} className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 py-2 text-sm font-black text-white shadow-[0_12px_28px_rgba(29,92,131,0.18)] transition duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--gold)] hover:bg-[var(--ink)] disabled:opacity-55 sm:w-auto sm:justify-self-start">{submitting ? "Submitting..." : "Create account"} <ArrowRight className="h-4 w-4" /></button>
           </form>
           <p className="mt-6 rounded-[1.4rem] border border-[var(--line)] bg-[var(--surface)] p-4 text-sm font-bold text-[var(--steel)]">Already have an account? <Link href="/login" className="font-black text-[var(--signal)] hover:text-[var(--ember)]">Sign in</Link></p>
         </section>

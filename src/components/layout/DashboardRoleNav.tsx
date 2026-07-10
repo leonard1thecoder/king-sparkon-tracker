@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
-import { BarChart3, Boxes, BriefcaseBusiness, Building2, CreditCard, FileCheck2, Megaphone, QrCode, ScanLine, Settings, ShieldCheck, ShoppingCart, Ticket, UserRound, UsersRound, WalletCards } from "lucide-react";
+import { BarChart3, Boxes, BriefcaseBusiness, Building2, CreditCard, FileCheck2, Megaphone, QrCode, ScanLine, Settings, ShieldCheck, Ticket, UserRound, UsersRound, WalletCards } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import type { UserRole } from "@/lib/types/backend";
 
@@ -23,7 +23,6 @@ const navByRole: Record<UserRole, NavItem[]> = {
   Owner: [
     { label: "Overview", href: "/dashboard/owner", icon: Building2 },
     { label: "Products", href: "/dashboard/owner/products", icon: Boxes },
-    { label: "Tuck Shop", href: "/dashboard/owner/products", icon: ShoppingCart },
     { label: "Workers", href: "/dashboard/owner/workers", icon: UsersRound },
     { label: "Transactions", href: "/dashboard/owner/transactions", icon: CreditCard },
     { label: "Tips", href: "/dashboard/owner/tips", icon: WalletCards },
@@ -106,7 +105,7 @@ export function DashboardRoleNav({ role }: { role: UserRole }) {
             key={`${role}-${href}-${label}`}
             href={href}
             className={cn(
-              "inline-flex min-h-11 shrink-0 items-center gap-3 rounded-full border px-4 py-2 text-sm font-black transition lg:w-full lg:rounded-[1.15rem]",
+              "inline-flex min-h-11 shrink-0 items-center gap-3 rounded-full border px-4 py-2 text-sm font-black transition duration-200 ease-out hover:-translate-y-0.5 lg:w-full lg:rounded-[1.15rem]",
               active
                 ? "border-[var(--gold)] bg-white text-[var(--ink)] shadow-[var(--shadow-soft)]"
                 : "border-white/10 bg-white/[0.04] text-white/68 hover:border-[var(--gold)] hover:bg-white/10 hover:text-white",
