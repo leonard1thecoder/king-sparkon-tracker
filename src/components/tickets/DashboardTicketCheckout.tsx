@@ -6,7 +6,8 @@ import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { AlertCircle, ArrowRight, CreditCard, Minus, Plus, ShoppingCart } from "lucide-react";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { TicketStatusBadge } from "@/components/tickets/TicketStatusBadge";
-import { calculateCheckoutQuote, getEventById, getTicketTypeLabel } from "@/services/ticketService";
+import { calculateCheckoutQuote, getTicketTypeLabel } from "@/services/ticketService";
+import { getLiveEventById } from "@/lib/api/tickets";
 import type { TicketEvent, TicketType } from "@/types/tickets";
 import { addTicketToCart } from "@/lib/tuck-shop/cart";
 
@@ -35,13 +36,21 @@ export function DashboardTicketCheckout({ eventId }: DashboardTicketCheckoutProp
 
   useEffect(() => {
     let mounted = true;
-    getEventById(eventId).then((nextEvent) => {
-      if (!mounted) return;
-      setEvent(nextEvent);
-      const requestedType = searchParams.get("type");
-      if (isTicketType(requestedType) && nextEvent?.ticketTypes.some((candidate) => candidate.type === requestedType)) setTicketType(requestedType);
-      setIsLoading(false);
-    });
+    getLiveEventById(eventId)
+      .then((nextEvent) => {
+        if (!mounted) return;
+        setEvent(nextEvent);
+        const requestedType = searchParams.get("type");
+        if (isTicketType(requestedType) && nextEvent?.ticketTypes.some((candidate) => candidate.type === requestedType)) setTicketType(requestedType);
+      })
+      .catch((loadError) => {
+        if (!mounted) return;
+        setEvent(null);
+        setError(loadError instanceof Error ? loadError.message : "Live ticket event could not be loaded.");
+      })
+      .finally(() => {
+        if (mounted) setIsLoading(false);
+      });
     return () => {
       mounted = false;
     };
@@ -80,12 +89,13 @@ export function DashboardTicketCheckout({ eventId }: DashboardTicketCheckoutProp
 
   return (
     <>
-      <DashboardHeader role="USER WORKSPACE" title="Ticket checkout" description="Select ticket class and quantity, then add the ticket package to the shared user cart. Registered user details are used at final checkout." />
+      <DashboardHeader role="USER WORKSPACE" title="Ticket checkout" description="Select a live ticket class and quantity, then add it to the shared Stripe-verified user cart." />
       <main className="bg-[var(--surface)] p-5 md:p-8">
         {isLoading ? <div className="h-[34rem] animate-pulse rounded-[2.4rem] border border-[var(--line)] bg-white" /> : null}
         {!isLoading && !event ? (
           <div className="rounded-[2rem] border border-dashed border-[var(--line-strong)] bg-white p-10 text-center shadow-[var(--shadow-soft)]">
             <h1 className="text-3xl font-black">Event not found</h1>
+            {error ? <p className="mt-3 text-sm font-bold text-[var(--danger)]">{error}</p> : null}
             <Link href="/dashboard/user/tickets/buy" className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white">Back to buy tickets</Link>
           </div>
         ) : null}
@@ -94,9 +104,9 @@ export function DashboardTicketCheckout({ eventId }: DashboardTicketCheckoutProp
             <section className="rounded-[2.35rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-8">
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div>
-                  <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Dashboard ticket checkout</p>
+                  <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Live dashboard ticket checkout</p>
                   <h1 className="mt-3 text-4xl font-black tracking-[-0.05em] md:text-5xl">Buy tickets for {event.name}</h1>
-                  <p className="mt-3 text-sm leading-7 text-[var(--steel)]">Choose the ticket class and quantity. The ticket will be added to the same user cart used for products.</p>
+                  <p className="mt-3 text-sm leading-7 text-[var(--steel)]">Choose the ticket class and quantity. The backend checks price and capacity again before Stripe creates the PaymentIntent.</p>
                 </div>
                 <TicketStatusBadge status={event.status} />
               </div>
@@ -104,7 +114,7 @@ export function DashboardTicketCheckout({ eventId }: DashboardTicketCheckoutProp
               <div className="mt-8 grid gap-5">
                 <label className="grid gap-2">
                   <span className="text-sm font-black">Ticket type</span>
-                  <select value={ticketType} onChange={(changeEvent) => setTicketType(changeEvent.target.value as TicketType)} className="min-h-13 rounded-[1.35rem] border border-[var(--line)] bg-white px-4 text-sm font-black outline-none focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]">
+                  <select value={ticketType} onChange={(changeEvent) => { setTicketType(changeEvent.target.value as TicketType); setQuantity(1); }} className="min-h-13 rounded-[1.35rem] border border-[var(--line)] bg-white px-4 text-sm font-black outline-none focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]">
                     {event.ticketTypes.map((candidate) => <option key={candidate.type} value={candidate.type}>{getTicketTypeLabel(candidate.type)} · {formatCurrency(candidate.price)} · {candidate.available} left</option>)}
                   </select>
                 </label>
@@ -118,7 +128,7 @@ export function DashboardTicketCheckout({ eventId }: DashboardTicketCheckoutProp
                 </div>
                 <div className="rounded-[1.4rem] border border-[var(--line)] bg-[var(--surface)] p-4">
                   <p className="text-sm font-black text-[var(--ink)]">Registered user details</p>
-                  <p className="mt-2 text-sm leading-6 text-[var(--steel)]">Buyer full name and email are no longer collected here. The final cart checkout uses the logged-in user account details automatically.</p>
+                  <p className="mt-2 text-sm leading-6 text-[var(--steel)]">The final cart uses the signed-in user name and email. Tickets are issued only after Stripe confirms payment and the webhook fulfils the order.</p>
                 </div>
               </div>
               {error ? <div className="mt-5 flex gap-3 rounded-[1.4rem] border border-[var(--danger)]/25 bg-[var(--danger)]/10 px-4 py-3 text-sm font-bold text-[var(--danger)]"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />{error}</div> : null}
