@@ -19,6 +19,12 @@ function productImage(product: Product) {
   return product.productImageUrl || "/king-sparkon-logo.png";
 }
 
+function primaryBarcode(product: Product) {
+  const first = product.barcodes?.[0];
+  if (typeof first === "string") return first;
+  return first?.barcode ?? "";
+}
+
 function fieldClass() {
   return "min-h-11 w-full rounded-[1rem] border border-[var(--line)] bg-white px-4 text-sm font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]";
 }
@@ -50,7 +56,7 @@ export function WorkerProductWorkspace() {
     const query = search.trim().toLowerCase();
     if (!query) return products;
     return products.filter((product) =>
-      [product.name, product.category, product.status, product.productBarcode, product.id]
+      [product.name, product.category, product.status, primaryBarcode(product), product.id]
         .join(" ")
         .toLowerCase()
         .includes(query),
@@ -125,6 +131,7 @@ export function WorkerProductWorkspace() {
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {filteredProducts.map((product) => {
                 const ready = product.status === "CREATED" && product.stockQuantity > 0;
+                const barcode = primaryBarcode(product);
                 return (
                   <article key={product.id} className="overflow-hidden rounded-[1.5rem] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
                     <div className="aspect-[16/9] overflow-hidden bg-[var(--surface)]">
@@ -135,7 +142,7 @@ export function WorkerProductWorkspace() {
                         <div className="min-w-0">
                           <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.14em] text-[var(--signal)]">Product #{product.id}</p>
                           <h3 className="mt-1 truncate text-xl font-black text-[var(--ink)]">{product.name}</h3>
-                          <p className="mt-1 text-xs font-bold text-[var(--steel)]">{product.category} · {product.productBarcode || "No product barcode"}</p>
+                          <p className="mt-1 text-xs font-bold text-[var(--steel)]">{product.category} · {barcode || "No barcode unit assigned"}</p>
                         </div>
                         <StatusPill label={ready ? "SELL READY" : product.status ?? "PRODUCT"} tone={ready ? "confirm" : "neutral"} />
                       </div>
