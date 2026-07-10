@@ -12,6 +12,10 @@ export function getAffiliateReferrals() {
   return apiGet("/affiliate/referrals");
 }
 
+export function getAffiliateAssets() {
+  return apiGet("/affiliate/assets");
+}
+
 export function getAffiliateCommissions() {
   return apiGet("/affiliate/commissions");
 }
