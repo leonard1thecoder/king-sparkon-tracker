@@ -39,7 +39,6 @@ export type TuckShopPurchaseHistoryItem = {
 
 const TUCK_SHOP_CART_KEY = "king-sparkon-tuck-shop-cart";
 const TUCK_SHOP_PURCHASE_HISTORY_KEY = "king-sparkon-user-purchase-history";
-const MAX_USER_CATALOGUE_BUSINESSES = 5;
 
 export function money(value?: number | null) {
   return new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(Number(value ?? 0));
@@ -89,9 +88,7 @@ export function groupProductsByBusiness(products: Product[]) {
     });
   });
 
-  return Array.from(groups.values())
-    .sort((left, right) => left.businessName.localeCompare(right.businessName))
-    .slice(0, MAX_USER_CATALOGUE_BUSINESSES);
+  return Array.from(groups.values()).sort((left, right) => left.businessName.localeCompare(right.businessName));
 }
 
 export function cartTotal(cart: TuckShopCartLine[]) {
