@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Bell,
   BellRing,
   Boxes,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   Eye,
   Loader2,
   PackageCheck,
@@ -33,6 +35,9 @@ import {
 
 const JOB_ALERTS_STORAGE_KEY = "king-sparkon-job-alert-businesses";
 const CATALOGUE_PAGE_SIZE = 100;
+const BUSINESSES_PER_PAGE = 4;
+
+type BusinessGroup = ReturnType<typeof groupProductsByBusiness>[number];
 
 function businessKey(businessId?: number | null, businessName?: string) {
   return String(businessId ?? businessName ?? "unknown");
@@ -80,10 +85,147 @@ async function loadCompleteCatalogue(search: string, businessId: string) {
   return Array.from(uniqueProducts.values());
 }
 
+function BusinessProductSection({
+  group,
+  compact,
+  followed,
+  onToggleJobAlert,
+  onAddToCart,
+}: {
+  group: BusinessGroup;
+  compact: boolean;
+  followed: boolean;
+  onToggleJobAlert: (group: BusinessGroup) => void;
+  onAddToCart: (product: Product) => void;
+}) {
+  const productRowRef = useRef<HTMLDivElement | null>(null);
+
+  function scrollProducts(direction: "left" | "right") {
+    const row = productRowRef.current;
+    if (!row) return;
+
+    const distance = Math.max(row.clientWidth * 0.82, 300);
+    row.scrollBy({ left: direction === "left" ? -distance : distance, behavior: "smooth" });
+  }
+
+  return (
+    <section className="overflow-hidden rounded-[2rem] border border-[var(--line)] bg-[var(--surface)] p-4 shadow-[var(--shadow-soft)] md:p-6">
+      <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex min-w-0 items-start gap-3">
+          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-[1.1rem] border border-[var(--gold)] bg-[var(--gold)] text-[var(--ink)] shadow-[var(--shadow-soft)]">
+            <Store className="h-5 w-5" />
+          </div>
+          <div className="min-w-0">
+            <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">
+              {followed ? "Followed business · job alerts on" : "Business catalogue"}
+            </p>
+            <h2 className="mt-1 text-2xl font-black tracking-[-0.04em] text-[var(--ink)]">{group.businessName}</h2>
+            <p className="mt-1 text-xs font-bold uppercase tracking-[0.1em] text-[var(--muted)]">
+              {group.products.length} product{group.products.length === 1 ? "" : "s"}
+              {group.businessId ? ` · Business ID ${group.businessId}` : ""}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => onToggleJobAlert(group)}
+            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-white px-4 text-xs font-black uppercase tracking-[0.08em] text-[var(--ink)] hover:bg-[var(--gold)]"
+          >
+            {followed ? <BellRing className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
+            {followed ? "Job alerts on" : "Job alert"}
+          </button>
+
+          <div className="inline-flex items-center gap-1 rounded-full border border-[var(--line)] bg-white p-1 shadow-[var(--shadow-soft)]">
+            <button
+              type="button"
+              onClick={() => scrollProducts("left")}
+              disabled={group.products.length <= 1}
+              aria-label={`Scroll ${group.businessName} products left`}
+              className="grid h-9 w-9 place-items-center rounded-full text-[var(--ink)] transition hover:bg-[var(--gold)] disabled:cursor-not-allowed disabled:opacity-35"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <span className="px-2 text-[0.65rem] font-black uppercase tracking-[0.1em] text-[var(--steel)]">Scroll products</span>
+            <button
+              type="button"
+              onClick={() => scrollProducts("right")}
+              disabled={group.products.length <= 1}
+              aria-label={`Scroll ${group.businessName} products right`}
+              className="grid h-9 w-9 place-items-center rounded-full text-[var(--ink)] transition hover:bg-[var(--gold)] disabled:cursor-not-allowed disabled:opacity-35"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div
+        ref={productRowRef}
+        className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-4 pr-2 [scrollbar-color:var(--gold)_transparent] [scrollbar-width:thin]"
+      >
+        {group.products.map((product) => {
+          const salePrice = productPrice(product);
+          const hasDiscount = product.salePrice !== undefined && product.salePrice < product.price;
+
+          return (
+            <article
+              key={product.id}
+              className={`flex shrink-0 snap-start flex-col overflow-hidden rounded-[1.5rem] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)] transition hover:-translate-y-1 hover:border-[var(--gold)] hover:shadow-[var(--shadow-ledger)] ${compact ? "w-[min(82vw,18rem)]" : "w-[min(84vw,20rem)] sm:w-[20rem]"}`}
+            >
+              <div className="relative overflow-hidden bg-[var(--surface)]">
+                <img src={productImage(product)} alt={product.name} className="h-48 w-full object-cover transition duration-300 hover:scale-[1.03]" />
+                <div className="absolute left-3 top-3 flex flex-wrap gap-2">
+                  <StatusPill label={product.status ?? "AVAILABLE"} tone="confirm" />
+                  {hasDiscount ? <StatusPill label="SPECIAL" tone="signal" /> : null}
+                </div>
+              </div>
+
+              <div className="flex flex-1 flex-col gap-4 p-4">
+                <div className="min-h-[5rem]">
+                  <p className="truncate font-mono text-[0.62rem] font-black uppercase tracking-[0.14em] text-[var(--signal)]">{group.businessName}</p>
+                  <h3 className="mt-1 line-clamp-2 text-lg font-black tracking-[-0.03em] text-[var(--ink)]">{product.name}</h3>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 rounded-[1rem] border border-[var(--line)] bg-[var(--surface)] p-3">
+                  <div>
+                    <p className="text-[0.65rem] font-black uppercase tracking-[0.1em] text-[var(--muted)]">Price</p>
+                    <p className="money mt-1 text-xl font-black text-[var(--ink)]">{money(salePrice)}</p>
+                    {hasDiscount ? <p className="money text-xs font-bold text-[var(--muted)] line-through">{money(product.price)}</p> : null}
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[0.65rem] font-black uppercase tracking-[0.1em] text-[var(--muted)]">Stock</p>
+                    <p className="money mt-1 text-xl font-black text-[var(--ink)]">{product.stockQuantity}</p>
+                    <p className="text-xs font-semibold text-[var(--steel)]">units ready</p>
+                  </div>
+                </div>
+
+                <div className="mt-auto grid gap-2 sm:grid-cols-2">
+                  <Button onClick={() => onAddToCart(product)} disabled={product.stockQuantity <= 0} className="w-full">
+                    <ShoppingCart className="h-4 w-4" /> Add
+                  </Button>
+                  <Link
+                    href={`/dashboard/user/shop/products/${product.id}`}
+                    className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-4 text-sm font-black text-[var(--ink)] hover:border-[var(--gold)] hover:bg-[var(--surface)]"
+                  >
+                    <Eye className="h-4 w-4" /> Details
+                  </Link>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState("");
   const [businessId, setBusinessId] = useState("");
+  const [businessPage, setBusinessPage] = useState(0);
   const [jobAlertBusinesses, setJobAlertBusinesses] = useState<Set<string>>(() => new Set());
   const [cartNotice, setCartNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -95,6 +237,7 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
 
     try {
       setProducts(await loadCompleteCatalogue(nextSearch, nextBusinessId));
+      setBusinessPage(0);
     } catch (exception) {
       setError(normalizeApiError(exception).message);
     } finally {
@@ -118,11 +261,20 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
     });
   }, [jobAlertBusinesses, products]);
 
+  const businessPageCount = Math.max(Math.ceil(businessGroups.length / BUSINESSES_PER_PAGE), 1);
+  const visibleBusinessGroups = useMemo(() => {
+    const start = businessPage * BUSINESSES_PER_PAGE;
+    return businessGroups.slice(start, start + BUSINESSES_PER_PAGE);
+  }, [businessGroups, businessPage]);
+
+  useEffect(() => {
+    setBusinessPage((current) => Math.min(current, businessPageCount - 1));
+  }, [businessPageCount]);
+
   const totalStock = useMemo(
     () => products.reduce((total, product) => total + Math.max(Number(product.stockQuantity ?? 0), 0), 0),
     [products],
   );
-
   const promotedProducts = useMemo(
     () => products.filter((product) => product.salePrice !== undefined && product.salePrice < product.price).length,
     [products],
@@ -133,7 +285,7 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
     setCartNotice(`${product.name} added to cart.`);
   }
 
-  function toggleJobAlert(group: { businessId?: number | null; businessName: string }) {
+  function toggleJobAlert(group: BusinessGroup) {
     const key = businessKey(group.businessId, group.businessName);
     const nextKeys = new Set(jobAlertBusinesses);
 
@@ -152,21 +304,29 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
   function resetFilters() {
     setSearch("");
     setBusinessId("");
+    setBusinessPage(0);
     void loadProducts("", "");
   }
+
+  function openBusinessPage(nextPage: number) {
+    setBusinessPage(Math.min(Math.max(nextPage, 0), businessPageCount - 1));
+  }
+
+  const firstVisibleBusiness = businessGroups.length === 0 ? 0 : businessPage * BUSINESSES_PER_PAGE + 1;
+  const lastVisibleBusiness = Math.min((businessPage + 1) * BUSINESSES_PER_PAGE, businessGroups.length);
 
   return (
     <section className="grid gap-6">
       <SectionHeader
         eyebrow="King Sparkon Tuck Shop"
-        title="Browse every business and every product."
-        description="All businesses are shown in one continuous catalogue. There is no business pagination and no frontend business limit."
+        title="Browse four businesses per page."
+        description="Each page shows up to four businesses. Every business keeps a horizontal product scroller so customers can move right to see more products."
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Products visible" value={loading ? "..." : String(products.length)} detail="Complete loaded catalogue" tone="confirm" icon={<Boxes className="h-5 w-5" />} />
-        <MetricCard label="Businesses" value={loading ? "..." : String(businessGroups.length)} detail="All businesses shown together" tone="signal" icon={<Store className="h-5 w-5" />} />
-        <MetricCard label="Units in stock" value={loading ? "..." : String(totalStock)} detail="Across all visible products" />
+        <MetricCard label="Businesses" value={loading ? "..." : String(businessGroups.length)} detail="Four businesses per page" tone="signal" icon={<Store className="h-5 w-5" />} />
+        <MetricCard label="Units in stock" value={loading ? "..." : String(totalStock)} detail="Across all loaded products" />
         <MetricCard label="Special prices" value={loading ? "..." : String(promotedProducts)} detail="Products with sale pricing" />
       </div>
 
@@ -175,7 +335,7 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
           <div>
             <CardTitle>Product catalogue</CardTitle>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--steel)]">
-              Search by product or business, or use a business ID. Every matching business and product appears below without business pages.
+              Search by product or business, or use a business ID. Matching businesses are grouped into pages of four.
             </p>
           </div>
 
@@ -227,77 +387,59 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
             <div className="grid gap-8">
               <div className="flex flex-col gap-2 rounded-[1.25rem] border border-[var(--gold)]/50 bg-[var(--gold)]/20 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--ink)]">Complete catalogue grouped by business</p>
-                  <p className="mt-1 text-sm font-bold text-[var(--steel)]">Showing all {businessGroups.length} businesses and {products.length} products together.</p>
+                  <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--ink)]">Catalogue grouped by business</p>
+                  <p className="mt-1 text-sm font-bold text-[var(--steel)]">Showing businesses {firstVisibleBusiness}–{lastVisibleBusiness} of {businessGroups.length}. Scroll right inside each business to see more products.</p>
                 </div>
                 <Link href="/dashboard/user/shop/cart" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--ink)] bg-[var(--ink)] px-4 text-xs font-black uppercase tracking-[0.08em] text-white hover:border-[var(--signal)] hover:bg-[var(--signal)]">Open cart <ShoppingCart className="h-4 w-4" /></Link>
               </div>
 
-              {businessGroups.map((group) => (
-                <section key={group.key} className="overflow-hidden rounded-[2rem] border border-[var(--line)] bg-[var(--surface)] p-4 shadow-[var(--shadow-soft)] md:p-6">
-                  <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-                    <div className="flex min-w-0 items-start gap-3">
-                      <div className="grid h-12 w-12 shrink-0 place-items-center rounded-[1.1rem] border border-[var(--gold)] bg-[var(--gold)] text-[var(--ink)] shadow-[var(--shadow-soft)]"><Store className="h-5 w-5" /></div>
-                      <div className="min-w-0">
-                        <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">
-                          {jobAlertBusinesses.has(businessKey(group.businessId, group.businessName)) ? "Followed business · job alerts on" : "Business catalogue"}
-                        </p>
-                        <h2 className="mt-1 text-2xl font-black tracking-[-0.04em] text-[var(--ink)]">{group.businessName}</h2>
-                        <p className="mt-1 text-xs font-bold uppercase tracking-[0.1em] text-[var(--muted)]">{group.products.length} product{group.products.length === 1 ? "" : "s"}{group.businessId ? ` · Business ID ${group.businessId}` : ""}</p>
-                      </div>
-                    </div>
-
-                    <button type="button" onClick={() => toggleJobAlert(group)} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-white px-4 text-xs font-black uppercase tracking-[0.08em] text-[var(--ink)] hover:bg-[var(--gold)]">
-                      {jobAlertBusinesses.has(businessKey(group.businessId, group.businessName)) ? <BellRing className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
-                      {jobAlertBusinesses.has(businessKey(group.businessId, group.businessName)) ? "Job alerts on" : "Job alert"}
-                    </button>
-                  </div>
-
-                  <div className={`grid gap-4 ${compact ? "sm:grid-cols-2 xl:grid-cols-3" : "sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"}`}>
-                    {group.products.map((product) => {
-                      const salePrice = productPrice(product);
-                      const hasDiscount = product.salePrice !== undefined && product.salePrice < product.price;
-
-                      return (
-                        <article key={product.id} className="flex min-w-0 flex-col overflow-hidden rounded-[1.5rem] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)] transition hover:-translate-y-1 hover:border-[var(--gold)] hover:shadow-[var(--shadow-ledger)]">
-                          <div className="relative overflow-hidden bg-[var(--surface)]">
-                            <img src={productImage(product)} alt={product.name} className="h-48 w-full object-cover transition duration-300 hover:scale-[1.03]" />
-                            <div className="absolute left-3 top-3 flex flex-wrap gap-2">
-                              <StatusPill label={product.status ?? "AVAILABLE"} tone="confirm" />
-                              {hasDiscount ? <StatusPill label="SPECIAL" tone="signal" /> : null}
-                            </div>
-                          </div>
-
-                          <div className="flex flex-1 flex-col gap-4 p-4">
-                            <div className="min-h-[5rem]">
-                              <p className="truncate font-mono text-[0.62rem] font-black uppercase tracking-[0.14em] text-[var(--signal)]">{group.businessName}</p>
-                              <h3 className="mt-1 line-clamp-2 text-lg font-black tracking-[-0.03em] text-[var(--ink)]">{product.name}</h3>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-3 rounded-[1rem] border border-[var(--line)] bg-[var(--surface)] p-3">
-                              <div>
-                                <p className="text-[0.65rem] font-black uppercase tracking-[0.1em] text-[var(--muted)]">Price</p>
-                                <p className="money mt-1 text-xl font-black text-[var(--ink)]">{money(salePrice)}</p>
-                                {hasDiscount ? <p className="money text-xs font-bold text-[var(--muted)] line-through">{money(product.price)}</p> : null}
-                              </div>
-                              <div className="text-right">
-                                <p className="text-[0.65rem] font-black uppercase tracking-[0.1em] text-[var(--muted)]">Stock</p>
-                                <p className="money mt-1 text-xl font-black text-[var(--ink)]">{product.stockQuantity}</p>
-                                <p className="text-xs font-semibold text-[var(--steel)]">units ready</p>
-                              </div>
-                            </div>
-
-                            <div className="mt-auto grid gap-2 sm:grid-cols-2">
-                              <Button onClick={() => addToCart(product)} disabled={product.stockQuantity <= 0} className="w-full"><ShoppingCart className="h-4 w-4" /> Add</Button>
-                              <Link href={`/dashboard/user/shop/products/${product.id}`} className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-4 text-sm font-black text-[var(--ink)] hover:border-[var(--gold)] hover:bg-[var(--surface)]"><Eye className="h-4 w-4" /> Details</Link>
-                            </div>
-                          </div>
-                        </article>
-                      );
-                    })}
-                  </div>
-                </section>
+              {visibleBusinessGroups.map((group) => (
+                <BusinessProductSection
+                  key={group.key}
+                  group={group}
+                  compact={compact}
+                  followed={jobAlertBusinesses.has(businessKey(group.businessId, group.businessName))}
+                  onToggleJobAlert={toggleJobAlert}
+                  onAddToCart={addToCart}
+                />
               ))}
+
+              <div className="flex flex-col items-center justify-between gap-4 rounded-[1.5rem] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)] sm:flex-row">
+                <button
+                  type="button"
+                  onClick={() => openBusinessPage(businessPage - 1)}
+                  disabled={businessPage === 0}
+                  className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)] transition hover:border-[var(--gold)] hover:bg-[var(--gold)] disabled:cursor-not-allowed disabled:opacity-35 sm:w-auto"
+                >
+                  <ChevronLeft className="h-5 w-5" /> Previous 4 businesses
+                </button>
+
+                <div className="text-center">
+                  <p className="text-sm font-black text-[var(--ink)]">Business page {businessPage + 1} of {businessPageCount}</p>
+                  <p className="mt-1 text-xs font-semibold text-[var(--steel)]">Businesses {firstVisibleBusiness}–{lastVisibleBusiness}</p>
+                  <div className="mt-3 flex flex-wrap justify-center gap-1.5" aria-label="Business catalogue pages">
+                    {Array.from({ length: businessPageCount }, (_, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => openBusinessPage(index)}
+                        aria-label={`Open business page ${index + 1}`}
+                        aria-current={index === businessPage ? "page" : undefined}
+                        className={`h-2.5 rounded-full transition ${index === businessPage ? "w-8 bg-[var(--signal)]" : "w-2.5 bg-[var(--line)] hover:bg-[var(--gold)]"}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => openBusinessPage(businessPage + 1)}
+                  disabled={businessPage >= businessPageCount - 1}
+                  className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[var(--ink)] bg-[var(--ink)] px-5 text-sm font-black text-white transition hover:border-[var(--signal)] hover:bg-[var(--signal)] disabled:cursor-not-allowed disabled:opacity-35 sm:w-auto"
+                >
+                  Next 4 businesses <ChevronRight className="h-5 w-5" />
+                </button>
+              </div>
             </div>
           )}
         </CardContent>
