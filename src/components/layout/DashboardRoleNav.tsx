@@ -90,7 +90,7 @@ function isActive(pathname: string, searchParams: URLSearchParams, href: string)
   }
 
   if (cleanHref === "/dashboard/user/shop") {
-    return pathname === cleanHref || pathname.startsWith("/dashboard/user/shop/products");
+    return pathname === cleanHref || pathname.startsWith("/dashboard/user/shop/products") || pathname.startsWith("/dashboard/user/shop/all");
   }
 
   if (cleanHref === "/dashboard/user/shop/cart") {
