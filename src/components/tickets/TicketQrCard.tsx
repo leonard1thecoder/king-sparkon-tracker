@@ -180,12 +180,12 @@ export function TicketQrCard({
         <p className="mt-3 break-all text-center font-mono text-[0.62rem] font-bold leading-5 text-[var(--muted)]">Ticket QR · ownership v{ticket.ownershipVersion ?? 1}</p>
 
         {canChangePhoto ? (
-          <div className="mt-3 grid gap-2">
-            <button type="button" onClick={startCamera} disabled={busy} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-4 text-xs font-black uppercase tracking-[0.08em] text-white hover:bg-[var(--ink)] disabled:opacity-50">
-              <Camera className="h-4 w-4" /> {hasPhoto ? "Retake verification photo" : "Take verification photo"}
+          <div className="mt-3 flex flex-wrap justify-center gap-2">
+            <button type="button" onClick={startCamera} disabled={busy} className="inline-flex min-h-9 w-fit items-center justify-center gap-1.5 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-3 text-[0.68rem] font-black uppercase tracking-[0.06em] text-white hover:bg-[var(--ink)] disabled:opacity-50">
+              <Camera className="h-3.5 w-3.5" /> {hasPhoto ? "Retake photo" : "Take photo"}
             </button>
-            <button type="button" onClick={() => fileInputRef.current?.click()} disabled={busy} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-4 text-xs font-black text-[var(--ink)] hover:border-[var(--gold)] disabled:opacity-50">
-              <Upload className="h-4 w-4" /> Choose photo
+            <button type="button" onClick={() => fileInputRef.current?.click()} disabled={busy} className="inline-flex min-h-9 w-fit items-center justify-center gap-1.5 rounded-full border border-[var(--line)] bg-white px-3 text-[0.68rem] font-black text-[var(--ink)] hover:border-[var(--gold)] disabled:opacity-50">
+              <Upload className="h-3.5 w-3.5" /> Choose photo
             </button>
             <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(event) => {
               const file = event.target.files?.[0];
@@ -252,7 +252,7 @@ export function TicketQrCard({
           <div className="rounded-[1.4rem] border border-[var(--signal)]/25 bg-[var(--ink)] p-4 text-white">
             <div className="flex items-center justify-between gap-3"><p className="font-black">Centre your face in the camera</p><button type="button" onClick={closeCamera} className="grid h-9 w-9 place-items-center rounded-full bg-white/10"><X className="h-4 w-4" /></button></div>
             <video ref={videoRef} muted playsInline className="mt-3 aspect-square max-h-[28rem] w-full rounded-[1.2rem] bg-black object-cover" />
-            <button type="button" onClick={captureFrame} disabled={busy} className="mt-3 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--gold)] px-5 text-sm font-black text-[var(--ink)] disabled:opacity-50"><Camera className="h-4 w-4" /> {busy ? "Saving..." : "Capture verification photo"}</button>
+            <button type="button" onClick={captureFrame} disabled={busy} className="mx-auto mt-3 inline-flex min-h-10 w-fit items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--gold)] px-4 text-xs font-black text-[var(--ink)] disabled:opacity-50"><Camera className="h-3.5 w-3.5" /> {busy ? "Saving..." : "Capture photo"}</button>
             <p className="mt-3 text-xs font-semibold leading-5 text-white/65">This image is used only for a worker&apos;s manual visual comparison at entry. The app does not perform automated face recognition.</p>
           </div>
         ) : null}
