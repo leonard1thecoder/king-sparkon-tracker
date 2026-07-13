@@ -1,12 +1,15 @@
 import { RouteSectionPage } from "@/components/layout/RouteSectionPage";
-import { BarcodeScanner } from "@/components/scanner/BarcodeScanner";
-import { WorkerTuckShopBarcodeCheckout } from "@/components/tuck-shop/WorkerTuckShopBarcodeCheckout";
+import { WorkerScanCheckoutWorkspace } from "@/components/tuck-shop/WorkerScanCheckoutWorkspace";
 
 export default function WorkerScanPage() {
   return (
-    <RouteSectionPage role="WORKER" title="Scan terminal" description="Camera scanner for product barcodes, QR codes, and worker-assisted Tuck Shop barcode checkout." endpoint="GET /api/products/barcode/{barcode}">
-      <BarcodeScanner />
-      <WorkerTuckShopBarcodeCheckout />
+    <RouteSectionPage
+      role="WORKER"
+      title="Scan terminal"
+      description="Verify products, fill the worker checkout automatically, create counter payments, and prepare paid online carts for collection."
+      endpoint="GET /api/products/barcode/{barcode}"
+    >
+      <WorkerScanCheckoutWorkspace />
     </RouteSectionPage>
   );
 }
