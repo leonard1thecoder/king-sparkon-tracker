@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ShoppingCart, UserRound } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { DashboardHeaderActions } from "@/components/layout/DashboardHeaderActions";
 import { WorkerOnlineBarcodeHeaderAction } from "@/components/layout/WorkerOnlineBarcodeHeaderAction";
 import { cn } from "@/lib/utils/cn";
@@ -94,19 +94,6 @@ function UserCartHeaderAction() {
   );
 }
 
-function WorkerProfileHeaderAction() {
-  return (
-    <Link
-      href="/dashboard/worker/profile"
-      aria-label="Worker profile settings"
-      title="Profile settings"
-      className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--gold)] hover:bg-[var(--surface)]"
-    >
-      <UserRound className="h-4.5 w-4.5" />
-    </Link>
-  );
-}
-
 function isUserWorkspace(role: string) {
   return role.toLowerCase().includes("user");
 }
@@ -123,7 +110,6 @@ export function UserAwareDashboardHeaderActions({ role }: { role: string }) {
     return (
       <div className="flex items-center justify-end gap-2">
         <WorkerOnlineBarcodeHeaderAction />
-        <WorkerProfileHeaderAction />
         <DashboardHeaderActions role={role} />
       </div>
     );
