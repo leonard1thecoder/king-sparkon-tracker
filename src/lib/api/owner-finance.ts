@@ -29,6 +29,10 @@ export type OwnerWalletSummary = {
   withdrawn: number;
   pendingWithdrawalCount: number;
   recentEntries: WalletLedgerEntry[];
+  payoutProvider: "PAYPAL" | string;
+  payoutCurrency: string;
+  zarPerPayoutUnit: number;
+  payoutConfigured: boolean;
 };
 
 export type OwnerWithdrawal = {
@@ -45,12 +49,17 @@ export type OwnerWithdrawal = {
   notes?: string | null;
   requestedAt?: string | null;
   processedAt?: string | null;
+  provider?: string | null;
+  providerBatchId?: string | null;
+  providerStatus?: string | null;
+  payoutAmount?: number | null;
+  payoutCurrency?: string | null;
 };
 
 export type OwnerWithdrawalPayload = {
   amount: number;
-  payoutMethod: string;
-  payoutDestination?: string | null;
+  payoutMethod: "PAYPAL";
+  payoutDestination: string;
   notes?: string | null;
 };
 
