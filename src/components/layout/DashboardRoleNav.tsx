@@ -55,14 +55,11 @@ const navByRole: Record<UserRole, NavItem[]> = {
   Worker: [
     { label: "Overview", href: "/dashboard/worker", icon: UserRound, description: "Today’s worker activity" },
     { label: "Products & Barcodes", href: "/dashboard/worker/products", icon: Boxes, description: "Stock and automatic codes" },
-    { label: "Counter Checkout", href: "/dashboard/worker/scan", icon: ScanLine, description: "Scan or sell without scan" },
+    { label: "Counter Checkout", href: "/dashboard/worker/scan", icon: ScanLine, description: "Cash or card checkout" },
     { label: "Online Orders", href: "/dashboard/worker/orders", icon: PackageSearch, description: "Prepare paid carts" },
     { label: "Product Sales", href: "/dashboard/worker/transactions", icon: CreditCard, description: "Completed carts" },
     { label: "Ticket Entry", href: "/dashboard/worker/tickets/scan", icon: QrCode, description: "Face and QR verification" },
-    { label: "Tips & QR", href: "/dashboard/worker/tips", icon: WalletCards, description: "Tip QR and earnings" },
-    { label: "Jobs", href: "/dashboard/worker/jobs", icon: BriefcaseBusiness, description: "Available opportunities" },
-    { label: "Applications", href: "/dashboard/worker/applications", icon: FileCheck2, description: "Application tracking" },
-    { label: "Profile", href: "/dashboard/worker/profile", icon: Settings, description: "Account settings" },
+    { label: "Tips & QR", href: "/dashboard/worker/tips", icon: WalletCards, description: "Owner-enabled tips" },
   ],
   Affiliate: [
     { label: "Overview", href: "/dashboard/affiliate", icon: QrCode, description: "Funnel and earnings" },
