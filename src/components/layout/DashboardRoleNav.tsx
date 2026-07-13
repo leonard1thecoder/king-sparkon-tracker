@@ -22,7 +22,6 @@ import {
   QrCode,
   ReceiptText,
   ScanLine,
-  Settings,
   ShieldCheck,
   ShoppingCart,
   Ticket,
@@ -53,7 +52,6 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Reports", href: "/dashboard/admin/reports", icon: BarChart3, description: "Platform performance" },
     { label: "Audit Logs", href: "/dashboard/admin/audit", icon: ClipboardList, description: "Security and action history" },
     { label: "Developer Hub", href: "/dashboard/admin/developer", icon: Code2, description: "Stages and implementation" },
-    { label: "Settings", href: "/dashboard/admin/settings", icon: Settings, description: "Platform configuration" },
   ],
   Owner: [
     { label: "Overview", href: "/dashboard/owner", icon: Building2, description: "Business command centre" },
@@ -66,8 +64,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Jobs", href: "/dashboard/owner/jobs", icon: BriefcaseBusiness, description: "Business opportunities" },
     { label: "Applications", href: "/dashboard/owner/jobs?tab=applications", icon: FileCheck2, description: "Review job applicants" },
     { label: "Promotions", href: "/dashboard/owner/promotions", icon: Megaphone, description: "Subscriber campaigns" },
-    { label: "Plan & Billing", href: "/dashboard/owner/billing", icon: CreditCard, description: "Subscription and discounts" },
-    { label: "Settings", href: "/dashboard/owner/settings", icon: Settings, description: "Business configuration" },
+    { label: "Plan & Billing", href: "/dashboard/owner/billing", icon: CreditCard, description: "Monthly and yearly subscriptions" },
   ],
   Worker: [
     { label: "Overview", href: "/dashboard/worker", icon: UserRound, description: "Today’s worker activity" },
