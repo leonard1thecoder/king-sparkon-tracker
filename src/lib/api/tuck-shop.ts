@@ -30,11 +30,10 @@ export type ProductBarcodeConfiguration = {
   barcodesRequired: number;
 };
 
-export type WorkerCheckoutPaymentType = "CASH" | "CARD" | "KING_SPARKON";
+export type WorkerCheckoutPaymentType = "CASH" | "CARD";
 
 export type WorkerTuckShopCheckoutPayload = CreateTuckShopPurchasePayload & {
-  paymentType: "CASH" | "SWIPE_MACHINE" | "WEBSITE_PAYMENT";
-  customerUsername?: string | null;
+  paymentType: "CASH" | "SWIPE_MACHINE";
 };
 
 export type TuckShopFulfilmentStatus =
