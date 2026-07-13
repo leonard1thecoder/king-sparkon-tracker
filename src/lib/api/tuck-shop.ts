@@ -18,6 +18,31 @@ export type AddProductBarcodePayload = {
   referenceEmail?: string | null;
 };
 
+export type WorkerCheckoutPaymentType = "CASH" | "CARD" | "KING_SPARKON";
+
+export type WorkerTuckShopCheckoutPayload = CreateTuckShopPurchasePayload & {
+  paymentType: "CASH" | "SWIPE_MACHINE" | "WEBSITE_PAYMENT";
+  customerUsername?: string | null;
+};
+
+export type TuckShopFulfilmentStatus =
+  | "NOT_REQUIRED"
+  | "AWAITING_BARCODE_ASSIGNMENT"
+  | "READY_FOR_COLLECTION"
+  | "COLLECTED";
+
+export type OnlineTuckShopPurchase = TuckShopPurchase & {
+  customerId?: number | null;
+  customerUsername?: string | null;
+  fulfilmentStatus?: TuckShopFulfilmentStatus | string | null;
+  barcodesRequired?: number;
+  collectionQrCodeValue?: string | null;
+  collectionQrCodeUrl?: string | null;
+  collectionReadyAt?: string | null;
+  collectedAt?: string | null;
+  preparedByWorkerId?: number | null;
+};
+
 function queryString(params: Record<string, string | number | undefined | null>) {
   const search = new URLSearchParams();
 
@@ -80,12 +105,34 @@ export function getEmbeddedCartPaymentStatus(paymentIntentId: string) {
   );
 }
 
-export async function createWorkerTuckShopBarcodePurchase(payload: CreateTuckShopPurchasePayload) {
-  try {
-    return await apiPost<TuckShopPurchase, CreateTuckShopPurchasePayload>("/v1/tuck-shop/workers/barcode-purchases", payload);
-  } catch {
-    return createApplicationMockPurchase(payload);
-  }
+export function createWorkerTuckShopBarcodePurchase(payload: WorkerTuckShopCheckoutPayload) {
+  return apiPost<TuckShopPurchase, WorkerTuckShopCheckoutPayload>("/v1/tuck-shop/workers/barcode-purchases", payload);
+}
+
+export function getWorkerProductByBarcode(barcode: string) {
+  return apiGet<Product>(`/products/barcode/${encodeURIComponent(barcode.trim())}`);
+}
+
+export function listWorkerOnlinePurchases() {
+  return apiGet<OnlineTuckShopPurchase[]>("/v1/tuck-shop/workers/online-purchases");
+}
+
+export function assignOnlinePurchaseBarcode(transactionId: number, productId: number, barcode: string) {
+  return apiPost<OnlineTuckShopPurchase, { barcode: string }>(
+    `/v1/tuck-shop/workers/online-purchases/${transactionId}/products/${productId}/barcodes`,
+    { barcode: barcode.trim() },
+  );
+}
+
+export function listMyTuckShopPurchases() {
+  return apiGet<OnlineTuckShopPurchase[]>("/v1/tuck-shop/my-purchases");
+}
+
+export function verifyTuckShopCollection(qrValue: string) {
+  return apiPost<OnlineTuckShopPurchase, { qrValue: string }>(
+    "/v1/tuck-shop/my-purchases/collect",
+    { qrValue: qrValue.trim() },
+  );
 }
 
 export async function listOwnerProducts(params: { page?: number; size?: number }) {
