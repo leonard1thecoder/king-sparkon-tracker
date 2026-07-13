@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ShoppingCart } from "lucide-react";
 import { DashboardHeaderActions } from "@/components/layout/DashboardHeaderActions";
+import { WorkerOnlineBarcodeHeaderAction } from "@/components/layout/WorkerOnlineBarcodeHeaderAction";
 import { cn } from "@/lib/utils/cn";
 import { isProductLine, isTicketLine, readTuckShopCart } from "@/lib/tuck-shop/cart";
 
@@ -97,8 +98,22 @@ function isUserWorkspace(role: string) {
   return role.toLowerCase().includes("user");
 }
 
+function isWorkerWorkspace(role: string) {
+  return role.toLowerCase().includes("worker");
+}
+
 export function UserAwareDashboardHeaderActions({ role }: { role: string }) {
   const showUserCart = useMemo(() => isUserWorkspace(role), [role]);
+  const showWorkerOnlineBarcode = useMemo(() => isWorkerWorkspace(role), [role]);
+
+  if (showWorkerOnlineBarcode) {
+    return (
+      <div className="flex items-center justify-end gap-2">
+        <WorkerOnlineBarcodeHeaderAction />
+        <DashboardHeaderActions role={role} />
+      </div>
+    );
+  }
 
   if (!showUserCart) {
     return <DashboardHeaderActions role={role} />;
