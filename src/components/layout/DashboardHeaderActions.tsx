@@ -6,6 +6,7 @@ import {
   BriefcaseBusiness,
   ChevronDown,
   FileCheck2,
+  Landmark,
   Loader2,
   Mail,
   Power,
@@ -13,22 +14,11 @@ import {
   ShoppingCart,
   Ticket,
   UserRound,
-  WalletCards,
 } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
-import { apiGet, normalizeApiError } from "@/lib/api/client";
+import { apiGet } from "@/lib/api/client";
+import { getOwnerWallet } from "@/lib/api/owner-finance";
 import type { TrackerUser } from "@/lib/types/backend";
-
-type TipRow = Record<string, unknown>;
-type TipPayload = TipRow[] | {
-  content?: TipRow[];
-  data?: TipRow[];
-  items?: TipRow[];
-  withdrawableAmount?: number;
-  accountTotal?: number;
-  totalWithdrawable?: number;
-  availableToWithdraw?: number;
-};
 
 type ProfileShortcut = {
   label: string;
@@ -56,44 +46,7 @@ const userProfileShortcuts: ProfileShortcut[] = [
 const iconButtonClass = "inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--gold)] hover:bg-[var(--surface)]";
 
 function money(value: number) {
-  return new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(value);
-}
-
-function numeric(value: unknown) {
-  const next = Number(value ?? 0);
-  return Number.isFinite(next) ? next : 0;
-}
-
-function rowsFromPayload(payload: TipPayload): TipRow[] {
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload.content)) return payload.content;
-  if (Array.isArray(payload.data)) return payload.data;
-  if (Array.isArray(payload.items)) return payload.items;
-  return [];
-}
-
-function explicitTotal(payload: TipPayload) {
-  if (Array.isArray(payload)) return undefined;
-  const total = payload.withdrawableAmount ?? payload.availableToWithdraw ?? payload.totalWithdrawable ?? payload.accountTotal;
-  return typeof total === "number" && Number.isFinite(total) ? total : undefined;
-}
-
-function isWithdrawable(row: TipRow) {
-  const status = String(row.status ?? row.paymentStatus ?? row.state ?? "").toLowerCase();
-  const paidFlag = row.paid === true || row.paidToWorker === true || row.withdrawn === true;
-  if (paidFlag) return false;
-  if (status.includes("paid") || status.includes("withdrawn") || status.includes("failed") || status.includes("cancel")) return false;
-  return true;
-}
-
-function rowAmount(row: TipRow) {
-  return numeric(row.netAmount ?? row.amountToWithdraw ?? row.tipAmount ?? row.grossAmount ?? row.amount);
-}
-
-function calculateWithdrawable(payload: TipPayload) {
-  const total = explicitTotal(payload);
-  if (total !== undefined) return total;
-  return rowsFromPayload(payload).filter(isWithdrawable).reduce((sum, row) => sum + rowAmount(row), 0);
+  return new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(Number(value ?? 0));
 }
 
 function ownerRole(role: string) {
@@ -104,36 +57,51 @@ function userRole(role: string) {
   return role.toLowerCase().includes("user");
 }
 
-function OwnerWithdrawAction() {
+function OwnerBalanceAction() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
 
-    async function loadWithdrawableTotal() {
+    async function loadBalance() {
       try {
-        const payload = await apiGet<TipPayload>("/tips");
-        if (active) setTotal(calculateWithdrawable(payload));
-      } catch (error) {
-        normalizeApiError(error);
+        const wallet = await getOwnerWallet();
+        if (active) setTotal(Number(wallet.availableBalance ?? 0));
+      } catch {
         if (active) setTotal(0);
       } finally {
         if (active) setLoading(false);
       }
     }
 
-    void loadWithdrawableTotal();
+    function refresh() {
+      setLoading(true);
+      void loadBalance();
+    }
+
+    void loadBalance();
+    const timer = window.setInterval(loadBalance, 30_000);
+    window.addEventListener("focus", refresh);
+    window.addEventListener("king-sparkon:owner-wallet", refresh);
 
     return () => {
       active = false;
+      window.clearInterval(timer);
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("king-sparkon:owner-wallet", refresh);
     };
   }, []);
 
   return (
-    <Link href="/dashboard/owner/tips#withdraw" className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--ink)] px-4 text-xs font-black uppercase tracking-[0.1em] text-[var(--gold)] shadow-[var(--shadow-soft)] hover:bg-white" aria-label="Withdraw tips" title={`Withdraw tips · ${loading ? "Loading" : money(total)}`}>
-      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <WalletCards className="h-4 w-4" />}
-      <span className="sr-only">Withdraw tips</span>
+    <Link
+      href="/dashboard/owner/withdrawals"
+      className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--ink)] px-4 text-xs font-black uppercase tracking-[0.1em] text-[var(--gold)] shadow-[var(--shadow-soft)] hover:bg-white"
+      aria-label="Open business balance and withdrawals"
+      title={`King Sparkon balance · ${loading ? "Loading" : money(total)}`}
+    >
+      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Landmark className="h-4 w-4" />}
+      <span className="sr-only">Business balance and withdrawals</span>
       <span className="money hidden text-white/90 lg:inline">{loading ? "..." : money(total)}</span>
     </Link>
   );
@@ -235,11 +203,11 @@ function UserProfileDropdown() {
 
 export function DashboardHeaderActions({ role }: { role: string }) {
   const showCheckout = useMemo(() => userRole(role), [role]);
-  const showWithdraw = useMemo(() => ownerRole(role), [role]);
+  const showBalance = useMemo(() => ownerRole(role), [role]);
 
   return (
     <div className="flex items-center justify-end gap-2">
-      {showWithdraw ? <OwnerWithdrawAction /> : null}
+      {showBalance ? <OwnerBalanceAction /> : null}
       {showCheckout ? (
         <>
           <Link href="/dashboard/user/shop" className={iconButtonClass} aria-label="Buy products" title="Buy products">
