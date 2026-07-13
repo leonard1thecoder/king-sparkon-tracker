@@ -1,4 +1,4 @@
-import { apiGet } from "@/lib/api/client";
+import { apiClient, apiGet } from "@/lib/api/client";
 import type { TrackerUser } from "@/lib/types/backend";
 import type { TicketEvent, UserTicket } from "@/types/tickets";
 
@@ -25,6 +25,9 @@ function normalizeTicket(ticket: UserTicket): UserTicket {
     pricePaid: Number(ticket.pricePaid ?? 0),
     purchasedAt: ticket.purchasedAt ? String(ticket.purchasedAt) : new Date().toISOString(),
     usedAt: ticket.usedAt ? String(ticket.usedAt) : undefined,
+    verificationPhotoCapturedAt: ticket.verificationPhotoCapturedAt ? String(ticket.verificationPhotoCapturedAt) : undefined,
+    transferredAt: ticket.transferredAt ? String(ticket.transferredAt) : undefined,
+    ownershipVersion: Number(ticket.ownershipVersion ?? 1),
   };
 }
 
@@ -39,7 +42,30 @@ export async function getLiveEventById(eventId: string) {
 }
 
 export async function getLiveMyTickets() {
-  const user = await apiGet<TrackerUser>("/users/me");
-  const tickets = await apiGet<UserTicket[]>(`/v1/tickets/my-tickets?userId=${encodeURIComponent(String(user.id))}`);
-  return (Array.isArray(tickets) ? tickets : []).map(normalizeTicket);
+  try {
+    const tickets = await apiGet<UserTicket[]>("/v1/tickets/my-tickets/current");
+    return (Array.isArray(tickets) ? tickets : []).map(normalizeTicket);
+  } catch {
+    const user = await apiGet<TrackerUser>("/users/me");
+    const tickets = await apiGet<UserTicket[]>(`/v1/tickets/my-tickets?userId=${encodeURIComponent(String(user.id))}`);
+    return (Array.isArray(tickets) ? tickets : []).map(normalizeTicket);
+  }
+}
+
+export async function uploadTicketVerificationPhoto(ticketId: string, file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await apiClient.patch<UserTicket>(
+    `/v1/tickets/${encodeURIComponent(ticketId)}/verification-photo`,
+    formData,
+  );
+  return normalizeTicket(response.data);
+}
+
+export async function shareTicketByUsername(ticketId: string, username: string) {
+  const response = await apiClient.post<UserTicket>(
+    `/v1/tickets/${encodeURIComponent(ticketId)}/transfer`,
+    { username: username.trim() },
+  );
+  return normalizeTicket(response.data);
 }
