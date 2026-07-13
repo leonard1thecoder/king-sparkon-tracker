@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CheckCircle2, CreditCard, ExternalLink, Loader2, RefreshCw, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
+import { BadgePercent, CheckCircle2, CreditCard, ExternalLink, Loader2, RefreshCw, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
 import { apiGet, apiPost, normalizeApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -22,6 +22,10 @@ type BillingPlan = {
   workerClocker: boolean;
   affiliateProgram: boolean;
   features: string[];
+  originalMonthlyPrice?: number | null;
+  discountPercent?: number | null;
+  discountLabel?: string | null;
+  discountActive?: boolean;
 };
 
 type BillingDashboard = {
@@ -99,14 +103,16 @@ export function OwnerBillingWorkspace() {
   }
 
   const plans = dashboard?.availablePlans ?? [];
+  const liveDiscounts = plans.filter((plan) => plan.discountActive).length;
 
   return (
     <section className="grid gap-6">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <MetricCard label="Current plan" value={loading ? "..." : dashboard?.currentPlan ?? "Unavailable"} detail={dashboard?.businessName ?? "Business subscription"} tone="confirm" icon={<Sparkles className="h-5 w-5" />} />
         <MetricCard label="Business status" value={loading ? "..." : dashboard?.businessStatus ?? "Unavailable"} detail={dashboard?.trial ? `${dashboard.trialDaysLeft} trial days left` : "Subscription state"} tone={dashboard?.deactivated ? "neutral" : "signal"} icon={<ShieldCheck className="h-5 w-5" />} />
         <MetricCard label="Payment status" value={loading ? "..." : dashboard?.paymentStatus ?? (dashboard?.trial ? "TRIAL" : "NO PAYMENT")} detail="Latest subscription payment" icon={<CreditCard className="h-5 w-5" />} />
         <MetricCard label="Billing renewal" value={loading ? "..." : date(dashboard?.currentBillingPeriodEndDate)} detail={dashboard?.trial ? `Trial ends ${date(dashboard.trialEndDate)}` : "Current period end"} icon={<RefreshCw className="h-5 w-5" />} />
+        <MetricCard label="Live discounts" value={loading ? "..." : String(liveDiscounts)} detail="Admin Plus and Pro offers" icon={<BadgePercent className="h-5 w-5" />} />
       </div>
 
       {error ? <p className="rounded-[1.1rem] border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-4 text-sm font-black text-[var(--danger)]">{error}</p> : null}
@@ -127,14 +133,30 @@ export function OwnerBillingWorkspace() {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle>Available business plans</CardTitle><p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--steel)]">Compare worker capacity and platform features. Upgrade checkout is completed securely through Stripe.</p></CardHeader>
+        <CardHeader><CardTitle>Available business plans</CardTitle><p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--steel)]">Compare worker capacity, platform features and active administrator discounts. Stripe checkout uses the displayed discounted monthly amount.</p></CardHeader>
         <CardContent>
           {loading ? <div className="flex min-h-56 items-center justify-center gap-3 text-sm font-black text-[var(--steel)]"><Loader2 className="h-5 w-5 animate-spin" /> Loading plans</div> : (
             <div className="grid gap-5 lg:grid-cols-3">
               {plans.map((plan) => {
                 const current = plan.plan === dashboard?.currentPlan;
                 const upgrading = upgradingPlan === plan.plan;
-                return <article key={plan.plan} className={`grid gap-5 rounded-[1.6rem] border p-5 shadow-[var(--shadow-soft)] ${current ? "border-[var(--gold)] bg-[var(--gold)]/8" : "border-[var(--line)] bg-white"}`}><div><div className="flex items-center justify-between gap-3"><StatusPill label={current ? "CURRENT PLAN" : plan.plan} tone={current ? "confirm" : "signal"} /><UsersRound className="h-5 w-5 text-[var(--signal)]" /></div><h2 className="mt-4 text-3xl font-black tracking-[-0.05em] text-[var(--ink)]">{plan.displayName}</h2><p className="money mt-2 text-2xl font-black text-[var(--signal)]">{money(plan.monthlyPrice)} <span className="text-sm text-[var(--muted)]">/ month</span></p><p className="mt-2 text-sm font-bold text-[var(--steel)]">{plan.unlimitedWorkers ? "Unlimited workers" : `${plan.maxWorkers} workers`}</p></div><ul className="grid gap-2 text-sm font-semibold text-[var(--steel)]">{plan.features.map((feature) => <li key={feature} className="flex gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--confirm)]" /> {feature}</li>)}</ul><Button type="button" disabled={current || upgrading} onClick={() => void upgrade(plan)}>{upgrading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ExternalLink className="h-4 w-4" />} {current ? "Current plan" : upgrading ? "Opening checkout..." : `Choose ${plan.displayName}`}</Button></article>;
+                const originalPrice = Number(plan.originalMonthlyPrice ?? plan.monthlyPrice);
+                const discounted = Boolean(plan.discountActive && Number(plan.monthlyPrice) < originalPrice);
+                return (
+                  <article key={plan.plan} className={`relative grid gap-5 overflow-hidden rounded-[1.6rem] border p-5 shadow-[var(--shadow-soft)] ${current ? "border-[var(--gold)] bg-[var(--gold)]/8" : "border-[var(--line)] bg-white"}`}>
+                    {discounted ? <div className="absolute right-0 top-0 rounded-bl-[1.2rem] bg-[var(--signal)] px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-white">{plan.discountPercent}% off</div> : null}
+                    <div>
+                      <div className="flex items-center justify-between gap-3"><StatusPill label={current ? "CURRENT PLAN" : plan.plan} tone={current ? "confirm" : "signal"} /><UsersRound className="h-5 w-5 text-[var(--signal)]" /></div>
+                      <h2 className="mt-4 text-3xl font-black tracking-[-0.05em] text-[var(--ink)]">{plan.displayName}</h2>
+                      {discounted ? <p className="money mt-2 text-lg font-black text-[var(--muted)] line-through">{money(originalPrice)}</p> : null}
+                      <p className="money mt-1 text-3xl font-black text-[var(--signal)]">{money(plan.monthlyPrice)} <span className="text-sm text-[var(--muted)]">/ month</span></p>
+                      {discounted ? <p className="mt-2 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.08em] text-[var(--confirm)]"><BadgePercent className="h-4 w-4" /> {plan.discountLabel || "Service discount"}</p> : null}
+                      <p className="mt-3 text-sm font-bold text-[var(--steel)]">{plan.unlimitedWorkers ? "Unlimited workers" : `${plan.maxWorkers} workers`}</p>
+                    </div>
+                    <ul className="grid gap-2 text-sm font-semibold text-[var(--steel)]">{plan.features.map((feature) => <li key={feature} className="flex gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--confirm)]" /> {feature}</li>)}</ul>
+                    <Button type="button" disabled={current || upgrading} onClick={() => void upgrade(plan)}>{upgrading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ExternalLink className="h-4 w-4" />} {current ? "Current plan" : upgrading ? "Opening checkout..." : `Choose ${plan.displayName}`}</Button>
+                  </article>
+                );
               })}
             </div>
           )}
