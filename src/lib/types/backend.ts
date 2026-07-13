@@ -271,31 +271,51 @@ export type JobOpportunity = {
   contactEmail?: string | null;
   whatsappNumber?: string | null;
   status: JobOpportunityStatus;
-  applicationDeadline?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  publishedAt?: string | null;
+  closedAt?: string | null;
+};
+
+export type CreateJobOpportunityPayload = {
+  title: string;
+  companyName: string;
+  location: string;
+  workplaceType: WorkplaceType;
+  employmentType: EmploymentType;
+  experienceLevel: ExperienceLevel;
+  salaryMin?: number;
+  salaryMax?: number;
+  salaryCurrency?: string;
+  description: string;
+  responsibilities?: string;
+  requirements: string;
+  benefits?: string;
+  applyUrl?: string;
+  contactEmail?: string;
+  whatsappNumber?: string;
+};
+
+export type JobApplication = {
+  id: number;
+  jobOpportunityId?: number;
+  jobTitle?: string;
+  companyName?: string;
+  applicantUserId?: number;
+  applicantName: string;
+  applicantEmail: string;
+  phoneNumber?: string | null;
+  coverMessage?: string | null;
+  cvUrl?: string | null;
+  status: JobApplicationStatus;
   createdAt?: string;
   updatedAt?: string;
 };
 
-export type CreateJobOpportunityPayload = Omit<JobOpportunity, "id" | "createdAt" | "updatedAt">;
-
-export type JobApplication = {
-  id: number;
-  jobOpportunityId: number;
-  jobTitle?: string;
-  companyName?: string;
-  applicantUserId?: number;
-  applicantUsername?: string;
-  applicantEmail?: string;
-  applicantPhone?: string | null;
-  coverLetter?: string | null;
-  resumeUrl?: string | null;
-  status: JobApplicationStatus;
-  appliedAt?: string;
-  updatedAt?: string;
-};
-
 export type ApplyForJobPayload = {
-  coverLetter?: string | null;
-  resumeUrl?: string | null;
-  applicantPhone?: string | null;
+  applicantName: string;
+  applicantEmail: string;
+  phoneNumber?: string;
+  coverMessage?: string;
+  cvUrl?: string;
 };
