@@ -5,6 +5,8 @@ export type TipStatus = "CREATED" | "PENDING" | "PAID" | "FAILED" | string;
 
 type ListTipsParams = {
   status?: TipStatus;
+  page?: number;
+  size?: number;
 };
 
 export function listTips({ status = "PAID" }: ListTipsParams = {}) {
