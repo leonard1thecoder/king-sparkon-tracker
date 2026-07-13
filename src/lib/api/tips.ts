@@ -1,14 +1,19 @@
 import { apiGet, apiPatch, apiPost } from "./client";
-import type { PageResponse, Tip, TipPayload } from "@/lib/types/backend";
+import type { Tip, TipPayload } from "@/lib/types/backend";
+
+export type TipStatus = "CREATED" | "PENDING" | "PAID" | "FAILED" | string;
 
 type ListTipsParams = {
-  page?: number;
-  size?: number;
+  status?: TipStatus;
 };
 
-export function listTips({ page = 0, size = 10 }: ListTipsParams = {}) {
-  const query = new URLSearchParams({ page: String(page), size: String(size) });
-  return apiGet<PageResponse<Tip> | Tip[]>(`/tips?${query.toString()}`);
+export function listTips({ status = "PAID" }: ListTipsParams = {}) {
+  const query = new URLSearchParams({ status });
+  return apiGet<Tip[]>(`/tips?${query.toString()}`);
+}
+
+export function listOwnerTips() {
+  return apiGet<Tip[]>("/tips/owner");
 }
 
 export function createTip(payload: TipPayload) {
@@ -16,7 +21,7 @@ export function createTip(payload: TipPayload) {
 }
 
 export function markTipPaid(tipId: number) {
-  return apiPatch<Tip>(`/tips/${tipId}/paid`, {});
+  return apiPatch<Tip, { status: "PAID" }>(`/tips/${tipId}/status`, { status: "PAID" });
 }
 
 export function requestTipWithdrawal() {
