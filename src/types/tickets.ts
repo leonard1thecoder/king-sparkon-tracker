@@ -6,6 +6,8 @@ export type TicketStatus = "ACTIVE" | "USED" | "CANCELLED" | "EXPIRED";
 
 export type TicketRole = "USER" | "OWNER" | "WORKER" | "ADMIN";
 
+export type FaceVerificationDecision = "PENDING" | "MATCH" | "NO_MATCH";
+
 export interface TicketEvent {
   id: string;
   ownerId: string;
@@ -45,6 +47,14 @@ export interface UserTicket {
   purchasedAt: string;
   usedAt?: string;
   scannedByWorkerId?: string;
+  verificationPhotoUrl?: string | null;
+  verificationPhotoCapturedAt?: string | null;
+  verificationRequired?: boolean;
+  canShare?: boolean;
+  canChangeVerificationPhoto?: boolean;
+  transferredAt?: string | null;
+  transferredFromUserId?: string | null;
+  ownershipVersion?: number;
 }
 
 export interface TicketPurchaseRequest {
@@ -60,6 +70,8 @@ export interface TicketVerificationResult {
   message: string;
   ticket?: UserTicket;
   event?: TicketEvent;
+  requiresFaceConfirmation?: boolean;
+  verificationPhotoUrl?: string | null;
 }
 
 export interface TicketSession {
