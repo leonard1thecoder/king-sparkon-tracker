@@ -14,7 +14,8 @@ function money(value?: number | null) {
 }
 
 function completed(order: OnlineTuckShopPurchase) {
-  return order.fulfilmentStatus === "COLLECTED" || order.paymentStatus === "PAID";
+  if (order.fulfilmentStatus === "COLLECTED") return true;
+  return order.fulfilmentStatus === "NOT_REQUIRED" && order.paymentStatus === "PAID";
 }
 
 export function WorkerCompletedProductSales() {
@@ -46,7 +47,7 @@ export function WorkerCompletedProductSales() {
   return (
     <section className="grid gap-6">
       <div className="grid gap-4 sm:grid-cols-3">
-        <MetricCard label="Completed carts" value={loading ? "..." : String(completedOrders.length)} detail="Paid counter and collected online carts" tone="confirm" icon={<PackageCheck className="h-5 w-5" />} />
+        <MetricCard label="Completed carts" value={loading ? "..." : String(completedOrders.length)} detail="Completed counter and collected online carts" tone="confirm" icon={<PackageCheck className="h-5 w-5" />} />
         <MetricCard label="Products sold" value={loading ? "..." : String(totalUnits)} detail="Quantity across completed carts" icon={<ShoppingBag className="h-5 w-5" />} />
         <MetricCard label="Product revenue" value={loading ? "..." : money(totalRevenue)} detail="Completed cart value" tone="signal" icon={<CheckCircle2 className="h-5 w-5" />} />
       </div>
@@ -55,7 +56,7 @@ export function WorkerCompletedProductSales() {
 
       <Card>
         <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div><CardTitle>Completed product carts</CardTitle><p className="mt-2 text-sm leading-6 text-[var(--steel)]">All paid counter sales and online carts that reached collection completion.</p></div>
+          <div><CardTitle>Completed product carts</CardTitle><p className="mt-2 text-sm leading-6 text-[var(--steel)]">Completed counter sales and online carts only after customer collection verification.</p></div>
           <Button type="button" variant="quiet" disabled={loading} onClick={() => void loadSales()}><RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} /> Refresh</Button>
         </CardHeader>
         <CardContent>
