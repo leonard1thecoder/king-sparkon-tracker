@@ -1,4 +1,4 @@
-import { apiClient, apiGet, apiPatch, apiPost, apiPut } from "@/lib/api/client";
+import { apiClient, apiDelete, apiGet, apiPatch, apiPost, apiPut } from "@/lib/api/client";
 import { createApplicationMockPurchase, getApplicationMockProducts } from "@/lib/mock/application-products";
 import type {
   CreateEmbeddedCartPaymentPayload,
@@ -194,6 +194,14 @@ export function createOwnerProduct(payload: CreateProductPayload & { productBarc
 
 export function addProductBarcode(productId: number, payload: AddProductBarcodePayload) {
   return apiPost<Product, AddProductBarcodePayload>(`/products/${productId}/barcodes`, payload);
+}
+
+export function updateOwnerProductQuantity(productId: number, stockQuantity: number) {
+  return apiPatch<Product, { stockQuantity: number }>(`/products/${productId}/quantity`, { stockQuantity });
+}
+
+export function deleteOwnerProduct(productId: number) {
+  return apiDelete<void>(`/products/${productId}`);
 }
 
 export function updateOwnerProductImage(productId: number, payload: ProductImageUpdatePayload) {
