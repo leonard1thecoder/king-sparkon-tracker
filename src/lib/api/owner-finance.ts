@@ -21,6 +21,7 @@ export type OwnerWalletSummary = {
   businessName: string;
   availableBalance: number;
   minimumWithdrawalAmount: number;
+  withdrawalFeePercent: number;
   onlineProductRevenue: number;
   ticketRevenue: number;
   tipRevenue: number;
