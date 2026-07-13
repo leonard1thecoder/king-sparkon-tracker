@@ -11,6 +11,7 @@ import {
   CreditCard,
   FileCheck2,
   Megaphone,
+  PackageSearch,
   QrCode,
   ScanLine,
   Settings,
@@ -52,15 +53,16 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Settings", href: "/dashboard/owner/settings", icon: Settings },
   ],
   Worker: [
-    { label: "Overview", href: "/dashboard/worker", icon: UserRound, description: "Worker activity" },
-    { label: "Products", href: "/dashboard/worker/products", icon: Boxes, description: "Business stock catalogue" },
-    { label: "Scan & Sell", href: "/dashboard/worker/scan", icon: ScanLine, description: "Barcode checkout" },
-    { label: "Product Sales", href: "/dashboard/worker/transactions", icon: CreditCard, description: "Worker transaction history" },
-    { label: "Ticket Scan", href: "/dashboard/worker/tickets/scan", icon: QrCode, description: "Validate event tickets" },
-    { label: "Tips", href: "/dashboard/worker/tips", icon: WalletCards, description: "Tip earnings" },
-    { label: "Jobs", href: "/dashboard/worker/jobs", icon: BriefcaseBusiness },
-    { label: "Applications", href: "/dashboard/worker/applications", icon: FileCheck2 },
-    { label: "Profile", href: "/dashboard/worker/profile", icon: Settings },
+    { label: "Overview", href: "/dashboard/worker", icon: UserRound, description: "Today’s worker activity" },
+    { label: "Products & Barcodes", href: "/dashboard/worker/products", icon: Boxes, description: "Stock and automatic codes" },
+    { label: "Counter Checkout", href: "/dashboard/worker/scan", icon: ScanLine, description: "Scan or sell without scan" },
+    { label: "Online Orders", href: "/dashboard/worker/orders", icon: PackageSearch, description: "Prepare paid carts" },
+    { label: "Product Sales", href: "/dashboard/worker/transactions", icon: CreditCard, description: "Completed carts" },
+    { label: "Ticket Entry", href: "/dashboard/worker/tickets/scan", icon: QrCode, description: "Face and QR verification" },
+    { label: "Tips & QR", href: "/dashboard/worker/tips", icon: WalletCards, description: "Tip QR and earnings" },
+    { label: "Jobs", href: "/dashboard/worker/jobs", icon: BriefcaseBusiness, description: "Available opportunities" },
+    { label: "Applications", href: "/dashboard/worker/applications", icon: FileCheck2, description: "Application tracking" },
+    { label: "Profile", href: "/dashboard/worker/profile", icon: Settings, description: "Account settings" },
   ],
   Affiliate: [
     { label: "Overview", href: "/dashboard/affiliate", icon: QrCode, description: "Funnel and earnings" },
@@ -83,32 +85,15 @@ function isDashboardRoot(cleanHref: string) {
 
 function isActive(pathname: string, searchParams: URLSearchParams, href: string) {
   const [cleanHref, query = ""] = href.split("?");
-
   if (query) {
     const hrefParams = new URLSearchParams(query);
     return pathname === cleanHref && Array.from(hrefParams.entries()).every(([key, value]) => searchParams.get(key) === value);
   }
-
-  if (cleanHref === "/dashboard/user/shop") {
-    return pathname === cleanHref || pathname.startsWith("/dashboard/user/shop/products");
-  }
-
-  if (cleanHref === "/dashboard/user/shop/cart") {
-    return pathname === cleanHref || pathname.startsWith("/dashboard/user/carts");
-  }
-
-  if (cleanHref === "/dashboard/user/tickets/buy") {
-    return pathname === cleanHref || pathname.startsWith("/dashboard/user/tickets/events") || pathname.startsWith("/dashboard/user/tickets/checkout");
-  }
-
-  if (isDashboardRoot(cleanHref)) {
-    return pathname === cleanHref && !searchParams.has("tab");
-  }
-
-  if (pathname !== cleanHref && !pathname.startsWith(`${cleanHref}/`)) {
-    return false;
-  }
-
+  if (cleanHref === "/dashboard/user/shop") return pathname === cleanHref || pathname.startsWith("/dashboard/user/shop/products");
+  if (cleanHref === "/dashboard/user/shop/cart") return pathname === cleanHref || pathname.startsWith("/dashboard/user/carts");
+  if (cleanHref === "/dashboard/user/tickets/buy") return pathname === cleanHref || pathname.startsWith("/dashboard/user/tickets/events") || pathname.startsWith("/dashboard/user/tickets/checkout");
+  if (isDashboardRoot(cleanHref)) return pathname === cleanHref && !searchParams.has("tab");
+  if (pathname !== cleanHref && !pathname.startsWith(`${cleanHref}/`)) return false;
   return pathname !== cleanHref || !searchParams.has("tab");
 }
 
@@ -121,34 +106,10 @@ export function DashboardRoleNav({ role }: { role: UserRole }) {
     <>
       {items.map(({ label, href, icon: Icon, description }) => {
         const active = isActive(pathname, searchParams, href);
-
         return (
-          <Link
-            key={`${role}-${href}-${label}`}
-            href={href}
-            aria-current={active ? "page" : undefined}
-            className={cn(
-              "group inline-flex min-h-11 w-full shrink-0 items-center gap-3 rounded-[1rem] border px-3.5 py-2.5 text-sm font-black transition duration-200 ease-out hover:-translate-y-0.5",
-              description ? "min-h-[3.65rem]" : "",
-              active
-                ? "border-[var(--ink)] bg-[var(--ink)] text-white shadow-[0_12px_24px_rgba(7,19,31,0.2)]"
-                : "border-[var(--ink)]/10 bg-white/45 text-[var(--ink)]/75 hover:border-[var(--ink)]/25 hover:bg-white/75 hover:text-[var(--ink)]",
-            )}
-          >
-            <span
-              className={cn(
-                "grid h-8 w-8 shrink-0 place-items-center rounded-[0.8rem] border transition-colors",
-                active
-                  ? "border-white/15 bg-white/10 text-[var(--gold)]"
-                  : "border-[var(--ink)]/10 bg-white/55 text-[var(--signal)] group-hover:text-[var(--ink)]",
-              )}
-            >
-              <Icon className="h-4 w-4" />
-            </span>
-            <span className="min-w-0">
-              <span className="block truncate">{label}</span>
-              {description ? <span className={cn("mt-0.5 block truncate text-[0.65rem] font-bold tracking-normal", active ? "text-white/55" : "text-[var(--muted)]")}>{description}</span> : null}
-            </span>
+          <Link key={`${role}-${href}-${label}`} href={href} aria-current={active ? "page" : undefined} className={cn("group inline-flex min-h-11 w-full shrink-0 items-center gap-3 rounded-[1rem] border px-3.5 py-2.5 text-sm font-black transition duration-200 ease-out hover:-translate-y-0.5", description ? "min-h-[3.65rem]" : "", active ? "border-[var(--ink)] bg-[var(--ink)] text-white shadow-[0_12px_24px_rgba(7,19,31,0.2)]" : "border-[var(--ink)]/10 bg-white/45 text-[var(--ink)]/75 hover:border-[var(--ink)]/25 hover:bg-white/75 hover:text-[var(--ink)]")}>
+            <span className={cn("grid h-8 w-8 shrink-0 place-items-center rounded-[0.8rem] border transition-colors", active ? "border-white/15 bg-white/10 text-[var(--gold)]" : "border-[var(--ink)]/10 bg-white/55 text-[var(--signal)] group-hover:text-[var(--ink)]")}><Icon className="h-4 w-4" /></span>
+            <span className="min-w-0"><span className="block truncate">{label}</span>{description ? <span className={cn("mt-0.5 block truncate text-[0.65rem] font-bold tracking-normal", active ? "text-white/55" : "text-[var(--muted)]")}>{description}</span> : null}</span>
           </Link>
         );
       })}
