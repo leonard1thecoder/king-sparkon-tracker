@@ -1,12 +1,12 @@
-import { apiClient } from "@/lib/api/client";
-import type { TicketVerificationResult } from "@/types/tickets";
-import { verifyTicketByQr as verifyMockTicketByQr, verifyTicketByReference as verifyMockTicketByReference } from "@/services/ticketService";
+import { apiClient, normalizeApiError } from "@/lib/api/client";
+import type { FaceVerificationDecision, TicketVerificationResult } from "@/types/tickets";
 
 const DEFAULT_WORKER_ID = "worker-demo-001";
 
 type VerifyTicketPayload = {
   value: string;
   workerId: string;
+  faceDecision: FaceVerificationDecision;
 };
 
 function normalizeVerificationResult(data: TicketVerificationResult | null | undefined, fallbackMessage: string): TicketVerificationResult {
@@ -19,33 +19,55 @@ function normalizeVerificationResult(data: TicketVerificationResult | null | und
     message: data.message || fallbackMessage,
     ticket: data.ticket,
     event: data.event,
+    requiresFaceConfirmation: Boolean(data.requiresFaceConfirmation),
+    verificationPhotoUrl: data.verificationPhotoUrl ?? data.ticket?.verificationPhotoUrl,
   };
 }
 
-async function postVerification(path: string, value: string, workerId = DEFAULT_WORKER_ID) {
-  const payload: VerifyTicketPayload = { value: value.trim(), workerId };
+async function postVerification(
+  path: string,
+  value: string,
+  faceDecision: FaceVerificationDecision,
+  workerId = DEFAULT_WORKER_ID,
+) {
+  const payload: VerifyTicketPayload = { value: value.trim(), workerId, faceDecision };
   const { data } = await apiClient.post<TicketVerificationResult>(path, payload);
   return normalizeVerificationResult(data, "Ticket verification returned an unreadable response.");
 }
 
-export async function verifyWorkerTicketByQr(qrValue: string, workerId = DEFAULT_WORKER_ID): Promise<TicketVerificationResult> {
-  const value = qrValue.trim();
-  if (!value) return { valid: false, message: "Scan a ticket QR code first." };
+async function verify(
+  path: string,
+  value: string,
+  emptyMessage: string,
+  faceDecision: FaceVerificationDecision,
+  workerId: string,
+): Promise<TicketVerificationResult> {
+  const normalizedValue = value.trim();
+  if (!normalizedValue) return { valid: false, message: emptyMessage };
 
   try {
-    return await postVerification("/v1/tickets/verify/qr", value, workerId);
-  } catch {
-    return verifyMockTicketByQr(value);
+    return await postVerification(path, normalizedValue, faceDecision, workerId);
+  } catch (exception) {
+    const error = normalizeApiError(exception);
+    return {
+      valid: false,
+      message: error.message || "The secure ticket verification service is unavailable. Do not admit the guest.",
+    };
   }
 }
 
-export async function verifyWorkerTicketByReference(reference: string, workerId = DEFAULT_WORKER_ID): Promise<TicketVerificationResult> {
-  const value = reference.trim();
-  if (!value) return { valid: false, message: "Enter a ticket reference first." };
+export async function verifyWorkerTicketByQr(
+  qrValue: string,
+  faceDecision: FaceVerificationDecision = "PENDING",
+  workerId = DEFAULT_WORKER_ID,
+): Promise<TicketVerificationResult> {
+  return verify("/v1/tickets/verify/qr", qrValue, "Scan a ticket QR code first.", faceDecision, workerId);
+}
 
-  try {
-    return await postVerification("/v1/tickets/verify/reference", value, workerId);
-  } catch {
-    return verifyMockTicketByReference(value);
-  }
+export async function verifyWorkerTicketByReference(
+  reference: string,
+  faceDecision: FaceVerificationDecision = "PENDING",
+  workerId = DEFAULT_WORKER_ID,
+): Promise<TicketVerificationResult> {
+  return verify("/v1/tickets/verify/reference", reference, "Enter a ticket reference first.", faceDecision, workerId);
 }
