@@ -80,8 +80,11 @@ export function OwnerWithdrawalsWorkspace() {
   const amount = Number(form.amount || 0);
   const minimum = Number(wallet?.minimumWithdrawalAmount ?? 100);
   const available = Number(wallet?.availableBalance ?? 0);
+  const withdrawalFeePercent = Number(wallet?.withdrawalFeePercent ?? 7.35);
+  const withdrawalFee = Number.isFinite(amount) ? amount * (withdrawalFeePercent / 100) : 0;
+  const netPayoutZar = Math.max(amount - withdrawalFee, 0);
   const zarPerPayoutUnit = Number(wallet?.zarPerPayoutUnit ?? 0);
-  const estimatedPayout = zarPerPayoutUnit > 0 ? amount / zarPerPayoutUnit : 0;
+  const estimatedPayout = zarPerPayoutUnit > 0 ? netPayoutZar / zarPerPayoutUnit : 0;
   const payoutConfigured = Boolean(wallet?.payoutConfigured);
   const validAmount = Number.isFinite(amount) && amount >= minimum && amount <= available;
   const validForm = validAmount && validEmail(form.payoutDestination) && payoutConfigured;
@@ -122,7 +125,7 @@ export function OwnerWithdrawalsWorkspace() {
       setForm(emptyForm);
       setNotice(
         withdrawal.providerBatchId
-          ? `PayPal batch ${withdrawal.providerBatchId} was submitted with status ${withdrawal.providerStatus ?? withdrawal.status}.`
+          ? `PayPal batch ${withdrawal.providerBatchId} was submitted. ${money(withdrawal.feeAmount)} was deducted as the ${withdrawalFeePercent.toFixed(2)}% withdrawal fee.`
           : "The withdrawal was submitted to PayPal.",
       );
       window.dispatchEvent(new Event("king-sparkon:owner-wallet"));
@@ -136,11 +139,12 @@ export function OwnerWithdrawalsWorkspace() {
 
   return (
     <section className="grid gap-6">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
         <MetricCard label="Available balance" value={loading ? "..." : money(wallet?.availableBalance)} detail={`PayPal from ${money(minimum)}`} tone="confirm" icon={<Landmark className="h-5 w-5" />} />
-        <MetricCard label="Online products" value={loading ? "..." : money(wallet?.onlineProductRevenue)} detail="Paid through King Sparkon" tone="signal" icon={<CreditCard className="h-5 w-5" />} />
-        <MetricCard label="Ticket sales" value={loading ? "..." : money(wallet?.ticketRevenue)} detail="Successful ticket subtotal" icon={<Ticket className="h-5 w-5" />} />
-        <MetricCard label="Paid tips" value={loading ? "..." : money(wallet?.tipRevenue)} detail="Business worker tips" icon={<WalletCards className="h-5 w-5" />} />
+        <MetricCard label="Withdrawal fee" value={loading ? "..." : `${withdrawalFeePercent.toFixed(2)}%`} detail="Applied once at owner payout" tone="signal" icon={<Banknote className="h-5 w-5" />} />
+        <MetricCard label="Online products" value={loading ? "..." : money(wallet?.onlineProductRevenue)} detail="No source fee" tone="signal" icon={<CreditCard className="h-5 w-5" />} />
+        <MetricCard label="Ticket sales" value={loading ? "..." : money(wallet?.ticketRevenue)} detail="No source fee" icon={<Ticket className="h-5 w-5" />} />
+        <MetricCard label="Paid tips" value={loading ? "..." : money(wallet?.tipRevenue)} detail="No source fee" icon={<WalletCards className="h-5 w-5" />} />
         <MetricCard label="Withdrawn" value={loading ? "..." : money(wallet?.withdrawn)} detail={`${wallet?.pendingWithdrawalCount ?? 0} PayPal batches processing`} icon={<Banknote className="h-5 w-5" />} />
       </div>
 
@@ -152,7 +156,7 @@ export function OwnerWithdrawalsWorkspace() {
           <CardHeader>
             <CardTitle>Send balance to PayPal</CardTitle>
             <p className="mt-2 text-sm leading-6 text-[var(--steel)]">
-              Product revenue, ticket sales and paid tips share one owner balance. King Sparkon submits the payout immediately, while PayPal may keep the batch processing before it becomes successful.
+              Product revenue, ticket sales and paid tips enter one owner balance without separate source commissions. A single {withdrawalFeePercent.toFixed(2)}% fee is deducted only when the owner submits a withdrawal.
             </p>
           </CardHeader>
           <CardContent>
@@ -164,7 +168,7 @@ export function OwnerWithdrawalsWorkspace() {
               ) : null}
 
               <label className="grid gap-1.5 text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">
-                Amount in ZAR · minimum {money(minimum)}
+                Gross withdrawal in ZAR · minimum {money(minimum)}
                 <input
                   value={form.amount}
                   onChange={(event) => setForm((current) => ({ ...current, amount: event.target.value }))}
@@ -204,6 +208,18 @@ export function OwnerWithdrawalsWorkspace() {
                   <p className="mt-1 text-lg font-black text-[var(--ink)]">{money(available)}</p>
                 </div>
                 <div>
+                  <p className="text-xs uppercase tracking-[0.1em]">Gross balance debit</p>
+                  <p className="mt-1 text-lg font-black text-[var(--ink)]">{money(amount)}</p>
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.1em]">{withdrawalFeePercent.toFixed(2)}% deduction</p>
+                  <p className="mt-1 text-lg font-black text-[var(--danger)]">− {money(withdrawalFee)}</p>
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.1em]">Net payout before FX</p>
+                  <p className="mt-1 text-lg font-black text-[var(--confirm)]">{money(netPayoutZar)}</p>
+                </div>
+                <div className="sm:col-span-2">
                   <p className="text-xs uppercase tracking-[0.1em]">Estimated PayPal payout</p>
                   <p className="mt-1 text-lg font-black text-[var(--ink)]">
                     {zarPerPayoutUnit > 0 ? money(estimatedPayout, wallet?.payoutCurrency ?? "USD") : "Rate not configured"}
@@ -212,12 +228,12 @@ export function OwnerWithdrawalsWorkspace() {
               </div>
 
               <p className="text-xs font-semibold leading-5 text-[var(--muted)]">
-                Conversion uses the backend rate: {zarPerPayoutUnit > 0 ? `${money(zarPerPayoutUnit)} per 1 ${wallet?.payoutCurrency ?? "payout unit"}` : "not configured"}. PayPal may apply its own receiving or currency-conversion fees.
+                The 7.35% King Sparkon deduction is the only platform withdrawal fee. Conversion uses the backend rate: {zarPerPayoutUnit > 0 ? `${money(zarPerPayoutUnit)} per 1 ${wallet?.payoutCurrency ?? "payout unit"}` : "not configured"}. PayPal may separately apply receiving or currency-conversion charges.
               </p>
 
               <Button type="submit" disabled={saving || loading || !validForm}>
                 {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                {saving ? "Submitting to PayPal..." : "Send to PayPal now"}
+                {saving ? "Submitting to PayPal..." : "Send net payout to PayPal"}
               </Button>
             </form>
           </CardContent>
@@ -259,7 +275,7 @@ export function OwnerWithdrawalsWorkspace() {
                           ? money(withdrawal.payoutAmount, withdrawal.payoutCurrency)
                           : money(withdrawal.netAmount, withdrawal.currency || "ZAR")}
                       </p>
-                      <p className="mt-1 text-xs font-bold text-[var(--steel)]">King Sparkon debit {money(withdrawal.grossAmount)} · Fee {money(withdrawal.feeAmount)}</p>
+                      <p className="mt-1 text-xs font-bold text-[var(--steel)]">Gross {money(withdrawal.grossAmount)} · Fee {money(withdrawal.feeAmount)} · Net {money(withdrawal.netAmount)}</p>
                     </div>
                   </article>
                 ))}
@@ -270,7 +286,7 @@ export function OwnerWithdrawalsWorkspace() {
       </div>
 
       <Card>
-        <CardHeader><CardTitle>Unified balance activity</CardTitle><p className="mt-2 text-sm leading-6 text-[var(--steel)]">Recent credits, PayPal withdrawal debits and automatic failure reversals.</p></CardHeader>
+        <CardHeader><CardTitle>Unified balance activity</CardTitle><p className="mt-2 text-sm leading-6 text-[var(--steel)]">Recent credits, gross PayPal withdrawal debits and automatic failure reversals.</p></CardHeader>
         <CardContent>
           <div className="overflow-x-auto rounded-[1.3rem] border border-[var(--line)]">
             <table className="min-w-full border-collapse text-left text-sm">
