@@ -1,4 +1,4 @@
-import { apiClient, apiGet } from "@/lib/api/client";
+import { apiClient, apiGet, normalizeApiError } from "@/lib/api/client";
 import type { TrackerUser } from "@/lib/types/backend";
 import type { TicketEvent, UserTicket } from "@/types/tickets";
 
@@ -45,7 +45,10 @@ export async function getLiveMyTickets() {
   try {
     const tickets = await apiGet<UserTicket[]>("/v1/tickets/my-tickets/current");
     return (Array.isArray(tickets) ? tickets : []).map(normalizeTicket);
-  } catch {
+  } catch (exception) {
+    const error = normalizeApiError(exception);
+    if (error.status !== 404) throw error;
+
     const user = await apiGet<TrackerUser>("/users/me");
     const tickets = await apiGet<UserTicket[]>(`/v1/tickets/my-tickets?userId=${encodeURIComponent(String(user.id))}`);
     return (Array.isArray(tickets) ? tickets : []).map(normalizeTicket);
