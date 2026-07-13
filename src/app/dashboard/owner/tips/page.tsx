@@ -1,48 +1,14 @@
-import Link from "next/link";
-import { ArrowRight, QrCode, WalletCards } from "lucide-react";
 import { RouteSectionPage } from "@/components/layout/RouteSectionPage";
-
-const tipsActions = [
-  [
-    "/dashboard/owner/tips/paypal/onboarding",
-    "PayPal onboarding",
-    "Connect or review the owner PayPal setup used for worker tip payouts.",
-    WalletCards,
-  ],
-  [
-    "/dashboard/user/tips/workers/demo-worker",
-    "Worker tip dashboard preview",
-    "Preview the dashboard worker tip flow after a worker QR is scanned.",
-    QrCode,
-  ],
-] as const;
+import { OwnerTipsWorkspace } from "@/components/tips/OwnerTipsWorkspace";
 
 export default function OwnerTipsPage() {
   return (
     <RouteSectionPage
       role="OWNER"
-      title="Tips"
-      description="Review worker tips, payment link state, gross amount, configured fee, net amount, and paid state."
-      endpoint="GET /api/tips · PATCH /api/tips/{id}/paid"
+      title="Tips & PayPal"
+      description="Review business worker tips and move the unified owner balance through PayPal payouts."
     >
-      <section className="grid gap-4 lg:grid-cols-2">
-        {tipsActions.map(([href, title, detail, Icon]) => (
-          <Link
-            key={href}
-            href={href}
-            className="group rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] ring-1 ring-white/70 hover:-translate-y-1 hover:border-[var(--gold)]"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div className="grid h-12 w-12 place-items-center rounded-[1.2rem] bg-[var(--ink)] text-[var(--gold)]">
-                <Icon className="h-6 w-6" />
-              </div>
-              <ArrowRight className="mt-2 h-5 w-5 text-[var(--signal)] group-hover:text-[var(--ember)]" />
-            </div>
-            <h3 className="mt-5 text-xl font-black tracking-[-0.03em] text-[var(--ink)]">{title}</h3>
-            <p className="mt-3 text-sm leading-6 text-[var(--steel)]">{detail}</p>
-          </Link>
-        ))}
-      </section>
+      <OwnerTipsWorkspace />
     </RouteSectionPage>
   );
 }
