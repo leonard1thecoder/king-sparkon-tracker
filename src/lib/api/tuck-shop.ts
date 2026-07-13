@@ -1,4 +1,4 @@
-import { apiClient, apiGet, apiPatch, apiPost } from "@/lib/api/client";
+import { apiClient, apiGet, apiPatch, apiPost, apiPut } from "@/lib/api/client";
 import { createApplicationMockPurchase, getApplicationMockProducts } from "@/lib/mock/application-products";
 import type {
   CreateEmbeddedCartPaymentPayload,
@@ -16,6 +16,18 @@ export type AddProductBarcodePayload = {
   unitCode?: string | null;
   barcode?: string | null;
   referenceEmail?: string | null;
+};
+
+export type ProductBarcodeMode = "BRANDED" | "AUTO_GENERATED";
+
+export type ProductBarcodeConfiguration = {
+  productId: number;
+  productName: string;
+  barcodeMode: ProductBarcodeMode;
+  manufacturerBarcode?: string | null;
+  stockQuantity: number;
+  barcodeCount: number;
+  barcodesRequired: number;
 };
 
 export type WorkerCheckoutPaymentType = "CASH" | "CARD" | "KING_SPARKON";
@@ -106,11 +118,33 @@ export function getEmbeddedCartPaymentStatus(paymentIntentId: string) {
 }
 
 export function createWorkerTuckShopBarcodePurchase(payload: WorkerTuckShopCheckoutPayload) {
-  return apiPost<TuckShopPurchase, WorkerTuckShopCheckoutPayload>("/v1/tuck-shop/workers/barcode-purchases", payload);
+  return apiPost<TuckShopPurchase, WorkerTuckShopCheckoutPayload>("/v1/tuck-shop/workers/automatic-purchases", payload);
 }
 
 export function getWorkerProductByBarcode(barcode: string) {
   return apiGet<Product>(`/products/barcode/${encodeURIComponent(barcode.trim())}`);
+}
+
+export function getWorkerProductById(productId: number) {
+  return apiGet<Product>(`/products/${productId}`);
+}
+
+export function listProductBarcodeConfigurations() {
+  return apiGet<ProductBarcodeConfiguration[]>("/products/barcode-automation");
+}
+
+export function configureProductBarcodeMode(
+  productId: number,
+  payload: { barcodeMode: ProductBarcodeMode; manufacturerBarcode?: string | null },
+) {
+  return apiPut<ProductBarcodeConfiguration, typeof payload>(`/products/barcode-automation/${productId}`, payload);
+}
+
+export function fillAutomaticProductBarcodes(productId: number) {
+  return apiPost<ProductBarcodeConfiguration, Record<string, never>>(
+    `/products/barcode-automation/${productId}/fill-stock`,
+    {},
+  );
 }
 
 export function listWorkerOnlinePurchases() {
@@ -122,6 +156,17 @@ export function assignOnlinePurchaseBarcode(transactionId: number, productId: nu
     `/v1/tuck-shop/workers/online-purchases/${transactionId}/products/${productId}/barcodes`,
     { barcode: barcode.trim() },
   );
+}
+
+export function prepareAutomaticOnlinePurchaseBarcodes(transactionId: number, productId: number) {
+  return apiPost<OnlineTuckShopPurchase, Record<string, never>>(
+    `/v1/tuck-shop/workers/online-purchases/${transactionId}/products/${productId}/auto-barcodes`,
+    {},
+  );
+}
+
+export function listCompletedWorkerPurchases() {
+  return apiGet<OnlineTuckShopPurchase[]>("/v1/tuck-shop/workers/completed-purchases");
 }
 
 export function listMyTuckShopPurchases() {
@@ -144,8 +189,8 @@ export async function listOwnerProducts(params: { page?: number; size?: number }
   }
 }
 
-export function createOwnerProduct(payload: CreateProductPayload) {
-  return apiPost<Product, CreateProductPayload>("/products", payload);
+export function createOwnerProduct(payload: CreateProductPayload & { productBarcode?: string | null }) {
+  return apiPost<Product, CreateProductPayload & { productBarcode?: string | null }>("/products", payload);
 }
 
 export function addProductBarcode(productId: number, payload: AddProductBarcodePayload) {
