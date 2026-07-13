@@ -69,6 +69,11 @@ export async function apiPost<TResponse, TPayload = unknown>(path: string, paylo
   return response.data;
 }
 
+export async function apiPut<TResponse, TPayload = unknown>(path: string, payload?: TPayload) {
+  const response = await apiClient.put<TResponse>(path, payload);
+  return response.data;
+}
+
 export async function apiPatch<TResponse, TPayload = unknown>(path: string, payload?: TPayload) {
   const response = await apiClient.patch<TResponse>(path, payload);
   return response.data;
