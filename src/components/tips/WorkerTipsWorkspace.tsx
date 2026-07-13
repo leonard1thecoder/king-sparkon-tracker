@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Banknote, Loader2, QrCode, RefreshCw, WalletCards } from "lucide-react";
+import { Banknote, LockKeyhole, Loader2, QrCode, RefreshCw, UserRound, WalletCards } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { MetricCard } from "@/components/ui/MetricCard";
@@ -11,6 +12,7 @@ import type { TrackerUser } from "@/lib/types/backend";
 
 type TipRow = Record<string, unknown>;
 type TipResponse = TipRow[] | { content?: TipRow[]; data?: TipRow[]; items?: TipRow[] };
+type WorkerProfile = TrackerUser & { tipQrCodeEnabled?: boolean; tipQrCodeUrl?: string | null; jobTitle?: string | null };
 
 function rows(payload: TipResponse): TipRow[] {
   if (Array.isArray(payload)) return payload;
@@ -38,7 +40,7 @@ function tipStatus(tip: TipRow) {
 }
 
 export function WorkerTipsWorkspace() {
-  const [profile, setProfile] = useState<TrackerUser | null>(null);
+  const [profile, setProfile] = useState<WorkerProfile | null>(null);
   const [tips, setTips] = useState<TipRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,11 +49,13 @@ export function WorkerTipsWorkspace() {
     setLoading(true);
     setError(null);
     try {
-      const [user, tipPayload] = await Promise.all([
-        apiGet<TrackerUser>("/users/me"),
-        apiGet<TipResponse>("/tips/me"),
-      ]);
+      const user = await apiGet<WorkerProfile>("/users/me");
       setProfile(user);
+      if (!user.tipQrCodeEnabled) {
+        setTips([]);
+        return;
+      }
+      const tipPayload = await apiGet<TipResponse>("/tips/me");
       setTips(rows(tipPayload));
     } catch (exception) {
       setError(normalizeApiError(exception).message);
@@ -66,6 +70,24 @@ export function WorkerTipsWorkspace() {
 
   const total = useMemo(() => tips.reduce((sum, tip) => sum + tipAmount(tip), 0), [tips]);
   const paid = useMemo(() => tips.filter((tip) => tipStatus(tip).includes("PAID") || tipStatus(tip).includes("SUCCESS")).length, [tips]);
+  const tipsEnabled = profile?.tipQrCodeEnabled === true;
+
+  if (!loading && profile && !tipsEnabled) {
+    return (
+      <section className="grid gap-6">
+        <Card className="overflow-hidden border-[var(--danger)]/25 bg-white">
+          <div className="grid gap-5 bg-[var(--ink)] p-7 text-white md:grid-cols-[auto_1fr] md:items-center">
+            <div className="grid h-20 w-20 place-items-center rounded-[1.4rem] border border-white/15 bg-white/10 text-[var(--gold)]"><LockKeyhole className="h-9 w-9" /></div>
+            <div><p className="font-mono text-xs font-black uppercase tracking-[0.16em] text-[var(--gold)]">Tips privilege disabled</p><h2 className="mt-2 text-3xl font-black tracking-[-0.04em]">You are not privileged to receive tips</h2><p className="mt-3 max-w-2xl text-sm font-semibold leading-6 text-white/70">Your business owner did not enable tips when creating this worker account. No tip QR is available, and copied or old tip links are rejected by the backend.</p></div>
+          </div>
+          <CardContent className="grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
+            <div><p className="font-black text-[var(--ink)]">Worker account: {profile.username}</p><p className="mt-1 text-sm font-semibold text-[var(--steel)]">Ask the business owner to create or update the worker account with the tips option enabled.</p></div>
+            <Link href="/dashboard/worker/profile" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ink)] bg-[var(--ink)] px-5 text-sm font-black text-white hover:bg-[var(--gold)] hover:text-[var(--ink)]"><UserRound className="h-4 w-4" /> Open profile</Link>
+          </CardContent>
+        </Card>
+      </section>
+    );
+  }
 
   return (
     <section className="grid gap-6">
@@ -86,7 +108,7 @@ export function WorkerTipsWorkspace() {
           {loading ? <div className="flex min-h-56 items-center justify-center gap-3 text-sm font-black text-[var(--steel)]"><Loader2 className="h-5 w-5 animate-spin" /> Loading tip QR</div> : (
             <div className="grid gap-5 md:grid-cols-[auto_1fr] md:items-center">
               {profile?.tipQrCodeUrl ? <img src={profile.tipQrCodeUrl} alt="Worker tip QR code" className="h-60 w-60 rounded-[1.5rem] border border-[var(--line)] bg-white p-3 shadow-[var(--shadow-soft)]" /> : <div className="grid h-60 w-60 place-items-center rounded-[1.5rem] border border-dashed border-[var(--line)] bg-white"><QrCode className="h-20 w-20 text-[var(--signal)]" /></div>}
-              <div><p className="font-mono text-xs font-black uppercase tracking-[0.15em] text-[var(--signal)]">Worker account</p><h2 className="mt-2 text-3xl font-black text-[var(--ink)]">{profile?.username ?? "Worker tip profile"}</h2><p className="mt-3 text-sm font-semibold leading-6 text-[var(--steel)]">Keep this QR visible when serving customers. Tips are recorded separately from product revenue and remain traceable in the ledger below.</p>{profile?.tipQrCodeUrl ? <a href={profile.tipQrCodeUrl} target="_blank" rel="noreferrer" className="mt-4 inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--signal)] bg-white px-5 text-sm font-black text-[var(--signal)] hover:bg-[var(--signal)] hover:text-white">Open full QR</a> : null}</div>
+              <div><p className="font-mono text-xs font-black uppercase tracking-[0.15em] text-[var(--signal)]">Worker account</p><h2 className="mt-2 text-3xl font-black text-[var(--ink)]">{profile?.username ?? "Worker tip profile"}</h2><p className="mt-3 text-sm font-semibold leading-6 text-[var(--steel)]">Tips were enabled by your business owner. Keep this QR visible when serving customers.</p>{profile?.tipQrCodeUrl ? <a href={profile.tipQrCodeUrl} target="_blank" rel="noreferrer" className="mt-4 inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--signal)] bg-white px-5 text-sm font-black text-[var(--signal)] hover:bg-[var(--signal)] hover:text-white">Open full QR</a> : null}</div>
             </div>
           )}
         </CardContent>
