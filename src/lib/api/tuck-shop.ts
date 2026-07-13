@@ -12,6 +12,12 @@ import type {
   TuckShopPurchase,
 } from "@/lib/types/backend";
 
+export type AddProductBarcodePayload = {
+  unitCode?: string | null;
+  barcode?: string | null;
+  referenceEmail?: string | null;
+};
+
 function queryString(params: Record<string, string | number | undefined | null>) {
   const search = new URLSearchParams();
 
@@ -93,6 +99,10 @@ export async function listOwnerProducts(params: { page?: number; size?: number }
 
 export function createOwnerProduct(payload: CreateProductPayload) {
   return apiPost<Product, CreateProductPayload>("/products", payload);
+}
+
+export function addProductBarcode(productId: number, payload: AddProductBarcodePayload) {
+  return apiPost<Product, AddProductBarcodePayload>(`/products/${productId}/barcodes`, payload);
 }
 
 export function updateOwnerProductImage(productId: number, payload: ProductImageUpdatePayload) {
