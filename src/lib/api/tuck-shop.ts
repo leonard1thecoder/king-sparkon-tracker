@@ -1,4 +1,14 @@
-import { apiClient, apiDelete, apiGet, apiPatch, apiPost, apiPut, normalizeApiError } from "@/lib/api/client";
+import {
+  apiClient,
+  apiDelete,
+  apiGet,
+  apiPatch,
+  apiPost,
+  apiPostIdempotent,
+  apiPut,
+  normalizeApiError,
+} from "@/lib/api/client";
+import { apiContract, createIdempotencyKey } from "@/lib/api/contracts";
 import { getLiveEventById } from "@/lib/api/tickets";
 import { createApplicationMockPurchase, getApplicationMockProducts } from "@/lib/mock/application-products";
 import { removeTuckShopCartLine } from "@/lib/tuck-shop/cart";
@@ -59,6 +69,8 @@ export type OnlineTuckShopPurchase = TuckShopPurchase & {
 };
 
 const supportedTicketTypes = new Set<TicketType>(["REGULAR", "VIP", "VVIP"]);
+const developmentMocksEnabled =
+  process.env.NODE_ENV !== "production" && process.env.NEXT_PUBLIC_ENABLE_DEVELOPMENT_MOCKS === "true";
 
 function queryString(params: Record<string, string | number | undefined | null>) {
   const search = new URLSearchParams();
@@ -71,19 +83,6 @@ function queryString(params: Record<string, string | number | undefined | null>)
 
   const query = search.toString();
   return query ? `?${query}` : "";
-}
-
-function withMockFallback(
-  response: PageResponse<Product>,
-  params: {
-    page?: number;
-    size?: number;
-    businessId?: number | null;
-    category?: string | null;
-    search?: string | null;
-  },
-) {
-  return response.content?.length ? response : getApplicationMockProducts(params);
 }
 
 function removeUnavailableTicketFromStoredCart(item: EmbeddedCartTicketItem) {
@@ -149,37 +148,51 @@ export async function listTuckShopProducts(params: {
   search?: string | null;
 }) {
   try {
-    const response = await apiGet<PageResponse<Product>>(`/v1/tuck-shop/products${queryString(params)}`);
-    return withMockFallback(response, params);
-  } catch {
-    return getApplicationMockProducts(params);
+    return await apiGet<PageResponse<Product>>(`${apiContract.tuckShop.products}${queryString(params)}`);
+  } catch (exception) {
+    if (developmentMocksEnabled) return getApplicationMockProducts(params);
+    throw normalizeApiError(exception);
   }
 }
 
-export async function createTuckShopPurchase(payload: CreateTuckShopPurchasePayload) {
+export async function createTuckShopPurchase(
+  payload: CreateTuckShopPurchasePayload,
+  idempotencyKey = createIdempotencyKey("tuck-shop-purchase"),
+) {
   try {
-    return await apiPost<TuckShopPurchase, CreateTuckShopPurchasePayload>("/v1/tuck-shop/purchases", payload);
-  } catch {
-    return createApplicationMockPurchase(payload);
+    return await apiPostIdempotent<TuckShopPurchase, CreateTuckShopPurchasePayload>(
+      apiContract.tuckShop.purchases,
+      payload,
+      idempotencyKey,
+    );
+  } catch (exception) {
+    if (developmentMocksEnabled) return createApplicationMockPurchase(payload);
+    throw normalizeApiError(exception);
   }
 }
 
 export async function createEmbeddedCartPaymentIntent(payload: CreateEmbeddedCartPaymentPayload) {
   const tickets = await validateLiveTicketItems(payload.tickets ?? []);
-  return apiPost<EmbeddedCartPaymentIntent, CreateEmbeddedCartPaymentPayload>(
-    "/v1/tuck-shop/cart-payments/payment-intents",
+  return apiPostIdempotent<EmbeddedCartPaymentIntent, CreateEmbeddedCartPaymentPayload>(
+    apiContract.tuckShop.paymentIntents,
     { ...payload, tickets },
+    payload.idempotencyKey,
   );
 }
 
 export function getEmbeddedCartPaymentStatus(paymentIntentId: string) {
-  return apiGet<EmbeddedCartPaymentStatus>(
-    `/v1/tuck-shop/cart-payments/payment-intents/${encodeURIComponent(paymentIntentId)}`,
-  );
+  return apiGet<EmbeddedCartPaymentStatus>(apiContract.tuckShop.paymentIntent(paymentIntentId));
 }
 
-export function createWorkerTuckShopBarcodePurchase(payload: WorkerTuckShopCheckoutPayload) {
-  return apiPost<TuckShopPurchase, WorkerTuckShopCheckoutPayload>("/v1/tuck-shop/workers/automatic-purchases", payload);
+export function createWorkerTuckShopBarcodePurchase(
+  payload: WorkerTuckShopCheckoutPayload,
+  idempotencyKey = createIdempotencyKey("worker-checkout"),
+) {
+  return apiPostIdempotent<TuckShopPurchase, WorkerTuckShopCheckoutPayload>(
+    "/v1/tuck-shop/workers/automatic-purchases",
+    payload,
+    idempotencyKey,
+  );
 }
 
 export function getWorkerProductByBarcode(barcode: string) {
@@ -243,10 +256,10 @@ export function verifyTuckShopCollection(qrValue: string) {
 
 export async function listOwnerProducts(params: { page?: number; size?: number }) {
   try {
-    const response = await apiGet<PageResponse<Product>>(`/products${queryString(params)}`);
-    return withMockFallback(response, params);
-  } catch {
-    return getApplicationMockProducts(params);
+    return await apiGet<PageResponse<Product>>(`/products${queryString(params)}`);
+  } catch (exception) {
+    if (developmentMocksEnabled) return getApplicationMockProducts(params);
+    throw normalizeApiError(exception);
   }
 }
 

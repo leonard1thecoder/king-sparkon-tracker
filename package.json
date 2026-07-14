@@ -9,7 +9,9 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "api:contract:generate": "node scripts/generate-openapi-contract.mjs",
+    "api:contract:check": "node scripts/generate-openapi-contract.mjs --check"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.5",

@@ -1,4 +1,5 @@
-import { apiGet, apiPost } from "@/lib/api/client";
+import { apiGet, apiPostIdempotent } from "@/lib/api/client";
+import { apiContract, createIdempotencyKey } from "@/lib/api/contracts";
 
 export type WalletLedgerEntry = {
   id: number;
@@ -65,17 +66,24 @@ export type OwnerWithdrawalPayload = {
 };
 
 export function getOwnerWallet() {
-  return apiGet<OwnerWalletSummary>("/business-account/wallet");
+  return apiGet<OwnerWalletSummary>(apiContract.ownerFinance.wallet);
 }
 
 export function listOwnerWithdrawals() {
-  return apiGet<OwnerWithdrawal[]>("/business-account/withdrawals");
+  return apiGet<OwnerWithdrawal[]>(apiContract.ownerFinance.withdrawals);
 }
 
-export function requestOwnerWithdrawal(payload: OwnerWithdrawalPayload) {
-  return apiPost<OwnerWithdrawal, OwnerWithdrawalPayload>("/business-account/withdrawals", payload);
+export function requestOwnerWithdrawal(
+  payload: OwnerWithdrawalPayload,
+  idempotencyKey = createIdempotencyKey("owner-withdrawal"),
+) {
+  return apiPostIdempotent<OwnerWithdrawal, OwnerWithdrawalPayload>(
+    apiContract.ownerFinance.withdrawals,
+    payload,
+    idempotencyKey,
+  );
 }
 
 export function listOwnerWalletLedger() {
-  return apiGet<WalletLedgerEntry[]>("/business-account/ledger");
+  return apiGet<WalletLedgerEntry[]>(apiContract.ownerFinance.ledger);
 }

@@ -1,4 +1,9 @@
-import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
+import axios, {
+  AxiosError,
+  type AxiosRequestConfig,
+  type InternalAxiosRequestConfig,
+  type RawAxiosRequestHeaders,
+} from "axios";
 import { backendError, type NormalizedBackendError } from "@/lib/utils/errors";
 import { retryAfterSecondsFromHeader } from "@/lib/utils/rate-limit";
 
@@ -59,27 +64,61 @@ apiClient.interceptors.response.use(
   },
 );
 
-export async function apiGet<T>(path: string) {
-  const response = await apiClient.get<T>(path);
+function withIdempotencyKey(config: AxiosRequestConfig | undefined, idempotencyKey: string): AxiosRequestConfig {
+  const normalizedKey = idempotencyKey.trim();
+  if (normalizedKey.length < 8 || normalizedKey.length > 255) {
+    throw new Error("Idempotency key must contain between 8 and 255 characters");
+  }
+
+  const headers: RawAxiosRequestHeaders = {
+    ...(config?.headers as RawAxiosRequestHeaders | undefined),
+    "Idempotency-Key": normalizedKey,
+  };
+  return { ...config, headers };
+}
+
+export async function apiGet<T>(path: string, config?: AxiosRequestConfig) {
+  const response = await apiClient.get<T>(path, config);
   return response.data;
 }
 
-export async function apiPost<TResponse, TPayload = unknown>(path: string, payload?: TPayload) {
-  const response = await apiClient.post<TResponse>(path, payload);
+export async function apiPost<TResponse, TPayload = unknown>(
+  path: string,
+  payload?: TPayload,
+  config?: AxiosRequestConfig,
+) {
+  const response = await apiClient.post<TResponse>(path, payload, config);
   return response.data;
 }
 
-export async function apiPut<TResponse, TPayload = unknown>(path: string, payload?: TPayload) {
-  const response = await apiClient.put<TResponse>(path, payload);
+export function apiPostIdempotent<TResponse, TPayload = unknown>(
+  path: string,
+  payload: TPayload,
+  idempotencyKey: string,
+  config?: AxiosRequestConfig,
+) {
+  return apiPost<TResponse, TPayload>(path, payload, withIdempotencyKey(config, idempotencyKey));
+}
+
+export async function apiPut<TResponse, TPayload = unknown>(
+  path: string,
+  payload?: TPayload,
+  config?: AxiosRequestConfig,
+) {
+  const response = await apiClient.put<TResponse>(path, payload, config);
   return response.data;
 }
 
-export async function apiPatch<TResponse, TPayload = unknown>(path: string, payload?: TPayload) {
-  const response = await apiClient.patch<TResponse>(path, payload);
+export async function apiPatch<TResponse, TPayload = unknown>(
+  path: string,
+  payload?: TPayload,
+  config?: AxiosRequestConfig,
+) {
+  const response = await apiClient.patch<TResponse>(path, payload, config);
   return response.data;
 }
 
-export async function apiDelete<TResponse>(path: string) {
-  const response = await apiClient.delete<TResponse>(path);
+export async function apiDelete<TResponse>(path: string, config?: AxiosRequestConfig) {
+  const response = await apiClient.delete<TResponse>(path, config);
   return response.data;
 }

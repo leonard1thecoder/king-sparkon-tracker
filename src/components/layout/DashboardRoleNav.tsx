@@ -33,9 +33,9 @@ import {
 import { cn } from "@/lib/utils/cn";
 import type { UserRole } from "@/lib/types/backend";
 
-type NavItem = { label: string; href: string; icon: LucideIcon; description?: string };
+export type NavItem = { label: string; href: string; icon: LucideIcon; description?: string };
 
-const navByRole: Record<UserRole, NavItem[]> = {
+export const navByRole: Record<UserRole, NavItem[]> = {
   Admin: [
     { label: "Overview", href: "/dashboard/admin", icon: ShieldCheck, description: "Platform command centre" },
     { label: "Capacity", href: "/dashboard/admin/capacity", icon: Gauge, description: "Users, stock and system scale" },
@@ -107,7 +107,7 @@ function isDashboardRoot(cleanHref: string) {
   return /^\/dashboard\/[^/]+$/.test(cleanHref);
 }
 
-function isActive(pathname: string, searchParams: URLSearchParams, href: string) {
+export function isActive(pathname: string, searchParams: URLSearchParams, href: string) {
   const [cleanHref, query = ""] = href.split("?");
   if (query) {
     const hrefParams = new URLSearchParams(query);
