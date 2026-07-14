@@ -214,7 +214,7 @@ export function KingSparkonLanding() {
           <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {visionPillars.map(({ icon: Icon, title, copy }) => (
               <article key={title} className="rounded-[2rem] border border-[var(--line)] bg-white p-6 shadow-[var(--shadow-soft)] transition duration-200 ease-out hover:-translate-y-1 hover:border-[var(--gold)] hover:shadow-[var(--shadow-ledger)]">
-                <div className="grid h-14 w-14 place-items-center rounded-[1.25rem] bg-[#8e3f68] text-[var(--gold)]">
+                <div className="grid h-14 w-14 place-items-center rounded-[1.25rem] bg-[var(--gold)] text-[var(--ink)]">
                   <Icon className="h-6 w-6" />
                 </div>
                 <h3 className="mt-6 text-2xl font-black tracking-[-0.04em]">{title}</h3>
@@ -284,7 +284,7 @@ export function KingSparkonLanding() {
           <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {features.map(({ icon: Icon, title, copy, tags }) => (
               <article key={title} className="rounded-[2rem] border border-[var(--line)] bg-white p-6 shadow-[var(--shadow-soft)] hover:-translate-y-1 hover:border-[var(--gold)]">
-                <div className="grid h-14 w-14 place-items-center rounded-[1.25rem] bg-[#8e3f68] text-[var(--gold)]">
+                <div className="grid h-14 w-14 place-items-center rounded-[1.25rem] bg-[var(--gold)] text-[var(--ink)]">
                   <Icon className="h-6 w-6" />
                 </div>
                 <h3 className="mt-6 text-2xl font-black tracking-[-0.04em]">{title}</h3>
@@ -346,7 +346,7 @@ export function KingSparkonLanding() {
             <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Dashboards show how much the system can hold.</h2>
             <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[var(--steel)] md:text-base">Capacity is workers, stock, jobs, tickets, campaigns, reports, and platform control.</p>
             <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-              <Link href="/dashboard/admin/capacity" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[#8e3f68]">View admin capacity <ArrowRight className="h-4 w-4" /></Link>
+              <Link href="/dashboard/admin/capacity" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ink)]">View admin capacity <ArrowRight className="h-4 w-4" /></Link>
               <Link href="/dashboard/owner/capacity" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--line)] bg-white px-6 font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--gold)]">Owner capacity</Link>
             </div>
           </div>
