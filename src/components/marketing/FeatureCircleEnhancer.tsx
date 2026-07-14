@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 
 type Orientation = "horizontal" | "vertical";
+type Point = { x: number; y: number };
+type MovingBody = Point & { vx: number; vy: number; radius: number };
 
 type WaveMetrics = {
   orientation: Orientation;
@@ -13,92 +15,175 @@ type WaveMetrics = {
 };
 
 const DESKTOP_BREAKPOINT = 1024;
-const WAVE_CYCLES = 1.15;
-const WAVE_SPEED = 0.55;
+const WAVE_CYCLES = 1.05;
+const WAVE_SPEED = 0.5;
+const SPRING_STRENGTH = 5.4;
+const VELOCITY_RETENTION_PER_SECOND = 0.18;
+const WALL_RESTITUTION = 0.68;
+const COLLISION_RESTITUTION = 0.62;
+const MAX_BODY_SPEED = 72;
+const COLLISION_GAP = 10;
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
+const MOBILE_DIAMETER = 176;
+const MOBILE_GAP = 104;
 
 function clamp(value: number, minimum: number, maximum: number) {
   return Math.min(maximum, Math.max(minimum, value));
+}
+
+function resolveOrientation(): Orientation {
+  return window.innerWidth >= DESKTOP_BREAKPOINT ? "horizontal" : "vertical";
+}
+
+function resolveDiameter(width: number, count: number, orientation: Orientation) {
+  if (orientation === "vertical") {
+    return clamp(Math.min(MOBILE_DIAMETER, width - 88), 128, MOBILE_DIAMETER);
+  }
+
+  if (count <= 1) return 180;
+  const centreSpacing = Math.max(1, (width - 64) / (count - 1));
+  return clamp(centreSpacing * 0.72, 116, 180);
+}
+
+function resolveStageHeight(diameter: number, count: number, orientation: Orientation) {
+  if (orientation === "horizontal") return 620;
+  const edgeRoom = diameter / 2 + 44;
+  return Math.ceil(edgeRoom * 2 + Math.max(0, count - 1) * (diameter + MOBILE_GAP));
 }
 
 function createWaveMetrics(
   width: number,
   height: number,
   radius: number,
+  orientation: Orientation,
 ): WaveMetrics {
-  const orientation: Orientation =
-    width >= DESKTOP_BREAKPOINT ? "horizontal" : "vertical";
-  const padding = radius + 24;
+  const edgeRoom = radius + 34;
 
   if (orientation === "horizontal") {
-    const availableHeight = Math.max(0, height - radius * 2 - 64);
+    const availableHeight = Math.max(0, height - radius * 2 - 48);
     return {
       orientation,
-      start: padding,
-      span: Math.max(1, width - padding * 2),
+      start: edgeRoom,
+      span: Math.max(1, width - edgeRoom * 2),
       baseline: height / 2,
-      amplitude: clamp(availableHeight * 0.18, 18, 52),
+      amplitude: clamp(availableHeight * 0.2, 18, 46),
     };
   }
 
-  const availableWidth = Math.max(0, width - radius * 2 - 48);
+  const availableWidth = Math.max(0, width - radius * 2 - 36);
   return {
     orientation,
-    start: padding,
-    span: Math.max(1, height - padding * 2),
+    start: edgeRoom,
+    span: Math.max(1, height - edgeRoom * 2),
     baseline: width / 2,
-    amplitude: clamp(availableWidth * 0.22, 16, 42),
+    amplitude: clamp(availableWidth * 0.24, 16, 30),
   };
 }
 
-function pointOnWave(metrics: WaveMetrics, progress: number, phase: number) {
-  const waveOffset =
-    Math.sin(progress * Math.PI * 2 * WAVE_CYCLES + phase) * metrics.amplitude;
-
+function pointOnWave(metrics: WaveMetrics, progress: number, phase: number): Point {
+  const waveOffset = Math.sin(progress * Math.PI * 2 * WAVE_CYCLES + phase) * metrics.amplitude;
   if (metrics.orientation === "horizontal") {
-    return {
-      x: metrics.start + metrics.span * progress,
-      y: metrics.baseline + waveOffset,
-    };
+    return { x: metrics.start + metrics.span * progress, y: metrics.baseline + waveOffset };
   }
-
-  return {
-    x: metrics.baseline + waveOffset,
-    y: metrics.start + metrics.span * progress,
-  };
+  return { x: metrics.baseline + waveOffset, y: metrics.start + metrics.span * progress };
 }
 
 function buildWavePath(metrics: WaveMetrics, phase: number) {
-  const segments = 80;
-  const points = Array.from({ length: segments + 1 }, (_, index) =>
+  const segments = 96;
+  return Array.from({ length: segments + 1 }, (_, index) =>
     pointOnWave(metrics, index / segments, phase),
-  );
-  return points
-    .map(
-      (point, index) =>
-        `${index === 0 ? "M" : "L"} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`,
-    )
+  )
+    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`)
     .join(" ");
 }
 
-function rememberStyle(
-  node: HTMLElement,
-  styles: Map<HTMLElement, string | null>,
-) {
+function rememberStyle(node: HTMLElement, styles: Map<HTMLElement, string | null>) {
   if (!styles.has(node)) styles.set(node, node.getAttribute("style"));
+}
+
+function limitSpeed(body: MovingBody) {
+  const speed = Math.hypot(body.vx, body.vy);
+  if (speed <= MAX_BODY_SPEED || speed === 0) return;
+  const scale = MAX_BODY_SPEED / speed;
+  body.vx *= scale;
+  body.vy *= scale;
+}
+
+function resolveWallCollision(body: MovingBody, width: number, height: number) {
+  const padding = 6;
+  const minimumX = body.radius + padding;
+  const maximumX = width - body.radius - padding;
+  const minimumY = body.radius + padding;
+  const maximumY = height - body.radius - padding;
+
+  if (body.x < minimumX) {
+    body.x = minimumX;
+    body.vx = Math.abs(body.vx) * WALL_RESTITUTION;
+  } else if (body.x > maximumX) {
+    body.x = maximumX;
+    body.vx = -Math.abs(body.vx) * WALL_RESTITUTION;
+  }
+
+  if (body.y < minimumY) {
+    body.y = minimumY;
+    body.vy = Math.abs(body.vy) * WALL_RESTITUTION;
+  } else if (body.y > maximumY) {
+    body.y = maximumY;
+    body.vy = -Math.abs(body.vy) * WALL_RESTITUTION;
+  }
+}
+
+function resolveBodyCollisions(bodies: MovingBody[]) {
+  for (let pass = 0; pass < 2; pass += 1) {
+    for (let first = 0; first < bodies.length; first += 1) {
+      for (let second = first + 1; second < bodies.length; second += 1) {
+        const a = bodies[first];
+        const b = bodies[second];
+        let dx = b.x - a.x;
+        let dy = b.y - a.y;
+        let distance = Math.hypot(dx, dy);
+        const minimumDistance = a.radius + b.radius + COLLISION_GAP;
+        if (distance >= minimumDistance) continue;
+        if (distance === 0) {
+          dx = 1;
+          dy = 0;
+          distance = 1;
+        }
+
+        const normalX = dx / distance;
+        const normalY = dy / distance;
+        const overlap = minimumDistance - distance;
+        a.x -= normalX * overlap * 0.5;
+        a.y -= normalY * overlap * 0.5;
+        b.x += normalX * overlap * 0.5;
+        b.y += normalY * overlap * 0.5;
+
+        const relativeVelocityX = b.vx - a.vx;
+        const relativeVelocityY = b.vy - a.vy;
+        const velocityAlongNormal = relativeVelocityX * normalX + relativeVelocityY * normalY;
+        if (velocityAlongNormal >= 0) continue;
+
+        const impulse = (-(1 + COLLISION_RESTITUTION) * velocityAlongNormal) / 2;
+        a.vx -= impulse * normalX;
+        a.vy -= impulse * normalY;
+        b.vx += impulse * normalX;
+        b.vy += impulse * normalY;
+        limitSpeed(a);
+        limitSpeed(b);
+      }
+    }
+  }
 }
 
 export function FeatureCircleEnhancer() {
   useEffect(() => {
     const firstCard = document.querySelector<HTMLElement>("#features article");
     const stageElement = firstCard?.parentElement;
-    if (!stageElement || stageElement.dataset.waveFeatureField === "true")
-      return;
+    if (!stageElement || stageElement.dataset.waveFeatureField === "true") return;
 
     const stage = stageElement;
     const cards = Array.from(stage.children).filter(
-      (element): element is HTMLElement =>
-        element instanceof HTMLElement && element.tagName === "ARTICLE",
+      (element): element is HTMLElement => element instanceof HTMLElement && element.tagName === "ARTICLE",
     );
     if (!cards.length) return;
 
@@ -115,9 +200,7 @@ export function FeatureCircleEnhancer() {
       if (copy) rememberStyle(copy, originalStyles);
       if (tags) {
         rememberStyle(tags, originalStyles);
-        tags
-          .querySelectorAll<HTMLElement>("span")
-          .forEach((tag) => rememberStyle(tag, originalStyles));
+        tags.querySelectorAll<HTMLElement>("span").forEach((tag) => rememberStyle(tag, originalStyles));
       }
     });
 
@@ -129,6 +212,8 @@ export function FeatureCircleEnhancer() {
     let animationFrame = 0;
     let lastTime = performance.now();
     let phase = 0.35;
+    let bodies: MovingBody[] = [];
+    let layoutKey = "";
 
     stage.dataset.waveFeatureField = "true";
     svg.setAttribute("aria-hidden", "true");
@@ -139,7 +224,7 @@ export function FeatureCircleEnhancer() {
       width: "100%",
       height: "100%",
       pointerEvents: "none",
-      zIndex: "1",
+      zIndex: "2",
     });
 
     [glowPath, linePath].forEach((path) => {
@@ -150,54 +235,32 @@ export function FeatureCircleEnhancer() {
       path.setAttribute("vector-effect", "non-scaling-stroke");
     });
     glowPath.setAttribute("stroke-width", "12");
-    glowPath.setAttribute("opacity", connectorVisible ? "0.10" : "0");
-    linePath.setAttribute("stroke-width", "3.5");
-    linePath.setAttribute("stroke-dasharray", "18 12");
-    linePath.setAttribute("opacity", connectorVisible ? "0.82" : "0");
+    glowPath.setAttribute("opacity", connectorVisible ? "0.12" : "0");
+    linePath.setAttribute("stroke-width", "4");
+    linePath.setAttribute("stroke-dasharray", "20 12");
+    linePath.setAttribute("opacity", connectorVisible ? "0.88" : "0");
     svg.append(glowPath, linePath);
     stage.prepend(svg);
 
-    function styleCards() {
-      const width = stage.clientWidth;
-      const vertical = width < DESKTOP_BREAKPOINT;
-      const horizontalSpacing =
-        cards.length > 1 ? (width - 48) / (cards.length - 1) : width;
-      const size = vertical
-        ? clamp(width * 0.46, 148, 176)
-        : clamp(horizontalSpacing * 0.82, 150, 190);
-      const stageHeight = vertical
-        ? Math.max(1180, cards.length * (size + 34))
-        : 660;
-      const compactText = size < 170;
-
-      Object.assign(stage.style, {
-        position: "relative",
-        display: "block",
-        minHeight: `${stageHeight}px`,
-        overflow: "hidden",
-        borderTop: "1px solid var(--line)",
-        borderBottom: "1px solid var(--line)",
-        background:
-          "radial-gradient(circle at center, var(--signal-soft), white 68%)",
-      });
-
+    function applyCardTypography(diameter: number) {
+      const compactText = diameter < 164;
       cards.forEach((card) => {
         Object.assign(card.style, {
           position: "absolute",
           left: "0",
           top: "0",
-          width: `${size}px`,
-          height: `${size}px`,
+          width: `${diameter}px`,
+          height: `${diameter}px`,
           borderRadius: "9999px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
           textAlign: "center",
-          padding: compactText ? "12px" : "18px",
+          padding: compactText ? "11px" : "15px",
           willChange: "transform",
-          boxShadow: "0 18px 45px rgba(14, 165, 233, 0.13)",
-          zIndex: "2",
+          boxShadow: "0 18px 45px rgba(14,165,233,0.13)",
+          zIndex: "10",
         });
 
         const icon = card.firstElementChild as HTMLElement | null;
@@ -206,78 +269,151 @@ export function FeatureCircleEnhancer() {
         const tags = card.querySelector<HTMLElement>("h3 ~ div");
         if (icon) icon.style.borderRadius = "9999px";
         if (title) {
-          title.style.marginTop = compactText ? "8px" : "10px";
-          title.style.fontSize = compactText ? "0.78rem" : "0.92rem";
-          title.style.lineHeight = "1.05rem";
+          title.style.marginTop = compactText ? "7px" : "9px";
+          title.style.fontSize = compactText ? "0.74rem" : "0.86rem";
+          title.style.lineHeight = "1rem";
         }
         if (copy) {
-          copy.style.marginTop = "5px";
-          copy.style.fontSize = compactText ? "0.55rem" : "0.64rem";
-          copy.style.lineHeight = compactText ? "0.82rem" : "0.94rem";
+          copy.style.marginTop = "4px";
+          copy.style.fontSize = compactText ? "0.52rem" : "0.59rem";
+          copy.style.lineHeight = compactText ? "0.78rem" : "0.88rem";
         }
         if (tags) {
-          tags.style.marginTop = compactText ? "5px" : "8px";
+          tags.style.marginTop = compactText ? "4px" : "6px";
           tags.style.justifyContent = "center";
           tags.querySelectorAll<HTMLElement>("span").forEach((tag) => {
             tag.style.borderRadius = "9999px";
-            tag.style.fontSize = compactText ? "0.42rem" : "0.49rem";
-            tag.style.padding = compactText ? "2px 5px" : "3px 7px";
+            tag.style.fontSize = compactText ? "0.4rem" : "0.46rem";
+            tag.style.padding = compactText ? "2px 4px" : "2px 6px";
           });
         }
       });
     }
 
-    function renderWave(currentPhase: number) {
-      styleCards();
+    function prepareLayout(currentPhase: number) {
       const width = stage.clientWidth;
-      const height = stage.clientHeight;
-      if (!width || !height) return;
+      if (!width) return null;
+      const orientation = resolveOrientation();
+      const diameter = resolveDiameter(width, cards.length, orientation);
+      const stageHeight = resolveStageHeight(diameter, cards.length, orientation);
+      const nextLayoutKey = `${Math.round(width)}:${orientation}:${Math.round(diameter)}:${stageHeight}`;
+      const layoutChanged = nextLayoutKey !== layoutKey;
 
-      const maximumRadius = Math.max(
-        ...cards.map((card) => card.offsetWidth / 2),
+      if (layoutChanged) {
+        layoutKey = nextLayoutKey;
+        Object.assign(stage.style, {
+          position: "relative",
+          display: "block",
+          height: `${stageHeight}px`,
+          minHeight: `${stageHeight}px`,
+          overflow: "hidden",
+          borderTop: "1px solid var(--line)",
+          borderBottom: "1px solid var(--line)",
+          background: "radial-gradient(circle at center, var(--signal-soft), white 70%)",
+        });
+        applyCardTypography(diameter);
+      }
+
+      const height = stageHeight;
+      const radius = diameter / 2;
+      const metrics = createWaveMetrics(width, height, radius, orientation);
+      const anchors = cards.map((_, index) =>
+        pointOnWave(metrics, cards.length <= 1 ? 0.5 : index / (cards.length - 1), currentPhase),
       );
-      const metrics = createWaveMetrics(width, height, maximumRadius);
       const path = buildWavePath(metrics, currentPhase);
 
-      stage.dataset.waveOrientation = metrics.orientation;
+      stage.dataset.waveOrientation = orientation;
       svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
       glowPath.setAttribute("d", path);
       linePath.setAttribute("d", path);
-      linePath.style.strokeDashoffset = `${-currentPhase * 42}px`;
+      linePath.style.strokeDashoffset = `${-currentPhase * 40}px`;
 
-      cards.forEach((card, index) => {
-        const progress = cards.length <= 1 ? 0.5 : index / (cards.length - 1);
-        const point = pointOnWave(metrics, progress, currentPhase);
-        const radius = card.offsetWidth / 2;
-        card.style.transform = `translate3d(${point.x - radius}px, ${point.y - radius}px, 0)`;
+      if (layoutChanged || bodies.length !== cards.length) {
+        bodies = anchors.map((anchor, index) => {
+          const direction = index % 2 === 0 ? 1 : -1;
+          return {
+            x: anchor.x,
+            y: anchor.y,
+            vx: orientation === "horizontal" ? direction * 5 : direction * 16,
+            vy: orientation === "horizontal" ? direction * 16 : direction * 5,
+            radius,
+          };
+        });
+      } else {
+        bodies.forEach((body) => {
+          body.radius = radius;
+          resolveWallCollision(body, width, height);
+        });
+      }
+
+      return { anchors, width, height };
+    }
+
+    function renderBodies() {
+      bodies.forEach((body, index) => {
+        cards[index].style.transform = `translate3d(${body.x - body.radius}px, ${body.y - body.radius}px, 0)`;
       });
     }
 
+    function renderStatic() {
+      const scene = prepareLayout(phase);
+      if (!scene) return;
+      bodies = scene.anchors.map((anchor, index) => ({
+        ...anchor,
+        vx: 0,
+        vy: 0,
+        radius: cards[index].offsetWidth / 2,
+      }));
+      renderBodies();
+    }
+
     function animate(now: number) {
-      const delta = Math.min((now - lastTime) / 1000, 0.05);
+      const delta = Math.min((now - lastTime) / 1000, 0.04);
       lastTime = now;
       phase += delta * WAVE_SPEED;
-      renderWave(phase);
+      const scene = prepareLayout(phase);
+      if (!scene) {
+        animationFrame = window.requestAnimationFrame(animate);
+        return;
+      }
+
+      const damping = Math.pow(VELOCITY_RETENTION_PER_SECOND, delta);
+      bodies.forEach((body, index) => {
+        const anchor = scene.anchors[index];
+        body.vx += (anchor.x - body.x) * SPRING_STRENGTH * delta;
+        body.vy += (anchor.y - body.y) * SPRING_STRENGTH * delta;
+        body.vx *= damping;
+        body.vy *= damping;
+        limitSpeed(body);
+        body.x += body.vx * delta;
+        body.y += body.vy * delta;
+        resolveWallCollision(body, scene.width, scene.height);
+      });
+
+      resolveBodyCollisions(bodies);
+      bodies.forEach((body) => resolveWallCollision(body, scene.width, scene.height));
+      renderBodies();
       animationFrame = window.requestAnimationFrame(animate);
     }
 
     function restart() {
       window.cancelAnimationFrame(animationFrame);
       lastTime = performance.now();
-      renderWave(phase);
-      if (!reducedMotion.matches)
-        animationFrame = window.requestAnimationFrame(animate);
+      if (reducedMotion.matches) renderStatic();
+      else animationFrame = window.requestAnimationFrame(animate);
     }
 
     const resizeObserver = new ResizeObserver(restart);
     resizeObserver.observe(stage);
     reducedMotion.addEventListener("change", restart);
+    window.addEventListener("resize", restart);
     restart();
 
     return () => {
       window.cancelAnimationFrame(animationFrame);
       resizeObserver.disconnect();
       reducedMotion.removeEventListener("change", restart);
+      window.removeEventListener("resize", restart);
       svg.remove();
       delete stage.dataset.waveFeatureField;
       delete stage.dataset.waveOrientation;
