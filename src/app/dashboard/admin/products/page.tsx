@@ -12,7 +12,7 @@ export default function AdminProductsPage() {
       role="ADMIN"
       title="Products"
       description="Platform-wide product oversight for barcode allocation, stock status, category health, and suspicious inventory activity."
-      endpoint="GET /api/admin/products"
+      endpoint="GET /api/products"
     />
   );
 }
