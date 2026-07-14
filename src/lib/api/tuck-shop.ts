@@ -1,16 +1,20 @@
-import { apiClient, apiDelete, apiGet, apiPatch, apiPost, apiPut } from "@/lib/api/client";
+import { apiClient, apiDelete, apiGet, apiPatch, apiPost, apiPut, normalizeApiError } from "@/lib/api/client";
+import { getLiveEventById } from "@/lib/api/tickets";
 import { createApplicationMockPurchase, getApplicationMockProducts } from "@/lib/mock/application-products";
+import { removeTuckShopCartLine } from "@/lib/tuck-shop/cart";
 import type {
   CreateEmbeddedCartPaymentPayload,
   CreateProductPayload,
   CreateTuckShopPurchasePayload,
   EmbeddedCartPaymentIntent,
   EmbeddedCartPaymentStatus,
+  EmbeddedCartTicketItem,
   PageResponse,
   Product,
   ProductImageUpdatePayload,
   TuckShopPurchase,
 } from "@/lib/types/backend";
+import type { TicketType } from "@/types/tickets";
 
 export type AddProductBarcodePayload = {
   unitCode?: string | null;
@@ -54,6 +58,8 @@ export type OnlineTuckShopPurchase = TuckShopPurchase & {
   preparedByWorkerId?: number | null;
 };
 
+const supportedTicketTypes = new Set<TicketType>(["REGULAR", "VIP", "VVIP"]);
+
 function queryString(params: Record<string, string | number | undefined | null>) {
   const search = new URLSearchParams();
 
@@ -80,6 +86,61 @@ function withMockFallback(
   return response.content?.length ? response : getApplicationMockProducts(params);
 }
 
+function removeUnavailableTicketFromStoredCart(item: EmbeddedCartTicketItem) {
+  if (!supportedTicketTypes.has(item.ticketType as TicketType)) return;
+  removeTuckShopCartLine("TICKET", item.eventId, item.ticketType as TicketType);
+}
+
+async function validateLiveTicketItems(items: EmbeddedCartTicketItem[]) {
+  const normalizedItems = items.map((item) => ({
+    ...item,
+    eventId: item.eventId.trim(),
+  }));
+  const unavailableItems: EmbeddedCartTicketItem[] = [];
+
+  for (let index = 0; index < normalizedItems.length; index += 1) {
+    const item = normalizedItems[index];
+    const originalItem = items[index];
+
+    try {
+      const event = await getLiveEventById(item.eventId);
+      const ticketType = event?.ticketTypes.find((candidate) => candidate.type === item.ticketType);
+
+      if (!event || !ticketType) {
+        unavailableItems.push(originalItem);
+        continue;
+      }
+      if (event.status !== "PUBLISHED") {
+        throw new Error(`${event.name} is no longer published for ticket sales.`);
+      }
+      if (item.quantity > ticketType.available) {
+        throw new Error(
+          `${event.name} only has ${ticketType.available} ${item.ticketType} ticket${ticketType.available === 1 ? "" : "s"} available. Update the cart quantity and try again.`,
+        );
+      }
+    } catch (exception) {
+      const error = normalizeApiError(exception);
+      const missingEvent = error.status === 404 || error.message.toLowerCase().includes("not found");
+      if (missingEvent) {
+        unavailableItems.push(originalItem);
+        continue;
+      }
+      throw error;
+    }
+  }
+
+  if (unavailableItems.length > 0) {
+    unavailableItems.forEach(removeUnavailableTicketFromStoredCart);
+    throw new Error(
+      unavailableItems.length === 1
+        ? "A ticket event saved in your cart no longer exists and was removed. Add the ticket again from Buy Tickets before checkout."
+        : `${unavailableItems.length} ticket events saved in your cart no longer exist and were removed. Add the tickets again from Buy Tickets before checkout.`,
+    );
+  }
+
+  return normalizedItems;
+}
+
 export async function listTuckShopProducts(params: {
   page?: number;
   size?: number;
@@ -103,10 +164,11 @@ export async function createTuckShopPurchase(payload: CreateTuckShopPurchasePayl
   }
 }
 
-export function createEmbeddedCartPaymentIntent(payload: CreateEmbeddedCartPaymentPayload) {
+export async function createEmbeddedCartPaymentIntent(payload: CreateEmbeddedCartPaymentPayload) {
+  const tickets = await validateLiveTicketItems(payload.tickets ?? []);
   return apiPost<EmbeddedCartPaymentIntent, CreateEmbeddedCartPaymentPayload>(
     "/v1/tuck-shop/cart-payments/payment-intents",
-    payload,
+    { ...payload, tickets },
   );
 }
 
