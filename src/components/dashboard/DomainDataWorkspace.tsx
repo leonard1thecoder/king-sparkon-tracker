@@ -106,12 +106,12 @@ function valueText(value: unknown) {
 
 function DataState({ icon: Icon, title, message, action }: { icon: LucideIcon; title: string; message: string; action?: () => void }) {
   return (
-    <section className="grid min-h-64 place-items-center rounded-[1.35rem] border border-[var(--ink)]/10 bg-white/70 p-8 text-center">
+    <section className="grid min-h-64 place-items-center rounded-xl border border-[var(--line)] bg-white p-8 text-center">
       <div className="max-w-lg">
-        <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl border border-[var(--ink)]/10 bg-[var(--gold)]/25 text-[var(--ink)]"><Icon className="h-5 w-5" /></span>
+        <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl border border-[var(--line)] bg-[var(--gold)]/25 text-[var(--ink)]"><Icon className="h-5 w-5" /></span>
         <h3 className="mt-4 text-lg font-black text-[var(--ink)]">{title}</h3>
         <p className="mt-2 text-sm font-semibold leading-6 text-[var(--muted)]">{message}</p>
-        {action ? <button type="button" onClick={action} className="mt-5 inline-flex min-h-10 items-center gap-2 rounded-xl border border-[var(--ink)] bg-[var(--ink)] px-4 text-sm font-black text-white"><RefreshCcw className="h-4 w-4" />Retry</button> : null}
+        {action ? <button type="button" onClick={action} className="mt-5 inline-flex min-h-10 items-center gap-2 rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-4 text-sm font-black text-white hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]"><RefreshCcw className="h-4 w-4" />Retry</button> : null}
       </div>
     </section>
   );
@@ -126,6 +126,7 @@ function MutationWorkspace({ contract, title }: { contract: EndpointContract; ti
   if (!config) {
     return <DataState icon={AlertTriangle} title={`${title} is not configured`} message="This operation requires a domain-specific request form before it can be safely exposed." />;
   }
+  const mutation = config;
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -133,14 +134,14 @@ function MutationWorkspace({ contract, title }: { contract: EndpointContract; ti
     setMessage(null);
     setError(null);
     const form = new FormData(event.currentTarget);
-    const payload = Object.fromEntries(config.fields.map((field) => {
+    const payload = Object.fromEntries(mutation.fields.map((field) => {
       const raw = String(form.get(field.name) ?? "").trim();
       return [field.name, field.type === "number" && raw ? Number(raw) : raw || undefined];
     }));
     try {
       await apiClient.request({ method: contract.method, url: contract.path.replace(/^\/api/, ""), data: payload });
       event.currentTarget.reset();
-      setMessage(config.successMessage);
+      setMessage(mutation.successMessage);
     } catch (exception) {
       setError(normalizeApiError(exception).message);
     } finally {
@@ -149,27 +150,27 @@ function MutationWorkspace({ contract, title }: { contract: EndpointContract; ti
   }
 
   return (
-    <form onSubmit={submit} className="grid gap-4 rounded-[1.35rem] border border-[var(--ink)]/10 bg-white/75 p-5 shadow-sm" aria-label={`${title} form`}>
+    <form onSubmit={submit} className="grid gap-4 rounded-xl border border-[var(--line)] bg-white p-5 shadow-sm" aria-label={`${title} form`}>
       <div className="grid gap-4 md:grid-cols-2">
-        {config.fields.map((field) => (
+        {mutation.fields.map((field) => (
           <label key={field.name} className={field.type === "textarea" ? "grid gap-2 md:col-span-2" : "grid gap-2"}>
             <span className="text-xs font-black uppercase tracking-[0.14em] text-[var(--muted)]">{field.label}</span>
             {field.type === "textarea" ? (
-              <textarea name={field.name} required={field.required} rows={5} className="rounded-xl border border-[var(--ink)]/15 bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--signal)]" />
+              <textarea name={field.name} required={field.required} rows={5} className="rounded-xl border border-[var(--line)] bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--signal)]" />
             ) : field.type === "select" ? (
-              <select name={field.name} required={field.required} className="min-h-11 rounded-xl border border-[var(--ink)]/15 bg-white px-3 text-sm outline-none focus:border-[var(--signal)]">
+              <select name={field.name} required={field.required} className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3 text-sm outline-none focus:border-[var(--signal)]">
                 {field.options?.map((option) => <option key={option} value={option}>{option.replaceAll("_", " ")}</option>)}
               </select>
             ) : (
-              <input name={field.name} type={field.type ?? "text"} required={field.required} className="min-h-11 rounded-xl border border-[var(--ink)]/15 bg-white px-3 text-sm outline-none focus:border-[var(--signal)]" />
+              <input name={field.name} type={field.type ?? "text"} required={field.required} className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3 text-sm outline-none focus:border-[var(--signal)]" />
             )}
           </label>
         ))}
       </div>
-      {message ? <p role="status" className="rounded-xl border border-emerald-600/20 bg-emerald-50 px-3 py-2 text-sm font-bold text-emerald-800">{message}</p> : null}
+      {message ? <p role="status" className="rounded-xl border border-[var(--line-strong)] bg-[var(--signal-soft)] px-3 py-2 text-sm font-bold text-[var(--signal-strong)]">{message}</p> : null}
       {error ? <p role="alert" className="rounded-xl border border-red-600/20 bg-red-50 px-3 py-2 text-sm font-bold text-red-800">{error}</p> : null}
-      <button disabled={busy} className="inline-flex min-h-11 w-fit items-center gap-2 rounded-xl border border-[var(--ink)] bg-[var(--ink)] px-5 text-sm font-black text-white disabled:opacity-50">
-        {busy ? <LoaderCircle className="h-4 w-4 animate-spin" /> : null}{config.submitLabel}
+      <button disabled={busy} className="inline-flex min-h-11 w-fit items-center gap-2 rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
+        {busy ? <LoaderCircle className="h-4 w-4 animate-spin" /> : null}{mutation.submitLabel}
       </button>
     </form>
   );
@@ -212,17 +213,17 @@ export function DomainDataWorkspace({ endpoint, title }: { endpoint: string; tit
   const columns = Array.from(new Set(result.rows.flatMap((row) => Object.keys(row)))).slice(0, 8);
   return (
     <section className="grid gap-4" aria-label={`${title} data`}>
-      <div className="grid gap-3 rounded-[1.35rem] border border-[var(--ink)]/10 bg-white/75 p-4 md:grid-cols-[1fr_12rem_auto]">
-        <label className="relative"><span className="sr-only">Search {title}</span><Search className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[var(--muted)]" /><input value={search} onChange={(event) => { setSearch(event.target.value); setPage(0); }} placeholder={`Search ${title.toLowerCase()}`} className="min-h-11 w-full rounded-xl border border-[var(--ink)]/15 bg-white pl-10 pr-3 text-sm outline-none focus:border-[var(--signal)]" /></label>
-        <label className="relative"><span className="sr-only">Filter by status</span><Filter className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[var(--muted)]" /><input value={status} onChange={(event) => { setStatus(event.target.value); setPage(0); }} placeholder="Status filter" className="min-h-11 w-full rounded-xl border border-[var(--ink)]/15 bg-white pl-10 pr-3 text-sm outline-none focus:border-[var(--signal)]" /></label>
-        <button type="button" onClick={() => void load()} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--ink)]/15 bg-white px-4 text-sm font-black"><RefreshCcw className="h-4 w-4" />Refresh</button>
+      <div className="grid gap-3 rounded-xl border border-[var(--line)] bg-white p-4 md:grid-cols-[1fr_12rem_auto]">
+        <label className="relative"><span className="sr-only">Search {title}</span><Search className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[var(--muted)]" /><input value={search} onChange={(event) => { setSearch(event.target.value); setPage(0); }} placeholder={`Search ${title.toLowerCase()}`} className="min-h-11 w-full rounded-xl border border-[var(--line)] bg-white pl-10 pr-3 text-sm outline-none focus:border-[var(--signal)]" /></label>
+        <label className="relative"><span className="sr-only">Filter by status</span><Filter className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[var(--muted)]" /><input value={status} onChange={(event) => { setStatus(event.target.value); setPage(0); }} placeholder="Status filter" className="min-h-11 w-full rounded-xl border border-[var(--line)] bg-white pl-10 pr-3 text-sm outline-none focus:border-[var(--signal)]" /></label>
+        <button type="button" onClick={() => void load()} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--line)] bg-white px-4 text-sm font-black"><RefreshCcw className="h-4 w-4" />Refresh</button>
       </div>
-      <div className="overflow-x-auto rounded-[1.35rem] border border-[var(--ink)]/10 bg-white/80">
-        <table className="min-w-full text-left text-sm"><thead className="bg-[var(--gold)]/25"><tr>{columns.map((column) => <th key={column} scope="col" className="whitespace-nowrap px-4 py-3 text-xs font-black uppercase tracking-[0.12em] text-[var(--ink)]">{column.replaceAll(/([A-Z])/g, " $1")}</th>)}</tr></thead><tbody>{result.rows.map((row, index) => <tr key={String(row.id ?? index)} className="border-t border-[var(--ink)]/8">{columns.map((column) => <td key={column} className="max-w-72 truncate px-4 py-3 font-semibold text-[var(--ink)]/75" title={valueText(row[column])}>{valueText(row[column])}</td>)}</tr>)}</tbody></table>
+      <div className="overflow-x-auto rounded-xl border border-[var(--line)] bg-white">
+        <table className="min-w-full text-left text-sm"><thead className="bg-[var(--gold)]/25"><tr>{columns.map((column) => <th key={column} scope="col" className="whitespace-nowrap px-4 py-3 text-xs font-black uppercase tracking-[0.12em] text-[var(--ink)]">{column.replaceAll(/([A-Z])/g, " $1")}</th>)}</tr></thead><tbody>{result.rows.map((row, index) => <tr key={String(row.id ?? index)} className="border-t border-[var(--line)]">{columns.map((column) => <td key={column} className="max-w-72 truncate px-4 py-3 font-semibold text-[var(--ink)]/75" title={valueText(row[column])}>{valueText(row[column])}</td>)}</tr>)}</tbody></table>
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--ink)]/10 bg-white/70 px-4 py-3 text-sm font-bold text-[var(--muted)]">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--line)] bg-white px-4 py-3 text-sm font-bold text-[var(--muted)]">
         <span>{result.totalElements} records · Page {result.page + 1} of {Math.max(result.totalPages, 1)}</span>
-        <div className="flex items-center gap-2"><label><span className="sr-only">Rows per page</span><select value={size} onChange={(event) => { setSize(Number(event.target.value)); setPage(0); }} className="min-h-10 rounded-lg border border-[var(--ink)]/15 bg-white px-2">{PAGE_SIZES.map((value) => <option key={value} value={value}>{value} rows</option>)}</select></label><button type="button" disabled={page === 0} onClick={() => setPage((value) => Math.max(0, value - 1))} aria-label="Previous page" className="grid h-10 w-10 place-items-center rounded-lg border border-[var(--ink)]/15 bg-white disabled:opacity-35"><ChevronLeft className="h-4 w-4" /></button><button type="button" disabled={result.totalPages === 0 || page + 1 >= result.totalPages} onClick={() => setPage((value) => value + 1)} aria-label="Next page" className="grid h-10 w-10 place-items-center rounded-lg border border-[var(--ink)]/15 bg-white disabled:opacity-35"><ChevronRight className="h-4 w-4" /></button></div>
+        <div className="flex items-center gap-2"><label><span className="sr-only">Rows per page</span><select value={size} onChange={(event) => { setSize(Number(event.target.value)); setPage(0); }} className="min-h-10 rounded-lg border border-[var(--line)] bg-white px-2">{PAGE_SIZES.map((value) => <option key={value} value={value}>{value} rows</option>)}</select></label><button type="button" disabled={page === 0} onClick={() => setPage((value) => Math.max(0, value - 1))} aria-label="Previous page" className="grid h-10 w-10 place-items-center rounded-lg border border-[var(--line)] bg-white disabled:opacity-35"><ChevronLeft className="h-4 w-4" /></button><button type="button" disabled={result.totalPages === 0 || page + 1 >= result.totalPages} onClick={() => setPage((value) => value + 1)} aria-label="Next page" className="grid h-10 w-10 place-items-center rounded-lg border border-[var(--line)] bg-white disabled:opacity-35"><ChevronRight className="h-4 w-4" /></button></div>
       </div>
     </section>
   );

@@ -9,13 +9,13 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "border-[var(--signal)] bg-[var(--signal)] text-white shadow-[0_12px_28px_rgba(74,169,223,0.2)] hover:-translate-y-0.5 hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-white hover:shadow-[0_18px_36px_rgba(7,19,31,0.2)]",
+    "border-[var(--signal)] bg-[var(--signal)] text-white hover:-translate-y-0.5 hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)] hover:text-white hover:shadow-[0_10px_24px_rgba(249,115,22,0.18)]",
   secondary:
-    "border-[var(--ink)] bg-[var(--ink)] text-white hover:-translate-y-0.5 hover:border-[var(--gold)] hover:bg-[var(--ink-2)] hover:text-white",
+    "border-[var(--line-strong)] bg-white text-[var(--ink)] hover:-translate-y-0.5 hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)] hover:text-white",
   quiet:
-    "border-[var(--line)] bg-white text-[var(--ink)] hover:-translate-y-0.5 hover:border-[var(--gold)] hover:bg-[var(--surface)]",
+    "border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--accent-hover)] hover:bg-white hover:text-[var(--accent-hover)]",
   danger:
-    "border-[var(--danger)] bg-white text-[var(--danger)] hover:-translate-y-0.5 hover:bg-[var(--danger)] hover:text-white",
+    "border-[var(--danger)] bg-white text-[var(--danger)] hover:bg-[var(--danger)] hover:text-white",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
@@ -27,7 +27,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       type={type}
       className={cn(
-        "inline-flex min-h-11 max-w-full shrink-0 items-center justify-center gap-2 whitespace-normal rounded-[1rem] border px-4 py-2 text-center text-sm font-black uppercase leading-tight tracking-[0.06em] transition duration-200 ease-out focus-visible:shadow-[var(--focus-ring)] active:translate-y-0 disabled:pointer-events-none disabled:opacity-55",
+        "inline-flex min-h-11 max-w-full shrink-0 items-center justify-center gap-2 whitespace-normal rounded-lg border px-4 py-2 text-center text-sm font-extrabold leading-tight transition duration-200 ease-out focus-visible:shadow-[var(--focus-ring)] active:translate-y-0 disabled:pointer-events-none disabled:opacity-55",
         variants[variant],
         className,
       )}

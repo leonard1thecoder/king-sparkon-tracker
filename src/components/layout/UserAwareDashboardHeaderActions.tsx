@@ -61,11 +61,11 @@ function UserCartHeaderAction() {
       className={cn(
         "relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border bg-white text-[var(--ink)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[var(--surface)]",
         counts.products > 0 && counts.tickets > 0
-          ? "border-blue-500 ring-2 ring-orange-500/35"
+          ? "border-sky-400 ring-2 ring-sky-200"
           : counts.products > 0
-            ? "border-orange-500 ring-2 ring-orange-500/20"
+            ? "border-sky-400 ring-2 ring-sky-200"
             : counts.tickets > 0
-              ? "border-blue-500 ring-2 ring-blue-500/20"
+              ? "border-sky-400 ring-2 ring-sky-200"
               : "border-[var(--line)] hover:border-[var(--gold)]",
       )}
     >
@@ -73,7 +73,7 @@ function UserCartHeaderAction() {
 
       {counts.products > 0 ? (
         <span
-          className="absolute -right-2 -top-2 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-orange-500 px-1 text-[0.62rem] font-black leading-none text-white shadow-md"
+          className="absolute -right-2 -top-2 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-sky-500 px-1 text-[0.62rem] font-black leading-none text-white shadow-md"
           aria-label={`${counts.products} product${counts.products === 1 ? "" : "s"} in cart`}
         >
           {countLabel(counts.products)}
@@ -82,7 +82,7 @@ function UserCartHeaderAction() {
 
       {counts.tickets > 0 ? (
         <span
-          className="absolute -bottom-2 -right-2 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-blue-600 px-1 text-[0.62rem] font-black leading-none text-white shadow-md"
+          className="absolute -bottom-2 -right-2 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-sky-500 px-1 text-[0.62rem] font-black leading-none text-white shadow-md"
           aria-label={`${counts.tickets} ticket${counts.tickets === 1 ? "" : "s"} in cart`}
         >
           {countLabel(counts.tickets)}
@@ -128,43 +128,43 @@ export function UserAwareDashboardHeaderActions({ role }: { role: string }) {
         }
 
         [class*="sm:grid-cols-[5rem_1fr_auto_auto]"]:has(> img.h-20.w-20) {
-          border-color: rgb(249 115 22 / 0.72) !important;
-          background: linear-gradient(135deg, rgb(255 247 237 / 0.92), #ffffff 48%) !important;
-          box-shadow: 0 14px 34px rgb(249 115 22 / 0.11) !important;
+          border-color: rgb(125 211 252 / 0.9) !important;
+          background: #ffffff !important;
+          box-shadow: 0 8px 24px rgb(14 165 233 / 0.08) !important;
         }
 
         [class*="sm:grid-cols-[5rem_1fr_auto_auto]"]:has(> img.h-20.w-20) > img {
-          border: 2px solid rgb(249 115 22 / 0.72);
+          border: 2px solid rgb(125 211 252 / 0.9);
         }
 
         [class*="sm:grid-cols-[5rem_1fr_auto_auto]"]:has(> img.h-20.w-20) > div:nth-child(2) > p:first-child {
-          color: rgb(234 88 12) !important;
+          color: rgb(2 132 199) !important;
         }
 
         [class*="sm:grid-cols-[5rem_1fr_auto_auto]"]:has(> img.h-20.w-20) > input[type="number"] {
-          border-color: rgb(249 115 22 / 0.65) !important;
-          background: rgb(255 247 237) !important;
+          border-color: rgb(125 211 252 / 0.9) !important;
+          background: #ffffff !important;
         }
 
         [class*="sm:grid-cols-[5rem_1fr_auto_auto]"]:has(> div:first-child svg) {
-          border-color: rgb(37 99 235 / 0.68) !important;
-          background: linear-gradient(135deg, rgb(239 246 255 / 0.95), #ffffff 48%) !important;
-          box-shadow: 0 14px 34px rgb(37 99 235 / 0.11) !important;
+          border-color: rgb(125 211 252 / 0.9) !important;
+          background: #ffffff !important;
+          box-shadow: 0 8px 24px rgb(14 165 233 / 0.08) !important;
         }
 
         [class*="sm:grid-cols-[5rem_1fr_auto_auto]"]:has(> div:first-child svg) > div:first-child {
-          background: rgb(37 99 235) !important;
+          background: rgb(14 165 233) !important;
           color: white !important;
           box-shadow: inset 0 0 0 2px rgb(147 197 253 / 0.55);
         }
 
         [class*="sm:grid-cols-[5rem_1fr_auto_auto]"]:has(> div:first-child svg) > div:nth-child(2) > p:first-child {
-          color: rgb(37 99 235) !important;
+          color: rgb(2 132 199) !important;
         }
 
         [class*="sm:grid-cols-[5rem_1fr_auto_auto]"]:has(> div:first-child svg) > input[type="number"] {
-          border-color: rgb(37 99 235 / 0.62) !important;
-          background: rgb(239 246 255) !important;
+          border-color: rgb(125 211 252 / 0.9) !important;
+          background: #ffffff !important;
         }
       `}</style>
 

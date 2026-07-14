@@ -56,9 +56,9 @@ const socialIcons: Record<SocialPlatform, ReactNode> = {
 };
 
 const variantClassNames: Record<SocialLinksVariant, string> = {
-  dark: "border-white/10 bg-white/[0.06] text-white/72 hover:border-[var(--gold)]/45 hover:bg-[var(--gold)]/10 hover:text-[var(--gold)]",
-  light: "border-[var(--line)] bg-white text-[var(--steel)] shadow-[var(--shadow-soft)] hover:border-[var(--gold)] hover:bg-[var(--gold)]/10 hover:text-[var(--ink)]",
-  compact: "border-white/10 bg-white/[0.05] text-white/70 hover:border-white/30 hover:bg-white/[0.1] hover:text-white",
+  dark: "border-[var(--line)] bg-white text-[var(--steel)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]",
+  light: "border-[var(--line)] bg-white text-[var(--steel)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]",
+  compact: "border-[var(--line)] bg-white text-[var(--steel)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]",
 };
 
 export function SocialLinks({ variant = "dark", showLabels = false, className = "" }: SocialLinksProps) {
@@ -71,7 +71,7 @@ export function SocialLinks({ variant = "dark", showLabels = false, className = 
           target="_blank"
           rel="noreferrer"
           aria-label={social.label}
-          className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-full border px-3 text-sm font-bold transition-all duration-200 hover:-translate-y-1 ${
+          className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border px-3 text-sm font-bold transition-all duration-200 hover:-translate-y-1 ${
             showLabels ? "min-w-0 pr-4" : "h-11 w-11"
           } ${variantClassNames[variant]}`}
         >

@@ -15,21 +15,12 @@ export function MetricCard({
   icon?: ReactNode;
 }) {
   return (
-    <div className="group relative overflow-hidden rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-[var(--shadow-soft)] ring-1 ring-white/70 transition duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--gold)] hover:shadow-[var(--shadow-ledger)]">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[var(--signal)] via-[var(--gold)] to-[var(--ember)] opacity-70" />
+    <div className="group relative overflow-hidden rounded-xl border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] transition duration-200 ease-out hover:border-[var(--line-strong)]">
       <div className="flex items-start justify-between gap-4">
-        <p className="font-mono text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--steel)]">{label}</p>
-        {icon ? <div className="grid h-10 w-10 place-items-center rounded-[var(--radius-md)] border border-[var(--line)] bg-[var(--surface)] text-[var(--signal)] transition duration-200 ease-out group-hover:border-[var(--gold)] group-hover:bg-white">{icon}</div> : null}
+        <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-[var(--steel)]">{label}</p>
+        {icon ? <div className="grid h-10 w-10 place-items-center rounded-lg border border-[var(--line)] bg-white text-[var(--signal)] transition group-hover:border-[var(--line-strong)]">{icon}</div> : null}
       </div>
-      <p
-        className={cn(
-          "money mt-4 text-3xl font-black tracking-tight md:text-4xl",
-          tone === "signal" && "text-[var(--signal)]",
-          tone === "confirm" && "text-[var(--confirm)]",
-        )}
-      >
-        {value}
-      </p>
+      <p className={cn("money mt-4 text-3xl font-black tracking-tight md:text-4xl", tone === "signal" && "text-[var(--signal-strong)]", tone === "confirm" && "text-[var(--signal-strong)]")}>{value}</p>
       {detail ? <p className="mt-3 text-sm leading-6 text-[var(--steel)]">{detail}</p> : null}
     </div>
   );

@@ -1,24 +1,7 @@
-main > section:first-child header nav a[href="/"] p:last-child {
-  font-size: 0 !important;
-  line-height: 1 !important;
-}
-
-main > section:first-child header nav a[href="/"] p:last-child::after {
-  content: "King Sparkon";
-  font-size: 0.875rem;
-  line-height: 1.15;
-}
-
-#pricing article > span.absolute {
-  position: static !important;
-  display: inline-flex !important;
-  margin-bottom: 0.85rem;
-  width: fit-content;
-}
-
+/* Small responsive adjustments that are intentionally separate from tokens. */
 main.relative.min-h-screen form > button[type="submit"] {
-  width: min(100%, 20rem) !important;
-  justify-self: center !important;
+  width: min(100%, 20rem);
+  justify-self: start;
 }
 
 @media (min-width: 1024px) {
@@ -28,27 +11,7 @@ main.relative.min-h-screen form > button[type="submit"] {
 }
 
 @media (max-width: 640px) {
-  #complaints .capacity-hero-deck {
-    min-height: 39rem !important;
-  }
-
-  #complaints .capacity-hero-deck > div.absolute.left-5.top-6 {
-    left: 1rem !important;
-    right: 1rem !important;
-    top: 1rem !important;
-    width: auto;
-    text-align: center;
-  }
-
-  #complaints .capacity-hero-deck > div.absolute.right-5.top-6 {
-    left: 1rem !important;
-    right: 1rem !important;
-    top: 4.25rem !important;
-    width: auto;
-    text-align: center;
-  }
-
-  #complaints .capacity-card-3d-admin {
-    top: 8.5rem !important;
+  main.relative.min-h-screen form > button[type="submit"] {
+    width: 100%;
   }
 }
