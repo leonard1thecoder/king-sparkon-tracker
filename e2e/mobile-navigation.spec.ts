@@ -38,16 +38,19 @@ for (const viewport of viewports) {
     await page.goto("/dashboard/owner", { waitUntil: "domcontentloaded" });
 
     if (viewport.width < 1024) {
-      const open = page.getByRole("button", { name: "Open dashboard navigation" });
+      const mobileHeader = page.getByRole("banner").first();
+      const open = mobileHeader.getByRole("button", { name: "Open dashboard navigation", exact: true });
       await expect(open).toBeVisible();
       await open.click();
-      await expect(page.getByRole("button", { name: "Close dashboard navigation" })).toBeVisible();
+
+      const close = mobileHeader.getByRole("button", { name: "Close dashboard navigation", exact: true });
+      await expect(close).toBeVisible();
       await expect(page.getByRole("navigation").first()).toBeVisible();
-      await page.getByRole("button", { name: "Close dashboard navigation" }).click();
-      await expect(page.getByRole("button", { name: "Open dashboard navigation" })).toBeVisible();
+      await close.click();
+      await expect(open).toBeVisible();
     } else {
       await expect(page.getByRole("navigation").first()).toBeVisible();
-      await expect(page.getByRole("button", { name: "Open dashboard navigation" })).toBeHidden();
+      await expect(page.getByRole("button", { name: "Open dashboard navigation", exact: true })).toBeHidden();
     }
   });
 }
