@@ -31,7 +31,6 @@ export default function TransactionsPayPalOnboardingPage() {
       role="OWNER"
       title="Transactions PayPal onboarding"
       description="Connect PayPal for website transactions so BUY and SELL payment links have owner settlement readiness, clean status visibility, and audit-grade reporting."
-      endpoint="GET /api/transactions/paypal/onboarding · POST /api/transactions/paypal/onboarding/start"
     >
       <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
         <Card className="overflow-hidden">
