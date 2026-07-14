@@ -22,6 +22,7 @@ import {
   QrCode,
   ReceiptText,
   ScanLine,
+  Settings,
   ShieldCheck,
   ShoppingCart,
   Ticket,
@@ -51,6 +52,8 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Reports", href: "/dashboard/admin/reports", icon: BarChart3, description: "Platform performance" },
     { label: "Audit Logs", href: "/dashboard/admin/audit", icon: ClipboardList, description: "Security and action history" },
     { label: "Developer Hub", href: "/dashboard/admin/developer", icon: Code2, description: "Stages and implementation" },
+    { label: "Settings", href: "/dashboard/admin/settings", icon: Settings, description: "Platform policy and controls" },
+    { label: "Profile", href: "/dashboard/admin/profile", icon: UserRound, description: "Account and session" },
   ],
   Owner: [
     { label: "Overview", href: "/dashboard/owner", icon: Building2, description: "Business command centre" },
@@ -64,6 +67,8 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Applications", href: "/dashboard/owner/jobs?tab=applications", icon: FileCheck2, description: "Review job applicants" },
     { label: "Promotions", href: "/dashboard/owner/promotions", icon: Megaphone, description: "Subscriber campaigns" },
     { label: "Plan & Billing", href: "/dashboard/owner/billing", icon: CreditCard, description: "Monthly and yearly subscriptions" },
+    { label: "Settings", href: "/dashboard/owner/settings", icon: Settings, description: "Business preferences" },
+    { label: "Profile", href: "/dashboard/owner/profile", icon: UserRound, description: "Identity and session" },
   ],
   Worker: [
     { label: "Overview", href: "/dashboard/worker", icon: UserRound, description: "Today’s worker activity" },
@@ -73,6 +78,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Product Sales", href: "/dashboard/worker/transactions", icon: CreditCard, description: "Completed carts" },
     { label: "Ticket Entry", href: "/dashboard/worker/tickets/scan", icon: QrCode, description: "Face and QR verification" },
     { label: "Tips & QR", href: "/dashboard/worker/tips", icon: WalletCards, description: "Owner-enabled tips" },
+    { label: "Profile", href: "/dashboard/worker/profile", icon: UserRound, description: "Identity and business assignment" },
   ],
   Affiliate: [
     { label: "Overview", href: "/dashboard/affiliate", icon: Activity, description: "Funnel, earnings and next action" },
@@ -81,12 +87,19 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Affiliate Leads", href: "/dashboard/affiliate/leads", icon: UsersRound, description: "Subscriber contacts and sales angles" },
     { label: "Commissions", href: "/dashboard/affiliate/commissions", icon: BarChart3, description: "Approved earnings ledger" },
     { label: "Payouts", href: "/dashboard/affiliate/payouts", icon: WalletCards, description: "Cash out and settlements" },
+    { label: "Profile", href: "/dashboard/affiliate/profile", icon: UserRound, description: "Payout identity and session" },
   ],
   User: [
-    { label: "Buy Products", href: "/dashboard/user/shop", icon: ShoppingCart },
-    { label: "Cart", href: "/dashboard/user/shop/cart", icon: ShoppingCart },
-    { label: "Buy Tickets", href: "/dashboard/user/tickets/buy", icon: Ticket },
-    { label: "Tip Worker", href: "/dashboard/user/tips/scan", icon: WalletCards },
+    { label: "Overview", href: "/dashboard/user", icon: UserRound, description: "Purchases, tickets and applications" },
+    { label: "Buy Products", href: "/dashboard/user/shop", icon: ShoppingCart, description: "Browse the Tuck Shop" },
+    { label: "Cart", href: "/dashboard/user/shop/cart", icon: ShoppingCart, description: "Review and pay" },
+    { label: "My Carts", href: "/dashboard/user/carts", icon: ReceiptText, description: "Purchases and collections" },
+    { label: "Buy Tickets", href: "/dashboard/user/tickets/buy", icon: Ticket, description: "Browse live events" },
+    { label: "My Tickets", href: "/dashboard/user/tickets", icon: QrCode, description: "Purchased QR tickets" },
+    { label: "Jobs", href: "/dashboard/user/jobs", icon: BriefcaseBusiness, description: "Browse opportunities" },
+    { label: "Applications", href: "/dashboard/user/applications", icon: FileCheck2, description: "Track submissions" },
+    { label: "Tip Worker", href: "/dashboard/user/tips/scan", icon: WalletCards, description: "Scan a worker QR" },
+    { label: "Profile", href: "/dashboard/user/profile", icon: UserRound, description: "Contact details and session" },
   ],
 };
 
@@ -101,8 +114,9 @@ function isActive(pathname: string, searchParams: URLSearchParams, href: string)
     return pathname === cleanHref && Array.from(hrefParams.entries()).every(([key, value]) => searchParams.get(key) === value);
   }
   if (cleanHref === "/dashboard/user/shop") return pathname === cleanHref || pathname.startsWith("/dashboard/user/shop/products");
-  if (cleanHref === "/dashboard/user/shop/cart") return pathname === cleanHref || pathname.startsWith("/dashboard/user/carts");
+  if (cleanHref === "/dashboard/user/shop/cart") return pathname === cleanHref;
   if (cleanHref === "/dashboard/user/tickets/buy") return pathname === cleanHref || pathname.startsWith("/dashboard/user/tickets/events") || pathname.startsWith("/dashboard/user/tickets/checkout");
+  if (cleanHref === "/dashboard/user/tickets") return pathname === cleanHref;
   if (isDashboardRoot(cleanHref)) return pathname === cleanHref && !searchParams.has("tab");
   if (pathname !== cleanHref && !pathname.startsWith(`${cleanHref}/`)) return false;
   return pathname !== cleanHref || !searchParams.has("tab");
