@@ -1,4 +1,4 @@
-import { apiDelete, apiGet, apiPost } from "./client";
+import { apiDelete, apiGet, apiPatch, apiPost } from "./client";
 
 export function getOwnerProfile() {
   return apiGet("/users/me");
@@ -17,5 +17,5 @@ export function deleteWorker(workerId: number) {
 }
 
 export function completeOwnerOnboarding(payload: Record<string, unknown>) {
-  return apiPost("/users/onboarding", payload);
+  return apiPatch("/users/me/onboarding", payload);
 }
