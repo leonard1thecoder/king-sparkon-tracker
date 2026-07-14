@@ -101,7 +101,12 @@ export function SubscriptionSection() {
           <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--steel)]">
             Get scanner, tickets, worker tips, affiliate, Dev Hub, dashboard, and capacity updates without digging through the whole platform.
           </p>
-          <BouncingCircleField items={subscriptionNotes} ariaLabel="King Sparkon subscription update types" variant="notes" />
+          <BouncingCircleField
+            items={subscriptionNotes}
+            ariaLabel="King Sparkon subscription update types"
+            variant="subscription"
+            connectorOpacity={1}
+          />
         </div>
 
         <div className="relative border border-[var(--line-strong)] bg-white p-5 shadow-[var(--shadow-soft)] md:p-8">
