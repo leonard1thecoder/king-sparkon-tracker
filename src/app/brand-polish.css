@@ -1,7 +1,12 @@
-/* Small responsive adjustments that are intentionally separate from tokens. */
+/* White-first responsive adjustments kept separate from the core design tokens. */
 main.relative.min-h-screen form > button[type="submit"] {
   width: min(100%, 20rem);
   justify-self: start;
+}
+
+main [data-orange-hover="true"]:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--signal) 30%, transparent);
+  outline-offset: 3px;
 }
 
 @media (min-width: 1024px) {
