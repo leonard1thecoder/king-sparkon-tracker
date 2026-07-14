@@ -30,7 +30,6 @@ export default function TipsPayPalOnboardingPage() {
       role="OWNER"
       title="Tips PayPal onboarding"
       description="Connect PayPal for worker tips so every QR tip link has a clean owner payout path, transparent fee display, and review-ready status tracking."
-      endpoint="GET /api/tips/paypal/onboarding · POST /api/tips/paypal/onboarding/start"
     >
       <section className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
         <div className="relative overflow-hidden rounded-[2.5rem] bg-[var(--ink)] p-6 text-white shadow-[var(--shadow-depth)] enterprise-grid md:p-8">
@@ -66,12 +65,6 @@ export default function TipsPayPalOnboardingPage() {
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--gold)] px-5 text-sm font-black text-[var(--ink)] shadow-[var(--shadow-soft)] hover:bg-white"
               >
                 Back to tips <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/tips/workers/demo-worker"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-5 text-sm font-black text-white hover:bg-white/12"
-              >
-                Preview worker tip URL <QrCode className="h-4 w-4" />
               </Link>
             </div>
           </div>
