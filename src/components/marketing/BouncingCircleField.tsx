@@ -8,6 +8,7 @@ export type BouncingCircleItem = {
   eyebrow?: string;
   title: string;
   copy: string;
+  tags?: readonly string[];
 };
 
 type MovingBody = {
@@ -21,7 +22,7 @@ type MovingBody = {
 type BouncingCircleFieldProps = {
   items: readonly BouncingCircleItem[];
   ariaLabel: string;
-  variant?: "vision" | "notes" | "stats" | "services";
+  variant?: "vision" | "notes" | "stats" | "services" | "features";
 };
 
 const MIN_SPEED = 7;
@@ -45,6 +46,10 @@ const variantClasses = {
   services: {
     stage: "min-h-[49rem] sm:min-h-[44rem] lg:min-h-[42rem]",
     bubble: "w-[clamp(8.5rem,19vw,14.5rem)] p-5 sm:p-6",
+  },
+  features: {
+    stage: "min-h-[72rem] sm:min-h-[62rem] lg:min-h-[50rem]",
+    bubble: "w-[clamp(10.25rem,22vw,16rem)] p-4 sm:p-5",
   },
 } as const;
 
@@ -250,7 +255,7 @@ export function BouncingCircleField({ items, ariaLabel, variant = "stats" }: Bou
   return (
     <div ref={containerRef} className={`relative mt-8 overflow-hidden border-y border-[var(--line)] bg-white ${classes.stage}`} aria-label={ariaLabel}>
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,var(--signal-soft),transparent_68%)] opacity-60" aria-hidden="true" />
-      {items.map(({ icon: Icon, eyebrow, title, copy }, index) => (
+      {items.map(({ icon: Icon, eyebrow, title, copy, tags }, index) => (
         <article
           key={title}
           ref={(element) => {
@@ -263,7 +268,16 @@ export function BouncingCircleField({ items, ariaLabel, variant = "stats" }: Bou
           </div>
           <p className="mt-3 text-[0.56rem] font-extrabold uppercase tracking-[0.12em] text-[var(--signal-strong)]">{eyebrow ?? `0${index + 1}`}</p>
           <h3 className="mt-1 text-base font-black tracking-[-0.03em] sm:text-lg">{title}</h3>
-          <p className="mt-2 text-[0.7rem] leading-5 text-[var(--steel)] sm:text-xs sm:leading-5">{copy}</p>
+          <p className={`mt-2 text-[var(--steel)] ${variant === "features" ? "text-[0.62rem] leading-4 sm:text-[0.7rem] sm:leading-5" : "text-[0.7rem] leading-5 sm:text-xs sm:leading-5"}`}>{copy}</p>
+          {tags?.length ? (
+            <div className="mt-3 flex max-w-full flex-wrap justify-center gap-1">
+              {tags.map((tag) => (
+                <span key={tag} className="rounded-full border border-[var(--line)] bg-[var(--signal-soft)] px-2 py-0.5 text-[0.5rem] font-extrabold text-[var(--signal-strong)] sm:text-[0.56rem]">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          ) : null}
         </article>
       ))}
     </div>
