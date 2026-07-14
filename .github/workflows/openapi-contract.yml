@@ -1,0 +1,22 @@
+name: Backend OpenAPI Contract
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      OPENAPI_URL: ${{ vars.BACKEND_OPENAPI_URL || 'https://king-sparkon-tracker-backend-75756350962.africa-south1.run.app/v3/api-docs' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+      - name: Verify generated DTOs operations and paths
+        run: bun run api:contract:check
