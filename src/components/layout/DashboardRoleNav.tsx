@@ -25,7 +25,6 @@ import {
   ShieldCheck,
   ShoppingCart,
   Ticket,
-  UserCheck,
   UserRound,
   UsersRound,
   WalletCards,
@@ -77,12 +76,10 @@ const navByRole: Record<UserRole, NavItem[]> = {
   ],
   Affiliate: [
     { label: "Overview", href: "/dashboard/affiliate", icon: Activity, description: "Funnel, earnings and next action" },
-    { label: "Onboarding", href: "/dashboard/affiliate/onboarding", icon: UserCheck, description: "Payout and promotion profile" },
     { label: "Referral Links", href: "/dashboard/affiliate/referrals", icon: QrCode, description: "Tracked link and QR" },
     { label: "Campaign Assets", href: "/dashboard/affiliate/assets", icon: Megaphone, description: "WhatsApp, social and email copy" },
-    { label: "Commissions", href: "/dashboard/affiliate/commissions", icon: BarChart3, description: "Business earnings ledger" },
-    { label: "Payouts", href: "/dashboard/affiliate/payouts", icon: WalletCards, description: "Requests and settlements" },
-    { label: "Tip Activity", href: "/dashboard/affiliate/tips", icon: Handshake, description: "Referral-linked tip activity" },
+    { label: "Commissions", href: "/dashboard/affiliate/commissions", icon: BarChart3, description: "Approved earnings ledger" },
+    { label: "Payouts", href: "/dashboard/affiliate/payouts", icon: WalletCards, description: "Cash out and settlements" },
   ],
   User: [
     { label: "Buy Products", href: "/dashboard/user/shop", icon: ShoppingCart },
