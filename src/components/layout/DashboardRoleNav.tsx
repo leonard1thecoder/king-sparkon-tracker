@@ -44,7 +44,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Tickets", href: "/dashboard/admin/tickets", icon: Ticket, description: "Events, sales and verification" },
     { label: "Jobs", href: "/dashboard/admin/jobs", icon: BriefcaseBusiness, description: "Platform opportunities" },
     { label: "Applications", href: "/dashboard/admin/jobs?tab=applications", icon: FileCheck2, description: "Applicant review queue" },
-    { label: "Affiliates", href: "/dashboard/admin/affiliates", icon: Handshake, description: "Partners and referrals" },
+    { label: "Affiliates", href: "/dashboard/admin/affiliates", icon: Handshake, description: "Poster uploads and partner tools" },
     { label: "Tips", href: "/dashboard/admin/tips", icon: WalletCards, description: "Tip payments and activity" },
     { label: "Promotions", href: "/dashboard/admin/promotions", icon: Megaphone, description: "Platform campaigns" },
     { label: "Services & Discounts", href: "/dashboard/admin/discounts", icon: BadgePercent, description: "Plus and Pro pricing offers" },
@@ -77,7 +77,8 @@ const navByRole: Record<UserRole, NavItem[]> = {
   Affiliate: [
     { label: "Overview", href: "/dashboard/affiliate", icon: Activity, description: "Funnel, earnings and next action" },
     { label: "Referral Links", href: "/dashboard/affiliate/referrals", icon: QrCode, description: "Tracked link and QR" },
-    { label: "Campaign Assets", href: "/dashboard/affiliate/assets", icon: Megaphone, description: "WhatsApp, social and email copy" },
+    { label: "Campaign Assets", href: "/dashboard/affiliate/assets", icon: Megaphone, description: "Download approved posters" },
+    { label: "Affiliate Leads", href: "/dashboard/affiliate/leads", icon: UsersRound, description: "Subscriber contacts and sales angles" },
     { label: "Commissions", href: "/dashboard/affiliate/commissions", icon: BarChart3, description: "Approved earnings ledger" },
     { label: "Payouts", href: "/dashboard/affiliate/payouts", icon: WalletCards, description: "Cash out and settlements" },
   ],
@@ -117,7 +118,7 @@ export function DashboardRoleNav({ role }: { role: UserRole }) {
       {items.map(({ label, href, icon: Icon, description }) => {
         const active = isActive(pathname, searchParams, href);
         return (
-          <Link key={`${role}-${href}-${label}`} href={href} aria-current={active ? "page" : undefined} className={cn("group inline-flex min-h-11 w-full shrink-0 items-center gap-3 rounded-[1rem] border px-3.5 py-2.5 text-sm font-black transition duration-200 ease-out hover:-translate-y-0.5", description ? "min-h-[3.65rem]" : "", active ? "border-[var(--ink)] bg-[var(--ink)] text-white shadow-[0_12px_24px_rgba(7,19,31,0.2)]" : "border-[var(--ink)]/10 bg-white/45 text-[var(--ink)]/75 hover:border-[var(--ink)]/25 hover:bg-white/75 hover:text-[var(--ink)]")}>
+          <Link key={`${role}-${href}-${label}`} href={href} aria-current={active ? "page" : undefined} className={cn("group inline-flex min-h-11 w-full shrink-0 items-center gap-3 rounded-[1rem] border px-3.5 py-2.5 text-sm font-black transition duration-200 ease-out hover:-translate-y-0.5", description ? "min-h-[3.65rem]" : "", active ? "border-[var(--ink)] bg-[var(--ink)] text-white shadow-[0_12px_24px_rgba(7,19,31,0.2)]" : "border-[var(--ink)]/10 bg-white/45 text-[var(--ink)]/75 hover:border-[var(--ink)]/25 hover:bg-white/75 hover:text-[var(--ink)]") }>
             <span className={cn("grid h-8 w-8 shrink-0 place-items-center rounded-[0.8rem] border transition-colors", active ? "border-white/15 bg-white/10 text-[var(--gold)]" : "border-[var(--ink)]/10 bg-white/55 text-[var(--signal)] group-hover:text-[var(--ink)]")}><Icon className="h-4 w-4" /></span>
             <span className="min-w-0"><span className="block truncate">{label}</span>{description ? <span className={cn("mt-0.5 block truncate text-[0.65rem] font-bold tracking-normal", active ? "text-white/55" : "text-[var(--muted)]")}>{description}</span> : null}</span>
           </Link>
