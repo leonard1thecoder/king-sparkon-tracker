@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { DashboardHeader } from "./DashboardHeader";
-import { ContractDataWorkspace } from "@/components/dashboard/ContractDataWorkspace";
+import { DomainDataWorkspace } from "@/components/dashboard/DomainDataWorkspace";
 
 export function RouteSectionPage({
   role,
@@ -20,7 +20,7 @@ export function RouteSectionPage({
       <DashboardHeader role={role} title={title} description={description} />
       <main className="grid gap-5 p-5 md:p-8">
         {children ? children : null}
-        {endpoint ? <ContractDataWorkspace endpoint={endpoint} role={role} title={title} /> : null}
+        {endpoint ? <DomainDataWorkspace endpoint={endpoint} title={title} /> : null}
       </main>
     </>
   );

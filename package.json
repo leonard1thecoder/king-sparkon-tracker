@@ -11,7 +11,9 @@
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "api:contract:generate": "node scripts/generate-openapi-contract.mjs",
-    "api:contract:check": "node scripts/generate-openapi-contract.mjs --check"
+    "api:contract:check": "node scripts/generate-openapi-contract.mjs --check",
+    "test:e2e": "playwright test",
+    "test:e2e:install": "playwright install chromium"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.5",
@@ -34,7 +36,9 @@
     "eslint-config-next": "16.2.7",
     "tailwindcss": "4.3.0",
     "typescript": "6.0.3",
-    "vitest": "^4.0.15"
+    "vitest": "^4.0.15",
+    "@playwright/test": "^1.55.0",
+    "openapi-typescript": "^7.10.1"
   },
   "ignoreScripts": [
     "sharp",
