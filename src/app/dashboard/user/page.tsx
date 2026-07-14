@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { DashboardShell } from "../dashboard-shell";
 
 export const metadata: Metadata = {
   title: "User Tuck Shop Dashboard",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function UserDashboardPage() {
-  redirect("/dashboard/user/shop");
+  return <DashboardShell role="User" />;
 }
