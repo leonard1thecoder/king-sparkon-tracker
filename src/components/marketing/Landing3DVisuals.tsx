@@ -12,111 +12,70 @@ const CONTACT_FORM_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/
 const APPLICATION_COMPLAINT_PRIMARY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_35_42%20PM%20(2).png";
 const APPLICATION_COMPLAINT_SECONDARY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_26_11%20PM%20(2).png";
 
-type FloatingCardProps = {
-  image: string;
-  alt: string;
-  eyebrow: string;
-  title: string;
-  className: string;
-  icon: ReactNode;
-};
-
-function StageDecor() {
+function CircleStage({ children, label, icon }: { children: ReactNode; label: string; icon: ReactNode }) {
   return (
-    <>
-      <div className="landing-motion-glow pointer-events-none absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--signal-soft)] blur-3xl" aria-hidden="true" />
-      <div className="landing-motion-ring landing-motion-ring-one pointer-events-none absolute left-1/2 top-1/2 h-[78%] w-[78%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[var(--line)]" aria-hidden="true" />
-      <div className="landing-motion-ring landing-motion-ring-two pointer-events-none absolute left-1/2 top-1/2 h-[58%] w-[58%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[var(--line-strong)]" aria-hidden="true" />
-      <span className="landing-motion-dot landing-motion-dot-one" aria-hidden="true" />
-      <span className="landing-motion-dot landing-motion-dot-two" aria-hidden="true" />
-      <span className="landing-motion-dot landing-motion-dot-three" aria-hidden="true" />
-    </>
-  );
-}
-
-function FloatingCard({ image, alt, eyebrow, title, className, icon }: FloatingCardProps) {
-  return (
-    <article className={`capacity-card-3d absolute border border-[var(--line-strong)] bg-white p-3 shadow-[0_24px_55px_rgba(14,165,233,0.14)] ${className}`}>
-      <div className="relative overflow-hidden rounded-lg border border-[var(--line)] bg-white">
-        <Image src={image} alt={alt} width={760} height={760} unoptimized className="h-56 w-full object-contain p-2 sm:h-72" />
-        <div className="landing-motion-scan pointer-events-none absolute inset-y-0 w-20" aria-hidden="true" />
-      </div>
-      <div className="mt-3 flex items-center justify-between gap-3 px-1 pb-1">
-        <div>
-          <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.12em] text-[var(--signal-strong)]">{eyebrow}</p>
-          <p className="mt-1 text-lg font-black tracking-[-0.03em] text-[var(--ink)]">{title}</p>
-        </div>
-        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-[var(--line)] bg-[var(--signal-soft)] text-[var(--signal-strong)]">{icon}</div>
-      </div>
-    </article>
-  );
-}
-
-function SingleVisual({ image, alt, eyebrow, title, chips, icon }: { image: string; alt: string; eyebrow: string; title: string; chips: string[]; icon: ReactNode }) {
-  return (
-    <figure className="contact-hero-stage relative min-h-[28rem] overflow-hidden rounded-xl border border-[var(--line-strong)] bg-white p-4 shadow-[var(--shadow-soft)] sm:min-h-[32rem]">
-      <StageDecor />
-      <div className="contact-card-3d absolute inset-x-5 top-12 z-20 border border-[var(--line-strong)] bg-white p-3 shadow-[0_28px_65px_rgba(14,165,233,0.16)] sm:inset-x-10">
-        <div className="relative overflow-hidden rounded-lg border border-[var(--line)] bg-white">
-          <Image src={image} alt={alt} width={900} height={760} unoptimized className="h-72 w-full object-contain p-3 sm:h-80" />
-          <div className="landing-motion-scan pointer-events-none absolute inset-y-0 w-20" aria-hidden="true" />
-        </div>
-        <figcaption className="mt-4 flex items-center justify-between gap-4 px-1 pb-1">
-          <div>
-            <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.12em] text-[var(--signal-strong)]">{eyebrow}</p>
-            <p className="mt-1 text-xl font-black tracking-[-0.04em]">{title}</p>
-          </div>
-          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-[var(--line)] bg-[var(--signal-soft)] text-[var(--signal-strong)]">{icon}</div>
-        </figcaption>
-      </div>
-      <div className="absolute inset-x-5 bottom-5 z-30 grid grid-cols-3 gap-2 sm:inset-x-10">
-        {chips.map((chip, index) => (
-          <div key={chip} className="rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-center shadow-[var(--shadow-soft)]">
-            <p className="text-[0.56rem] font-extrabold uppercase tracking-[0.1em] text-[var(--signal-strong)]">0{index + 1}</p>
-            <p className="mt-1 text-xs font-extrabold text-[var(--ink)] sm:text-sm">{chip}</p>
-          </div>
-        ))}
-      </div>
+    <figure className="landing-circle-stage relative isolate mx-auto aspect-square w-full max-w-[28rem] overflow-hidden rounded-full border border-[var(--line-strong)] bg-white shadow-[0_20px_54px_rgba(14,165,233,0.12)]">
+      <div className="landing-circle-glow pointer-events-none absolute inset-[8%] rounded-full bg-[var(--signal-soft)]" aria-hidden="true" />
+      <div className="landing-circle-ring landing-circle-ring-one pointer-events-none absolute inset-[9%] rounded-full border border-[var(--line-strong)]" aria-hidden="true" />
+      <div className="landing-circle-ring landing-circle-ring-two pointer-events-none absolute inset-[20%] rounded-full border border-[var(--line)]" aria-hidden="true" />
+      {children}
+      <figcaption className="absolute bottom-[7%] left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full border border-[var(--line-strong)] bg-white px-4 py-2 shadow-[var(--shadow-soft)]">
+        <span className="text-[var(--signal)]">{icon}</span>
+        <span className="whitespace-nowrap text-xs font-extrabold text-[var(--ink)]">{label}</span>
+      </figcaption>
     </figure>
+  );
+}
+
+function SingleCircleVisual({ image, alt, label, icon }: { image: string; alt: string; label: string; icon: ReactNode }) {
+  return (
+    <CircleStage label={label} icon={icon}>
+      <div className="landing-circle-image absolute inset-[16%] z-20 overflow-hidden rounded-full border border-[var(--line)] bg-white shadow-[0_16px_38px_rgba(14,165,233,0.12)]">
+        <Image src={image} alt={alt} fill unoptimized sizes="(min-width: 1024px) 28rem, 88vw" className="object-contain p-[8%]" />
+        <div className="landing-circle-scan pointer-events-none absolute inset-x-[8%] h-14" aria-hidden="true" />
+      </div>
+    </CircleStage>
+  );
+}
+
+function DoubleCircleVisual({ primaryImage, primaryAlt, secondaryImage, secondaryAlt, label, icon }: { primaryImage: string; primaryAlt: string; secondaryImage: string; secondaryAlt: string; label: string; icon: ReactNode }) {
+  return (
+    <CircleStage label={label} icon={icon}>
+      <div className="landing-circle-card landing-circle-card-primary absolute left-[12%] top-[16%] z-10 aspect-square w-[55%] overflow-hidden rounded-full border border-[var(--line-strong)] bg-white shadow-[0_16px_40px_rgba(14,165,233,0.12)]">
+        <Image src={primaryImage} alt={primaryAlt} fill unoptimized sizes="16rem" className="object-contain p-[8%]" />
+      </div>
+      <div className="landing-circle-card landing-circle-card-secondary absolute bottom-[16%] right-[10%] z-20 aspect-square w-[55%] overflow-hidden rounded-full border border-[var(--line-strong)] bg-white shadow-[0_18px_44px_rgba(14,165,233,0.15)]">
+        <Image src={secondaryImage} alt={secondaryAlt} fill unoptimized sizes="16rem" className="object-contain p-[8%]" />
+      </div>
+      <div className="landing-circle-scan pointer-events-none absolute inset-x-[14%] z-30 h-14" aria-hidden="true" />
+    </CircleStage>
   );
 }
 
 export function Sponsor3DVisual() {
-  return <SingleVisual image={TIP_KING_SPARKON_IMAGE} alt="3D King Sparkon platform support visual" eyebrow="Platform support" title="Maintain. Test. Improve." chips={["Host", "Secure", "Grow"]} icon={<BadgeCheck className="h-5 w-5" />} />;
+  return <SingleCircleVisual image={TIP_KING_SPARKON_IMAGE} alt="3D King Sparkon platform support visual" label="Maintain · Test · Improve" icon={<BadgeCheck className="h-4 w-4" />} />;
 }
 
 export function Role3DVisual() {
-  return <SingleVisual image={CHOOSE_FORM_IMAGE} alt="3D King Sparkon role selection visual" eyebrow="Choose your access" title="One platform. The correct role." chips={["User", "Affiliate", "Business"]} icon={<Crown className="h-5 w-5" />} />;
+  return <SingleCircleVisual image={CHOOSE_FORM_IMAGE} alt="3D King Sparkon role selection visual" label="Choose the correct access" icon={<Crown className="h-4 w-4" />} />;
 }
 
 export function Capacity3DVisual() {
-  return (
-    <figure className="capacity-hero-stage relative min-h-[34rem] overflow-hidden rounded-xl border border-[var(--line-strong)] bg-white p-4 shadow-[var(--shadow-soft)] sm:min-h-[38rem]">
-      <StageDecor />
-      <FloatingCard image={ADMIN_CAPACITY_IMAGE} alt="3D administrator capacity dashboard" eyebrow="Platform capacity" title="Admin control" icon={<ShieldCheck className="h-5 w-5" />} className="capacity-card-3d-admin left-3 top-12 z-10 w-[72%] sm:left-8 sm:w-[61%]" />
-      <FloatingCard image={OWNER_CAPACITY_IMAGE} alt="3D owner capacity dashboard" eyebrow="Business capacity" title="Owner control" icon={<BriefcaseBusiness className="h-5 w-5" />} className="capacity-card-3d-owner bottom-12 right-3 z-20 w-[72%] sm:right-8 sm:w-[61%]" />
-      <div className="absolute bottom-4 left-4 right-4 z-30 flex items-center justify-between gap-3 rounded-lg border border-[var(--line)] bg-white px-4 py-3 shadow-[var(--shadow-soft)]">
-        <p className="text-sm font-extrabold text-[var(--ink)]">Capacity stays visible before it becomes a problem.</p>
-        <ScanLine className="h-5 w-5 shrink-0 text-[var(--signal)]" />
-      </div>
-    </figure>
-  );
+  return <DoubleCircleVisual primaryImage={ADMIN_CAPACITY_IMAGE} primaryAlt="3D administrator capacity dashboard" secondaryImage={OWNER_CAPACITY_IMAGE} secondaryAlt="3D owner capacity dashboard" label="Admin and owner capacity" icon={<BriefcaseBusiness className="h-4 w-4" />} />;
 }
 
 export function Engineering3DVisual() {
-  return (
-    <figure className="capacity-hero-stage relative min-h-[34rem] overflow-hidden rounded-xl border border-[var(--line-strong)] bg-white p-4 shadow-[var(--shadow-soft)] sm:min-h-[38rem]">
-      <StageDecor />
-      <FloatingCard image={APPLICATION_COMPLAINT_PRIMARY_IMAGE} alt="3D customer feedback evidence visual" eyebrow="Evidence input" title="Listen to friction" icon={<Megaphone className="h-5 w-5" />} className="capacity-card-3d-admin left-3 top-12 z-10 w-[72%] sm:left-8 sm:w-[61%]" />
-      <FloatingCard image={APPLICATION_COMPLAINT_SECONDARY_IMAGE} alt="3D engineering response visual" eyebrow="Engineering response" title="Fix and prove" icon={<ShieldCheck className="h-5 w-5" />} className="capacity-card-3d-owner bottom-12 right-3 z-20 w-[72%] sm:right-8 sm:w-[61%]" />
-      <div className="absolute bottom-4 left-4 right-4 z-30 grid grid-cols-3 gap-2 rounded-lg border border-[var(--line)] bg-white p-3 shadow-[var(--shadow-soft)]">
-        {["Listen", "Fix", "Prove"].map((label, index) => <div key={label} className="text-center"><p className="text-[0.56rem] font-extrabold text-[var(--signal-strong)]">0{index + 1}</p><p className="mt-1 text-xs font-extrabold sm:text-sm">{label}</p></div>)}
-      </div>
-    </figure>
-  );
+  return <DoubleCircleVisual primaryImage={APPLICATION_COMPLAINT_PRIMARY_IMAGE} primaryAlt="3D customer feedback evidence visual" secondaryImage={APPLICATION_COMPLAINT_SECONDARY_IMAGE} secondaryAlt="3D engineering response visual" label="Listen · Fix · Prove" icon={<Megaphone className="h-4 w-4" />} />;
 }
 
 export function Contact3DVisual() {
-  return <SingleVisual image={CONTACT_FORM_IMAGE} alt="3D King Sparkon contact workflow visual" eyebrow="Contact pipeline" title="Message becomes action." chips={["Describe", "Review", "Build"]} icon={<QrCode className="h-5 w-5" />} />;
+  return <SingleCircleVisual image={CONTACT_FORM_IMAGE} alt="3D King Sparkon contact workflow visual" label="Message becomes action" icon={<QrCode className="h-4 w-4" />} />;
 }
 
+export function CompactScanBadge() {
+  return <div className="grid h-12 w-12 place-items-center rounded-full border border-[var(--line-strong)] bg-white text-[var(--signal)] shadow-[var(--shadow-soft)]"><ScanLine className="h-5 w-5" /></div>;
+}
+
+export function CompactShieldBadge() {
+  return <div className="grid h-12 w-12 place-items-center rounded-full border border-[var(--line-strong)] bg-white text-[var(--signal)] shadow-[var(--shadow-soft)]"><ShieldCheck className="h-5 w-5" /></div>;
+}
