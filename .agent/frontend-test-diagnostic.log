@@ -1,0 +1,67 @@
+exit_status=1
+$ vitest run --passWithNoTests
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.9 [39m[90m/home/runner/work/king-sparkon-tracker/king-sparkon-tracker[39m
+
+ [32m✓[39m src/services/ticketService.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/components/layout/DashboardRoleNav.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [31m❯[39m e2e/dashboard-roles.spec.ts [2m([22m[2m0 test[22m[2m)[22m
+ [32m✓[39m src/lib/auth/registration.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [31m❯[39m e2e/mobile-navigation.spec.ts [2m([22m[2m0 test[22m[2m)[22m
+ [32m✓[39m src/lib/utils/money.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 270[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m e2e/dashboard-roles.spec.ts[2m [ e2e/dashboard-roles.spec.ts ][22m
+[31m[1mError[22m: Playwright Test did not expect test.describe() to be called here.
+Most common reasons include:
+- You are calling test.describe() in a configuration file.
+- You are calling test.describe() in a file that is imported by the configuration file.
+- You have two different versions of @playwright/test. This usually happens
+  when one of the dependencies in your package.json depends on @playwright/test.
+- You are calling test.describe() from an async test.describe() block. Only sync ones are supported.[39m
+[90m [2m❯[22m _TestTypeImpl._currentSuite node_modules/playwright/lib/common/index.js:[2m2257:13[22m[39m
+[90m [2m❯[22m _TestTypeImpl._describe node_modules/playwright/lib/common/index.js:[2m2298:24[22m[39m
+[90m [2m❯[22m Function.describe node_modules/playwright/lib/common/index.js:[2m1220:12[22m[39m
+[36m [2m❯[22m e2e/dashboard-roles.spec.ts:[2m56:8[22m[39m
+    [90m 54|[39m
+    [90m 55|[39m for (const [role, routes] of Object.entries(routesByRole) as Array<[Ro…
+    [90m 56|[39m   test[33m.[39m[34mdescribe[39m([32m`[39m[36m${[39mrole[36m}[39m[32m navigation`[39m[33m,[39m () [33m=>[39m {
+    [90m   |[39m        [31m^[39m
+    [90m 57|[39m     test[33m.[39m[34mbeforeEach[39m([35masync[39m ({ page }) [33m=>[39m {
+    [90m 58|[39m       [35mawait[39m [34mauthenticate[39m(page[33m,[39m role)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m e2e/mobile-navigation.spec.ts[2m [ e2e/mobile-navigation.spec.ts ][22m
+[31m[1mError[22m: Playwright Test did not expect test() to be called here.
+Most common reasons include:
+- You are calling test() in a configuration file.
+- You are calling test() in a file that is imported by the configuration file.
+- You have two different versions of @playwright/test. This usually happens
+  when one of the dependencies in your package.json depends on @playwright/test.
+- You are calling test() from an async test.describe() block. Only sync ones are supported.[39m
+[90m [2m❯[22m _TestTypeImpl._currentSuite node_modules/playwright/lib/common/index.js:[2m2257:13[22m[39m
+[90m [2m❯[22m _TestTypeImpl._createTest node_modules/playwright/lib/common/index.js:[2m2271:24[22m[39m
+[90m [2m❯[22m node_modules/playwright/lib/common/index.js:[2m1220:12[22m[39m
+[36m [2m❯[22m e2e/mobile-navigation.spec.ts:[2m17:3[22m[39m
+    [90m 15|[39m
+    [90m 16|[39m [35mfor[39m ([35mconst[39m viewport [35mof[39m viewports) {
+    [90m 17|[39m   test(`owner navigation works at ${viewport.width}px`, async ({ page …
+    [90m   |[39m   [31m^[39m
+    [90m 18|[39m     [35mawait[39m page[33m.[39m[34msetViewportSize[39m(viewport)[33m;[39m
+    [90m 19|[39m     [35mawait[39m page[33m.[39m[34mcontext[39m()[33m.[39m[34maddCookies[39m([{
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m4 passed[39m[22m[90m (6)[39m
+[2m      Tests [22m [1m[32m14 passed[39m[22m[90m (14)[39m
+[2m   Start at [22m 15:57:00
+[2m   Duration [22m 1.31s[2m (transform 447ms, setup 0ms, import 861ms, tests 296ms, environment 1ms)[22m
+
+
+::error file=/home/runner/work/king-sparkon-tracker/king-sparkon-tracker/e2e/dashboard-roles.spec.ts,title=e2e/dashboard-roles.spec.ts,line=56,column=8::Error: Playwright Test did not expect test.describe() to be called here.%0AMost common reasons include:%0A- You are calling test.describe() in a configuration file.%0A- You are calling test.describe() in a file that is imported by the configuration file.%0A- You have two different versions of @playwright/test. This usually happens%0A  when one of the dependencies in your package.json depends on @playwright/test.%0A- You are calling test.describe() from an async test.describe() block. Only sync ones are supported.%0A ❯ _TestTypeImpl._currentSuite node_modules/playwright/lib/common/index.js:2257:13%0A ❯ _TestTypeImpl._describe node_modules/playwright/lib/common/index.js:2298:24%0A ❯ Function.describe node_modules/playwright/lib/common/index.js:1220:12%0A ❯ e2e/dashboard-roles.spec.ts:56:8%0A%0A
+
+::error file=/home/runner/work/king-sparkon-tracker/king-sparkon-tracker/e2e/mobile-navigation.spec.ts,title=e2e/mobile-navigation.spec.ts,line=17,column=3::Error: Playwright Test did not expect test() to be called here.%0AMost common reasons include:%0A- You are calling test() in a configuration file.%0A- You are calling test() in a file that is imported by the configuration file.%0A- You have two different versions of @playwright/test. This usually happens%0A  when one of the dependencies in your package.json depends on @playwright/test.%0A- You are calling test() from an async test.describe() block. Only sync ones are supported.%0A ❯ _TestTypeImpl._currentSuite node_modules/playwright/lib/common/index.js:2257:13%0A ❯ _TestTypeImpl._createTest node_modules/playwright/lib/common/index.js:2271:24%0A ❯ node_modules/playwright/lib/common/index.js:1220:12%0A ❯ e2e/mobile-navigation.spec.ts:17:3%0A%0A
+error: script "test" exited with code 1
