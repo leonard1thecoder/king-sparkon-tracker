@@ -12,7 +12,7 @@ export default function AdminTipsPage() {
       role="ADMIN"
       title="Tips & Withdrawals"
       description="Platform oversight for worker tip QR links, gross amount, service fee, net payout, owner approval state, and withdrawal history."
-      endpoint="GET /api/admin/tips/withdrawals"
+      endpoint="GET /api/tips?status=PAID"
     />
   );
 }
