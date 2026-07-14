@@ -12,7 +12,7 @@ export default function OwnerCapacityPage() {
       role="OWNER"
       title="Business capacity"
       description="View operating capacity across products, stock, barcodes, workers, ticket classes, job opportunities, applications, tips, promotions, and reports."
-      endpoint="GET /api/owner/capacity"
+      endpoint="GET /api/business-account/summary"
     />
   );
 }
