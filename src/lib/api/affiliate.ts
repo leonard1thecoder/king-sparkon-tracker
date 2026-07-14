@@ -32,7 +32,7 @@ export function completeAffiliateOnboarding(payload: Record<string, unknown>) {
 }
 
 export function getAffiliateReferrals() {
-  return apiGet("/affiliate/referrals");
+  return apiGet("/affiliates/me/commissions");
 }
 
 export function getAffiliateAssets() {
