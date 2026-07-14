@@ -23,6 +23,7 @@ const adsensePublisherId = "ca-pub-8918343184695576";
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://king-sparkon-tracker.com"),
   applicationName: "King Sparkon Tracker",
+  manifest: "/manifest.webmanifest",
   title: {
     default: "King Sparkon | Commerce, tickets and team operations",
     template: "%s | King Sparkon",
@@ -50,6 +51,15 @@ export const metadata: Metadata = {
   creator: "Sizolwakhe Leonard Mthimunye, known as King Sparkon",
   publisher: "King Sparkon Tracker",
   category: "Software Application",
+  referrer: "origin-when-cross-origin",
+  formatDetection: {
+    address: false,
+    email: false,
+    telephone: false,
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
   icons: {
     icon: "/king-sparkon-logo.png",
     shortcut: "/king-sparkon-logo.png",
