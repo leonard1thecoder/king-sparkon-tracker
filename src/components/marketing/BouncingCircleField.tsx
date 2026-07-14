@@ -11,10 +11,12 @@ export type BouncingCircleItem = {
   tags?: readonly string[];
 };
 
+type WaveVariant = "vision" | "notes" | "stats" | "services" | "features" | "subscription";
+
 type BouncingCircleFieldProps = {
   items: readonly BouncingCircleItem[];
   ariaLabel: string;
-  variant?: "vision" | "notes" | "stats" | "services" | "features";
+  variant?: WaveVariant;
   showConnector?: boolean;
   connectorOpacity?: number;
 };
@@ -54,20 +56,32 @@ const variantClasses = {
     stage: "min-h-[80rem] lg:min-h-[46rem]",
     bubble: "w-[clamp(9.5rem,15vw,12rem)] p-4 sm:p-5",
   },
+  subscription: {
+    stage: "min-h-[54rem] sm:min-h-[58rem] lg:min-h-[22rem]",
+    bubble: "w-[clamp(7.25rem,38vw,8.75rem)] p-3.5 sm:w-[8.75rem] sm:p-4 lg:w-[clamp(7.5rem,12vw,9rem)]",
+  },
 } as const;
 
 function clamp(value: number, minimum: number, maximum: number) {
   return Math.min(maximum, Math.max(minimum, value));
 }
 
+function resolveOrientation(width: number, variant: WaveVariant): Orientation {
+  if (variant === "subscription") {
+    return window.innerWidth >= DESKTOP_BREAKPOINT ? "horizontal" : "vertical";
+  }
+
+  return width >= DESKTOP_BREAKPOINT ? "horizontal" : "vertical";
+}
+
 function createWaveMetrics(
   width: number,
   height: number,
   radius: number,
+  orientation: Orientation,
+  variant: WaveVariant,
 ): WaveMetrics {
-  const orientation: Orientation =
-    width >= DESKTOP_BREAKPOINT ? "horizontal" : "vertical";
-  const padding = radius + 24;
+  const padding = radius + (variant === "subscription" ? 18 : 24);
 
   if (orientation === "horizontal") {
     const availableHeight = Math.max(0, height - radius * 2 - 64);
@@ -76,7 +90,10 @@ function createWaveMetrics(
       start: padding,
       span: Math.max(1, width - padding * 2),
       baseline: height / 2,
-      amplitude: clamp(availableHeight * 0.18, 18, 52),
+      amplitude:
+        variant === "subscription"
+          ? clamp(availableHeight * 0.12, 10, 24)
+          : clamp(availableHeight * 0.18, 18, 52),
     };
   }
 
@@ -86,7 +103,10 @@ function createWaveMetrics(
     start: padding,
     span: Math.max(1, height - padding * 2),
     baseline: width / 2,
-    amplitude: clamp(availableWidth * 0.22, 16, 42),
+    amplitude:
+      variant === "subscription"
+        ? clamp(availableWidth * 0.16, 12, 28)
+        : clamp(availableWidth * 0.22, 16, 42),
   };
 }
 
@@ -134,6 +154,7 @@ export function BouncingCircleField({
   const bubbleRefs = useRef<Array<HTMLElement | null>>([]);
   const classes = variantClasses[variant];
   const safeConnectorOpacity = clamp(connectorOpacity, 0, 1);
+  const isSubscription = variant === "subscription";
 
   useEffect(() => {
     const stageElement = containerRef.current;
@@ -155,7 +176,14 @@ export function BouncingCircleField({
       const maximumRadius = Math.max(
         ...elements.map((element) => element.offsetWidth / 2),
       );
-      const metrics = createWaveMetrics(width, height, maximumRadius);
+      const orientation = resolveOrientation(width, variant);
+      const metrics = createWaveMetrics(
+        width,
+        height,
+        maximumRadius,
+        orientation,
+        variant,
+      );
       const path = buildWavePath(metrics, currentPhase);
 
       stage.dataset.waveOrientation = metrics.orientation;
@@ -195,15 +223,17 @@ export function BouncingCircleField({
     resizeObserver.observe(stage);
     elements.forEach((element) => resizeObserver.observe(element));
     reducedMotion.addEventListener("change", startMotion);
+    window.addEventListener("resize", startMotion);
     startMotion();
 
     return () => {
       window.cancelAnimationFrame(animationFrame);
       resizeObserver.disconnect();
       reducedMotion.removeEventListener("change", startMotion);
+      window.removeEventListener("resize", startMotion);
       delete stage.dataset.waveOrientation;
     };
-  }, [items]);
+  }, [items, variant]);
 
   return (
     <div
@@ -226,19 +256,19 @@ export function BouncingCircleField({
           ref={glowPathRef}
           fill="none"
           stroke="var(--signal)"
-          strokeWidth="12"
+          strokeWidth={isSubscription ? "14" : "12"}
           strokeLinecap="round"
-          opacity={showConnector ? safeConnectorOpacity * 0.12 : 0}
+          opacity={showConnector ? safeConnectorOpacity * (isSubscription ? 0.16 : 0.12) : 0}
           vectorEffect="non-scaling-stroke"
         />
         <path
           ref={linePathRef}
           fill="none"
           stroke="var(--signal)"
-          strokeWidth="3.5"
+          strokeWidth={isSubscription ? "4.5" : "3.5"}
           strokeLinecap="round"
           strokeLinejoin="round"
-          strokeDasharray="18 12"
+          strokeDasharray={isSubscription ? "22 10" : "18 12"}
           opacity={showConnector ? safeConnectorOpacity : 0}
           vectorEffect="non-scaling-stroke"
         />
@@ -252,17 +282,23 @@ export function BouncingCircleField({
           }}
           className={`absolute left-0 top-0 z-10 flex aspect-square will-change-transform flex-col items-center justify-center rounded-full border border-[var(--line-strong)] bg-white text-center shadow-[0_18px_45px_rgba(14,165,233,0.13)] ${classes.bubble}`}
         >
-          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-[var(--line)] bg-[var(--signal-soft)] text-[var(--signal)] sm:h-12 sm:w-12">
-            <Icon className="h-5 w-5" />
+          <div
+            className={`grid shrink-0 place-items-center rounded-full border border-[var(--line)] bg-[var(--signal-soft)] text-[var(--signal)] ${isSubscription ? "h-9 w-9" : "h-11 w-11 sm:h-12 sm:w-12"}`}
+          >
+            <Icon className={isSubscription ? "h-4 w-4" : "h-5 w-5"} />
           </div>
-          <p className="mt-3 text-[0.56rem] font-extrabold uppercase tracking-[0.12em] text-[var(--signal-strong)]">
+          <p
+            className={`font-extrabold uppercase text-[var(--signal-strong)] ${isSubscription ? "mt-2 text-[0.48rem] tracking-[0.1em]" : "mt-3 text-[0.56rem] tracking-[0.12em]"}`}
+          >
             {eyebrow ?? `0${index + 1}`}
           </p>
-          <h3 className="mt-1 text-base font-black tracking-[-0.03em] sm:text-lg">
+          <h3
+            className={`font-black tracking-[-0.03em] ${isSubscription ? "mt-1 text-sm sm:text-base" : "mt-1 text-base sm:text-lg"}`}
+          >
             {title}
           </h3>
           <p
-            className={`mt-2 text-[var(--steel)] ${variant === "features" ? "text-[0.62rem] leading-4 sm:text-[0.7rem] sm:leading-5" : "text-[0.7rem] leading-5 sm:text-xs sm:leading-5"}`}
+            className={`mt-2 text-[var(--steel)] ${variant === "features" ? "text-[0.62rem] leading-4 sm:text-[0.7rem] sm:leading-5" : isSubscription ? "text-[0.6rem] leading-4 sm:text-[0.66rem]" : "text-[0.7rem] leading-5 sm:text-xs sm:leading-5"}`}
           >
             {copy}
           </p>
