@@ -23,11 +23,18 @@ for (const viewport of viewports) {
       httpOnly: true,
       sameSite: "Lax",
     }]);
-    await page.route("**/api/**", (route) => route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ content: [], page: 0, size: 20, totalElements: 0, totalPages: 0 }),
-    }));
+    await page.route("**/api/**", (route) => {
+      const pathname = new URL(route.request().url()).pathname;
+      const arrayResponse = pathname.includes("/products/barcode-automation")
+        || pathname.includes("/product-promotions/");
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(arrayResponse
+          ? []
+          : { content: [], page: 0, size: 20, totalElements: 0, totalPages: 0 }),
+      });
+    });
     await page.goto("/dashboard/owner", { waitUntil: "domcontentloaded" });
 
     if (viewport.width < 1024) {
