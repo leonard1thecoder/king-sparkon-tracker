@@ -27,6 +27,7 @@ import { FounderVerificationCard } from "@/components/marketing/FounderVerificat
 import { JobOpportunitiesSection } from "@/components/marketing/JobOpportunitiesSection";
 import { Capacity3DVisual, Contact3DVisual, Engineering3DVisual, Role3DVisual, Sponsor3DVisual } from "@/components/marketing/Landing3DVisuals";
 import { SubscriptionSection } from "@/components/marketing/SubscriptionSection";
+import { VisionBubbleField } from "@/components/marketing/VisionBubbleField";
 import { BUSINESS_PRICING_PLANS } from "@/lib/config/business-policy";
 
 const navLinks = [
@@ -151,7 +152,7 @@ export function KingSparkonLanding() {
       <section id="vision" className="scroll-mt-28 border-t border-[var(--line)] bg-white px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end"><div><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Vision</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Control real-world operations from one trusted record.</h2></div><p className="text-base leading-8 text-[var(--steel)] lg:text-lg">Every scan, sale, ticket, payment and role action should be understandable without searching through disconnected systems.</p></div>
-          <div className="mt-10 grid gap-5 md:grid-cols-3">{visionPillars.map(({ icon: Icon, title, copy }) => <article key={title} className="rounded-xl border border-[var(--line)] bg-white p-6"><div className="grid h-11 w-11 place-items-center rounded-lg border border-[var(--line)] text-[var(--signal)]"><Icon className="h-5 w-5" /></div><h3 className="mt-5 text-xl font-black tracking-[-0.03em]">{title}</h3><p className="mt-3 text-sm leading-7 text-[var(--steel)]">{copy}</p></article>)}</div>
+          <VisionBubbleField items={visionPillars} />
         </div>
       </section>
 
