@@ -6,7 +6,7 @@ import { ACCESS_COOKIE_NAME, dashboardPathForSession, decodeJwtPayload } from "@
 import { registrationPrivilegeOptions } from "@/lib/auth/registration";
 
 export const metadata: Metadata = {
-  title: "Register | King Sparkon Tracker Role Access",
+  title: "Register Business, User or Affiliate Account",
   description:
     "Create a King Sparkon Tracker account as a free user, free affiliate, or business owner for barcode inventory, QR tickets, cart checkout, job opportunities, worker tips, promotions, and reports.",
   keywords: [
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "/register" },
   openGraph: {
-    title: "Register for King Sparkon Tracker",
+    title: "Register a Business, User or Affiliate Account",
     description: "Register as a free user, free affiliate, or business owner for barcode inventory, tickets, jobs, tips, affiliates, cart checkout, and reporting.",
     type: "website",
     siteName: "King Sparkon Tracker",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Register for King Sparkon Tracker",
+    title: "Register Business, User or Affiliate | King Sparkon Tracker",
     description: "Choose User, Affiliate, or Business Owner and see only the fields that role needs.",
     images: ["/king-sparkon-logo.png"],
   },
