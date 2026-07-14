@@ -1,11 +1,20 @@
-import { apiGet, apiPost } from "./client";
+import { apiGet, apiPatch, apiPost } from "./client";
+
+export type AffiliateWithdrawalEligibility = {
+  affiliateId: number;
+  availableAmount: number;
+  eligibleCommissionCount: number;
+  paypalLinkReady: boolean;
+  canWithdraw: boolean;
+  paypalLink?: string | null;
+};
 
 export function getAffiliateProfile() {
-  return apiGet("/users/me");
+  return apiGet("/affiliates/me");
 }
 
 export function completeAffiliateOnboarding(payload: Record<string, unknown>) {
-  return apiPost("/affiliate/onboarding", payload);
+  return apiPatch("/affiliates/me/onboarding", payload);
 }
 
 export function getAffiliateReferrals() {
@@ -17,13 +26,17 @@ export function getAffiliateAssets() {
 }
 
 export function getAffiliateCommissions() {
-  return apiGet("/affiliate/commissions");
+  return apiGet("/affiliates/me/commissions");
 }
 
 export function getAffiliatePayouts() {
-  return apiGet("/affiliate/payouts");
+  return apiGet("/affiliates/me/withdrawals");
+}
+
+export function getAffiliateWithdrawalEligibility() {
+  return apiGet<AffiliateWithdrawalEligibility>("/affiliates/me/withdrawals/eligibility");
 }
 
 export function requestAffiliatePayout() {
-  return apiPost("/affiliate/payouts", {});
+  return apiPost("/affiliates/me/withdrawals", {});
 }
