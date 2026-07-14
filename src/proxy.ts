@@ -8,7 +8,12 @@ const roleRoutes = [
   ["/dashboard/owner", "Owner"],
   ["/dashboard/worker", "Worker"],
   ["/dashboard/affiliate", "Affiliate"],
+  ["/dashboard/user", "User"],
 ] as const;
+
+function matchesRoute(pathname: string, prefix: string) {
+  return pathname === prefix || pathname.startsWith(`${prefix}/`);
+}
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -30,7 +35,7 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(dashboardPathForSession(claims), request.url));
   }
 
-  const matchedRoleRoute = roleRoutes.find(([prefix]) => pathname.startsWith(prefix));
+  const matchedRoleRoute = roleRoutes.find(([prefix]) => matchesRoute(pathname, prefix));
   if (matchedRoleRoute && authenticated && !hasRole(claims, matchedRoleRoute[1])) {
     return NextResponse.redirect(new URL(dashboardPathForSession(claims), request.url));
   }
