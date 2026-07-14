@@ -1,4 +1,5 @@
 import { apiGet, apiPatch, apiPost } from "./client";
+import type { PageResponse } from "@/lib/types/backend";
 
 export type AffiliateWithdrawalEligibility = {
   affiliateId: number;
@@ -7,6 +8,19 @@ export type AffiliateWithdrawalEligibility = {
   paypalLinkReady: boolean;
   canWithdraw: boolean;
   paypalLink?: string | null;
+};
+
+export type AffiliateLead = {
+  id: number;
+  contactValue: string;
+  contactType: "EMAIL" | "CELLPHONE" | string;
+  subscriberType: "CLIENT" | "AFFILIATE" | "KINGSPARKON_SUBSCRIBER" | string;
+  preferredChannel: "EMAIL" | "WHATSAPP" | "ANY" | string;
+  source: string;
+  niche: string;
+  opportunity: string;
+  affiliateRegistered: boolean;
+  createdDate?: string | null;
 };
 
 export function getAffiliateProfile() {
@@ -22,7 +36,11 @@ export function getAffiliateReferrals() {
 }
 
 export function getAffiliateAssets() {
-  return apiGet("/affiliate/assets");
+  return apiGet("/affiliates/assets");
+}
+
+export function getAffiliateLeads(page = 0, size = 50) {
+  return apiGet<PageResponse<AffiliateLead>>(`/affiliates/leads?page=${page}&size=${size}`);
 }
 
 export function getAffiliateCommissions() {
