@@ -12,7 +12,7 @@ export default function AdminCapacityPage() {
       role="ADMIN"
       title="All platform capacity"
       description="View capacity across users, businesses, tickets, stock, workers, job opportunities, applications, promotions, tips, reports, and platform health."
-      endpoint="GET /api/admin/capacity"
+      endpoint="GET /api/admin/overview"
     />
   );
 }
