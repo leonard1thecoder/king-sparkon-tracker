@@ -11,95 +11,129 @@ export type BouncingCircleItem = {
   tags?: readonly string[];
 };
 
-type MovingBody = {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  radius: number;
-};
-
 type BouncingCircleFieldProps = {
   items: readonly BouncingCircleItem[];
   ariaLabel: string;
   variant?: "vision" | "notes" | "stats" | "services" | "features";
+  showConnector?: boolean;
+  connectorOpacity?: number;
 };
 
-const MIN_SPEED = 7;
-const MAX_SPEED = 16;
-const COLLISION_DAMPING = 0.88;
-const WALL_DAMPING = 0.92;
+type Orientation = "horizontal" | "vertical";
+
+type WaveMetrics = {
+  orientation: Orientation;
+  start: number;
+  span: number;
+  baseline: number;
+  amplitude: number;
+};
+
+const DESKTOP_BREAKPOINT = 1024;
+const WAVE_CYCLES = 1.15;
+const WAVE_SPEED = 0.55;
 
 const variantClasses = {
   vision: {
-    stage: "min-h-[40rem] sm:min-h-[36rem] lg:min-h-[34rem]",
+    stage: "min-h-[44rem] lg:min-h-[34rem]",
     bubble: "w-[clamp(10rem,28vw,19rem)] p-6 sm:p-8",
   },
   notes: {
-    stage: "min-h-[32rem] sm:min-h-[30rem] lg:min-h-[29rem]",
+    stage: "min-h-[38rem] lg:min-h-[28rem]",
     bubble: "w-[clamp(8.5rem,25vw,13.5rem)] p-5 sm:p-6",
   },
   stats: {
-    stage: "min-h-[40rem] sm:min-h-[35rem] lg:min-h-[34rem]",
+    stage: "min-h-[48rem] lg:min-h-[31rem]",
     bubble: "w-[clamp(8.5rem,22vw,14rem)] p-5 sm:p-6",
   },
   services: {
-    stage: "min-h-[49rem] sm:min-h-[44rem] lg:min-h-[42rem]",
-    bubble: "w-[clamp(8.5rem,19vw,14.5rem)] p-5 sm:p-6",
+    stage: "min-h-[68rem] lg:min-h-[38rem]",
+    bubble: "w-[clamp(8.5rem,17vw,13rem)] p-5 sm:p-6",
   },
   features: {
-    stage: "min-h-[72rem] sm:min-h-[62rem] lg:min-h-[50rem]",
-    bubble: "w-[clamp(10.25rem,22vw,16rem)] p-4 sm:p-5",
+    stage: "min-h-[80rem] lg:min-h-[46rem]",
+    bubble: "w-[clamp(9.5rem,15vw,12rem)] p-4 sm:p-5",
   },
 } as const;
 
-const velocitySeeds = [
-  { vx: 11, vy: 7 },
-  { vx: -9, vy: 10 },
-  { vx: -8, vy: -11 },
-  { vx: 10, vy: -8 },
-  { vx: 7, vy: 12 },
-  { vx: -12, vy: 7 },
-] as const;
-
-function keepSlowDrift(body: MovingBody) {
-  const speed = Math.hypot(body.vx, body.vy);
-  if (speed === 0) {
-    body.vx = MIN_SPEED;
-    body.vy = MIN_SPEED * 0.5;
-    return;
-  }
-
-  const target = Math.min(MAX_SPEED, Math.max(MIN_SPEED, speed));
-  const scale = target / speed;
-  body.vx *= scale;
-  body.vy *= scale;
+function clamp(value: number, minimum: number, maximum: number) {
+  return Math.min(maximum, Math.max(minimum, value));
 }
 
-function layoutSeeds(count: number, compact: boolean) {
-  if (count === 3) {
-    return compact
-      ? [{ x: 0.3, y: 0.22 }, { x: 0.7, y: 0.5 }, { x: 0.34, y: 0.8 }]
-      : [{ x: 0.22, y: 0.34 }, { x: 0.78, y: 0.34 }, { x: 0.5, y: 0.74 }];
+function createWaveMetrics(
+  width: number,
+  height: number,
+  radius: number,
+): WaveMetrics {
+  const orientation: Orientation =
+    width >= DESKTOP_BREAKPOINT ? "horizontal" : "vertical";
+  const padding = radius + 24;
+
+  if (orientation === "horizontal") {
+    const availableHeight = Math.max(0, height - radius * 2 - 64);
+    return {
+      orientation,
+      start: padding,
+      span: Math.max(1, width - padding * 2),
+      baseline: height / 2,
+      amplitude: clamp(availableHeight * 0.18, 18, 52),
+    };
   }
 
-  const columns = compact ? 2 : count === 4 ? 2 : 3;
-  const rows = Math.ceil(count / columns);
-
-  return Array.from({ length: count }, (_, index) => {
-    const row = Math.floor(index / columns);
-    const column = index % columns;
-    const itemsInRow = Math.min(columns, count - row * columns);
-    const x = (column + 1) / (itemsInRow + 1);
-    const y = (row + 1) / (rows + 1);
-    return { x, y };
-  });
+  const availableWidth = Math.max(0, width - radius * 2 - 48);
+  return {
+    orientation,
+    start: padding,
+    span: Math.max(1, height - padding * 2),
+    baseline: width / 2,
+    amplitude: clamp(availableWidth * 0.22, 16, 42),
+  };
 }
 
-export function BouncingCircleField({ items, ariaLabel, variant = "stats" }: BouncingCircleFieldProps) {
+function pointOnWave(metrics: WaveMetrics, progress: number, phase: number) {
+  const waveOffset =
+    Math.sin(progress * Math.PI * 2 * WAVE_CYCLES + phase) * metrics.amplitude;
+
+  if (metrics.orientation === "horizontal") {
+    return {
+      x: metrics.start + metrics.span * progress,
+      y: metrics.baseline + waveOffset,
+    };
+  }
+
+  return {
+    x: metrics.baseline + waveOffset,
+    y: metrics.start + metrics.span * progress,
+  };
+}
+
+function buildWavePath(metrics: WaveMetrics, phase: number) {
+  const segments = 80;
+  const points = Array.from({ length: segments + 1 }, (_, index) =>
+    pointOnWave(metrics, index / segments, phase),
+  );
+  return points
+    .map(
+      (point, index) =>
+        `${index === 0 ? "M" : "L"} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`,
+    )
+    .join(" ");
+}
+
+export function BouncingCircleField({
+  items,
+  ariaLabel,
+  variant = "stats",
+  showConnector = true,
+  connectorOpacity = 0.82,
+}: BouncingCircleFieldProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const glowPathRef = useRef<SVGPathElement>(null);
+  const linePathRef = useRef<SVGPathElement>(null);
   const bubbleRefs = useRef<Array<HTMLElement | null>>([]);
   const classes = variantClasses[variant];
+  const safeConnectorOpacity = clamp(connectorOpacity, 0, 1);
 
   useEffect(() => {
     const stageElement = containerRef.current;
@@ -111,132 +145,50 @@ export function BouncingCircleField({ items, ariaLabel, variant = "stats" }: Bou
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let animationFrame = 0;
     let lastTime = performance.now();
-    let bodies: MovingBody[] = [];
+    let phase = 0.35;
 
-    function resolveWallCollision(body: MovingBody, width: number, height: number) {
-      let collided = false;
-
-      if (body.x - body.radius <= 0) {
-        body.x = body.radius;
-        body.vx = Math.abs(body.vx) * WALL_DAMPING;
-        collided = true;
-      } else if (body.x + body.radius >= width) {
-        body.x = width - body.radius;
-        body.vx = -Math.abs(body.vx) * WALL_DAMPING;
-        collided = true;
-      }
-
-      if (body.y - body.radius <= 0) {
-        body.y = body.radius;
-        body.vy = Math.abs(body.vy) * WALL_DAMPING;
-        collided = true;
-      } else if (body.y + body.radius >= height) {
-        body.y = height - body.radius;
-        body.vy = -Math.abs(body.vy) * WALL_DAMPING;
-        collided = true;
-      }
-
-      if (collided) keepSlowDrift(body);
-    }
-
-    function resolveBubbleCollisions(applyImpulse = true) {
-      for (let first = 0; first < bodies.length; first += 1) {
-        for (let second = first + 1; second < bodies.length; second += 1) {
-          const a = bodies[first];
-          const b = bodies[second];
-          let dx = b.x - a.x;
-          let dy = b.y - a.y;
-          let distance = Math.hypot(dx, dy);
-          const minimumDistance = a.radius + b.radius;
-
-          if (distance >= minimumDistance) continue;
-          if (distance === 0) {
-            dx = 1;
-            dy = 0;
-            distance = 1;
-          }
-
-          const normalX = dx / distance;
-          const normalY = dy / distance;
-          const overlap = minimumDistance - distance;
-
-          a.x -= normalX * overlap * 0.5;
-          a.y -= normalY * overlap * 0.5;
-          b.x += normalX * overlap * 0.5;
-          b.y += normalY * overlap * 0.5;
-
-          if (!applyImpulse) continue;
-
-          const closingSpeed = (a.vx - b.vx) * normalX + (a.vy - b.vy) * normalY;
-          if (closingSpeed > 0) {
-            const impulse = closingSpeed * COLLISION_DAMPING;
-            a.vx -= impulse * normalX;
-            a.vy -= impulse * normalY;
-            b.vx += impulse * normalX;
-            b.vy += impulse * normalY;
-            keepSlowDrift(a);
-            keepSlowDrift(b);
-          }
-        }
-      }
-    }
-
-    function renderBodies() {
-      bodies.forEach((body, index) => {
-        elements[index].style.transform = `translate3d(${body.x - body.radius}px, ${body.y - body.radius}px, 0)`;
-      });
-    }
-
-    function placeBodies() {
+    function renderWave(currentPhase: number) {
       const width = stage.clientWidth;
       const height = stage.clientHeight;
-      const compact = width < 640;
-      const positions = layoutSeeds(items.length, compact);
+      if (!width || !height) return;
 
-      bodies = elements.map((element, index) => {
-        const radius = element.offsetWidth / 2;
-        const position = positions[index];
-        const velocity = velocitySeeds[index % velocitySeeds.length];
-        const existing = bodies[index];
+      const maximumRadius = Math.max(
+        ...elements.map((element) => element.offsetWidth / 2),
+      );
+      const metrics = createWaveMetrics(width, height, maximumRadius);
+      const path = buildWavePath(metrics, currentPhase);
 
-        return {
-          x: existing ? Math.min(width - radius, Math.max(radius, existing.x)) : Math.min(width - radius, Math.max(radius, width * position.x)),
-          y: existing ? Math.min(height - radius, Math.max(radius, existing.y)) : Math.min(height - radius, Math.max(radius, height * position.y)),
-          vx: existing?.vx ?? velocity.vx,
-          vy: existing?.vy ?? velocity.vy,
-          radius,
-        };
-      });
+      stage.dataset.waveOrientation = metrics.orientation;
+      svgRef.current?.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      glowPathRef.current?.setAttribute("d", path);
+      linePathRef.current?.setAttribute("d", path);
 
-      for (let pass = 0; pass < 12; pass += 1) {
-        resolveBubbleCollisions(false);
-        bodies.forEach((body) => resolveWallCollision(body, width, height));
+      if (linePathRef.current) {
+        linePathRef.current.style.strokeDashoffset = `${-currentPhase * 42}px`;
       }
-      renderBodies();
+
+      elements.forEach((element, index) => {
+        const progress = items.length <= 1 ? 0.5 : index / (items.length - 1);
+        const point = pointOnWave(metrics, progress, currentPhase);
+        const radius = element.offsetWidth / 2;
+        element.style.transform = `translate3d(${point.x - radius}px, ${point.y - radius}px, 0)`;
+      });
     }
 
     function animate(now: number) {
-      const delta = Math.min((now - lastTime) / 1000, 0.034);
+      const delta = Math.min((now - lastTime) / 1000, 0.05);
       lastTime = now;
-      const width = stage.clientWidth;
-      const height = stage.clientHeight;
-
-      bodies.forEach((body) => {
-        body.x += body.vx * delta;
-        body.y += body.vy * delta;
-        resolveWallCollision(body, width, height);
-      });
-      resolveBubbleCollisions();
-      renderBodies();
-
+      phase += delta * WAVE_SPEED;
+      renderWave(phase);
       animationFrame = window.requestAnimationFrame(animate);
     }
 
     function startMotion() {
       window.cancelAnimationFrame(animationFrame);
-      placeBodies();
       lastTime = performance.now();
-      if (!reducedMotion.matches) animationFrame = window.requestAnimationFrame(animate);
+      renderWave(phase);
+      if (!reducedMotion.matches)
+        animationFrame = window.requestAnimationFrame(animate);
     }
 
     const resizeObserver = new ResizeObserver(startMotion);
@@ -249,30 +201,78 @@ export function BouncingCircleField({ items, ariaLabel, variant = "stats" }: Bou
       window.cancelAnimationFrame(animationFrame);
       resizeObserver.disconnect();
       reducedMotion.removeEventListener("change", startMotion);
+      delete stage.dataset.waveOrientation;
     };
   }, [items]);
 
   return (
-    <div ref={containerRef} className={`relative mt-8 overflow-hidden border-y border-[var(--line)] bg-white ${classes.stage}`} aria-label={ariaLabel}>
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,var(--signal-soft),transparent_68%)] opacity-60" aria-hidden="true" />
+    <div
+      ref={containerRef}
+      className={`relative mt-8 overflow-hidden border-y border-[var(--line)] bg-white ${classes.stage}`}
+      aria-label={ariaLabel}
+      data-wave-connector={showConnector ? "visible" : "hidden"}
+    >
+      <div
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,var(--signal-soft),transparent_68%)] opacity-60"
+        aria-hidden="true"
+      />
+      <svg
+        ref={svgRef}
+        className="pointer-events-none absolute inset-0 z-[1] h-full w-full"
+        aria-hidden="true"
+        preserveAspectRatio="none"
+      >
+        <path
+          ref={glowPathRef}
+          fill="none"
+          stroke="var(--signal)"
+          strokeWidth="12"
+          strokeLinecap="round"
+          opacity={showConnector ? safeConnectorOpacity * 0.12 : 0}
+          vectorEffect="non-scaling-stroke"
+        />
+        <path
+          ref={linePathRef}
+          fill="none"
+          stroke="var(--signal)"
+          strokeWidth="3.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeDasharray="18 12"
+          opacity={showConnector ? safeConnectorOpacity : 0}
+          vectorEffect="non-scaling-stroke"
+        />
+      </svg>
+
       {items.map(({ icon: Icon, eyebrow, title, copy, tags }, index) => (
         <article
           key={title}
           ref={(element) => {
             bubbleRefs.current[index] = element;
           }}
-          className={`absolute left-0 top-0 flex aspect-square will-change-transform flex-col items-center justify-center rounded-full border border-[var(--line-strong)] bg-white text-center shadow-[0_18px_45px_rgba(14,165,233,0.13)] ${classes.bubble}`}
+          className={`absolute left-0 top-0 z-10 flex aspect-square will-change-transform flex-col items-center justify-center rounded-full border border-[var(--line-strong)] bg-white text-center shadow-[0_18px_45px_rgba(14,165,233,0.13)] ${classes.bubble}`}
         >
           <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-[var(--line)] bg-[var(--signal-soft)] text-[var(--signal)] sm:h-12 sm:w-12">
             <Icon className="h-5 w-5" />
           </div>
-          <p className="mt-3 text-[0.56rem] font-extrabold uppercase tracking-[0.12em] text-[var(--signal-strong)]">{eyebrow ?? `0${index + 1}`}</p>
-          <h3 className="mt-1 text-base font-black tracking-[-0.03em] sm:text-lg">{title}</h3>
-          <p className={`mt-2 text-[var(--steel)] ${variant === "features" ? "text-[0.62rem] leading-4 sm:text-[0.7rem] sm:leading-5" : "text-[0.7rem] leading-5 sm:text-xs sm:leading-5"}`}>{copy}</p>
+          <p className="mt-3 text-[0.56rem] font-extrabold uppercase tracking-[0.12em] text-[var(--signal-strong)]">
+            {eyebrow ?? `0${index + 1}`}
+          </p>
+          <h3 className="mt-1 text-base font-black tracking-[-0.03em] sm:text-lg">
+            {title}
+          </h3>
+          <p
+            className={`mt-2 text-[var(--steel)] ${variant === "features" ? "text-[0.62rem] leading-4 sm:text-[0.7rem] sm:leading-5" : "text-[0.7rem] leading-5 sm:text-xs sm:leading-5"}`}
+          >
+            {copy}
+          </p>
           {tags?.length ? (
             <div className="mt-3 flex max-w-full flex-wrap justify-center gap-1">
               {tags.map((tag) => (
-                <span key={tag} className="rounded-full border border-[var(--line)] bg-[var(--signal-soft)] px-2 py-0.5 text-[0.5rem] font-extrabold text-[var(--signal-strong)] sm:text-[0.56rem]">
+                <span
+                  key={tag}
+                  className="rounded-full border border-[var(--line)] bg-[var(--signal-soft)] px-2 py-0.5 text-[0.5rem] font-extrabold text-[var(--signal-strong)] sm:text-[0.56rem]"
+                >
                   {tag}
                 </span>
               ))}
