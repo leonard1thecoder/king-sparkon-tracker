@@ -1,0 +1,131 @@
+name: Agent Apply Circle Landing Layout
+
+on:
+  push:
+    branches:
+      - "agent/production-readiness-phase2"
+    paths:
+      - ".github/workflows/agent-apply-circle-layout.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/production-readiness-phase2
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+      - name: Apply contained circular landing layout
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('src/components/marketing/KingSparkonLanding.tsx')
+          s = p.read_text()
+          marker = '''const engineeringPrinciples = [
+            ["Public interest", "Protect users, businesses and payment integrity before shortcuts."],
+            ["Professional standards", "Build changes that are testable, reviewable and production-safe."],
+            ["Evidence over decoration", "Use clear states, real data and audit trails instead of visual noise."],
+          ] as const;'''.replace('          ', '')
+          flow = marker + '''
+
+          const operationFlow = [
+            [ScanLine, "Scan", "Capture the item or ticket."],
+            [ShoppingCart, "Sell", "Complete the customer action."],
+            [QrCode, "Track", "Keep the record visible."],
+            [BadgeCheck, "Prove", "Review the final evidence."],
+          ] as const;'''.replace('          ', '')
+          if 'const operationFlow' not in s:
+            s = s.replace(marker, flow)
+          old_hero = '''          <div className="min-w-0 lg:-mr-6">
+            <ScanLoop />
+          </div>
+        </div>
+      </section>'''
+          new_hero = '''          <div className="relative min-w-0 overflow-hidden rounded-full">
+            <ScanLoop />
+          </div>
+        </div>
+
+        <div className="relative z-10 mx-auto grid max-w-5xl gap-4 px-5 pb-16 sm:grid-cols-2 md:px-8 lg:grid-cols-4">
+          {operationFlow.map(([Icon, title, copy], index) => (
+            <div key={title} className="mx-auto flex aspect-square w-full max-w-[13rem] flex-col items-center justify-center rounded-full border border-[var(--line-strong)] bg-white p-6 text-center shadow-[var(--shadow-soft)]">
+              <div className="grid h-12 w-12 place-items-center rounded-full border border-[var(--line)] bg-[var(--signal-soft)] text-[var(--signal)]"><Icon className="h-5 w-5" /></div>
+              <p className="mt-4 text-[0.6rem] font-extrabold uppercase tracking-[0.12em] text-[var(--signal-strong)]">0{index + 1}</p>
+              <h2 className="mt-1 text-xl font-black">{title}</h2>
+              <p className="mt-2 text-xs leading-5 text-[var(--steel)]">{copy}</p>
+            </div>
+          ))}
+        </div>
+      </section>'''
+          s = s.replace(old_hero, new_hero)
+          old_vision = '<div className="mt-10 grid gap-5 md:grid-cols-3">{visionPillars.map(({ icon: Icon, title, copy }) => <article key={title} className="rounded-xl border border-[var(--line)] bg-white p-6"><div className="grid h-11 w-11 place-items-center rounded-lg border border-[var(--line)] text-[var(--signal)]"><Icon className="h-5 w-5" /></div><h3 className="mt-5 text-xl font-black tracking-[-0.03em]">{title}</h3><p className="mt-3 text-sm leading-7 text-[var(--steel)]">{copy}</p></article>)}</div>'
+          new_vision = '<div className="mt-10 grid gap-6 md:grid-cols-3">{visionPillars.map(({ icon: Icon, title, copy }) => <article key={title} className="mx-auto flex aspect-square w-full max-w-[20rem] flex-col items-center justify-center rounded-full border border-[var(--line)] bg-white p-8 text-center shadow-[var(--shadow-soft)]"><div className="grid h-12 w-12 place-items-center rounded-full border border-[var(--line)] bg-[var(--signal-soft)] text-[var(--signal)]"><Icon className="h-5 w-5" /></div><h3 className="mt-5 text-xl font-black tracking-[-0.03em]">{title}</h3><p className="mt-3 text-sm leading-7 text-[var(--steel)]">{copy}</p></article>)}</div>'
+          s = s.replace(old_vision, new_vision)
+          replacements = {
+            '<section id="sponsor" className="scroll-mt-28 border-y': '<section id="sponsor" className="relative scroll-mt-28 overflow-hidden border-y',
+            '<section id="roles" className="scroll-mt-28 border-y': '<section id="roles" className="relative scroll-mt-28 overflow-hidden border-y',
+            '<section id="capacity" className="scroll-mt-28 bg-white': '<section id="capacity" className="relative scroll-mt-28 overflow-hidden bg-white',
+            '<section id="complaints" className="scroll-mt-28 border-y': '<section id="complaints" className="relative scroll-mt-28 overflow-hidden border-y',
+            '<section id="contact" className="scroll-mt-28 border-t': '<section id="contact" className="relative scroll-mt-28 overflow-hidden border-t',
+            '<div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">': '<div className="relative z-10 mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">',
+            '<div className="mx-auto max-w-7xl">\n          <div className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr]': '<div className="relative z-10 mx-auto max-w-7xl">\n          <div className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr]',
+            '<div className="mx-auto max-w-7xl">\n          <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr]': '<div className="relative z-10 mx-auto max-w-7xl">\n          <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr]',
+            '<div className="mx-auto max-w-7xl">\n          <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr]': '<div className="relative z-10 mx-auto max-w-7xl">\n          <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr]',
+          }
+          for old, new in replacements.items():
+            s = s.replace(old, new)
+          p.write_text(s)
+
+          css = Path('src/app/brand-polish.css')
+          c = css.read_text()
+          block = '''
+
+          /* Circular landing visuals stay inside their own section and never cover the next heading. */
+          .landing-circle-stage,
+          .hero-circle-scene { contain: layout paint; }
+          .landing-circle-ring { animation-duration: 18s; animation-timing-function: linear; animation-iteration-count: infinite; }
+          .landing-circle-ring-one { animation-name: landing-circle-spin; }
+          .landing-circle-ring-two { animation-name: landing-circle-spin-reverse; }
+          .landing-circle-glow { animation: landing-circle-pulse 5s ease-in-out infinite; }
+          .landing-circle-image,
+          .landing-circle-card { transform: translateZ(0); transition: transform 260ms ease; }
+          .landing-circle-stage:hover .landing-circle-image { transform: scale(1.025); }
+          .landing-circle-card-primary { animation: landing-circle-float 5.4s ease-in-out infinite; }
+          .landing-circle-card-secondary { animation: landing-circle-float 5.4s ease-in-out -2.7s infinite reverse; }
+          .landing-circle-scan { top: -18%; background: linear-gradient(to bottom, transparent, rgb(14 165 233 / 0.18), transparent); border-bottom: 2px solid var(--signal); animation: landing-circle-scan 3.8s ease-in-out infinite; }
+          @keyframes landing-circle-spin { to { transform: rotate(360deg); } }
+          @keyframes landing-circle-spin-reverse { to { transform: rotate(-360deg); } }
+          @keyframes landing-circle-pulse { 0%, 100% { transform: scale(0.96); opacity: 0.72; } 50% { transform: scale(1.04); opacity: 1; } }
+          @keyframes landing-circle-float { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-8px) rotate(1deg); } }
+          @keyframes landing-circle-scan { 0%, 100% { top: -18%; opacity: 0; } 14% { opacity: 1; } 72% { top: 102%; opacity: 1; } 84% { opacity: 0; } }
+          @media (prefers-reduced-motion: reduce) {
+            .landing-circle-ring,
+            .landing-circle-glow,
+            .landing-circle-card,
+            .landing-circle-scan { animation: none !important; }
+          }
+          '''.replace('          ', '')
+          if 'Circular landing visuals stay inside' not in c:
+            css.write_text(c + block)
+          PY
+          rm -f .github/workflows/agent-apply-circle-layout.yml
+          git diff --check
+      - name: Validate frontend
+        run: |
+          bun install
+          bun run typecheck
+          bun run lint
+          bun run test
+          bun run build
+      - name: Commit circle landing layout
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src .github/workflows
+          git commit -m "Contain 3D motion in circular landing sections"
+          git push origin HEAD:agent/production-readiness-phase2
