@@ -31,7 +31,7 @@ export function DashboardFrame({ role, nav, children }: { role: string; nav: Rea
 
   return (
     <div className="h-dvh overflow-hidden bg-white text-[var(--ink)] lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
-      <header className="sticky top-0 z-40 flex min-h-[4.5rem] items-center justify-between gap-3 border-b border-[var(--line)] bg-white px-4 py-3 shadow-[var(--shadow-soft)] lg:hidden">
+      <header className="sticky top-0 z-[60] flex min-h-[4.5rem] items-center justify-between gap-3 border-b border-[var(--line)] bg-white px-4 py-3 shadow-[var(--shadow-soft)] lg:hidden">
         <Link href="/" className="flex min-w-0 items-center gap-3">
           <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker" width={42} height={42} className="rounded-lg border border-[var(--line)] bg-white p-1" priority />
           <div className="min-w-0">
@@ -50,7 +50,7 @@ export function DashboardFrame({ role, nav, children }: { role: string; nav: Rea
         </button>
       </header>
 
-      {open ? <button type="button" aria-label="Close dashboard navigation overlay" className="fixed inset-0 z-40 bg-slate-950/20 backdrop-blur-[2px] lg:hidden" onClick={() => setOpen(false)} /> : null}
+      {open ? <button type="button" aria-label="Close dashboard navigation overlay" className="fixed inset-0 z-40 bg-sky-50/90 backdrop-blur-[2px] lg:hidden" onClick={() => setOpen(false)} /> : null}
 
       <aside
         className={cn(
