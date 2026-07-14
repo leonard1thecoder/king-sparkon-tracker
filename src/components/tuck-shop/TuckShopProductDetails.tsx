@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, CheckCircle2, Loader2, Minus, Plus, ShoppingCart, Store } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Minus, Plus, ShoppingCart, Store } from "lucide-react";
 import { listTuckShopProducts } from "@/lib/api/tuck-shop";
 import type { Product } from "@/lib/types/backend";
 import { normalizeApiError } from "@/lib/api/client";
