@@ -1,0 +1,41 @@
+name: Agent Frontend Test Diagnostic
+
+on:
+  push:
+    branches:
+      - "agent/production-readiness-phase2"
+    paths:
+      - ".agent/run-test-diagnostic"
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/production-readiness-phase2
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+      - name: Capture unit test failure
+        run: |
+          bun install
+          set +e
+          bun run test > /tmp/frontend-test.log 2>&1
+          status=$?
+          set -e
+          {
+            echo "exit_status=$status"
+            tail -n 160 /tmp/frontend-test.log
+          } > .agent/frontend-test-diagnostic.log
+          rm -f .agent/run-test-diagnostic .github/workflows/agent-test-diagnostic.yml
+      - name: Commit diagnostic
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .agent .github/workflows/agent-test-diagnostic.yml
+          git commit -m "Record frontend test diagnostic"
+          git push origin HEAD:agent/production-readiness-phase2
