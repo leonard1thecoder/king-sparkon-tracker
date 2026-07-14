@@ -1,0 +1,40 @@
+name: Agent Apply White UI Parts
+
+on:
+  push:
+    branches:
+      - "agent/production-readiness-phase2"
+    paths:
+      - ".agent/ui-overhaul.part07"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/production-readiness-phase2
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+      - name: Apply reviewed UI source package
+        run: |
+          cat .agent/ui-overhaul.part* | base64 --decode > /tmp/ui-overhaul.tar.gz
+          tar -xzf /tmp/ui-overhaul.tar.gz
+          rm -f .agent/ui-overhaul.part* .agent/ui-overhaul.tar.gz.b64
+          rm -f .github/workflows/agent-apply-white-ui.yml .github/workflows/agent-apply-white-ui-parts.yml
+          git diff --check
+      - name: Validate TypeScript
+        run: |
+          bun install
+          bun run typecheck
+      - name: Commit white UI overhaul
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src .agent .github/workflows/agent-apply-white-ui.yml .github/workflows/agent-apply-white-ui-parts.yml
+          git commit -m "Replace legacy theme with focused white UI"
+          git push origin HEAD:agent/production-readiness-phase2
