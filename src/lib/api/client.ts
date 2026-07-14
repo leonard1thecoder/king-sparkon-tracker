@@ -1,8 +1,8 @@
 import axios, {
   AxiosError,
-  AxiosHeaders,
   type AxiosRequestConfig,
   type InternalAxiosRequestConfig,
+  type RawAxiosRequestHeaders,
 } from "axios";
 import { backendError, type NormalizedBackendError } from "@/lib/utils/errors";
 import { retryAfterSecondsFromHeader } from "@/lib/utils/rate-limit";
@@ -70,8 +70,10 @@ function withIdempotencyKey(config: AxiosRequestConfig | undefined, idempotencyK
     throw new Error("Idempotency key must contain between 8 and 255 characters");
   }
 
-  const headers = AxiosHeaders.from(config?.headers);
-  headers.set("Idempotency-Key", normalizedKey);
+  const headers: RawAxiosRequestHeaders = {
+    ...(config?.headers as RawAxiosRequestHeaders | undefined),
+    "Idempotency-Key": normalizedKey,
+  };
   return { ...config, headers };
 }
 
