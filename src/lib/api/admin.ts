@@ -1,7 +1,7 @@
 import { apiGet } from "./client";
 
 export function listUsers() {
-  return apiGet("/users");
+  return apiGet("/admin/users");
 }
 
 export function listBusinesses() {
