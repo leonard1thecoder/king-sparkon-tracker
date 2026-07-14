@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
   BadgeDollarSign,
+  Banknote,
   BarChart3,
   Check,
   ChevronLeft,
@@ -32,12 +33,13 @@ import {
   getAffiliatePayouts,
   getAffiliateProfile,
   getAffiliateReferrals,
+  getAffiliateWithdrawalEligibility,
+  requestAffiliatePayout,
+  type AffiliateWithdrawalEligibility,
 } from "@/lib/api/affiliate";
 import { normalizeApiError } from "@/lib/api/client";
 import {
   affiliateMockAssets,
-  affiliateMockCommissions,
-  affiliateMockPayouts,
   affiliateMockProfile,
   affiliateMockReferrals,
   type AffiliateAssetRow,
@@ -52,40 +54,48 @@ type SourceState = "backend" | "preview" | "mixed";
 type UnknownRecord = Record<string, unknown>;
 
 const PAGE_SIZE = 5;
+const emptyEligibility: AffiliateWithdrawalEligibility = {
+  affiliateId: 0,
+  availableAmount: 0,
+  eligibleCommissionCount: 0,
+  paypalLinkReady: false,
+  canWithdraw: false,
+  paypalLink: null,
+};
 
 const sectionCopy: Record<AffiliateSection, { title: string; description: string; objective: string }> = {
   overview: {
     title: "Affiliate growth overview",
-    description: "Track the complete path from shared referral link to converted business, earned commission, and settled payout.",
-    objective: "Know what to share next, what converted, what you earned, and what is ready to be paid.",
+    description: "Track the complete path from shared referral link to converted business, approved commission, and settled payout.",
+    objective: "Know what to share next, what converted, what is approved, and what can be cashed out.",
   },
   referrals: {
     title: "Referral links",
-    description: "Share one tracked promotion link and QR code, then monitor every referred business through the conversion funnel.",
-    objective: "Create measurable business registrations from one copy-ready referral identity.",
+    description: "Share one production-safe tracked link and monitor referred businesses through the conversion funnel.",
+    objective: "Use one reliable affiliate identity without localhost links or untracked registrations.",
   },
   assets: {
     title: "Campaign assets",
-    description: "Use channel-ready WhatsApp, social, email, and QR copy without rewriting the King Sparkon value proposition each time.",
-    objective: "Give affiliates reusable, consistent material that always points back to their tracked referral link.",
+    description: "Use channel-ready WhatsApp, social, email, and QR copy linked to your current tracked URL.",
+    objective: "Promote King Sparkon consistently while preserving affiliate attribution.",
   },
   commissions: {
     title: "Commissions",
-    description: "Review which referred businesses generated earnings and whether each commission is pending, approved, or paid.",
-    objective: "Make every earned amount traceable to its business, rate, date, and settlement state.",
+    description: "Review pending, approved, processing, and paid affiliate earnings with direct access to cash out approved value.",
+    objective: "Make each commission traceable and move approved earnings into a payout request.",
   },
   payouts: {
     title: "Payouts",
-    description: "Track payout requests from processing through provider settlement and confirm when affiliate earnings reached the payment account.",
-    objective: "Separate earned commission from money that has actually been transferred.",
+    description: "See approved commissions ready for cashout beside every requested and completed payout.",
+    objective: "Cash out approved commissions and track settlement without leaving the affiliate dashboard.",
   },
 };
 
 const navCards = [
-  { label: "Referral Links", href: "/dashboard/affiliate/referrals", detail: "Share link + QR", icon: Link2 },
+  { label: "Referral Links", href: "/dashboard/affiliate/referrals", detail: "Production tracked link", icon: Link2 },
   { label: "Campaign Assets", href: "/dashboard/affiliate/assets", detail: "Copy-ready promotion", icon: Megaphone },
-  { label: "Commissions", href: "/dashboard/affiliate/commissions", detail: "Earnings ledger", icon: BarChart3 },
-  { label: "Payouts", href: "/dashboard/affiliate/payouts", detail: "Settlement history", icon: WalletCards },
+  { label: "Commissions", href: "/dashboard/affiliate/commissions", detail: "Approved earnings ledger", icon: BarChart3 },
+  { label: "Payouts", href: "/dashboard/affiliate/payouts", detail: "Cash out + settlements", icon: WalletCards },
 ] as const;
 
 function asRecord(value: unknown): UnknownRecord {
@@ -133,8 +143,30 @@ function dateTime(value?: string | null) {
 function statusTone(status: string) {
   const normalized = status.toUpperCase();
   if (["ACTIVE", "READY", "CONVERTED", "APPROVED", "PAID", "SUCCESS"].includes(normalized)) return "confirm" as const;
-  if (["TRIAL", "QUALIFIED", "PENDING", "PROCESSING", "CONTACTED"].includes(normalized)) return "signal" as const;
+  if (["TRIAL", "QUALIFIED", "PENDING", "PROCESSING", "WITHDRAWAL_REQUESTED", "CONTACTED"].includes(normalized)) return "signal" as const;
   return "neutral" as const;
+}
+
+function commissionStatus(value: string) {
+  const normalized = value.toUpperCase();
+  if (normalized === "EARNED") return "APPROVED";
+  if (normalized === "WITHDRAWAL_REQUESTED") return "PROCESSING";
+  return normalized || "PENDING";
+}
+
+function productionReferralUrl(rawUrl: string, code: string) {
+  const path = `/pricing?affiliateCode=${encodeURIComponent(code)}`;
+  if (typeof window === "undefined") return rawUrl || path;
+
+  try {
+    const parsed = new URL(rawUrl || path, window.location.origin);
+    if (["localhost", "127.0.0.1", "0.0.0.0"].includes(parsed.hostname)) {
+      return new URL(path, window.location.origin).toString();
+    }
+    return parsed.toString();
+  } catch {
+    return new URL(path, window.location.origin).toString();
+  }
 }
 
 function normalizeProfile(payload: unknown): AffiliateProfileView | null {
@@ -143,17 +175,18 @@ function normalizeProfile(payload: unknown): AffiliateProfileView | null {
   const nested = asRecord(record.user ?? record.profile ?? record.affiliate);
   const merged = { ...record, ...nested };
   const code = text(merged, ["affiliateCode", "referralCode", "code"]);
-  const referralUrl = text(merged, ["affiliatePromotionUrl", "referralUrl", "promotionUrl", "affiliateUrl"]);
-  if (!code && !referralUrl) return null;
+  const rawUrl = text(merged, ["affiliatePromotionUrl", "referralUrl", "promotionUrl", "affiliateUrl"]);
+  if (!code && !rawUrl) return null;
 
+  const safeCode = code || "Affiliate code pending";
   return {
     name: text(merged, ["fullName", "name", "username"], "Affiliate partner"),
     email: text(merged, ["emailAddress", "email"], "Not supplied"),
-    code: code || "Affiliate code pending",
-    referralUrl: referralUrl || `/register?ref=${encodeURIComponent(code)}`,
+    code: safeCode,
+    referralUrl: productionReferralUrl(rawUrl, safeCode),
     qrCodeUrl: text(merged, ["affiliateQrCodeUrl", "qrCodeUrl"], "") || null,
     status: text(merged, ["affiliateStatus", "status"], "ACTIVE"),
-    joinedAt: text(merged, ["createdAt", "joinedAt", "registrationDate"], ""),
+    joinedAt: text(merged, ["affiliateJoinedAt", "createdAt", "joinedAt", "registrationDate"], ""),
   };
 }
 
@@ -187,11 +220,11 @@ function normalizeAssets(payload: unknown): AffiliateAssetRow[] {
 function normalizeCommissions(payload: unknown): AffiliateCommissionRow[] {
   return recordsFromPayload(payload).map((record, index) => ({
     id: numberValue(record, ["id", "commissionId"], 9400 + index),
-    reference: text(record, ["reference", "commissionReference", "paymentReference"], `COM-${9400 + index}`),
+    reference: text(record, ["reference", "commissionReference", "paymentReference"], `COM-${numberValue(record, ["id"], 9400 + index)}`),
     businessName: text(record, ["businessName", "companyName", "sourceName"], `Business ${index + 1}`),
-    rate: numberValue(record, ["rate", "commissionRate", "percentage"]),
+    rate: numberValue(record, ["rate", "commissionRate", "commissionRatePercent", "percentage"]),
     amount: numberValue(record, ["amount", "commissionAmount", "netAmount", "grossAmount"]),
-    status: text(record, ["status", "paymentStatus", "state"], "PENDING"),
+    status: commissionStatus(text(record, ["status", "paymentStatus", "state"], "PENDING")),
     earnedAt: text(record, ["earnedAt", "createdAt", "updatedAt"], ""),
   }));
 }
@@ -199,7 +232,7 @@ function normalizeCommissions(payload: unknown): AffiliateCommissionRow[] {
 function normalizePayouts(payload: unknown): AffiliatePayoutRow[] {
   return recordsFromPayload(payload).map((record, index) => ({
     id: numberValue(record, ["id", "payoutId"], 9600 + index),
-    reference: text(record, ["reference", "payoutReference", "paymentReference"], `PAY-${9600 + index}`),
+    reference: text(record, ["reference", "payoutReference", "paymentReference"], `PAY-AFF-${numberValue(record, ["id"], 9600 + index)}`),
     amount: numberValue(record, ["amount", "netAmount", "grossAmount"]),
     provider: text(record, ["provider", "paymentProvider", "method"], "PayPal"),
     status: text(record, ["status", "paymentStatus", "state"], "PROCESSING"),
@@ -229,31 +262,74 @@ function Pagination({ page, total, setPage }: { page: number; total: number; set
   );
 }
 
+function CashoutPanel({
+  approvedAmount,
+  approvedCount,
+  eligibility,
+  cashingOut,
+  onCashout,
+}: {
+  approvedAmount: number;
+  approvedCount: number;
+  eligibility: AffiliateWithdrawalEligibility;
+  cashingOut: boolean;
+  onCashout: () => void;
+}) {
+  const available = Number(eligibility.availableAmount ?? approvedAmount);
+  return (
+    <section className="grid gap-5 rounded-[2rem] border border-[var(--gold)]/60 bg-white p-5 shadow-[var(--shadow-ledger)] lg:grid-cols-[1fr_auto] lg:items-center">
+      <div>
+        <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">Approved commission cashout</p>
+        <h2 className="mt-2 text-3xl font-black tracking-[-0.05em] text-[var(--ink)]">{money(available)} ready</h2>
+        <p className="mt-2 text-sm font-semibold leading-6 text-[var(--steel)]">{approvedCount} approved commission{approvedCount === 1 ? "" : "s"} will be grouped into one payout request.</p>
+        {!eligibility.paypalLinkReady ? <p className="mt-3 text-sm font-black text-[var(--danger)]">Add your PayPal payout link in Profile before cashing out.</p> : null}
+      </div>
+      <div className="flex flex-col gap-2 sm:flex-row lg:flex-col">
+        <Button type="button" disabled={!eligibility.canWithdraw || cashingOut || available <= 0} onClick={onCashout}>
+          {cashingOut ? <Loader2 className="h-4 w-4 animate-spin" /> : <Banknote className="h-4 w-4" />}
+          {cashingOut ? "Creating payout..." : "Cash out approved"}
+        </Button>
+        <Link href="/dashboard/affiliate/profile" className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)] hover:border-[var(--gold)]">Update payout profile</Link>
+      </div>
+    </section>
+  );
+}
+
 export function AffiliateWorkspace({ section }: { section: AffiliateSection }) {
   const copy = sectionCopy[section];
   const [profile, setProfile] = useState<AffiliateProfileView>(affiliateMockProfile);
   const [referrals, setReferrals] = useState<AffiliateReferralRow[]>(affiliateMockReferrals);
   const [assets, setAssets] = useState<AffiliateAssetRow[]>(affiliateMockAssets);
-  const [commissions, setCommissions] = useState<AffiliateCommissionRow[]>(affiliateMockCommissions);
-  const [payouts, setPayouts] = useState<AffiliatePayoutRow[]>(affiliateMockPayouts);
+  const [commissions, setCommissions] = useState<AffiliateCommissionRow[]>([]);
+  const [payouts, setPayouts] = useState<AffiliatePayoutRow[]>([]);
+  const [eligibility, setEligibility] = useState<AffiliateWithdrawalEligibility>(emptyEligibility);
   const [source, setSource] = useState<SourceState>("preview");
   const [loading, setLoading] = useState(true);
-  const [notice, setNotice] = useState<string | null>(null);
+  const [cashingOut, setCashingOut] = useState(false);
+  const [warning, setWarning] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
   const [page, setPage] = useState(0);
 
   const load = useCallback(async () => {
     setLoading(true);
-    setNotice(null);
+    setWarning(null);
     const failures: string[] = [];
     let backendCount = 0;
     let previewCount = 0;
 
-    const loadOne = async <T,>(label: string, request: () => Promise<unknown>, normalize: (payload: unknown) => T | null, fallback: T, apply: (value: T) => void) => {
+    const loadOne = async <T,>(
+      label: string,
+      request: () => Promise<unknown>,
+      normalize: (payload: unknown) => T | null,
+      fallback: T,
+      apply: (value: T) => void,
+      allowEmpty = false,
+    ) => {
       try {
         const normalized = normalize(await request());
-        const usable = Array.isArray(normalized) ? normalized.length > 0 : Boolean(normalized);
-        if (usable && normalized) {
+        const usable = Array.isArray(normalized) ? allowEmpty || normalized.length > 0 : Boolean(normalized);
+        if (usable && normalized !== null) {
           apply(normalized);
           backendCount += 1;
         } else {
@@ -269,14 +345,23 @@ export function AffiliateWorkspace({ section }: { section: AffiliateSection }) {
     };
 
     await loadOne("profile", getAffiliateProfile, normalizeProfile, affiliateMockProfile, setProfile);
-
     if (section === "overview" || section === "referrals") await loadOne("referrals", getAffiliateReferrals, normalizeReferrals, affiliateMockReferrals, setReferrals);
     if (section === "overview" || section === "assets") await loadOne("campaign assets", getAffiliateAssets, normalizeAssets, affiliateMockAssets, setAssets);
-    if (section === "overview" || section === "commissions") await loadOne("commissions", getAffiliateCommissions, normalizeCommissions, affiliateMockCommissions, setCommissions);
-    if (section === "overview" || section === "payouts") await loadOne("payouts", getAffiliatePayouts, normalizePayouts, affiliateMockPayouts, setPayouts);
+    if (["overview", "commissions", "payouts"].includes(section)) await loadOne("commissions", getAffiliateCommissions, normalizeCommissions, [], setCommissions, true);
+    if (["overview", "payouts"].includes(section)) await loadOne("payouts", getAffiliatePayouts, normalizePayouts, [], setPayouts, true);
+
+    if (["overview", "commissions", "payouts"].includes(section)) {
+      try {
+        setEligibility(await getAffiliateWithdrawalEligibility());
+        backendCount += 1;
+      } catch (error) {
+        setEligibility(emptyEligibility);
+        failures.push(`payout eligibility: ${normalizeApiError(error).message}`);
+      }
+    }
 
     setSource(backendCount > 0 && previewCount > 0 ? "mixed" : backendCount > 0 ? "backend" : "preview");
-    setNotice(failures.length ? `${failures.join(" · ")}. Preview records are clearly labelled and will be replaced automatically when backend data is available.` : null);
+    setWarning(failures.length ? `${failures.join(" · ")}. Financial records never use preview payouts or commissions.` : null);
     setLoading(false);
   }, [section]);
 
@@ -285,18 +370,35 @@ export function AffiliateWorkspace({ section }: { section: AffiliateSection }) {
     void load();
   }, [load]);
 
+  const approvedCommissions = useMemo(() => commissions.filter((item) => item.status.toUpperCase() === "APPROVED"), [commissions]);
   const totals = useMemo(() => ({
     clicks: referrals.reduce((sum, item) => sum + item.clicks, 0),
     signups: referrals.reduce((sum, item) => sum + item.signups, 0),
     commissions: commissions.reduce((sum, item) => sum + item.amount, 0),
-    pendingCommission: commissions.filter((item) => !["PAID", "COMPLETED"].includes(item.status.toUpperCase())).reduce((sum, item) => sum + item.amount, 0),
-    paidOut: payouts.filter((item) => item.status.toUpperCase() === "PAID").reduce((sum, item) => sum + item.amount, 0),
-  }), [commissions, payouts, referrals]);
+    approved: approvedCommissions.reduce((sum, item) => sum + item.amount, 0),
+    processing: commissions.filter((item) => item.status.toUpperCase() === "PROCESSING").reduce((sum, item) => sum + item.amount, 0),
+    paidOut: payouts.filter((item) => ["PAID", "SUCCESS"].includes(item.status.toUpperCase())).reduce((sum, item) => sum + item.amount, 0),
+  }), [approvedCommissions, commissions, payouts, referrals]);
 
   async function copyValue(key: string, value: string) {
     await navigator.clipboard.writeText(value);
     setCopied(key);
     window.setTimeout(() => setCopied(null), 1600);
+  }
+
+  async function cashOutApproved() {
+    setCashingOut(true);
+    setSuccess(null);
+    setWarning(null);
+    try {
+      await requestAffiliatePayout();
+      setSuccess("Approved commissions were submitted as one payout request.");
+      await load();
+    } catch (error) {
+      setWarning(normalizeApiError(error).message);
+    } finally {
+      setCashingOut(false);
+    }
   }
 
   function paged<T>(rows: T[]) {
@@ -311,18 +413,13 @@ export function AffiliateWorkspace({ section }: { section: AffiliateSection }) {
       <DashboardHeader role="AFFILIATE" title={copy.title} description={copy.description} />
       <main className="grid gap-6 bg-[var(--surface)] p-5 md:p-8">
         <section className="flex flex-col gap-4 rounded-[2rem] border border-[var(--gold)]/55 bg-[var(--gold)]/15 p-5 shadow-[var(--shadow-soft)] lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">Key objective</p>
-            <h2 className="mt-2 max-w-4xl text-xl font-black tracking-[-0.035em] text-[var(--ink)] md:text-2xl">{copy.objective}</h2>
-          </div>
+          <div><p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">Key objective</p><h2 className="mt-2 max-w-4xl text-xl font-black tracking-[-0.035em] text-[var(--ink)] md:text-2xl">{copy.objective}</h2></div>
           <div className="flex items-center gap-3"><SourceBadge source={source} /><Button type="button" variant="quiet" onClick={() => void load()} disabled={loading}><RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} /> Verify backend</Button></div>
         </section>
 
-        {notice ? <p className="rounded-[1.25rem] border border-[var(--gold)]/50 bg-white p-4 text-sm font-semibold leading-6 text-[var(--steel)]">{notice}</p> : null}
-
-        {loading ? (
-          <div className="flex min-h-64 items-center justify-center gap-3 rounded-[2rem] border border-[var(--line)] bg-white text-sm font-black text-[var(--steel)]"><Loader2 className="h-5 w-5 animate-spin" /> Verifying affiliate backend data</div>
-        ) : null}
+        {warning ? <p className="rounded-[1.25rem] border border-[var(--gold)]/50 bg-white p-4 text-sm font-semibold leading-6 text-[var(--steel)]">{warning}</p> : null}
+        {success ? <p className="rounded-[1.25rem] border border-[var(--confirm)]/35 bg-[var(--confirm)]/10 p-4 text-sm font-black text-[var(--confirm)]">{success}</p> : null}
+        {loading ? <div className="flex min-h-64 items-center justify-center gap-3 rounded-[2rem] border border-[var(--line)] bg-white text-sm font-black text-[var(--steel)]"><Loader2 className="h-5 w-5 animate-spin" /> Verifying affiliate backend data</div> : null}
 
         {!loading && section === "overview" ? (
           <>
@@ -331,22 +428,18 @@ export function AffiliateWorkspace({ section }: { section: AffiliateSection }) {
                 <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--gold)]">Affiliate identity</p>
                 <h2 className="mt-4 text-3xl font-black tracking-[-0.05em]">{profile.name}</h2>
                 <p className="mt-2 text-sm text-white/60">{profile.email}</p>
-                <div className="mt-6 rounded-[1.35rem] border border-white/10 bg-white/[0.07] p-4">
-                  <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.14em] text-[var(--gold)]">Referral code</p>
-                  <p className="code mt-2 break-all text-2xl font-black">{profile.code}</p>
-                </div>
-                <button type="button" onClick={() => void copyValue("overview-link", profile.referralUrl)} className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[var(--gold)] px-5 text-sm font-black text-[var(--ink)]">{copied === "overview-link" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />} {copied === "overview-link" ? "Copied" : "Copy referral link"}</button>
+                <div className="mt-6 rounded-[1.35rem] border border-white/10 bg-white/[0.07] p-4"><p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.14em] text-[var(--gold)]">Referral code</p><p className="code mt-2 break-all text-2xl font-black">{profile.code}</p></div>
+                <button type="button" onClick={() => void copyValue("overview-link", profile.referralUrl)} className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[var(--gold)] px-5 text-sm font-black text-[var(--ink)]">{copied === "overview-link" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />} {copied === "overview-link" ? "Copied" : "Copy tracked link"}</button>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <MetricCard label="Tracked clicks" value={String(totals.clicks)} detail="Interest created by shared links" tone="signal" icon={<Share2 className="h-5 w-5" />} />
                 <MetricCard label="Business signups" value={String(totals.signups)} detail="Registrations attributed to affiliate" tone="confirm" icon={<QrCode className="h-5 w-5" />} />
-                <MetricCard label="Commission earned" value={money(totals.commissions)} detail={`${money(totals.pendingCommission)} awaiting settlement`} icon={<BadgeDollarSign className="h-5 w-5" />} />
-                <MetricCard label="Paid out" value={money(totals.paidOut)} detail="Confirmed provider settlements" tone="confirm" icon={<WalletCards className="h-5 w-5" />} />
+                <MetricCard label="Approved commission" value={money(Number(eligibility.availableAmount || totals.approved))} detail={`${approvedCommissions.length} commission${approvedCommissions.length === 1 ? "" : "s"} ready to cash out`} icon={<BadgeDollarSign className="h-5 w-5" />} />
+                <MetricCard label="Paid out" value={money(totals.paidOut)} detail="Confirmed payout settlements" tone="confirm" icon={<WalletCards className="h-5 w-5" />} />
               </div>
             </section>
-            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              {navCards.map(({ label, href, detail, icon: Icon }) => <Link key={href} href={href} className="group rounded-[1.5rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] transition hover:-translate-y-1 hover:border-[var(--gold)]"><div className="flex items-start justify-between"><span className="grid h-11 w-11 place-items-center rounded-[1rem] bg-[var(--ink)] text-[var(--gold)]"><Icon className="h-5 w-5" /></span><ArrowRight className="h-5 w-5 text-[var(--signal)]" /></div><h3 className="mt-5 text-lg font-black text-[var(--ink)]">{label}</h3><p className="mt-2 text-sm font-semibold text-[var(--steel)]">{detail}</p></Link>)}
-            </section>
+            {eligibility.canWithdraw ? <CashoutPanel approvedAmount={totals.approved} approvedCount={approvedCommissions.length} eligibility={eligibility} cashingOut={cashingOut} onCashout={() => void cashOutApproved()} /> : null}
+            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">{navCards.map(({ label, href, detail, icon: Icon }) => <Link key={href} href={href} className="group rounded-[1.5rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] transition hover:-translate-y-1 hover:border-[var(--gold)]"><div className="flex items-start justify-between"><span className="grid h-11 w-11 place-items-center rounded-[1rem] bg-[var(--ink)] text-[var(--gold)]"><Icon className="h-5 w-5" /></span><ArrowRight className="h-5 w-5 text-[var(--signal)]" /></div><h3 className="mt-5 text-lg font-black text-[var(--ink)]">{label}</h3><p className="mt-2 text-sm font-semibold text-[var(--steel)]">{detail}</p></Link>)}</section>
           </>
         ) : null}
 
@@ -360,18 +453,23 @@ export function AffiliateWorkspace({ section }: { section: AffiliateSection }) {
           </>
         ) : null}
 
-        {!loading && section === "assets" ? (
-          <section className="grid gap-5 lg:grid-cols-2">
-            {assets.map((asset) => <article key={asset.id} className="flex flex-col rounded-[1.75rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)]"><div className="flex items-start justify-between gap-3"><div><p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.14em] text-[var(--signal)]">{asset.channel} · {asset.format}</p><h2 className="mt-2 text-xl font-black tracking-[-0.035em] text-[var(--ink)]">{asset.title}</h2></div><StatusPill label={asset.status} tone={statusTone(asset.status)} /></div><div className="mt-5 rounded-[1.25rem] border border-[var(--line)] bg-[var(--surface)] p-4 text-sm font-semibold leading-7 text-[var(--steel)]">{asset.copy}<p className="mt-3 font-black text-[var(--ink)]">{asset.callToAction}</p><p className="mt-2 break-all text-xs text-[var(--signal)]">{profile.referralUrl}</p></div><div className="mt-auto flex flex-wrap gap-2 pt-5"><Button type="button" onClick={() => void copyValue(`asset-${asset.id}`, `${asset.copy}\n\n${asset.callToAction}\n${profile.referralUrl}`)}>{copied === `asset-${asset.id}` ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />} {copied === `asset-${asset.id}` ? "Copied" : "Copy campaign"}</Button><span className="inline-flex items-center text-xs font-bold text-[var(--muted)]">Updated {dateTime(asset.updatedAt)}</span></div></article>)}
-          </section>
-        ) : null}
+        {!loading && section === "assets" ? <section className="grid gap-5 lg:grid-cols-2">{assets.map((asset) => <article key={asset.id} className="flex flex-col rounded-[1.75rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)]"><div className="flex items-start justify-between gap-3"><div><p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.14em] text-[var(--signal)]">{asset.channel} · {asset.format}</p><h2 className="mt-2 text-xl font-black tracking-[-0.035em] text-[var(--ink)]">{asset.title}</h2></div><StatusPill label={asset.status} tone={statusTone(asset.status)} /></div><div className="mt-5 rounded-[1.25rem] border border-[var(--line)] bg-[var(--surface)] p-4 text-sm font-semibold leading-7 text-[var(--steel)]">{asset.copy}<p className="mt-3 font-black text-[var(--ink)]">{asset.callToAction}</p><p className="mt-2 break-all text-xs text-[var(--signal)]">{profile.referralUrl}</p></div><div className="mt-auto flex flex-wrap gap-2 pt-5"><Button type="button" onClick={() => void copyValue(`asset-${asset.id}`, `${asset.copy}\n\n${asset.callToAction}\n${profile.referralUrl}`)}>{copied === `asset-${asset.id}` ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />} {copied === `asset-${asset.id}` ? "Copied" : "Copy campaign"}</Button><span className="inline-flex items-center text-xs font-bold text-[var(--muted)]">Updated {dateTime(asset.updatedAt)}</span></div></article>)}</section> : null}
 
         {!loading && section === "commissions" ? (
-          <><section className="grid gap-4 sm:grid-cols-3"><MetricCard label="Total commission" value={money(totals.commissions)} detail="All backend or preview records" tone="confirm" icon={<BadgeDollarSign className="h-5 w-5" />} /><MetricCard label="Awaiting settlement" value={money(totals.pendingCommission)} detail="Pending and approved" tone="signal" icon={<BarChart3 className="h-5 w-5" />} /><MetricCard label="Commission records" value={String(commissions.length)} detail="Traceable business earnings" icon={<Database className="h-5 w-5" />} /></section><Card><CardHeader><CardTitle>Commission ledger</CardTitle></CardHeader><CardContent className="p-0"><div className="overflow-x-auto"><table className="min-w-[820px] w-full text-left"><thead className="bg-[var(--surface)] text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]"><tr><th className="px-5 py-4">Reference</th><th className="px-5 py-4">Business</th><th className="px-5 py-4">Rate</th><th className="px-5 py-4">Amount</th><th className="px-5 py-4">Status</th><th className="px-5 py-4">Earned</th></tr></thead><tbody>{paged(commissions).map((row) => <tr key={row.id} className="border-t border-[var(--line)] bg-white hover:bg-[var(--gold)]/10"><td className="code px-5 py-4 font-black">{row.reference}</td><td className="px-5 py-4 font-black">{row.businessName}</td><td className="px-5 py-4 font-black">{row.rate}%</td><td className="money px-5 py-4 text-lg font-black">{money(row.amount)}</td><td className="px-5 py-4"><StatusPill label={row.status} tone={statusTone(row.status)} /></td><td className="px-5 py-4 text-sm text-[var(--steel)]">{dateTime(row.earnedAt)}</td></tr>)}</tbody></table></div><Pagination page={page} total={totalPages} setPage={setPage} /></CardContent></Card></>
+          <>
+            <section className="grid gap-4 sm:grid-cols-3"><MetricCard label="Total commission" value={money(totals.commissions)} detail="All commission records" tone="confirm" icon={<BadgeDollarSign className="h-5 w-5" />} /><MetricCard label="Approved for cashout" value={money(Number(eligibility.availableAmount || totals.approved))} detail={`${approvedCommissions.length} approved records`} tone="signal" icon={<Banknote className="h-5 w-5" />} /><MetricCard label="Processing" value={money(totals.processing)} detail="Already attached to payout requests" icon={<RefreshCw className="h-5 w-5" />} /></section>
+            <CashoutPanel approvedAmount={totals.approved} approvedCount={approvedCommissions.length} eligibility={eligibility} cashingOut={cashingOut} onCashout={() => void cashOutApproved()} />
+            <Card><CardHeader><CardTitle>Commission ledger</CardTitle></CardHeader><CardContent className="p-0"><div className="overflow-x-auto"><table className="min-w-[820px] w-full text-left"><thead className="bg-[var(--surface)] text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]"><tr><th className="px-5 py-4">Reference</th><th className="px-5 py-4">Business</th><th className="px-5 py-4">Rate</th><th className="px-5 py-4">Amount</th><th className="px-5 py-4">Status</th><th className="px-5 py-4">Earned</th></tr></thead><tbody>{paged(commissions).map((row) => <tr key={row.id} className="border-t border-[var(--line)] bg-white hover:bg-[var(--gold)]/10"><td className="code px-5 py-4 font-black">{row.reference}</td><td className="px-5 py-4 font-black">{row.businessName}</td><td className="px-5 py-4 font-black">{row.rate}%</td><td className="money px-5 py-4 text-lg font-black">{money(row.amount)}</td><td className="px-5 py-4"><StatusPill label={row.status} tone={statusTone(row.status)} /></td><td className="px-5 py-4 text-sm text-[var(--steel)]">{dateTime(row.earnedAt)}</td></tr>)}</tbody></table></div><Pagination page={page} total={totalPages} setPage={setPage} /></CardContent></Card>
+          </>
         ) : null}
 
         {!loading && section === "payouts" ? (
-          <><section className="grid gap-4 sm:grid-cols-3"><MetricCard label="Paid to affiliate" value={money(totals.paidOut)} detail="Confirmed completed payouts" tone="confirm" icon={<WalletCards className="h-5 w-5" />} /><MetricCard label="Processing" value={money(payouts.filter((row) => row.status.toUpperCase() !== "PAID").reduce((sum, row) => sum + row.amount, 0))} detail="Requested but not settled" tone="signal" icon={<RefreshCw className="h-5 w-5" />} /><MetricCard label="Payment provider" value={payouts[0]?.provider ?? "Not set"} detail="Configure provider in affiliate profile" icon={<Database className="h-5 w-5" />} /></section><Card><CardHeader><CardTitle>Payout settlement history</CardTitle></CardHeader><CardContent className="p-0"><div className="overflow-x-auto"><table className="min-w-[860px] w-full text-left"><thead className="bg-[var(--surface)] text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]"><tr><th className="px-5 py-4">Reference</th><th className="px-5 py-4">Provider</th><th className="px-5 py-4">Amount</th><th className="px-5 py-4">Status</th><th className="px-5 py-4">Requested</th><th className="px-5 py-4">Paid</th></tr></thead><tbody>{paged(payouts).map((row) => <tr key={row.id} className="border-t border-[var(--line)] bg-white hover:bg-[var(--gold)]/10"><td className="code px-5 py-4 font-black">{row.reference}</td><td className="px-5 py-4 font-black">{row.provider}</td><td className="money px-5 py-4 text-lg font-black">{money(row.amount)}</td><td className="px-5 py-4"><StatusPill label={row.status} tone={statusTone(row.status)} /></td><td className="px-5 py-4 text-sm text-[var(--steel)]">{dateTime(row.requestedAt)}</td><td className="px-5 py-4 text-sm text-[var(--steel)]">{dateTime(row.paidAt)}</td></tr>)}</tbody></table></div><Pagination page={page} total={totalPages} setPage={setPage} /></CardContent></Card></>
+          <>
+            <section className="grid gap-4 sm:grid-cols-3"><MetricCard label="Approved commission" value={money(Number(eligibility.availableAmount || totals.approved))} detail="Ready to cash out" tone="confirm" icon={<BadgeDollarSign className="h-5 w-5" />} /><MetricCard label="Payout processing" value={money(payouts.filter((row) => !["PAID", "SUCCESS"].includes(row.status.toUpperCase())).reduce((sum, row) => sum + row.amount, 0))} detail="Requested but not settled" tone="signal" icon={<RefreshCw className="h-5 w-5" />} /><MetricCard label="Paid to affiliate" value={money(totals.paidOut)} detail="Confirmed settlements" icon={<WalletCards className="h-5 w-5" />} /></section>
+            <CashoutPanel approvedAmount={totals.approved} approvedCount={approvedCommissions.length} eligibility={eligibility} cashingOut={cashingOut} onCashout={() => void cashOutApproved()} />
+            <Card><CardHeader><CardTitle>Approved commissions included in next cashout</CardTitle></CardHeader><CardContent className="p-0"><div className="overflow-x-auto"><table className="min-w-[760px] w-full text-left"><thead className="bg-[var(--surface)] text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]"><tr><th className="px-5 py-4">Reference</th><th className="px-5 py-4">Business</th><th className="px-5 py-4">Amount</th><th className="px-5 py-4">Status</th></tr></thead><tbody>{approvedCommissions.length ? approvedCommissions.map((row) => <tr key={row.id} className="border-t border-[var(--line)] bg-white"><td className="code px-5 py-4 font-black">{row.reference}</td><td className="px-5 py-4 font-black">{row.businessName}</td><td className="money px-5 py-4 text-lg font-black">{money(row.amount)}</td><td className="px-5 py-4"><StatusPill label="APPROVED" tone="confirm" /></td></tr>) : <tr><td colSpan={4} className="px-5 py-10 text-center text-sm font-bold text-[var(--steel)]">No approved commissions are ready for cashout.</td></tr>}</tbody></table></div></CardContent></Card>
+            <Card><CardHeader><CardTitle>Payout settlement history</CardTitle></CardHeader><CardContent className="p-0"><div className="overflow-x-auto"><table className="min-w-[860px] w-full text-left"><thead className="bg-[var(--surface)] text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]"><tr><th className="px-5 py-4">Reference</th><th className="px-5 py-4">Provider</th><th className="px-5 py-4">Amount</th><th className="px-5 py-4">Status</th><th className="px-5 py-4">Requested</th><th className="px-5 py-4">Updated</th></tr></thead><tbody>{paged(payouts).length ? paged(payouts).map((row) => <tr key={row.id} className="border-t border-[var(--line)] bg-white hover:bg-[var(--gold)]/10"><td className="code px-5 py-4 font-black">{row.reference}</td><td className="px-5 py-4 font-black">{row.provider}</td><td className="money px-5 py-4 text-lg font-black">{money(row.amount)}</td><td className="px-5 py-4"><StatusPill label={row.status} tone={statusTone(row.status)} /></td><td className="px-5 py-4 text-sm text-[var(--steel)]">{dateTime(row.requestedAt)}</td><td className="px-5 py-4 text-sm text-[var(--steel)]">{dateTime(row.paidAt)}</td></tr>) : <tr><td colSpan={6} className="px-5 py-10 text-center text-sm font-bold text-[var(--steel)]">No payout requests have been created.</td></tr>}</tbody></table></div><Pagination page={page} total={totalPages} setPage={setPage} /></CardContent></Card>
+          </>
         ) : null}
       </main>
     </>
