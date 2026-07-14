@@ -1,5 +1,5 @@
-import { AffiliateWorkspace } from "@/components/affiliate/AffiliateWorkspace";
+import { AffiliatePosterGallery } from "@/components/affiliate/AffiliatePosterGallery";
 
 export default function AffiliateCampaignAssetsPage() {
-  return <AffiliateWorkspace section="assets" />;
+  return <AffiliatePosterGallery />;
 }

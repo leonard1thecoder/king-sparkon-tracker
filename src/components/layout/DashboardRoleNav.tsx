@@ -22,11 +22,9 @@ import {
   QrCode,
   ReceiptText,
   ScanLine,
-  Settings,
   ShieldCheck,
   ShoppingCart,
   Ticket,
-  UserCheck,
   UserRound,
   UsersRound,
   WalletCards,
@@ -46,14 +44,13 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Tickets", href: "/dashboard/admin/tickets", icon: Ticket, description: "Events, sales and verification" },
     { label: "Jobs", href: "/dashboard/admin/jobs", icon: BriefcaseBusiness, description: "Platform opportunities" },
     { label: "Applications", href: "/dashboard/admin/jobs?tab=applications", icon: FileCheck2, description: "Applicant review queue" },
-    { label: "Affiliates", href: "/dashboard/admin/affiliates", icon: Handshake, description: "Partners and referrals" },
+    { label: "Affiliates", href: "/dashboard/admin/affiliates", icon: Handshake, description: "Poster uploads and partner tools" },
     { label: "Tips", href: "/dashboard/admin/tips", icon: WalletCards, description: "Tip payments and activity" },
     { label: "Promotions", href: "/dashboard/admin/promotions", icon: Megaphone, description: "Platform campaigns" },
     { label: "Services & Discounts", href: "/dashboard/admin/discounts", icon: BadgePercent, description: "Plus and Pro pricing offers" },
     { label: "Reports", href: "/dashboard/admin/reports", icon: BarChart3, description: "Platform performance" },
     { label: "Audit Logs", href: "/dashboard/admin/audit", icon: ClipboardList, description: "Security and action history" },
     { label: "Developer Hub", href: "/dashboard/admin/developer", icon: Code2, description: "Stages and implementation" },
-    { label: "Settings", href: "/dashboard/admin/settings", icon: Settings, description: "Platform configuration" },
   ],
   Owner: [
     { label: "Overview", href: "/dashboard/owner", icon: Building2, description: "Business command centre" },
@@ -66,8 +63,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Jobs", href: "/dashboard/owner/jobs", icon: BriefcaseBusiness, description: "Business opportunities" },
     { label: "Applications", href: "/dashboard/owner/jobs?tab=applications", icon: FileCheck2, description: "Review job applicants" },
     { label: "Promotions", href: "/dashboard/owner/promotions", icon: Megaphone, description: "Subscriber campaigns" },
-    { label: "Plan & Billing", href: "/dashboard/owner/billing", icon: CreditCard, description: "Subscription and discounts" },
-    { label: "Settings", href: "/dashboard/owner/settings", icon: Settings, description: "Business configuration" },
+    { label: "Plan & Billing", href: "/dashboard/owner/billing", icon: CreditCard, description: "Monthly and yearly subscriptions" },
   ],
   Worker: [
     { label: "Overview", href: "/dashboard/worker", icon: UserRound, description: "Today’s worker activity" },
@@ -80,12 +76,11 @@ const navByRole: Record<UserRole, NavItem[]> = {
   ],
   Affiliate: [
     { label: "Overview", href: "/dashboard/affiliate", icon: Activity, description: "Funnel, earnings and next action" },
-    { label: "Onboarding", href: "/dashboard/affiliate/onboarding", icon: UserCheck, description: "Payout and promotion profile" },
     { label: "Referral Links", href: "/dashboard/affiliate/referrals", icon: QrCode, description: "Tracked link and QR" },
-    { label: "Campaign Assets", href: "/dashboard/affiliate/assets", icon: Megaphone, description: "WhatsApp, social and email copy" },
-    { label: "Commissions", href: "/dashboard/affiliate/commissions", icon: BarChart3, description: "Business earnings ledger" },
-    { label: "Payouts", href: "/dashboard/affiliate/payouts", icon: WalletCards, description: "Requests and settlements" },
-    { label: "Tip Activity", href: "/dashboard/affiliate/tips", icon: Handshake, description: "Referral-linked tip activity" },
+    { label: "Campaign Assets", href: "/dashboard/affiliate/assets", icon: Megaphone, description: "Download approved posters" },
+    { label: "Affiliate Leads", href: "/dashboard/affiliate/leads", icon: UsersRound, description: "Subscriber contacts and sales angles" },
+    { label: "Commissions", href: "/dashboard/affiliate/commissions", icon: BarChart3, description: "Approved earnings ledger" },
+    { label: "Payouts", href: "/dashboard/affiliate/payouts", icon: WalletCards, description: "Cash out and settlements" },
   ],
   User: [
     { label: "Buy Products", href: "/dashboard/user/shop", icon: ShoppingCart },
@@ -123,7 +118,7 @@ export function DashboardRoleNav({ role }: { role: UserRole }) {
       {items.map(({ label, href, icon: Icon, description }) => {
         const active = isActive(pathname, searchParams, href);
         return (
-          <Link key={`${role}-${href}-${label}`} href={href} aria-current={active ? "page" : undefined} className={cn("group inline-flex min-h-11 w-full shrink-0 items-center gap-3 rounded-[1rem] border px-3.5 py-2.5 text-sm font-black transition duration-200 ease-out hover:-translate-y-0.5", description ? "min-h-[3.65rem]" : "", active ? "border-[var(--ink)] bg-[var(--ink)] text-white shadow-[0_12px_24px_rgba(7,19,31,0.2)]" : "border-[var(--ink)]/10 bg-white/45 text-[var(--ink)]/75 hover:border-[var(--ink)]/25 hover:bg-white/75 hover:text-[var(--ink)]")}>
+          <Link key={`${role}-${href}-${label}`} href={href} aria-current={active ? "page" : undefined} className={cn("group inline-flex min-h-11 w-full shrink-0 items-center gap-3 rounded-[1rem] border px-3.5 py-2.5 text-sm font-black transition duration-200 ease-out hover:-translate-y-0.5", description ? "min-h-[3.65rem]" : "", active ? "border-[var(--ink)] bg-[var(--ink)] text-white shadow-[0_12px_24px_rgba(7,19,31,0.2)]" : "border-[var(--ink)]/10 bg-white/45 text-[var(--ink)]/75 hover:border-[var(--ink)]/25 hover:bg-white/75 hover:text-[var(--ink)]") }>
             <span className={cn("grid h-8 w-8 shrink-0 place-items-center rounded-[0.8rem] border transition-colors", active ? "border-white/15 bg-white/10 text-[var(--gold)]" : "border-[var(--ink)]/10 bg-white/55 text-[var(--signal)] group-hover:text-[var(--ink)]")}><Icon className="h-4 w-4" /></span>
             <span className="min-w-0"><span className="block truncate">{label}</span>{description ? <span className={cn("mt-0.5 block truncate text-[0.65rem] font-bold tracking-normal", active ? "text-white/55" : "text-[var(--muted)]")}>{description}</span> : null}</span>
           </Link>
