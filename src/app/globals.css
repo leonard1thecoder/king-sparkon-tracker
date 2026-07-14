@@ -95,6 +95,18 @@ textarea {
   border-spacing: 0;
 }
 
+@media (max-width: 639px) {
+  .table-ledger th,
+  .table-ledger td {
+    padding: 0.75rem;
+  }
+
+  button,
+  a {
+    overflow-wrap: anywhere;
+  }
+}
+
 .table-ledger th,
 .table-ledger td {
   border-bottom: 1px solid var(--line);
