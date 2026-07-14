@@ -97,10 +97,11 @@ export function BouncingCircleField({ items, ariaLabel, variant = "stats" }: Bou
   const classes = variantClasses[variant];
 
   useEffect(() => {
-    const stage = containerRef.current;
+    const stageElement = containerRef.current;
     const bubbles = bubbleRefs.current.slice(0, items.length);
-    if (!stage || bubbles.some((bubble) => !bubble)) return;
+    if (!stageElement || bubbles.some((bubble) => !bubble)) return;
 
+    const stage = stageElement;
     const elements = bubbles as HTMLElement[];
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let animationFrame = 0;
