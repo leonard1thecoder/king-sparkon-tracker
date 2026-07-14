@@ -1,18 +1,11 @@
 import type { Metadata } from "next";
-import { RouteSectionPage } from "@/components/layout/RouteSectionPage";
+import { AdminAffiliatePosterWorkspace } from "@/components/admin/AdminAffiliatePosterWorkspace";
 
 export const metadata: Metadata = {
-  title: "Admin Affiliates | King Sparkon Tracker",
-  description: "Admin affiliate oversight shell for referral links, commissions, and payout state.",
+  title: "Admin Affiliate Posters | King Sparkon Tracker",
+  description: "Upload and manage affiliate campaign posters for Tickets, Products, Tips and Job Opportunities.",
 };
 
 export default function AdminAffiliatesPage() {
-  return (
-    <RouteSectionPage
-      role="ADMIN"
-      title="Affiliates"
-      description="Platform affiliate oversight for referral codes, QR links, commission rules, marketing assets, payout eligibility, and promoter performance."
-      endpoint="GET /api/admin/affiliates"
-    />
-  );
+  return <AdminAffiliatePosterWorkspace />;
 }
