@@ -1,0 +1,226 @@
+name: Agent Apply Platform Bubbles
+
+on:
+  push:
+    branches:
+      - "agent/production-readiness-phase2"
+    paths:
+      - ".github/workflows/agent-apply-platform-bubbles.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/production-readiness-phase2
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+      - name: Apply feature, job and affiliate circles
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          marketing = Path("src/components/marketing")
+
+          # Extend the shared collision field with tag rendering and a six-feature layout.
+          path = marketing / "BouncingCircleField.tsx"
+          source = path.read_text()
+          source = source.replace(
+              '  copy: string;\n};',
+              '  copy: string;\n  tags?: readonly string[];\n};',
+          )
+          source = source.replace(
+              'variant?: "vision" | "notes" | "stats" | "services";',
+              'variant?: "vision" | "notes" | "stats" | "services" | "features";',
+          )
+          source = source.replace(
+              '  services: {\n    stage: "min-h-[49rem] sm:min-h-[44rem] lg:min-h-[42rem]",\n    bubble: "w-[clamp(8.5rem,19vw,14.5rem)] p-5 sm:p-6",\n  },',
+              '  services: {\n    stage: "min-h-[49rem] sm:min-h-[44rem] lg:min-h-[42rem]",\n    bubble: "w-[clamp(8.5rem,19vw,14.5rem)] p-5 sm:p-6",\n  },\n  features: {\n    stage: "min-h-[72rem] sm:min-h-[62rem] lg:min-h-[50rem]",\n    bubble: "w-[clamp(10.25rem,22vw,16rem)] p-4 sm:p-5",\n  },',
+          )
+          source = source.replace(
+              '{items.map(({ icon: Icon, eyebrow, title, copy }, index) => (',
+              '{items.map(({ icon: Icon, eyebrow, title, copy, tags }, index) => (',
+          )
+          old_copy = '          <p className="mt-2 text-[0.7rem] leading-5 text-[var(--steel)] sm:text-xs sm:leading-5">{copy}</p>\n'
+          new_copy = '''          <p className={`mt-2 text-[var(--steel)] ${variant === "features" ? "text-[0.62rem] leading-4 sm:text-[0.7rem] sm:leading-5" : "text-[0.7rem] leading-5 sm:text-xs sm:leading-5"}`}>{copy}</p>
+          {tags?.length ? (
+            <div className="mt-3 flex max-w-full flex-wrap justify-center gap-1">
+              {tags.map((tag) => (
+                <span key={tag} className="rounded-full border border-[var(--line)] bg-[var(--signal-soft)] px-2 py-0.5 text-[0.5rem] font-extrabold text-[var(--signal-strong)] sm:text-[0.56rem]">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          ) : null}
+'''
+          if old_copy not in source:
+              raise SystemExit("Bouncing circle copy block not found")
+          source = source.replace(old_copy, new_copy)
+          path.write_text(source)
+
+          # Convert the six platform feature cards into one collision field.
+          path = marketing / "KingSparkonLanding.tsx"
+          source = path.read_text()
+          import_anchor = 'import { AffiliateProgramSection } from "@/components/marketing/AffiliateProgramSection";\n'
+          bubble_import = 'import { BouncingCircleField } from "@/components/marketing/BouncingCircleField";\n'
+          if bubble_import not in source:
+              source = source.replace(import_anchor, import_anchor + bubble_import)
+          old_features = '<div className="mx-auto max-w-7xl"><div className="max-w-3xl"><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Features</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Built around the work, not the dashboard decoration.</h2><p className="mt-5 text-base leading-8 text-[var(--steel)]">Each feature supports a real operational task and a clearly defined role.</p></div><div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">{features.map(({ icon: Icon, title, copy, tags }) => <article key={title} className="rounded-xl border border-[var(--line)] bg-white p-6 transition hover:border-[var(--line-strong)]"><div className="grid h-11 w-11 place-items-center rounded-lg border border-[var(--line)] text-[var(--signal)]"><Icon className="h-5 w-5" /></div><h3 className="mt-5 text-xl font-black tracking-[-0.03em]">{title}</h3><p className="mt-3 text-sm leading-7 text-[var(--steel)]">{copy}</p><div className="mt-5 flex flex-wrap gap-2">{tags.map((tag) => <span key={tag} className="rounded-md border border-[var(--line)] bg-[var(--signal-soft)] px-2.5 py-1 text-xs font-bold text-[var(--signal-strong)]">{tag}</span>)}</div></article>)}</div></div>'
+          new_features = '<div className="mx-auto max-w-7xl"><div className="max-w-3xl"><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Features</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Built around the work, not the dashboard decoration.</h2><p className="mt-5 text-base leading-8 text-[var(--steel)]">Each feature supports a real operational task and a clearly defined role.</p></div><BouncingCircleField items={features} ariaLabel="King Sparkon platform features" variant="features" /></div>'
+          if old_features not in source:
+              raise SystemExit("Feature card grid not found")
+          source = source.replace(old_features, new_features)
+          path.write_text(source)
+
+          # Replace job highlights with a dedicated three-circle field.
+          (marketing / "JobOpportunitiesSection.tsx").write_text('''import Link from "next/link";
+import { ArrowRight, BadgeCheck, BriefcaseBusiness, Globe2, UsersRound } from "lucide-react";
+import { BouncingCircleField } from "@/components/marketing/BouncingCircleField";
+import { AnimatedStat } from "@/components/ui/AnimatedStat";
+
+const jobStats = [
+  { end: 1000, suffix: "+", label: "LinkedIn professional connections", copy: "Global network across software, business, retail, events, and operations." },
+  { end: 2400, suffix: "+", label: "Job hunts", copy: "Job seekers can discover roles, save opportunities, and apply from a cleaner platform flow." },
+  { end: 1200, suffix: "+", label: "Potential employees", copy: "Business owners can build a talent pipeline before hiring becomes urgent." },
+  { end: 320, suffix: "+", label: "Open posts", copy: "Role posts, hiring notices, internships, contract work, and business opportunities." },
+] as const;
+
+const jobHighlights = [
+  { icon: Globe2, eyebrow: "Discovery", title: "Business opportunities", copy: "Easy platform for employees and job hunters to find business opportunities." },
+  { icon: UsersRound, eyebrow: "Owner workspace", title: "Publish and review", copy: "Owners can publish open posts and review potential employees from one dashboard." },
+  { icon: BadgeCheck, eyebrow: "Application flow", title: "Keep business context", copy: "Job seekers can move from discovery to application without losing the business context." },
+] as const;
+
+export function JobOpportunitiesSection() {
+  return (
+    <section id="jobs" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
+      <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.75rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-8">
+        <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-end">
+          <div>
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">04 / job opportunities</p>
+            <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">A jobs engine built from real professional connection.</h2>
+          </div>
+          <div>
+            <p className="text-sm leading-7 text-[var(--steel)] md:text-base">
+              King Sparkon has more than <span className="font-black text-[var(--ink)]">1,000 professional LinkedIn connections</span> across the world. The jobs layer turns that network energy into a simple platform for employees, job hunters, business owners, and open posts.
+            </p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <Link href="/jobs" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-bold text-white shadow-[var(--shadow-soft)] hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]">
+                Explore job posts <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/dashboard/owner/jobs" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--line)] bg-white px-6 font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]">
+                Post opportunity
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {jobStats.map(({ end, suffix, label, copy }) => (
+            <article key={label} className="rounded-[2rem] border border-[var(--line)] bg-[var(--surface)] p-6 shadow-[var(--shadow-soft)] hover:-translate-y-1 hover:border-[var(--accent-hover)]">
+              <AnimatedStat end={end} suffix={suffix} className="font-mono text-4xl font-black tracking-[-0.08em] text-[var(--ink)]" />
+              <h3 className="mt-4 text-xl font-black tracking-[-0.03em]">{label}</h3>
+              <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{copy}</p>
+            </article>
+          ))}
+        </div>
+
+        <div className="mt-8 rounded-xl border border-[var(--line)] bg-white p-6 shadow-[var(--shadow-soft)]">
+          <div className="grid h-14 w-14 place-items-center rounded-full border border-[var(--line)] bg-[var(--signal-soft)] text-[var(--signal)]">
+            <BriefcaseBusiness className="h-6 w-6" />
+          </div>
+          <h3 className="mt-6 text-3xl font-black tracking-[-0.05em]">Business logic meets hiring logic.</h3>
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--steel)]">The same platform that tracks barcode inventory, tickets, and campaigns can expose hiring demand and match it to real people.</p>
+        </div>
+
+        <BouncingCircleField items={jobHighlights} ariaLabel="Job opportunity platform benefits" variant="notes" />
+      </div>
+    </section>
+  );
+}
+''')
+
+          # Convert affiliate promotion channels to circles and align the section to the light theme.
+          (marketing / "AffiliateProgramSection.tsx").write_text('''import Link from "next/link";
+import { ArrowRight, Megaphone, QrCode, WalletCards } from "lucide-react";
+import { BouncingCircleField } from "@/components/marketing/BouncingCircleField";
+import { AnimatedStat } from "@/components/ui/AnimatedStat";
+
+const affiliateStats = [
+  { end: 180, prefix: "", suffix: "+", compact: false, label: "Registered affiliates", copy: "Promoters ready to push barcode inventory, event hosting, and job opportunity hosting." },
+  { end: 4800, prefix: "", suffix: "+", compact: false, label: "Potential leads", copy: "Business owners, event hosts, retailers, and employers that affiliates can introduce." },
+  { end: 920, prefix: "", suffix: "+", compact: false, label: "Accepted leads", copy: "Qualified leads that can move into owner trials, demos, and sales follow-up." },
+  { end: 65000, prefix: "R", suffix: "+", compact: true, label: "Tracked earnings", copy: "Commission visibility with simple earning records and payout readiness." },
+] as const;
+
+const affiliateChannels = [
+  { icon: QrCode, eyebrow: "Commission-ready lead flow", title: "Barcode inventory", copy: "Promote tracking for stock, workers, scans, products, and reports." },
+  { icon: Megaphone, eyebrow: "Commission-ready lead flow", title: "Event hosting", copy: "Promote QR tickets, capacity views, gate scanning, and buyer access." },
+  { icon: WalletCards, eyebrow: "Commission-ready lead flow", title: "Job opportunity hosting", copy: "Promote business hiring posts and employee discovery workflows." },
+] as const;
+
+export function AffiliateProgramSection() {
+  return (
+    <section id="affiliate" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
+      <div className="mx-auto grid max-w-7xl gap-8 overflow-hidden rounded-[2.75rem] border border-[var(--line)] bg-white p-5 text-[var(--ink)] shadow-[var(--shadow-ledger)] md:p-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+        <div>
+          <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">05 / affiliate program</p>
+          <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Beat King Sparkon marketing and earn commission.</h2>
+          <p className="mt-5 max-w-2xl text-sm leading-7 text-[var(--steel)] md:text-base">
+            Affiliates get a focused dashboard for potential clients, accepted leads, earnings, and easy payout readiness. Promote barcode inventory, event hosting, and job opportunity hosting without guessing where the money is.
+          </p>
+
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+            <Link href="/register?plan=FREE_AFFILIATE&privilege=AFFILIATE&service=FREE_AFFILIATE_ACCESS" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-black text-white shadow-[var(--shadow-soft)] hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]">
+              Join affiliate program <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link href="/dashboard/affiliate" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--line)] bg-white px-6 font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]">
+              Affiliate dashboard
+            </Link>
+          </div>
+        </div>
+
+        <div className="relative overflow-hidden rounded-[2.4rem] border border-[var(--line)] bg-[var(--signal-soft)] p-5 shadow-[var(--shadow-soft)] md:p-6">
+          <div className="pointer-events-none absolute inset-0 scan-grid opacity-25" />
+          <div className="contact-dashboard-glow pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--signal)]/12 blur-3xl" />
+          <div className="relative z-10 grid gap-4 sm:grid-cols-2">
+            {affiliateStats.map(({ end, prefix, suffix, compact, label, copy }) => (
+              <article key={label} className="rounded-[1.7rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)]">
+                <AnimatedStat end={end} prefix={prefix} suffix={suffix} compact={compact} className="font-mono text-3xl font-black tracking-[-0.08em] text-[var(--signal-strong)]" />
+                <h3 className="mt-3 text-lg font-black tracking-[-0.03em] text-[var(--ink)]">{label}</h3>
+                <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{copy}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div className="lg:col-span-2">
+          <BouncingCircleField items={affiliateChannels} ariaLabel="Affiliate promotion channels" variant="stats" />
+        </div>
+      </div>
+    </section>
+  );
+}
+''')
+          PY
+          rm -f .github/workflows/agent-apply-platform-bubbles.yml
+          git diff --check
+      - name: Validate frontend
+        run: |
+          bun install
+          bun run lint
+          bun run typecheck
+          bun run test
+          bun run build
+      - name: Commit platform bubbles
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src .github/workflows
+          git commit -m "Animate platform feature circles"
+          git push origin HEAD:agent/production-readiness-phase2
