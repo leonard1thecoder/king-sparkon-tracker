@@ -9,6 +9,30 @@ main [data-orange-hover="true"]:focus-visible {
   outline-offset: 3px;
 }
 
+/* Legacy pages now share the same restrained geometry as the rebuilt surfaces. */
+:where([class~="rounded-2xl"], [class~="rounded-3xl"]) {
+  border-radius: var(--radius-xl) !important;
+}
+
+:where(button, a)[class~="rounded-full"] {
+  border-radius: var(--radius-md) !important;
+}
+
+/* Remove decorative generated gradients while preserving image-legibility overlays. */
+[class*="linear-gradient"] {
+  background-image: none !important;
+  background-color: #ffffff !important;
+}
+
+:where([class~="bg-amber-50"], [class~="bg-yellow-50"]) {
+  background-color: #ffffff !important;
+  border-color: var(--line) !important;
+}
+
+[class~="bg-slate-950/28"] {
+  background: rgb(240 249 255 / 0.92) !important;
+}
+
 @media (min-width: 1024px) {
   main > section:first-child header > div[aria-label="Section navigation"] {
     justify-content: center;
