@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { userProfileShortcuts } from "@/components/layout/DashboardHeaderActions";
 import { navByRole } from "@/components/layout/DashboardRoleNav";
 
 const hiddenUserSidebarRoutes = [
@@ -6,6 +7,7 @@ const hiddenUserSidebarRoutes = [
   "/dashboard/user/jobs",
   "/dashboard/user/applications",
   "/dashboard/user/profile",
+  "/dashboard/user/carts",
 ] as const;
 
 describe("user dashboard sidebar contract", () => {
@@ -15,6 +17,14 @@ describe("user dashboard sidebar contract", () => {
     hiddenUserSidebarRoutes.forEach((route) => {
       expect(userRoutes).not.toContain(route);
     });
+  });
+
+  it("keeps My Carts in the profile menu", () => {
+    expect(userProfileShortcuts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ label: "My Carts", href: "/dashboard/user/carts" }),
+      ]),
+    );
   });
 
   it("uses the canonical worker tip workspace route", () => {
@@ -28,7 +38,6 @@ describe("user dashboard sidebar contract", () => {
       "Overview",
       "Buy Products",
       "Cart",
-      "My Carts",
       "Buy Tickets",
       "Tip Worker",
     ]);
