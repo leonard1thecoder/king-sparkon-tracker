@@ -112,7 +112,14 @@ export function LandingDirectionalMotion() {
       immediate = false,
     ) {
       const currentState = motionStates.get(section);
-      if (currentState === "visible" || currentState === "preparing") return;
+      if (currentState === "visible") return;
+      if (
+        currentState === "preparing" &&
+        !immediate &&
+        !reducedMotion.matches
+      ) {
+        return;
+      }
 
       cancelRevealFrame(section);
       setMotionOffset(
