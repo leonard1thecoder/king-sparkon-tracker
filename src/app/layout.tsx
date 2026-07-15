@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { MotionDirector } from "@/components/motion/MotionDirector";
 import "./globals.css";
 import "./brand-polish.css";
+import "./motion.css";
 
 const inter = Inter({
   variable: "--font-inter",
