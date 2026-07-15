@@ -22,10 +22,12 @@ const VELOCITY_RETENTION_PER_SECOND = 0.18;
 const WALL_RESTITUTION = 0.68;
 const COLLISION_RESTITUTION = 0.62;
 const MAX_BODY_SPEED = 72;
-const COLLISION_GAP = 10;
+const COLLISION_GAP = 12;
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
-const MOBILE_DIAMETER = 176;
-const MOBILE_GAP = 104;
+const MOBILE_DIAMETER = 212;
+const MOBILE_GAP = 120;
+const DESKTOP_DIAMETER = 220;
+const DESKTOP_MINIMUM = 146;
 
 function clamp(value: number, minimum: number, maximum: number) {
   return Math.min(maximum, Math.max(minimum, value));
@@ -35,20 +37,34 @@ function resolveOrientation(): Orientation {
   return window.innerWidth >= DESKTOP_BREAKPOINT ? "horizontal" : "vertical";
 }
 
-function resolveDiameter(width: number, count: number, orientation: Orientation) {
+function resolveDiameter(
+  width: number,
+  count: number,
+  orientation: Orientation,
+) {
   if (orientation === "vertical") {
-    return clamp(Math.min(MOBILE_DIAMETER, width - 88), 128, MOBILE_DIAMETER);
+    return clamp(Math.min(MOBILE_DIAMETER, width - 64), 146, MOBILE_DIAMETER);
   }
 
-  if (count <= 1) return 180;
+  if (count <= 1) return DESKTOP_DIAMETER;
   const centreSpacing = Math.max(1, (width - 64) / (count - 1));
-  return clamp(centreSpacing * 0.72, 116, 180);
+  return clamp(
+    centreSpacing * 0.86,
+    DESKTOP_MINIMUM,
+    DESKTOP_DIAMETER,
+  );
 }
 
-function resolveStageHeight(diameter: number, count: number, orientation: Orientation) {
-  if (orientation === "horizontal") return 620;
-  const edgeRoom = diameter / 2 + 44;
-  return Math.ceil(edgeRoom * 2 + Math.max(0, count - 1) * (diameter + MOBILE_GAP));
+function resolveStageHeight(
+  diameter: number,
+  count: number,
+  orientation: Orientation,
+) {
+  if (orientation === "horizontal") return 680;
+  const edgeRoom = diameter / 2 + 48;
+  return Math.ceil(
+    edgeRoom * 2 + Math.max(0, count - 1) * (diameter + MOBILE_GAP),
+  );
 }
 
 function createWaveMetrics(
@@ -57,16 +73,16 @@ function createWaveMetrics(
   radius: number,
   orientation: Orientation,
 ): WaveMetrics {
-  const edgeRoom = radius + 34;
+  const edgeRoom = radius + 38;
 
   if (orientation === "horizontal") {
-    const availableHeight = Math.max(0, height - radius * 2 - 48);
+    const availableHeight = Math.max(0, height - radius * 2 - 52);
     return {
       orientation,
       start: edgeRoom,
       span: Math.max(1, width - edgeRoom * 2),
       baseline: height / 2,
-      amplitude: clamp(availableHeight * 0.2, 18, 46),
+      amplitude: clamp(availableHeight * 0.2, 18, 50),
     };
   }
 
@@ -76,16 +92,27 @@ function createWaveMetrics(
     start: edgeRoom,
     span: Math.max(1, height - edgeRoom * 2),
     baseline: width / 2,
-    amplitude: clamp(availableWidth * 0.24, 16, 30),
+    amplitude: clamp(availableWidth * 0.24, 16, 32),
   };
 }
 
-function pointOnWave(metrics: WaveMetrics, progress: number, phase: number): Point {
-  const waveOffset = Math.sin(progress * Math.PI * 2 * WAVE_CYCLES + phase) * metrics.amplitude;
-  if (metrics.orientation === "horizontal") {
-    return { x: metrics.start + metrics.span * progress, y: metrics.baseline + waveOffset };
-  }
-  return { x: metrics.baseline + waveOffset, y: metrics.start + metrics.span * progress };
+function pointOnWave(
+  metrics: WaveMetrics,
+  progress: number,
+  phase: number,
+): Point {
+  const waveOffset =
+    Math.sin(progress * Math.PI * 2 * WAVE_CYCLES + phase) * metrics.amplitude;
+
+  return metrics.orientation === "horizontal"
+    ? {
+        x: metrics.start + metrics.span * progress,
+        y: metrics.baseline + waveOffset,
+      }
+    : {
+        x: metrics.baseline + waveOffset,
+        y: metrics.start + metrics.span * progress,
+      };
 }
 
 function buildWavePath(metrics: WaveMetrics, phase: number) {
@@ -93,11 +120,17 @@ function buildWavePath(metrics: WaveMetrics, phase: number) {
   return Array.from({ length: segments + 1 }, (_, index) =>
     pointOnWave(metrics, index / segments, phase),
   )
-    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`)
+    .map(
+      (point, index) =>
+        `${index === 0 ? "M" : "L"} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`,
+    )
     .join(" ");
 }
 
-function rememberStyle(node: HTMLElement, styles: Map<HTMLElement, string | null>) {
+function rememberStyle(
+  node: HTMLElement,
+  styles: Map<HTMLElement, string | null>,
+) {
   if (!styles.has(node)) styles.set(node, node.getAttribute("style"));
 }
 
@@ -110,7 +143,7 @@ function limitSpeed(body: MovingBody) {
 }
 
 function resolveWallCollision(body: MovingBody, width: number, height: number) {
-  const padding = 6;
+  const padding = 8;
   const minimumX = body.radius + padding;
   const maximumX = width - body.radius - padding;
   const minimumY = body.radius + padding;
@@ -143,6 +176,7 @@ function resolveBodyCollisions(bodies: MovingBody[]) {
         let dy = b.y - a.y;
         let distance = Math.hypot(dx, dy);
         const minimumDistance = a.radius + b.radius + COLLISION_GAP;
+
         if (distance >= minimumDistance) continue;
         if (distance === 0) {
           dx = 1;
@@ -160,10 +194,12 @@ function resolveBodyCollisions(bodies: MovingBody[]) {
 
         const relativeVelocityX = b.vx - a.vx;
         const relativeVelocityY = b.vy - a.vy;
-        const velocityAlongNormal = relativeVelocityX * normalX + relativeVelocityY * normalY;
-        if (velocityAlongNormal >= 0) continue;
+        const velocityAlongNormal =
+          relativeVelocityX * normalX + relativeVelocityY * normalY;
 
-        const impulse = (-(1 + COLLISION_RESTITUTION) * velocityAlongNormal) / 2;
+        if (velocityAlongNormal >= 0) continue;
+        const impulse =
+          (-(1 + COLLISION_RESTITUTION) * velocityAlongNormal) / 2;
         a.vx -= impulse * normalX;
         a.vy -= impulse * normalY;
         b.vx += impulse * normalX;
@@ -175,15 +211,103 @@ function resolveBodyCollisions(bodies: MovingBody[]) {
   }
 }
 
+function fitCardTypography(card: HTMLElement, diameter: number) {
+  const icon = card.firstElementChild as HTMLElement | null;
+  const title = card.querySelector<HTMLElement>("h3");
+  const copy = card.querySelector<HTMLElement>("p");
+  const tags = card.querySelector<HTMLElement>("h3 ~ div");
+  const tagItems = tags
+    ? Array.from(tags.querySelectorAll<HTMLElement>("span"))
+    : [];
+  const large = diameter >= 205;
+  const medium = diameter >= 180;
+
+  let titleSize = large ? 0.98 : medium ? 0.9 : 0.8;
+  let copySize = large ? 0.7 : medium ? 0.64 : 0.56;
+  let copyLineHeight = large ? 1.02 : medium ? 0.94 : 0.84;
+  let tagSize = large ? 0.52 : medium ? 0.48 : 0.43;
+
+  Object.assign(card.style, {
+    position: "absolute",
+    left: "0",
+    top: "0",
+    width: `${diameter}px`,
+    height: `${diameter}px`,
+    borderRadius: "9999px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    textAlign: "center",
+    padding: large ? "22px" : medium ? "18px" : "14px",
+    overflow: "hidden",
+    boxSizing: "border-box",
+    willChange: "transform",
+    boxShadow: "0 18px 45px rgba(14,165,233,0.13)",
+    zIndex: "10",
+  });
+
+  if (icon) {
+    icon.style.borderRadius = "9999px";
+    icon.style.flexShrink = "0";
+  }
+
+  [title, copy, tags].forEach((node) => {
+    if (!node) return;
+    node.style.maxWidth = "88%";
+    node.style.overflowWrap = "anywhere";
+  });
+
+  if (title) title.style.marginTop = large ? "10px" : "8px";
+  if (copy) copy.style.marginTop = "5px";
+  if (tags) {
+    tags.style.marginTop = large ? "8px" : "6px";
+    tags.style.justifyContent = "center";
+  }
+
+  const applySizes = () => {
+    if (title) {
+      title.style.fontSize = `${titleSize}rem`;
+      title.style.lineHeight = `${titleSize * 1.12}rem`;
+    }
+    if (copy) {
+      copy.style.fontSize = `${copySize}rem`;
+      copy.style.lineHeight = `${copyLineHeight}rem`;
+    }
+    tagItems.forEach((tag) => {
+      tag.style.borderRadius = "9999px";
+      tag.style.fontSize = `${tagSize}rem`;
+      tag.style.padding = large ? "3px 8px" : "2px 6px";
+    });
+  };
+
+  applySizes();
+
+  for (
+    let attempt = 0;
+    attempt < 5 && card.scrollHeight > card.clientHeight + 1;
+    attempt += 1
+  ) {
+    titleSize *= 0.96;
+    copySize *= 0.94;
+    copyLineHeight *= 0.95;
+    tagSize *= 0.94;
+    applySizes();
+  }
+}
+
 export function FeatureCircleEnhancer() {
   useEffect(() => {
     const firstCard = document.querySelector<HTMLElement>("#features article");
     const stageElement = firstCard?.parentElement;
-    if (!stageElement || stageElement.dataset.waveFeatureField === "true") return;
+    if (!stageElement || stageElement.dataset.waveFeatureField === "true") {
+      return;
+    }
 
     const stage = stageElement;
     const cards = Array.from(stage.children).filter(
-      (element): element is HTMLElement => element instanceof HTMLElement && element.tagName === "ARTICLE",
+      (element): element is HTMLElement =>
+        element instanceof HTMLElement && element.tagName === "ARTICLE",
     );
     if (!cards.length) return;
 
@@ -200,7 +324,9 @@ export function FeatureCircleEnhancer() {
       if (copy) rememberStyle(copy, originalStyles);
       if (tags) {
         rememberStyle(tags, originalStyles);
-        tags.querySelectorAll<HTMLElement>("span").forEach((tag) => rememberStyle(tag, originalStyles));
+        tags
+          .querySelectorAll<HTMLElement>("span")
+          .forEach((tag) => rememberStyle(tag, originalStyles));
       }
     });
 
@@ -234,68 +360,25 @@ export function FeatureCircleEnhancer() {
       path.setAttribute("stroke-linejoin", "round");
       path.setAttribute("vector-effect", "non-scaling-stroke");
     });
-    glowPath.setAttribute("stroke-width", "12");
-    glowPath.setAttribute("opacity", connectorVisible ? "0.12" : "0");
-    linePath.setAttribute("stroke-width", "4");
-    linePath.setAttribute("stroke-dasharray", "20 12");
-    linePath.setAttribute("opacity", connectorVisible ? "0.88" : "0");
+    glowPath.setAttribute("stroke-width", "13");
+    glowPath.setAttribute("opacity", connectorVisible ? "0.13" : "0");
+    linePath.setAttribute("stroke-width", "4.25");
+    linePath.setAttribute("stroke-dasharray", "21 12");
+    linePath.setAttribute("opacity", connectorVisible ? "0.92" : "0");
     svg.append(glowPath, linePath);
     stage.prepend(svg);
-
-    function applyCardTypography(diameter: number) {
-      const compactText = diameter < 164;
-      cards.forEach((card) => {
-        Object.assign(card.style, {
-          position: "absolute",
-          left: "0",
-          top: "0",
-          width: `${diameter}px`,
-          height: `${diameter}px`,
-          borderRadius: "9999px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          textAlign: "center",
-          padding: compactText ? "11px" : "15px",
-          willChange: "transform",
-          boxShadow: "0 18px 45px rgba(14,165,233,0.13)",
-          zIndex: "10",
-        });
-
-        const icon = card.firstElementChild as HTMLElement | null;
-        const title = card.querySelector<HTMLElement>("h3");
-        const copy = card.querySelector<HTMLElement>("p");
-        const tags = card.querySelector<HTMLElement>("h3 ~ div");
-        if (icon) icon.style.borderRadius = "9999px";
-        if (title) {
-          title.style.marginTop = compactText ? "7px" : "9px";
-          title.style.fontSize = compactText ? "0.74rem" : "0.86rem";
-          title.style.lineHeight = "1rem";
-        }
-        if (copy) {
-          copy.style.marginTop = "4px";
-          copy.style.fontSize = compactText ? "0.52rem" : "0.59rem";
-          copy.style.lineHeight = compactText ? "0.78rem" : "0.88rem";
-        }
-        if (tags) {
-          tags.style.marginTop = compactText ? "4px" : "6px";
-          tags.style.justifyContent = "center";
-          tags.querySelectorAll<HTMLElement>("span").forEach((tag) => {
-            tag.style.borderRadius = "9999px";
-            tag.style.fontSize = compactText ? "0.4rem" : "0.46rem";
-            tag.style.padding = compactText ? "2px 4px" : "2px 6px";
-          });
-        }
-      });
-    }
 
     function prepareLayout(currentPhase: number) {
       const width = stage.clientWidth;
       if (!width) return null;
+
       const orientation = resolveOrientation();
       const diameter = resolveDiameter(width, cards.length, orientation);
-      const stageHeight = resolveStageHeight(diameter, cards.length, orientation);
+      const stageHeight = resolveStageHeight(
+        diameter,
+        cards.length,
+        orientation,
+      );
       const nextLayoutKey = `${Math.round(width)}:${orientation}:${Math.round(diameter)}:${stageHeight}`;
       const layoutChanged = nextLayoutKey !== layoutKey;
 
@@ -309,16 +392,26 @@ export function FeatureCircleEnhancer() {
           overflow: "hidden",
           borderTop: "1px solid var(--line)",
           borderBottom: "1px solid var(--line)",
-          background: "radial-gradient(circle at center, var(--signal-soft), white 70%)",
+          background:
+            "radial-gradient(circle at center, var(--signal-soft), white 70%)",
         });
-        applyCardTypography(diameter);
+        cards.forEach((card) => fitCardTypography(card, diameter));
       }
 
       const height = stageHeight;
       const radius = diameter / 2;
-      const metrics = createWaveMetrics(width, height, radius, orientation);
+      const metrics = createWaveMetrics(
+        width,
+        height,
+        radius,
+        orientation,
+      );
       const anchors = cards.map((_, index) =>
-        pointOnWave(metrics, cards.length <= 1 ? 0.5 : index / (cards.length - 1), currentPhase),
+        pointOnWave(
+          metrics,
+          cards.length <= 1 ? 0.5 : index / (cards.length - 1),
+          currentPhase,
+        ),
       );
       const path = buildWavePath(metrics, currentPhase);
 
@@ -372,6 +465,7 @@ export function FeatureCircleEnhancer() {
       lastTime = now;
       phase += delta * WAVE_SPEED;
       const scene = prepareLayout(phase);
+
       if (!scene) {
         animationFrame = window.requestAnimationFrame(animate);
         return;
@@ -391,7 +485,9 @@ export function FeatureCircleEnhancer() {
       });
 
       resolveBodyCollisions(bodies);
-      bodies.forEach((body) => resolveWallCollision(body, scene.width, scene.height));
+      bodies.forEach((body) =>
+        resolveWallCollision(body, scene.width, scene.height),
+      );
       renderBodies();
       animationFrame = window.requestAnimationFrame(animate);
     }
