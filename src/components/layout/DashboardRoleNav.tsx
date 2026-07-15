@@ -95,11 +95,7 @@ export const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Cart", href: "/dashboard/user/shop/cart", icon: ShoppingCart, description: "Review and pay" },
     { label: "My Carts", href: "/dashboard/user/carts", icon: ReceiptText, description: "Purchases and collections" },
     { label: "Buy Tickets", href: "/dashboard/user/tickets/buy", icon: Ticket, description: "Browse live events" },
-    { label: "My Tickets", href: "/dashboard/user/tickets", icon: QrCode, description: "Purchased QR tickets" },
-    { label: "Jobs", href: "/dashboard/user/jobs", icon: BriefcaseBusiness, description: "Browse opportunities" },
-    { label: "Applications", href: "/dashboard/user/applications", icon: FileCheck2, description: "Track submissions" },
-    { label: "Tip Worker", href: "/dashboard/user/tips/scan", icon: WalletCards, description: "Scan a worker QR" },
-    { label: "Profile", href: "/dashboard/user/profile", icon: UserRound, description: "Contact details and session" },
+    { label: "Tip Worker", href: "/dashboard/user/tips", icon: WalletCards, description: "Scan a worker QR" },
   ],
 };
 
@@ -117,6 +113,7 @@ export function isActive(pathname: string, searchParams: URLSearchParams, href: 
   if (cleanHref === "/dashboard/user/shop/cart") return pathname === cleanHref;
   if (cleanHref === "/dashboard/user/tickets/buy") return pathname === cleanHref || pathname.startsWith("/dashboard/user/tickets/events") || pathname.startsWith("/dashboard/user/tickets/checkout");
   if (cleanHref === "/dashboard/user/tickets") return pathname === cleanHref;
+  if (cleanHref === "/dashboard/user/tips") return pathname === cleanHref || pathname.startsWith("/dashboard/user/tips/");
   if (isDashboardRoot(cleanHref)) return pathname === cleanHref && !searchParams.has("tab");
   if (pathname !== cleanHref && !pathname.startsWith(`${cleanHref}/`)) return false;
   return pathname !== cleanHref || !searchParams.has("tab");
