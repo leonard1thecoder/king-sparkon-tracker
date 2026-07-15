@@ -21,9 +21,9 @@ export function landingSectionSide(sectionId: string, index: number): LandingSec
 }
 
 export function landingEnterOffset(side: LandingSectionSide, direction: LandingScrollDirection) {
-  return side * (direction === "down" ? 1 : -1) * 154;
+  return side * (direction === "down" ? 1 : -1) * 92;
 }
 
 export function landingExitOffset(side: LandingSectionSide, direction: LandingScrollDirection) {
-  return side * (direction === "up" ? 1 : -1) * 132;
+  return side * (direction === "up" ? 1 : -1) * 76;
 }
