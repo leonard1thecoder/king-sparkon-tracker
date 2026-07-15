@@ -3,245 +3,276 @@
 import { useEffect } from "react";
 import {
   landingEnterOffset,
-  landingExitOffset,
   landingSectionSide,
   type LandingScrollDirection,
 } from "@/lib/motion/landing-flow";
-import { loadGsapRuntime, type GsapTweenLike } from "@/lib/motion/gsap-runtime";
 
 const LANDING_SECTION_SELECTOR = "main section[id]";
+const SECTION_NAV_SELECTOR = "header [aria-label='Section navigation'] a[href^='#']";
+const SECTION_CHANGE_EVENT = "king-sparkon:landing-section-change";
+const ENTRY_DURATION_MS = 1050;
+const ENTRY_EASING = "cubic-bezier(0.16, 1, 0.3, 1)";
 
-type SectionState = "hidden" | "visible" | "leaving";
+type SectionChangeSource = "scroll" | "navigation" | "initial";
+
+function targetFromAnchor(anchor: HTMLAnchorElement) {
+  const href = anchor.getAttribute("href") ?? "";
+  const hash = href.startsWith("#")
+    ? href
+    : href.startsWith("/#") && window.location.pathname === "/"
+      ? href.slice(1)
+      : "";
+
+  if (hash.length < 2) return null;
+  return document.getElementById(decodeURIComponent(hash.slice(1)));
+}
+
+function sectionHref(section: HTMLElement) {
+  return `#${section.id}`;
+}
 
 export function LandingDirectionalMotion() {
   useEffect(() => {
+    const main = document.querySelector<HTMLElement>("main");
+    if (!main) return;
+
+    const sections = Array.from(
+      document.querySelectorAll<HTMLElement>(LANDING_SECTION_SELECTOR),
+    );
+    if (sections.length === 0) return;
+
+    const sectionIndexes = new Map(
+      sections.map((section, index) => [section, index]),
+    );
+    const navigationAnchors = Array.from(
+      document.querySelectorAll<HTMLAnchorElement>(SECTION_NAV_SELECTOR),
+    );
+    const navigableSections = navigationAnchors
+      .map((anchor) => targetFromAnchor(anchor))
+      .filter((section): section is HTMLElement => Boolean(section));
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const revealed = new WeakSet<HTMLElement>();
+    const runningAnimations = new Map<HTMLElement, Animation>();
+    const previousOverflowX = main.style.overflowX;
+
     let disposed = false;
-    let scrollFrameId = 0;
-    let scrollDirection: LandingScrollDirection = "down";
+    let scrollFrame = 0;
     let lastScrollY = window.scrollY;
-    let activeSection: HTMLElement | null = null;
-    const tweens: GsapTweenLike[] = [];
-    const animatedSections = new Set<HTMLElement>();
+    let scrollDirection: LandingScrollDirection = "down";
+    let activeHref = "";
+    let navigationSyncFrame = 0;
 
-    async function initialize() {
-      const main = document.querySelector<HTMLElement>("main");
-      if (!main) return;
+    main.style.overflowX = "clip";
 
-      const previousOverflowX = main.style.overflowX;
-      main.style.overflowX = "clip";
+    function sideFor(section: HTMLElement) {
+      return landingSectionSide(
+        section.id,
+        sectionIndexes.get(section) ?? 0,
+      );
+    }
 
-      try {
-        const { gsap } = await loadGsapRuntime();
-        if (disposed) return;
+    function reveal(
+      section: HTMLElement,
+      direction: LandingScrollDirection,
+    ) {
+      if (revealed.has(section)) return;
+      revealed.add(section);
+      section.dataset.landingRevealed = "true";
 
-        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        const sections = Array.from(document.querySelectorAll<HTMLElement>(LANDING_SECTION_SELECTOR));
-        const indexes = new Map(sections.map((section, index) => [section, index]));
-        const states = new Map<HTMLElement, SectionState>();
+      if (reducedMotion.matches) return;
 
-        function sideFor(section: HTMLElement) {
-          return landingSectionSide(section.id, indexes.get(section) ?? 0);
-        }
-
-        function remember(tween: GsapTweenLike) {
-          tweens.push(tween);
-          return tween;
-        }
-
-        function setHidden(section: HTMLElement, direction: LandingScrollDirection) {
-          const side = sideFor(section);
-          animatedSections.add(section);
-          states.set(section, "hidden");
-          gsap.set(section, {
-            opacity: 0,
-            x: landingEnterOffset(side, direction),
-            y: 10,
-            rotationY: side * 2.5,
-            scale: 0.994,
-            transformPerspective: 1400,
-            transformOrigin: side < 0 ? "0% 50%" : "100% 50%",
-            willChange: "transform, opacity",
-          });
-        }
-
-        function showImmediately(section: HTMLElement) {
-          animatedSections.add(section);
-          states.set(section, "visible");
-          gsap.set(section, {
-            opacity: 1,
-            x: 0,
-            y: 0,
-            rotationY: 0,
-            scale: 1,
-          });
-        }
-
-        function enter(section: HTMLElement, direction: LandingScrollDirection) {
-          if (states.get(section) === "visible") return;
-
-          const side = sideFor(section);
-          const offset = landingEnterOffset(side, direction);
-          animatedSections.add(section);
-          states.set(section, "visible");
-
-          if (reducedMotion) {
-            showImmediately(section);
-            return;
-          }
-
-          remember(
-            gsap.fromTo(
-              section,
-              {
-                opacity: 0,
-                x: offset,
-                y: 10,
-                rotationY: (offset < 0 ? -1 : 1) * 3,
-                scale: 0.994,
-                transformPerspective: 1400,
-                transformOrigin: offset < 0 ? "0% 50%" : "100% 50%",
-                willChange: "transform, opacity",
-              },
-              {
-                opacity: 1,
-                x: 0,
-                y: 0,
-                rotationY: 0,
-                scale: 1,
-                duration: 0.78,
-                ease: "power3.out",
-                clearProps: "willChange",
-                overwrite: "auto",
-              },
-            ),
-          );
-        }
-
-        function leave(section: HTMLElement, direction: LandingScrollDirection) {
-          if (states.get(section) !== "visible" || reducedMotion) return;
-
-          const offset = landingExitOffset(sideFor(section), direction);
-          animatedSections.add(section);
-          states.set(section, "leaving");
-
-          remember(
-            gsap.to(section, {
-              opacity: 0,
-              x: offset,
-              y: direction === "up" ? 8 : -8,
-              rotationY: (offset < 0 ? -1 : 1) * 2.5,
-              scale: 0.996,
-              duration: 0.46,
-              ease: "power2.inOut",
-              overwrite: "auto",
-              onComplete: () => {
-                if (states.get(section) === "leaving") states.set(section, "hidden");
-              },
-            }),
-          );
-        }
-
-        function updateScrollDirection() {
-          if (scrollFrameId) return;
-          scrollFrameId = window.requestAnimationFrame(() => {
-            scrollFrameId = 0;
-            const nextScrollY = window.scrollY;
-            const delta = nextScrollY - lastScrollY;
-            if (Math.abs(delta) > 2) scrollDirection = delta > 0 ? "down" : "up";
-            lastScrollY = nextScrollY;
-          });
-        }
-
-        function handleAnchorNavigation(event: MouseEvent) {
-          const source = event.target;
-          if (!(source instanceof Element)) return;
-          const anchor = source.closest<HTMLAnchorElement>("a[href^='#']");
-          const href = anchor?.getAttribute("href");
-          if (!href || href.length < 2) return;
-
-          const target = document.getElementById(decodeURIComponent(href.slice(1)));
-          if (!target) return;
-
-          const targetTop = target.getBoundingClientRect().top + window.scrollY;
-          scrollDirection = targetTop > window.scrollY + 100 ? "down" : "up";
-          event.preventDefault();
-          window.history.replaceState(null, "", href);
-          target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
-        }
-
-        if (reducedMotion) {
-          sections.forEach(showImmediately);
-          document.addEventListener("click", handleAnchorNavigation);
-          return () => {
-            document.removeEventListener("click", handleAnchorNavigation);
-            main.style.overflowX = previousOverflowX;
-          };
-        }
-
-        const observer = new IntersectionObserver(
-          (entries) => {
-            const entering = entries
-              .filter((entry) => entry.isIntersecting)
-              .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-
-            const nextEntry = entering[0];
-            if (!nextEntry) return;
-
-            const nextSection = nextEntry.target as HTMLElement;
-            if (activeSection && activeSection !== nextSection) leave(activeSection, scrollDirection);
-            enter(nextSection, scrollDirection);
-            activeSection = nextSection;
+      runningAnimations.get(section)?.cancel();
+      const offset = landingEnterOffset(sideFor(section), direction);
+      const animation = section.animate(
+        [
+          {
+            opacity: 0.38,
+            transform: `translate3d(${offset}px, 12px, 0)`,
           },
           {
-            rootMargin: "-18% 0px -24% 0px",
-            threshold: [0.08, 0.22, 0.42],
+            opacity: 1,
+            transform: "translate3d(0, 0, 0)",
           },
+        ],
+        {
+          duration: ENTRY_DURATION_MS,
+          easing: ENTRY_EASING,
+          fill: "both",
+        },
+      );
+
+      runningAnimations.set(section, animation);
+      animation.addEventListener(
+        "finish",
+        () => {
+          runningAnimations.delete(section);
+          animation.cancel();
+        },
+        { once: true },
+      );
+    }
+
+    function applyNavigationState(href: string) {
+      navigationAnchors.forEach((anchor) => {
+        const isActive = anchor.getAttribute("href") === href;
+        anchor.classList.toggle("landing-nav-active", isActive);
+        anchor.classList.toggle("landing-nav-inactive", !isActive);
+        if (isActive) anchor.setAttribute("aria-current", "location");
+        else anchor.removeAttribute("aria-current");
+      });
+    }
+
+    function scheduleNavigationState() {
+      if (navigationSyncFrame) return;
+      navigationSyncFrame = window.requestAnimationFrame(() => {
+        navigationSyncFrame = 0;
+        if (activeHref) applyNavigationState(activeHref);
+      });
+    }
+
+    function publishActiveSection(
+      section: HTMLElement,
+      source: SectionChangeSource,
+    ) {
+      const href = sectionHref(section);
+      if (href === activeHref && source === "scroll") return;
+      activeHref = href;
+      applyNavigationState(href);
+      window.dispatchEvent(
+        new CustomEvent(SECTION_CHANGE_EVENT, {
+          detail: { href, source },
+        }),
+      );
+    }
+
+    function resolveActiveSection() {
+      const candidates = navigableSections.length > 0
+        ? navigableSections
+        : sections;
+      const marker = window.innerHeight * 0.32;
+      let nearest = candidates[0];
+      let nearestDistance = Number.POSITIVE_INFINITY;
+
+      for (const section of candidates) {
+        const bounds = section.getBoundingClientRect();
+        if (bounds.top <= marker && bounds.bottom >= marker) return section;
+
+        const distance = Math.min(
+          Math.abs(bounds.top - marker),
+          Math.abs(bounds.bottom - marker),
         );
+        if (distance < nearestDistance) {
+          nearest = section;
+          nearestDistance = distance;
+        }
+      }
 
-        sections.forEach((section) => {
-          const bounds = section.getBoundingClientRect();
-          const initiallyVisible = bounds.top < window.innerHeight * 0.82 && bounds.bottom > window.innerHeight * 0.18;
-          if (initiallyVisible) {
-            showImmediately(section);
-            activeSection = section;
-          } else {
-            setHidden(section, "down");
-          }
-          observer.observe(section);
-        });
+      return nearest;
+    }
 
-        window.addEventListener("scroll", updateScrollDirection, { passive: true });
-        document.addEventListener("click", handleAnchorNavigation);
+    function updateScrollState() {
+      scrollFrame = 0;
+      const nextScrollY = window.scrollY;
+      const delta = nextScrollY - lastScrollY;
+      if (Math.abs(delta) > 2) {
+        scrollDirection = delta > 0 ? "down" : "up";
+      }
+      lastScrollY = nextScrollY;
 
-        return () => {
-          observer.disconnect();
-          window.removeEventListener("scroll", updateScrollDirection);
-          document.removeEventListener("click", handleAnchorNavigation);
-          main.style.overflowX = previousOverflowX;
-        };
-      } catch (error) {
-        main.style.overflowX = previousOverflowX;
-        console.error("Landing directional motion failed to initialize", error);
+      const activeSection = resolveActiveSection();
+      if (activeSection) {
+        reveal(activeSection, scrollDirection);
+        publishActiveSection(activeSection, "scroll");
       }
     }
 
-    let runtimeCleanup: (() => void) | undefined;
-    void initialize().then((cleanup) => {
-      runtimeCleanup = cleanup;
-      if (disposed) runtimeCleanup?.();
-    });
+    function handleScroll() {
+      if (scrollFrame) return;
+      scrollFrame = window.requestAnimationFrame(updateScrollState);
+    }
+
+    function handleAnchorNavigation(event: MouseEvent) {
+      const source = event.target;
+      if (!(source instanceof Element)) return;
+      const anchor = source.closest<HTMLAnchorElement>("a[href^='#'], a[href^='/#']");
+      if (!anchor) return;
+
+      const target = targetFromAnchor(anchor);
+      if (!target) return;
+
+      const targetTop = target.getBoundingClientRect().top + window.scrollY;
+      scrollDirection = targetTop > window.scrollY + 80 ? "down" : "up";
+      reveal(target, scrollDirection);
+      publishActiveSection(target, "navigation");
+
+      event.preventDefault();
+      window.history.replaceState(null, "", sectionHref(target));
+      target.scrollIntoView({
+        behavior: reducedMotion.matches ? "auto" : "smooth",
+        block: "start",
+      });
+    }
+
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          reveal(entry.target as HTMLElement, scrollDirection);
+        });
+      },
+      {
+        rootMargin: "14% 0px 14% 0px",
+        threshold: 0.04,
+      },
+    );
+
+    sections.forEach((section) => revealObserver.observe(section));
+
+    const navigationRoot = document.querySelector("header");
+    const navigationMutationObserver = new MutationObserver(
+      scheduleNavigationState,
+    );
+    if (navigationRoot) {
+      navigationMutationObserver.observe(navigationRoot, {
+        attributes: true,
+        subtree: true,
+        attributeFilter: ["aria-current", "class"],
+      });
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll, { passive: true });
+    document.addEventListener("click", handleAnchorNavigation);
+
+    const initialHashTarget = window.location.hash
+      ? document.getElementById(
+          decodeURIComponent(window.location.hash.slice(1)),
+        )
+      : null;
+    const initialSection = initialHashTarget ?? resolveActiveSection();
+    if (initialSection) {
+      reveal(initialSection, "down");
+      publishActiveSection(initialSection, "initial");
+    }
 
     return () => {
       disposed = true;
-      runtimeCleanup?.();
-      window.cancelAnimationFrame(scrollFrameId);
-      tweens.forEach((tween) => tween.kill());
-      if (window.__KING_SPARKON_MOTION__) {
-        animatedSections.forEach((section) => {
-          window.__KING_SPARKON_MOTION__?.gsap.killTweensOf(section);
-          window.__KING_SPARKON_MOTION__?.gsap.set(section, {
-            clearProps: "transform,opacity,willChange",
-          });
+      if (disposed) {
+        revealObserver.disconnect();
+        navigationMutationObserver.disconnect();
+        window.removeEventListener("scroll", handleScroll);
+        window.removeEventListener("resize", handleScroll);
+        document.removeEventListener("click", handleAnchorNavigation);
+        window.cancelAnimationFrame(scrollFrame);
+        window.cancelAnimationFrame(navigationSyncFrame);
+        runningAnimations.forEach((animation) => animation.cancel());
+        runningAnimations.clear();
+        main.style.overflowX = previousOverflowX;
+        navigationAnchors.forEach((anchor) => {
+          anchor.classList.remove(
+            "landing-nav-active",
+            "landing-nav-inactive",
+          );
         });
       }
     };
