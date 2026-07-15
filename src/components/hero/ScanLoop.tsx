@@ -1,523 +1,456 @@
 "use client";
 
-import Image from "next/image";
-import type { PointerEvent } from "react";
+import { Crown, Gauge, ScanLine, Sparkles } from "lucide-react";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { SocialLinks } from "@/components/social/SocialLinks";
+import { KingSparkonLoader } from "@/components/ui/KingSparkonLoader";
+import {
+  buildOperatingCrown,
+  buildParticleField,
+  createMesh,
+  disposeScene,
+} from "@/components/hero/three/scene";
+import {
+  loadThreeGsapRuntime,
+  type GsapRuntime,
+  type GsapTweenLike,
+  type RendererLike,
+  type SceneLike,
+} from "@/components/hero/three/runtime";
 
-const HERO_3D_IMAGE =
-  "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jun%2029,%202026,%2001_23_49%20PM.png";
+type SceneStatus = "loading" | "ready" | "fallback";
 
-const SECOND_3D_IMAGE =
-  "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/XSX.png";
-
-const previewTerminalMetrics = [
-  ["Brand logo", "LEGO"],
-  ["Scan sweep", "4x"],
-  ["Hero view", "4K"],
-] as const;
-
-type TerminalCardProps = {
-  imageSrc: string;
-  eyebrow: string;
-  title: string;
-  subtitle: string;
-  overlayEyebrow: string;
-  overlayTitle: string;
-  cardClassName: string;
+type SceneControls = {
+  move(normalizedX: number, normalizedY: number): void;
+  reset(): void;
 };
 
-function ScanTerminalCard({ imageSrc, eyebrow, title, subtitle, overlayEyebrow, overlayTitle, cardClassName }: TerminalCardProps) {
-  return (
-    <div className={`hero-scan-card absolute inset-0 ${cardClassName}`}>
-      <div className="hero-scan-card__shell relative rounded-[2.35rem] border border-white/70 bg-white/92 p-3 shadow-[0_38px_110px_rgba(7,19,31,0.28)] backdrop-blur-xl">
-        <div className="hero-card-edge hero-card-edge--left" aria-hidden="true" />
-        <div className="hero-card-edge hero-card-edge--right" aria-hidden="true" />
-        <div className="hero-card-specular pointer-events-none absolute inset-0 z-30 overflow-hidden rounded-[2.35rem]" aria-hidden="true" />
-        <div className="pointer-events-none absolute inset-x-8 top-2 z-20 h-6 rounded-full bg-gradient-to-b from-white via-white/75 to-transparent blur-[1px]" aria-hidden="true" />
-
-        <div className="relative overflow-hidden rounded-[1.95rem] border border-white/12 bg-[var(--ink)] scan-grid">
-          <div className="hero-terminal-glow pointer-events-none absolute inset-0" aria-hidden="true" />
-
-          <div className="relative z-10 flex items-center justify-between gap-3 border-b border-white/10 px-5 py-4">
-            <div>
-              <p className="font-mono text-[0.62rem] font-bold uppercase tracking-[0.18em] text-[var(--gold)]">{eyebrow}</p>
-              <p className="mt-1 text-sm font-semibold text-white/62">{subtitle}</p>
-            </div>
-            <span className="hero-live-pill rounded-full border border-[var(--confirm)]/40 bg-[var(--confirm)]/20 px-3 py-1 text-xs font-black text-white">4 scans</span>
-          </div>
-
-          <div className="relative z-10 grid gap-4 p-5">
-            <div className="grid gap-3 sm:grid-cols-3">
-              {previewTerminalMetrics.map(([label, value], index) => (
-                <div key={label} className={`hero-metric-card hero-metric-card--${index + 1} rounded-[1.25rem] border border-white/10 bg-white/[0.065] p-3 shadow-[var(--shadow-soft)] backdrop-blur-md`}>
-                  <p className="font-mono text-[0.56rem] uppercase tracking-[0.14em] text-white/38">{label}</p>
-                  <p className="money mt-1 text-lg font-black text-white">{value}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="hero-scan-display relative mx-auto my-3 w-full overflow-hidden rounded-[1.9rem] border border-white/18 bg-[var(--ink)] text-white shadow-[0_32px_95px_rgba(0,0,0,0.46)]">
-              <div className="hero-scan-window relative aspect-square w-full overflow-hidden bg-[radial-gradient(circle_at_50%_38%,rgba(255,210,90,0.24),rgba(7,19,31,0.98)_64%)]">
-                <div className="hero-image-aura pointer-events-none absolute left-1/2 top-1/2 h-[72%] w-[72%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--gold)]/16 blur-3xl" aria-hidden="true" />
-                <Image
-                  src={imageSrc}
-                  alt={title}
-                  fill
-                  priority
-                  unoptimized
-                  sizes="(min-width: 1280px) 640px, (min-width: 1024px) 52vw, 94vw"
-                  className="hero-3d-image transform-gpu object-contain [backface-visibility:hidden] [image-rendering:auto]"
-                />
-
-                <div className="hero-orbit hero-orbit--one pointer-events-none absolute left-1/2 top-1/2 z-10 rounded-full border border-[var(--gold)]/24" aria-hidden="true" />
-                <div className="hero-orbit hero-orbit--two pointer-events-none absolute left-1/2 top-1/2 z-10 rounded-full border border-[var(--signal)]/22" aria-hidden="true" />
-                <div className="logo-reflection-wick pointer-events-none absolute inset-0 z-10" aria-hidden="true" />
-                <div className="barcode-scan-beam pointer-events-none absolute left-0 right-0 z-20 h-28 bg-gradient-to-b from-transparent via-[var(--signal)]/20 to-transparent" aria-hidden="true" />
-                <div className="barcode-scan-line pointer-events-none absolute left-4 right-4 z-30 h-1.5 rounded-full bg-[var(--signal)] shadow-[0_0_22px_var(--signal),0_0_60px_var(--signal)]" aria-hidden="true" />
-                <div className="barcode-scan-line barcode-scan-line--echo pointer-events-none absolute left-10 right-10 z-20 h-px bg-white/65" aria-hidden="true" />
-                <div className="pointer-events-none absolute left-4 right-4 top-0 z-20 h-full border-x border-[var(--signal)]/18" aria-hidden="true" />
-
-                <span className="hero-corner hero-corner--tl" aria-hidden="true" />
-                <span className="hero-corner hero-corner--tr" aria-hidden="true" />
-                <span className="hero-corner hero-corner--bl" aria-hidden="true" />
-                <span className="hero-corner hero-corner--br" aria-hidden="true" />
-              </div>
-
-              <div className="absolute inset-x-0 bottom-0 z-40 bg-gradient-to-t from-[rgba(7,19,31,0.96)] via-[rgba(7,19,31,0.58)] to-transparent px-5 pb-5 pt-16 text-white">
-                <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.18em] text-[var(--gold)]">{overlayEyebrow}</p>
-                <p className="mt-2 text-xl font-black tracking-[-0.04em]">{overlayTitle}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+const sceneMetrics = [
+  { icon: ScanLine, label: "Scanner", value: "GSAP beam sweep" },
+  { icon: Crown, label: "Object", value: "Generated crown mesh" },
+  { icon: Gauge, label: "Camera", value: "Responsive parallax" },
+] as const;
 
 export function ScanLoop() {
-  function updateSceneTilt(event: PointerEvent<HTMLDivElement>) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const controlsRef = useRef<SceneControls | null>(null);
+  const [status, setStatus] = useState<SceneStatus>("loading");
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const canvas = canvasRef.current;
+    if (!container || !canvas) return;
+    const host = container;
+    const sceneCanvas = canvas;
+
+    let cancelled = false;
+    let renderer: RendererLike | null = null;
+    let scene: SceneLike | null = null;
+    let resizeObserver: ResizeObserver | null = null;
+    let intersectionObserver: IntersectionObserver | null = null;
+    let activeTweens: GsapTweenLike[] = [];
+    let gsapRuntime: GsapRuntime | null = null;
+    let animatedTargets: object[] = [];
+    let sceneIsVisible = true;
+    let pageIsVisible = document.visibilityState === "visible";
+
+    async function initializeScene() {
+      try {
+        const { THREE, gsap } = await loadThreeGsapRuntime();
+        if (cancelled) return undefined;
+        gsapRuntime = gsap;
+
+        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+
+        renderer = new THREE.WebGLRenderer({
+          canvas: sceneCanvas,
+          alpha: true,
+          antialias: !coarsePointer,
+          powerPreference: "high-performance",
+        });
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.18;
+        renderer.shadowMap.enabled = !coarsePointer;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, coarsePointer ? 1.25 : 1.75));
+
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x120f16);
+        scene.fog = new THREE.FogExp2(0x120f16, 0.047);
+
+        const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 70);
+        camera.position.set(0, 2.8, 11.8);
+        camera.lookAt(0, -0.15, 0);
+
+        const ambientLight = new THREE.AmbientLight(0xffe8bb, 0.9);
+        const hemisphereLight = new THREE.HemisphereLight(0xffd66b, 0x20101c, 1.45);
+        const keyLight = new THREE.DirectionalLight(0xffe7a3, 4.8);
+        keyLight.position.set(4.5, 7.2, 7.5);
+        keyLight.castShadow = !coarsePointer;
+        keyLight.shadow.mapSize.set(1024, 1024);
+        keyLight.shadow.bias = -0.00025;
+        keyLight.shadow.camera.near = 0.5;
+        keyLight.shadow.camera.far = 30;
+        keyLight.shadow.camera.left = -7;
+        keyLight.shadow.camera.right = 7;
+        keyLight.shadow.camera.top = 7;
+        keyLight.shadow.camera.bottom = -7;
+
+        const rimLight = new THREE.PointLight(0x4aa9df, 23, 18, 2);
+        rimLight.position.set(-4.8, 2.4, 3.6);
+        const signalLight = new THREE.PointLight(0xff4d2e, 28, 16, 2);
+        signalLight.position.set(4.6, -0.6, 4.4);
+        scene.add(ambientLight, hemisphereLight, keyLight, rimLight, signalLight);
+
+        const stage = buildOperatingCrown(THREE);
+        stage.root.position.set(0, 0.2, 0);
+        stage.root.rotation.y = -0.7;
+        stage.root.scale.set(0.08, 0.08, 0.08);
+        scene.add(stage.root);
+
+        animatedTargets = [
+          camera.position,
+          stage.root.position,
+          stage.root.rotation,
+          stage.root.scale,
+          stage.crown.position,
+          stage.crown.rotation,
+          stage.orbit.rotation,
+          stage.beam.position,
+          stage.beamGlow.position,
+          stage.signal,
+          stage.scanner.rotation,
+          stage.barcode.scale,
+        ];
+
+        const particles = buildParticleField(THREE);
+        scene.add(particles);
+
+        const floor = createMesh(
+          THREE,
+          new THREE.CylinderGeometry(4.35, 4.8, 0.38, 72),
+          new THREE.MeshPhysicalMaterial({
+            color: 0x19131b,
+            metalness: 0.7,
+            roughness: 0.28,
+            clearcoat: 0.55,
+          }),
+        );
+        floor.position.set(0, -1.86, 0);
+        scene.add(floor);
+
+        const floorRing = createMesh(
+          THREE,
+          new THREE.RingGeometry(3.28, 3.34, 96),
+          new THREE.MeshBasicMaterial({
+            color: 0xffc857,
+            transparent: true,
+            opacity: 0.58,
+            side: THREE.DoubleSide,
+          }),
+          false,
+        );
+        floorRing.rotation.x = -Math.PI / 2;
+        floorRing.position.set(0, -1.64, 0);
+        scene.add(floorRing);
+
+        function lookAtScene() {
+          camera.lookAt(0, -0.1, 0);
+        }
+
+        function resize() {
+          if (!renderer || !scene) return;
+          const width = Math.max(host.clientWidth, 1);
+          const height = Math.max(host.clientHeight, 1);
+          camera.aspect = width / height;
+          camera.updateProjectionMatrix();
+          renderer.setSize(width, height, false);
+          renderer.render(scene, camera);
+        }
+
+        resizeObserver = new ResizeObserver(resize);
+        resizeObserver.observe(host);
+        resize();
+
+        const intro = gsap.timeline({ defaults: { ease: "power3.out" } });
+        intro
+          .to(camera.position, {
+            x: 0,
+            y: 1.15,
+            z: 7.65,
+            duration: prefersReducedMotion ? 0 : 2.2,
+            onUpdate: lookAtScene,
+          })
+          .to(stage.root.scale, {
+            x: 1,
+            y: 1,
+            z: 1,
+            duration: prefersReducedMotion ? 0 : 1.7,
+            ease: "back.out(1.35)",
+          }, prefersReducedMotion ? 0 : "<0.15")
+          .to(stage.root.rotation, {
+            x: 0.02,
+            y: 0.18,
+            z: 0,
+            duration: prefersReducedMotion ? 0 : 2.15,
+          }, prefersReducedMotion ? 0 : "<")
+          .fromTo(stage.barcode.scale, {
+            x: 0.05,
+            y: 0.25,
+            z: 1,
+          }, {
+            x: 1,
+            y: 1,
+            z: 1,
+            duration: prefersReducedMotion ? 0 : 1.05,
+            ease: "back.out(1.7)",
+          }, prefersReducedMotion ? 0 : "<0.5");
+        activeTweens.push(intro);
+
+        if (!prefersReducedMotion) {
+          activeTweens = activeTweens.concat([
+            gsap.to(stage.crown.position, {
+              y: 0.18,
+              duration: 2.8,
+              ease: "sine.inOut",
+              repeat: -1,
+              yoyo: true,
+            }),
+            gsap.to(stage.crown.rotation, {
+              y: Math.PI * 2 + 0.18,
+              duration: 24,
+              ease: "none",
+              repeat: -1,
+            }),
+            gsap.to(stage.orbit.rotation, {
+              y: -Math.PI * 2,
+              z: Math.PI * 2,
+              duration: 18,
+              ease: "none",
+              repeat: -1,
+            }),
+            gsap.fromTo(stage.beam.position, {
+              y: 2.48,
+            }, {
+              y: -1.22,
+              duration: 2.45,
+              ease: "power1.inOut",
+              repeat: -1,
+              repeatDelay: 0.45,
+            }),
+            gsap.fromTo(stage.beamGlow.position, {
+              y: 2.48,
+            }, {
+              y: -1.22,
+              duration: 2.45,
+              ease: "power1.inOut",
+              repeat: -1,
+              repeatDelay: 0.45,
+            }),
+            gsap.to(stage.signal, {
+              emissiveIntensity: 2.15,
+              duration: 0.9,
+              ease: "sine.inOut",
+              repeat: -1,
+              yoyo: true,
+            }),
+            gsap.to(stage.scanner.rotation, {
+              z: 0.012,
+              duration: 2.2,
+              ease: "sine.inOut",
+              repeat: -1,
+              yoyo: true,
+            }),
+          ]);
+        }
+
+        controlsRef.current = {
+          move(normalizedX, normalizedY) {
+            if (prefersReducedMotion) return;
+            gsap.to(camera.position, {
+              x: normalizedX * 0.62,
+              y: 1.15 - normalizedY * 0.34,
+              duration: 0.72,
+              ease: "power2.out",
+              overwrite: "auto",
+              onUpdate: lookAtScene,
+            });
+            gsap.to(stage.root.rotation, {
+              x: 0.02 + normalizedY * 0.11,
+              y: 0.18 + normalizedX * 0.25,
+              duration: 0.82,
+              ease: "power2.out",
+              overwrite: "auto",
+            });
+          },
+          reset() {
+            gsap.to(camera.position, {
+              x: 0,
+              y: 1.15,
+              duration: 0.9,
+              ease: "power2.out",
+              overwrite: "auto",
+              onUpdate: lookAtScene,
+            });
+            gsap.to(stage.root.rotation, {
+              x: 0.02,
+              y: 0.18,
+              duration: 0.9,
+              ease: "power2.out",
+              overwrite: "auto",
+            });
+          },
+        };
+
+        function syncPlayback() {
+          const shouldPlay = sceneIsVisible && pageIsVisible;
+          activeTweens.forEach((tween) => shouldPlay ? tween.resume() : tween.pause());
+        }
+
+        intersectionObserver = new IntersectionObserver(([entry]) => {
+          sceneIsVisible = entry?.isIntersecting ?? true;
+          syncPlayback();
+        }, { rootMargin: "120px 0px", threshold: 0.01 });
+        intersectionObserver.observe(host);
+
+        function handleVisibilityChange() {
+          pageIsVisible = document.visibilityState === "visible";
+          syncPlayback();
+        }
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        renderer.setAnimationLoop((time) => {
+          if (!sceneIsVisible || !pageIsVisible || !renderer || !scene) return;
+          if (!prefersReducedMotion) {
+            particles.rotation.y = time * 0.000035;
+            particles.rotation.x = Math.sin(time * 0.00019) * 0.055;
+            floorRing.rotation.z = time * 0.00009;
+          }
+          renderer.render(scene, camera);
+        });
+
+        if (prefersReducedMotion) renderer.render(scene, camera);
+        setStatus("ready");
+
+        return () => {
+          document.removeEventListener("visibilitychange", handleVisibilityChange);
+        };
+      } catch (error) {
+        console.error("King Sparkon Three.js scene failed to initialize", error);
+        if (!cancelled) setStatus("fallback");
+        return undefined;
+      }
+    }
+
+    let removeVisibilityListener: (() => void) | undefined;
+    void initializeScene().then((cleanup) => {
+      if (cancelled) {
+        cleanup?.();
+        return;
+      }
+      removeVisibilityListener = cleanup;
+    });
+
+    return () => {
+      cancelled = true;
+      controlsRef.current = null;
+      removeVisibilityListener?.();
+      resizeObserver?.disconnect();
+      intersectionObserver?.disconnect();
+      activeTweens.forEach((tween) => tween.kill());
+      animatedTargets.forEach((target) => gsapRuntime?.killTweensOf(target));
+      renderer?.setAnimationLoop(null);
+      if (scene) disposeScene(scene);
+      renderer?.dispose();
+      renderer?.forceContextLoss?.();
+    };
+  }, []);
+
+  function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
     if (event.pointerType === "touch") return;
-
-    const scene = event.currentTarget;
-    const bounds = scene.getBoundingClientRect();
-    const x = (event.clientX - bounds.left) / bounds.width;
-    const y = (event.clientY - bounds.top) / bounds.height;
-    const tiltY = (x - 0.5) * 10;
-    const tiltX = (0.5 - y) * 8;
-
-    scene.style.setProperty("--hero-tilt-x", `${tiltX.toFixed(2)}deg`);
-    scene.style.setProperty("--hero-tilt-y", `${tiltY.toFixed(2)}deg`);
-    scene.style.setProperty("--hero-glow-x", `${(x * 100).toFixed(1)}%`);
-    scene.style.setProperty("--hero-glow-y", `${(y * 100).toFixed(1)}%`);
-  }
-
-  function resetSceneTilt(event: PointerEvent<HTMLDivElement>) {
-    const scene = event.currentTarget;
-    scene.style.setProperty("--hero-tilt-x", "0deg");
-    scene.style.setProperty("--hero-tilt-y", "0deg");
-    scene.style.setProperty("--hero-glow-x", "50%");
-    scene.style.setProperty("--hero-glow-y", "42%");
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const normalizedX = ((event.clientX - bounds.left) / bounds.width - 0.5) * 2;
+    const normalizedY = ((event.clientY - bounds.top) / bounds.height - 0.5) * 2;
+    controlsRef.current?.move(normalizedX, normalizedY);
   }
 
   return (
-    <div
-      className="hero-3d-scene relative mx-auto w-full max-w-2xl [perspective:1800px]"
-      onPointerMove={updateSceneTilt}
-      onPointerLeave={resetSceneTilt}
-    >
-      <div className="hero-scene-halo pointer-events-none absolute left-1/2 top-[45%] h-[72%] w-[84%] -translate-x-1/2 -translate-y-1/2 rounded-full" aria-hidden="true" />
-      <div className="hero-scene-ring hero-scene-ring--outer pointer-events-none absolute left-1/2 top-[42%] rounded-full border border-[var(--gold)]/25" aria-hidden="true" />
-      <div className="hero-scene-ring hero-scene-ring--inner pointer-events-none absolute left-1/2 top-[42%] rounded-full border border-[var(--signal)]/22" aria-hidden="true" />
+    <div className="mx-auto w-full max-w-2xl">
+      <div
+        ref={containerRef}
+        className="group relative min-h-[34rem] overflow-hidden rounded-[2.65rem] border border-[#302635] bg-[#120f16] shadow-[0_38px_120px_rgba(7,19,31,0.34)] sm:min-h-[42rem]"
+        onPointerMove={handlePointerMove}
+        onPointerLeave={() => controlsRef.current?.reset()}
+      >
+        <canvas
+          ref={canvasRef}
+          className={`absolute inset-0 h-full w-full transition-opacity duration-700 ${status === "ready" ? "opacity-100" : "opacity-0"}`}
+          role="img"
+          aria-label="Interactive Three.js operating crown with barcode scanner geometry"
+        />
 
-      <div className="hero-particle-field pointer-events-none absolute inset-0" aria-hidden="true">
-        {Array.from({ length: 10 }).map((_, index) => <span key={index} />)}
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(255,200,87,0.17),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.02),rgba(18,15,22,0.28))]" aria-hidden="true" />
+        <div className="pointer-events-none absolute inset-0 opacity-30 scan-grid" aria-hidden="true" />
+
+        <div className="pointer-events-none absolute inset-x-4 top-4 z-20 flex flex-wrap items-center justify-between gap-2 sm:inset-x-6 sm:top-6">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/28 px-3 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--gold)] backdrop-blur-xl">
+            <Sparkles className="h-3.5 w-3.5" /> Real Three.js scene
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-full border border-[var(--gold)]/25 bg-[var(--gold)]/10 px-3 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-white/74 backdrop-blur-xl">
+            <span className={`h-2 w-2 rounded-full ${status === "ready" ? "bg-emerald-400 shadow-[0_0_14px_rgba(52,211,153,0.85)]" : "bg-[var(--gold)]"}`} />
+            {status === "ready" ? "GSAP timeline live" : "Scene booting"}
+          </div>
+        </div>
+
+        {status === "loading" ? (
+          <div className="absolute inset-0 z-10 grid place-items-center bg-[#120f16]">
+            <KingSparkonLoader compact label="Building 3D operating crown" message="Camera and scanner timeline loading." />
+          </div>
+        ) : null}
+
+        {status === "fallback" ? (
+          <div className="absolute inset-0 z-10 grid place-items-center bg-[radial-gradient(circle_at_50%_28%,rgba(255,200,87,0.18),transparent_42%),#120f16] px-6 text-center text-white">
+            <div className="max-w-sm rounded-[2rem] border border-white/10 bg-white/[0.06] p-7 shadow-[0_28px_90px_rgba(0,0,0,0.28)] backdrop-blur-xl">
+              <div className="mx-auto grid h-20 w-20 place-items-center rounded-[1.6rem] border border-[var(--gold)]/50 bg-[var(--gold)]/12 text-[var(--gold)]">
+                <Crown className="h-10 w-10" />
+              </div>
+              <p className="mt-5 font-mono text-xs font-black uppercase tracking-[0.17em] text-[var(--gold)]">3D fallback active</p>
+              <h3 className="mt-3 text-2xl font-black tracking-[-0.04em]">The operating crown remains accessible.</h3>
+              <p className="mt-3 text-sm leading-6 text-white/58">WebGL or the animation runtime is unavailable, so the page keeps a lightweight branded fallback instead of breaking.</p>
+            </div>
+          </div>
+        ) : null}
+
+        <span className="pointer-events-none absolute left-5 top-20 z-20 h-10 w-10 border-l-2 border-t-2 border-[var(--gold)]/55" aria-hidden="true" />
+        <span className="pointer-events-none absolute right-5 top-20 z-20 h-10 w-10 border-r-2 border-t-2 border-[var(--gold)]/55" aria-hidden="true" />
+        <span className="pointer-events-none absolute bottom-28 left-5 z-20 h-10 w-10 border-b-2 border-l-2 border-[var(--signal)]/55" aria-hidden="true" />
+        <span className="pointer-events-none absolute bottom-28 right-5 z-20 h-10 w-10 border-b-2 border-r-2 border-[var(--signal)]/55" aria-hidden="true" />
+
+        <div className="pointer-events-none absolute inset-x-4 bottom-4 z-20 grid gap-2 rounded-[1.55rem] border border-white/10 bg-black/34 p-3 text-white shadow-[0_24px_70px_rgba(0,0,0,0.24)] backdrop-blur-xl sm:inset-x-6 sm:bottom-6 sm:grid-cols-3">
+          {sceneMetrics.map(({ icon: Icon, label, value }) => (
+            <div key={label} className="flex items-center gap-3 rounded-[1.1rem] border border-white/[0.08] bg-white/[0.055] p-3">
+              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[0.9rem] bg-[var(--gold)] text-[#171218]">
+                <Icon className="h-5 w-5" />
+              </div>
+              <div className="min-w-0">
+                <p className="font-mono text-[0.55rem] font-black uppercase tracking-[0.14em] text-white/38">{label}</p>
+                <p className="truncate text-sm font-black text-white">{value}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="hero-scan-stage relative min-h-[36rem] sm:min-h-[44rem] lg:min-h-[47rem]">
-        <ScanTerminalCard
-          imageSrc={HERO_3D_IMAGE}
-          eyebrow="King Sparkon brand terminal"
-          subtitle="Barcode line scans down 4 times"
-          title="King Sparkon Tracker"
-          overlayEyebrow="King Sparkon Lego"
-          overlayTitle="Present King Sparkon Lego"
-          cardClassName="hero-scan-card--first"
-        />
-        <ScanTerminalCard
-          imageSrc={SECOND_3D_IMAGE}
-          eyebrow="King Sparkon second terminal"
-          subtitle="Second card scans down 4 times"
-          title="Sizolwakhe Leonard Mthimunye"
-          overlayEyebrow="Sizolwakhe Leonard Mthimunye"
-          overlayTitle="Present King Sparkon"
-          cardClassName="hero-scan-card--second"
-        />
-      </div>
-
-      <div className="hero-floor pointer-events-none absolute bottom-[7rem] left-1/2 h-16 w-[76%] -translate-x-1/2 rounded-[50%] bg-[var(--ink)]/24 blur-2xl" aria-hidden="true" />
-      <div className="hero-floor-light pointer-events-none absolute bottom-[8.5rem] left-1/2 h-3 w-[58%] -translate-x-1/2 rounded-[50%] bg-[var(--gold)]/60 blur-xl" aria-hidden="true" />
-
-      <div className="relative z-20 mt-10 rounded-[1.65rem] border border-[var(--line)] bg-white/88 p-4 shadow-[var(--shadow-soft)] backdrop-blur">
-        <p className="mb-3 font-mono text-[0.68rem] font-black uppercase tracking-[0.16em] text-[var(--muted)]">Official profiles</p>
+      <div className="relative z-20 mt-5 rounded-[1.65rem] border border-[var(--line)] bg-white/92 p-4 shadow-[var(--shadow-soft)] backdrop-blur">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <p className="font-mono text-[0.68rem] font-black uppercase tracking-[0.16em] text-[var(--muted)]">Official profiles</p>
+          <span className="rounded-full border border-[var(--gold)]/45 bg-[var(--gold)]/20 px-3 py-1 font-mono text-[0.58rem] font-black uppercase tracking-[0.14em] text-[var(--ink)]">Move pointer to orbit</span>
+        </div>
         <SocialLinks variant="light" />
       </div>
-
-      <style jsx global>{`
-        .hero-3d-scene {
-          --hero-tilt-x: 0deg;
-          --hero-tilt-y: 0deg;
-          --hero-glow-x: 50%;
-          --hero-glow-y: 42%;
-          isolation: isolate;
-        }
-
-        .hero-scan-stage {
-          transform-style: preserve-3d;
-        }
-
-        .hero-scene-halo {
-          background: radial-gradient(circle at var(--hero-glow-x) var(--hero-glow-y), rgba(255, 190, 86, 0.4), rgba(74, 169, 223, 0.14) 38%, transparent 70%);
-          filter: blur(22px);
-          animation: heroHaloPulse 5.8s ease-in-out infinite;
-        }
-
-        .hero-scene-ring {
-          width: 80%;
-          aspect-ratio: 1;
-          transform: translate(-50%, -50%) rotateX(72deg) rotateZ(0deg);
-          transform-style: preserve-3d;
-        }
-
-        .hero-scene-ring--outer {
-          animation: heroRingSpin 18s linear infinite;
-          box-shadow: inset 0 0 40px rgba(255, 179, 107, 0.08), 0 0 40px rgba(255, 179, 107, 0.08);
-        }
-
-        .hero-scene-ring--inner {
-          width: 61%;
-          animation: heroRingSpinReverse 13s linear infinite;
-          box-shadow: inset 0 0 34px rgba(74, 169, 223, 0.08), 0 0 34px rgba(74, 169, 223, 0.08);
-        }
-
-        .hero-particle-field span {
-          position: absolute;
-          display: block;
-          width: 0.42rem;
-          height: 0.42rem;
-          border-radius: 999px;
-          background: var(--gold);
-          box-shadow: 0 0 18px rgba(255, 179, 107, 0.8);
-          animation: heroParticleFloat 7s ease-in-out infinite;
-        }
-
-        .hero-particle-field span:nth-child(1) { left: 5%; top: 18%; animation-delay: -1.2s; }
-        .hero-particle-field span:nth-child(2) { left: 14%; top: 62%; width: 0.28rem; height: 0.28rem; animation-delay: -3.8s; }
-        .hero-particle-field span:nth-child(3) { left: 28%; top: 7%; background: var(--signal); animation-delay: -5.4s; }
-        .hero-particle-field span:nth-child(4) { right: 8%; top: 24%; width: 0.3rem; height: 0.3rem; animation-delay: -2.1s; }
-        .hero-particle-field span:nth-child(5) { right: 17%; top: 69%; background: var(--signal); animation-delay: -4.6s; }
-        .hero-particle-field span:nth-child(6) { right: 31%; top: 10%; width: 0.24rem; height: 0.24rem; animation-delay: -0.8s; }
-        .hero-particle-field span:nth-child(7) { left: 3%; top: 42%; background: var(--signal); animation-delay: -6.1s; }
-        .hero-particle-field span:nth-child(8) { right: 3%; top: 48%; animation-delay: -3.1s; }
-        .hero-particle-field span:nth-child(9) { left: 21%; top: 83%; width: 0.24rem; height: 0.24rem; animation-delay: -5.8s; }
-        .hero-particle-field span:nth-child(10) { right: 24%; top: 86%; background: var(--signal); animation-delay: -1.7s; }
-
-        .hero-scan-card {
-          backface-visibility: hidden;
-          transform-style: preserve-3d;
-          will-change: opacity, filter, transform;
-        }
-
-        .hero-scan-card__shell {
-          transform: rotateX(var(--hero-tilt-x)) rotateY(var(--hero-tilt-y)) translateZ(0);
-          transform-style: preserve-3d;
-          transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease;
-          will-change: transform;
-        }
-
-        .hero-3d-scene:hover .hero-scan-card__shell {
-          box-shadow: 0 48px 130px rgba(7, 19, 31, 0.34);
-        }
-
-        .hero-card-edge {
-          position: absolute;
-          top: 2.2rem;
-          bottom: 2.2rem;
-          width: 1rem;
-          border-radius: 999px;
-          background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,179,107,0.28), rgba(74,169,223,0.2));
-          filter: blur(0.2px);
-          opacity: 0.72;
-          transform: translateZ(-18px);
-        }
-
-        .hero-card-edge--left { left: -0.45rem; }
-        .hero-card-edge--right { right: -0.45rem; }
-
-        .hero-card-specular::after {
-          content: "";
-          position: absolute;
-          inset: -35% -70%;
-          background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,0.42) 48%, rgba(255,217,102,0.2) 52%, transparent 62%);
-          transform: translateX(-45%) rotate(4deg);
-          animation: heroCardSpecular 7s ease-in-out infinite;
-        }
-
-        .hero-terminal-glow {
-          background: radial-gradient(circle at var(--hero-glow-x) var(--hero-glow-y), rgba(255, 179, 107, 0.15), transparent 34%);
-          mix-blend-mode: screen;
-        }
-
-        .hero-live-pill {
-          animation: heroLivePulse 2.2s ease-in-out infinite;
-        }
-
-        .hero-metric-card {
-          transform: translateZ(26px);
-          animation: heroMetricFloat 4.8s ease-in-out infinite;
-        }
-
-        .hero-metric-card--2 { animation-delay: -1.6s; }
-        .hero-metric-card--3 { animation-delay: -3.2s; }
-
-        .hero-scan-display {
-          transform: translateZ(34px);
-          transform-style: preserve-3d;
-        }
-
-        .hero-3d-image {
-          animation: heroImageFloat 5.6s ease-in-out infinite;
-          filter: drop-shadow(0 30px 34px rgba(0,0,0,0.32));
-          transform-origin: 50% 58%;
-        }
-
-        .hero-image-aura {
-          animation: heroImageAura 4.2s ease-in-out infinite;
-        }
-
-        .hero-orbit {
-          width: 72%;
-          aspect-ratio: 1;
-          transform: translate(-50%, -50%) rotateX(67deg);
-        }
-
-        .hero-orbit--one { animation: heroInnerOrbit 10s linear infinite; }
-        .hero-orbit--two { width: 56%; animation: heroInnerOrbitReverse 7s linear infinite; }
-
-        .hero-scan-card--first {
-          animation: showFirstScanCard 18s cubic-bezier(0.76, 0, 0.24, 1) infinite;
-        }
-
-        .hero-scan-card--second {
-          animation: showSecondScanCard 18s cubic-bezier(0.76, 0, 0.24, 1) infinite;
-        }
-
-        .barcode-scan-line,
-        .barcode-scan-beam {
-          top: -6rem;
-          animation: barcodeLineDown 2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-        }
-
-        .barcode-scan-line {
-          mix-blend-mode: screen;
-        }
-
-        .barcode-scan-line--echo {
-          animation-delay: 90ms;
-          opacity: 0.46;
-        }
-
-        .barcode-scan-beam {
-          animation-name: barcodeBeamDown;
-        }
-
-        .hero-corner {
-          position: absolute;
-          z-index: 30;
-          width: 2rem;
-          height: 2rem;
-          border-color: var(--gold);
-          opacity: 0.68;
-          filter: drop-shadow(0 0 9px rgba(255,179,107,0.55));
-          animation: heroCornerPulse 2s ease-in-out infinite;
-        }
-
-        .hero-corner--tl { left: 1.1rem; top: 1.1rem; border-left: 2px solid; border-top: 2px solid; border-radius: 0.65rem 0 0 0; }
-        .hero-corner--tr { right: 1.1rem; top: 1.1rem; border-right: 2px solid; border-top: 2px solid; border-radius: 0 0.65rem 0 0; }
-        .hero-corner--bl { left: 1.1rem; bottom: 1.1rem; border-left: 2px solid; border-bottom: 2px solid; border-radius: 0 0 0 0.65rem; }
-        .hero-corner--br { right: 1.1rem; bottom: 1.1rem; border-right: 2px solid; border-bottom: 2px solid; border-radius: 0 0 0.65rem 0; }
-
-        .hero-floor {
-          animation: heroFloorShadow 5.6s ease-in-out infinite;
-        }
-
-        .hero-floor-light {
-          animation: heroFloorLight 3.8s ease-in-out infinite;
-        }
-
-        @keyframes showFirstScanCard {
-          0%, 43% {
-            opacity: 1;
-            filter: blur(0);
-            transform: translate3d(0, 0, 42px) rotateX(0deg) rotateY(0deg) scale(1);
-            z-index: 2;
-          }
-          48%, 94% {
-            opacity: 0;
-            filter: blur(8px);
-            transform: translate3d(-2.5rem, 1.4rem, -110px) rotateX(5deg) rotateY(-10deg) scale(0.94);
-            z-index: 1;
-          }
-          100% {
-            opacity: 1;
-            filter: blur(0);
-            transform: translate3d(0, 0, 42px) rotateX(0deg) rotateY(0deg) scale(1);
-            z-index: 2;
-          }
-        }
-
-        @keyframes showSecondScanCard {
-          0%, 43% {
-            opacity: 0;
-            filter: blur(8px);
-            transform: translate3d(2.5rem, 1.4rem, -110px) rotateX(5deg) rotateY(10deg) scale(0.94);
-            z-index: 1;
-          }
-          48%, 94% {
-            opacity: 1;
-            filter: blur(0);
-            transform: translate3d(0, 0, 42px) rotateX(0deg) rotateY(0deg) scale(1);
-            z-index: 2;
-          }
-          100% {
-            opacity: 0;
-            filter: blur(8px);
-            transform: translate3d(2.5rem, 1.4rem, -110px) rotateX(5deg) rotateY(10deg) scale(0.94);
-            z-index: 1;
-          }
-        }
-
-        @keyframes barcodeLineDown {
-          0% { opacity: 0; top: -1.5rem; transform: scaleX(0.72); }
-          8% { opacity: 1; top: -0.4rem; transform: scaleX(1); }
-          78% { opacity: 1; top: calc(100% - 0.4rem); transform: scaleX(1); }
-          100% { opacity: 0; top: calc(100% + 1.5rem); transform: scaleX(0.72); }
-        }
-
-        @keyframes barcodeBeamDown {
-          0% { opacity: 0; top: -6rem; }
-          12% { opacity: 0.78; top: -3rem; }
-          78% { opacity: 0.66; top: calc(100% - 4rem); }
-          100% { opacity: 0; top: calc(100% + 1rem); }
-        }
-
-        @keyframes heroImageFloat {
-          0%, 100% { transform: translate3d(0, 0.4%, 0) rotateY(-1.2deg) scale(1); }
-          50% { transform: translate3d(0, -2.1%, 26px) rotateY(1.8deg) scale(1.025); }
-        }
-
-        @keyframes heroImageAura {
-          0%, 100% { opacity: 0.45; transform: translate(-50%, -50%) scale(0.92); }
-          50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.08); }
-        }
-
-        @keyframes heroMetricFloat {
-          0%, 100% { transform: translate3d(0, 0, 26px); }
-          50% { transform: translate3d(0, -5px, 38px); }
-        }
-
-        @keyframes heroLivePulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(50,213,131,0); }
-          50% { box-shadow: 0 0 0 7px rgba(50,213,131,0.08), 0 0 22px rgba(50,213,131,0.18); }
-        }
-
-        @keyframes heroCardSpecular {
-          0%, 18% { opacity: 0; transform: translateX(-45%) rotate(4deg); }
-          32% { opacity: 0.72; }
-          58% { opacity: 0.16; }
-          75%, 100% { opacity: 0; transform: translateX(45%) rotate(4deg); }
-        }
-
-        @keyframes heroHaloPulse {
-          0%, 100% { opacity: 0.62; transform: translate(-50%, -50%) scale(0.94); }
-          50% { opacity: 0.95; transform: translate(-50%, -50%) scale(1.06); }
-        }
-
-        @keyframes heroRingSpin {
-          to { transform: translate(-50%, -50%) rotateX(72deg) rotateZ(360deg); }
-        }
-
-        @keyframes heroRingSpinReverse {
-          to { transform: translate(-50%, -50%) rotateX(72deg) rotateZ(-360deg); }
-        }
-
-        @keyframes heroInnerOrbit {
-          to { transform: translate(-50%, -50%) rotateX(67deg) rotateZ(360deg); }
-        }
-
-        @keyframes heroInnerOrbitReverse {
-          to { transform: translate(-50%, -50%) rotateX(67deg) rotateZ(-360deg); }
-        }
-
-        @keyframes heroParticleFloat {
-          0%, 100% { opacity: 0.18; transform: translate3d(0, 0, -20px) scale(0.7); }
-          50% { opacity: 0.88; transform: translate3d(0, -1.7rem, 45px) scale(1.2); }
-        }
-
-        @keyframes heroCornerPulse {
-          0%, 100% { opacity: 0.44; transform: scale(0.96); }
-          50% { opacity: 0.9; transform: scale(1.04); }
-        }
-
-        @keyframes heroFloorShadow {
-          0%, 100% { opacity: 0.58; transform: translateX(-50%) scaleX(0.92); }
-          50% { opacity: 0.34; transform: translateX(-50%) scaleX(1.04); }
-        }
-
-        @keyframes heroFloorLight {
-          0%, 100% { opacity: 0.28; transform: translateX(-50%) scaleX(0.86); }
-          50% { opacity: 0.72; transform: translateX(-50%) scaleX(1.06); }
-        }
-
-        @media (max-width: 640px) {
-          .hero-scene-ring { width: 96%; }
-          .hero-scene-ring--inner { width: 72%; }
-          .hero-particle-field span:nth-child(n + 7) { display: none; }
-          .hero-scan-card__shell { transform: rotateX(0deg) rotateY(0deg); }
-          .hero-card-edge { display: none; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .hero-scan-card--first {
-            opacity: 1;
-            transform: none;
-          }
-
-          .hero-scan-card--second {
-            display: none;
-          }
-
-          .hero-scan-card,
-          .hero-scan-card__shell,
-          .hero-scene-halo,
-          .hero-scene-ring,
-          .hero-particle-field span,
-          .hero-card-specular::after,
-          .hero-live-pill,
-          .hero-metric-card,
-          .hero-3d-image,
-          .hero-image-aura,
-          .hero-orbit,
-          .barcode-scan-line,
-          .barcode-scan-beam,
-          .hero-corner,
-          .hero-floor,
-          .hero-floor-light {
-            animation: none !important;
-            transform: none !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }
