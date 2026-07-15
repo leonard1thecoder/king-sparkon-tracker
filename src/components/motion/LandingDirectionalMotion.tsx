@@ -1,6 +1,5 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import {
   landingEnterOffset,
@@ -14,26 +13,23 @@ const LANDING_SECTION_SELECTOR = "main section[id]";
 
 type SectionState = "hidden" | "visible" | "leaving";
 
-function motionSurface(section: HTMLElement) {
-  return section.querySelector<HTMLElement>(":scope > div") ?? section;
-}
-
 export function LandingDirectionalMotion() {
-  const pathname = usePathname();
-
   useEffect(() => {
-    if (pathname !== "/") return;
-
     let disposed = false;
     let scrollFrameId = 0;
     let scrollDirection: LandingScrollDirection = "down";
     let lastScrollY = window.scrollY;
+    let activeSection: HTMLElement | null = null;
     const tweens: GsapTweenLike[] = [];
-    const surfaces = new Set<HTMLElement>();
-    const previousOverflowX = document.documentElement.style.overflowX;
-    document.documentElement.style.overflowX = "clip";
+    const animatedSections = new Set<HTMLElement>();
 
     async function initialize() {
+      const main = document.querySelector<HTMLElement>("main");
+      if (!main) return;
+
+      const previousOverflowX = main.style.overflowX;
+      main.style.overflowX = "clip";
+
       try {
         const { gsap } = await loadGsapRuntime();
         if (disposed) return;
@@ -52,49 +48,57 @@ export function LandingDirectionalMotion() {
           return tween;
         }
 
-        function hide(section: HTMLElement, direction: LandingScrollDirection) {
-          const surface = motionSurface(section);
+        function setHidden(section: HTMLElement, direction: LandingScrollDirection) {
           const side = sideFor(section);
-          surfaces.add(surface);
+          animatedSections.add(section);
           states.set(section, "hidden");
-          gsap.set(surface, {
+          gsap.set(section, {
             opacity: 0,
             x: landingEnterOffset(side, direction),
-            y: 16,
-            rotationX: 2.5,
-            rotationY: side * 7,
-            scale: 0.988,
-            transformPerspective: 1200,
+            y: 10,
+            rotationY: side * 2.5,
+            scale: 0.994,
+            transformPerspective: 1400,
             transformOrigin: side < 0 ? "0% 50%" : "100% 50%",
             willChange: "transform, opacity",
+          });
+        }
+
+        function showImmediately(section: HTMLElement) {
+          animatedSections.add(section);
+          states.set(section, "visible");
+          gsap.set(section, {
+            opacity: 1,
+            x: 0,
+            y: 0,
+            rotationY: 0,
+            scale: 1,
           });
         }
 
         function enter(section: HTMLElement, direction: LandingScrollDirection) {
           if (states.get(section) === "visible") return;
 
-          const surface = motionSurface(section);
           const side = sideFor(section);
           const offset = landingEnterOffset(side, direction);
-          surfaces.add(surface);
+          animatedSections.add(section);
           states.set(section, "visible");
 
           if (reducedMotion) {
-            gsap.set(surface, { opacity: 1, x: 0, y: 0, rotationX: 0, rotationY: 0, scale: 1 });
+            showImmediately(section);
             return;
           }
 
           remember(
             gsap.fromTo(
-              surface,
+              section,
               {
                 opacity: 0,
                 x: offset,
-                y: 16,
-                rotationX: 2.5,
-                rotationY: (offset < 0 ? -1 : 1) * 8,
-                scale: 0.985,
-                transformPerspective: 1200,
+                y: 10,
+                rotationY: (offset < 0 ? -1 : 1) * 3,
+                scale: 0.994,
+                transformPerspective: 1400,
                 transformOrigin: offset < 0 ? "0% 50%" : "100% 50%",
                 willChange: "transform, opacity",
               },
@@ -102,10 +106,9 @@ export function LandingDirectionalMotion() {
                 opacity: 1,
                 x: 0,
                 y: 0,
-                rotationX: 0,
                 rotationY: 0,
                 scale: 1,
-                duration: 0.92,
+                duration: 0.78,
                 ease: "power3.out",
                 clearProps: "willChange",
                 overwrite: "auto",
@@ -114,23 +117,21 @@ export function LandingDirectionalMotion() {
           );
         }
 
-        function exit(section: HTMLElement, direction: LandingScrollDirection) {
+        function leave(section: HTMLElement, direction: LandingScrollDirection) {
           if (states.get(section) !== "visible" || reducedMotion) return;
 
-          const surface = motionSurface(section);
           const offset = landingExitOffset(sideFor(section), direction);
-          surfaces.add(surface);
+          animatedSections.add(section);
           states.set(section, "leaving");
 
           remember(
-            gsap.to(surface, {
+            gsap.to(section, {
               opacity: 0,
               x: offset,
-              y: direction === "up" ? 12 : -12,
-              rotationX: direction === "up" ? -2 : 2,
-              rotationY: (offset < 0 ? -1 : 1) * 7,
-              scale: 0.99,
-              duration: 0.58,
+              y: direction === "up" ? 8 : -8,
+              rotationY: (offset < 0 ? -1 : 1) * 2.5,
+              scale: 0.996,
+              duration: 0.46,
               ease: "power2.inOut",
               overwrite: "auto",
               onComplete: () => {
@@ -151,58 +152,75 @@ export function LandingDirectionalMotion() {
           });
         }
 
-        function captureNavigationIntent(event: MouseEvent) {
+        function handleAnchorNavigation(event: MouseEvent) {
           const source = event.target;
           if (!(source instanceof Element)) return;
           const anchor = source.closest<HTMLAnchorElement>("a[href^='#']");
           const href = anchor?.getAttribute("href");
           if (!href || href.length < 2) return;
+
           const target = document.getElementById(decodeURIComponent(href.slice(1)));
           if (!target) return;
+
           const targetTop = target.getBoundingClientRect().top + window.scrollY;
-          scrollDirection = targetTop > window.scrollY + 120 ? "down" : "up";
+          scrollDirection = targetTop > window.scrollY + 100 ? "down" : "up";
+          event.preventDefault();
+          window.history.replaceState(null, "", href);
+          target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
         }
 
         if (reducedMotion) {
-          sections.forEach((section) => enter(section, "down"));
-          return;
+          sections.forEach(showImmediately);
+          document.addEventListener("click", handleAnchorNavigation);
+          return () => {
+            document.removeEventListener("click", handleAnchorNavigation);
+            main.style.overflowX = previousOverflowX;
+          };
         }
 
         const observer = new IntersectionObserver(
           (entries) => {
-            entries.forEach((entry) => {
-              const section = entry.target as HTMLElement;
-              if (entry.isIntersecting) enter(section, scrollDirection);
-              else exit(section, scrollDirection);
-            });
+            const entering = entries
+              .filter((entry) => entry.isIntersecting)
+              .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+            const nextEntry = entering[0];
+            if (!nextEntry) return;
+
+            const nextSection = nextEntry.target as HTMLElement;
+            if (activeSection && activeSection !== nextSection) leave(activeSection, scrollDirection);
+            enter(nextSection, scrollDirection);
+            activeSection = nextSection;
           },
           {
-            rootMargin: "-20% 0px -25% 0px",
-            threshold: [0, 0.08, 0.24],
+            rootMargin: "-18% 0px -24% 0px",
+            threshold: [0.08, 0.22, 0.42],
           },
         );
 
         sections.forEach((section) => {
           const bounds = section.getBoundingClientRect();
-          const initiallyVisible = bounds.top < window.innerHeight * 0.8 && bounds.bottom > window.innerHeight * 0.2;
+          const initiallyVisible = bounds.top < window.innerHeight * 0.82 && bounds.bottom > window.innerHeight * 0.18;
           if (initiallyVisible) {
-            states.set(section, "visible");
-            gsap.set(motionSurface(section), { opacity: 1, x: 0, y: 0, rotationX: 0, rotationY: 0, scale: 1 });
+            showImmediately(section);
+            activeSection = section;
           } else {
-            hide(section, "down");
+            setHidden(section, "down");
           }
           observer.observe(section);
         });
 
         window.addEventListener("scroll", updateScrollDirection, { passive: true });
-        document.addEventListener("click", captureNavigationIntent, true);
+        document.addEventListener("click", handleAnchorNavigation);
 
         return () => {
           observer.disconnect();
           window.removeEventListener("scroll", updateScrollDirection);
-          document.removeEventListener("click", captureNavigationIntent, true);
+          document.removeEventListener("click", handleAnchorNavigation);
+          main.style.overflowX = previousOverflowX;
         };
       } catch (error) {
+        main.style.overflowX = previousOverflowX;
         console.error("Landing directional motion failed to initialize", error);
       }
     }
@@ -219,16 +237,15 @@ export function LandingDirectionalMotion() {
       window.cancelAnimationFrame(scrollFrameId);
       tweens.forEach((tween) => tween.kill());
       if (window.__KING_SPARKON_MOTION__) {
-        surfaces.forEach((surface) => {
-          window.__KING_SPARKON_MOTION__?.gsap.killTweensOf(surface);
-          window.__KING_SPARKON_MOTION__?.gsap.set(surface, {
+        animatedSections.forEach((section) => {
+          window.__KING_SPARKON_MOTION__?.gsap.killTweensOf(section);
+          window.__KING_SPARKON_MOTION__?.gsap.set(section, {
             clearProps: "transform,opacity,willChange",
           });
         });
       }
-      document.documentElement.style.overflowX = previousOverflowX;
     };
-  }, [pathname]);
+  }, []);
 
   return null;
 }

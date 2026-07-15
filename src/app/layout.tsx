@@ -3,11 +3,11 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { FloatingChatbot } from "@/components/chatbot/FloatingChatbot";
 import { SiteFooter } from "@/components/layout/SiteFooter";
-import { LandingDirectionalMotion } from "@/components/motion/LandingDirectionalMotion";
-import { MotionDirector } from "@/components/motion/MotionDirector";
+import { MotionRouter } from "@/components/motion/MotionRouter";
 import "./globals.css";
 import "./brand-polish.css";
 import "./motion.css";
+import "./landing-motion-stability.css";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -124,8 +124,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
-        <MotionDirector />
-        <LandingDirectionalMotion />
+        <MotionRouter />
         {children}
         <SiteFooter marketingOnly />
         <FloatingChatbot />
