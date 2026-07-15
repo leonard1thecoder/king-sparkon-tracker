@@ -1,3 +1,41 @@
+main section[id][data-landing-motion-state="hidden"],
+main section[id][data-landing-motion-state="preparing"] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate3d(
+    var(--landing-motion-x, 0px),
+    var(--landing-motion-y, 14px),
+    0
+  );
+}
+
+main section[id][data-landing-motion-state="visible"] {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0);
+}
+
+main[data-landing-motion-ready="true"] section[id] {
+  transition:
+    opacity 620ms ease,
+    transform 860ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear;
+}
+
+main[data-landing-motion-ready="true"] section[id][data-landing-motion-state="hidden"] {
+  transition-delay: 0s, 0s, 860ms;
+}
+
+main[data-landing-motion-ready="true"] section[id][data-landing-motion-state="preparing"] {
+  transition: none;
+}
+
+main[data-landing-motion-ready="true"] section[id][data-landing-motion-state="visible"] {
+  transition-delay: 0s;
+}
+
 [data-wave-connector] {
   isolation: isolate;
   contain: layout paint style;
@@ -62,6 +100,14 @@ header [aria-label="Section navigation"] a.landing-nav-active {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  main section[id][data-landing-motion-state] {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
   [data-wave-connector][data-wave-orientation] > article,
   header [aria-label="Section navigation"] a {
     transition: none !important;
