@@ -19,13 +19,13 @@ main section[id][data-landing-motion-state="visible"] {
 
 main[data-landing-motion-ready="true"] section[id] {
   transition:
-    opacity 620ms ease,
-    transform 860ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 1050ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1450ms cubic-bezier(0.16, 1, 0.3, 1),
     visibility 0s linear;
 }
 
 main[data-landing-motion-ready="true"] section[id][data-landing-motion-state="hidden"] {
-  transition-delay: 0s, 0s, 860ms;
+  transition-delay: 0s, 0s, 1450ms;
 }
 
 main[data-landing-motion-ready="true"] section[id][data-landing-motion-state="preparing"] {
