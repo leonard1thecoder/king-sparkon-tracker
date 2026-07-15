@@ -41,7 +41,7 @@ type HeaderProfile = TrackerUser & SessionProfile & {
   profilePictureUrl?: string | null;
 };
 
-const userProfileShortcuts: ProfileShortcut[] = [
+export const userProfileShortcuts: ProfileShortcut[] = [
   { label: "Jobs", href: "/dashboard/user/jobs", icon: BriefcaseBusiness },
   { label: "My Tickets", href: "/dashboard/user/tickets", icon: Ticket },
   { label: "Applications", href: "/dashboard/user/applications", icon: FileCheck2 },
