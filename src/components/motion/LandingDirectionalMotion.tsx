@@ -4,16 +4,17 @@ import { useEffect } from "react";
 import {
   landingActiveIndex,
   landingEnterOffset,
+  landingExitOffset,
   landingNavigationTargetReached,
+  landingSectionMotionDecision,
   landingSectionSide,
   type LandingScrollDirection,
+  type LandingSectionMotionDecision,
 } from "@/lib/motion/landing-flow";
 
 const LANDING_SECTION_SELECTOR = "main section[id]";
 const SECTION_NAV_SELECTOR = "header [aria-label='Section navigation'] a[href^='#']";
 const SECTION_CHANGE_EVENT = "king-sparkon:landing-section-change";
-const ENTRY_DURATION_MS = 1050;
-const ENTRY_EASING = "cubic-bezier(0.16, 1, 0.3, 1)";
 const NAVIGATION_LOCK_TIMEOUT_MS = 5000;
 const NAVIGATION_KEYS = new Set([
   "ArrowDown",
@@ -26,6 +27,7 @@ const NAVIGATION_KEYS = new Set([
 ]);
 
 type SectionChangeSource = "scroll" | "navigation" | "initial";
+type SectionMotionState = "hidden" | "preparing" | "visible";
 
 function targetFromAnchor(anchor: HTMLAnchorElement) {
   const href = anchor.getAttribute("href") ?? "";
@@ -64,11 +66,12 @@ export function LandingDirectionalMotion() {
       .filter((section): section is HTMLElement => Boolean(section));
     const navigationRoot = document.querySelector<HTMLElement>("header");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const revealed = new WeakSet<HTMLElement>();
-    const runningAnimations = new Map<HTMLElement, Animation>();
+    const motionStates = new Map<HTMLElement, SectionMotionState>();
+    const revealFrames = new Map<HTMLElement, number>();
     const previousOverflowX = main.style.overflowX;
 
     let scrollFrame = 0;
+    let mainReadyFrame = 0;
     let lastScrollY = window.scrollY;
     let scrollDirection: LandingScrollDirection = "down";
     let activeHref = "";
@@ -85,55 +88,79 @@ export function LandingDirectionalMotion() {
       );
     }
 
-    function reveal(
-      section: HTMLElement,
-      direction: LandingScrollDirection,
-    ) {
-      if (revealed.has(section)) return;
-      revealed.add(section);
-      section.dataset.landingRevealed = "true";
-
-      if (reducedMotion.matches || typeof section.animate !== "function") return;
-
-      runningAnimations.get(section)?.cancel();
-      const offset = landingEnterOffset(sideFor(section), direction);
-      const animation = section.animate(
-        [
-          {
-            opacity: 0.38,
-            transform: `translate3d(${offset}px, 12px, 0)`,
-          },
-          {
-            opacity: 1,
-            transform: "translate3d(0, 0, 0)",
-          },
-        ],
-        {
-          duration: ENTRY_DURATION_MS,
-          easing: ENTRY_EASING,
-          fill: "none",
-        },
-      );
-
-      runningAnimations.set(section, animation);
-      const releaseAnimation = () => {
-        if (runningAnimations.get(section) === animation) {
-          runningAnimations.delete(section);
-        }
-      };
-      animation.addEventListener("finish", releaseAnimation, { once: true });
-      animation.addEventListener("cancel", releaseAnimation, { once: true });
+    function setSectionAccessibility(section: HTMLElement, visible: boolean) {
+      section.inert = !visible;
+      if (visible) section.removeAttribute("aria-hidden");
+      else section.setAttribute("aria-hidden", "true");
     }
 
-    function revealIfNearViewport(
+    function setMotionOffset(section: HTMLElement, x: number, y: number) {
+      section.style.setProperty("--landing-motion-x", `${x}px`);
+      section.style.setProperty("--landing-motion-y", `${y}px`);
+    }
+
+    function cancelRevealFrame(section: HTMLElement) {
+      const frame = revealFrames.get(section);
+      if (!frame) return;
+      window.cancelAnimationFrame(frame);
+      revealFrames.delete(section);
+    }
+
+    function showSection(
       section: HTMLElement,
       direction: LandingScrollDirection,
+      immediate = false,
     ) {
-      const bounds = section.getBoundingClientRect();
-      const nearViewport =
-        bounds.top <= window.innerHeight * 0.96 &&
-        bounds.bottom >= window.innerHeight * 0.04;
-      if (nearViewport) reveal(section, direction);
+      const currentState = motionStates.get(section);
+      if (currentState === "visible" || currentState === "preparing") return;
+
+      cancelRevealFrame(section);
+      setMotionOffset(
+        section,
+        landingEnterOffset(sideFor(section), direction),
+        direction === "down" ? 14 : -14,
+      );
+
+      if (immediate || reducedMotion.matches) {
+        section.dataset.landingMotionState = "visible";
+        motionStates.set(section, "visible");
+        setSectionAccessibility(section, true);
+        return;
+      }
+
+      section.dataset.landingMotionState = "preparing";
+      motionStates.set(section, "preparing");
+      setSectionAccessibility(section, false);
+
+      const frame = window.requestAnimationFrame(() => {
+        revealFrames.delete(section);
+        if (motionStates.get(section) !== "preparing") return;
+
+        section.getBoundingClientRect();
+        section.dataset.landingMotionState = "visible";
+        motionStates.set(section, "visible");
+        setSectionAccessibility(section, true);
+      });
+      revealFrames.set(section, frame);
+    }
+
+    function hideSection(
+      section: HTMLElement,
+      direction: LandingScrollDirection,
+      immediate = false,
+    ) {
+      cancelRevealFrame(section);
+      setMotionOffset(
+        section,
+        landingExitOffset(sideFor(section), direction),
+        direction === "down" ? -12 : 12,
+      );
+
+      if (motionStates.get(section) === "hidden" && !immediate) return;
+
+      section.dataset.landingMotionState = "hidden";
+      motionStates.set(section, "hidden");
+      setSectionAccessibility(section, false);
     }
 
     function applyNavigationState(href: string) {
@@ -203,6 +230,46 @@ export function LandingDirectionalMotion() {
       return candidates[landingActiveIndex(sectionTops, marker)] ?? candidates[0];
     }
 
+    function resolveMotionViewport() {
+      const headerBottom = navigationRoot?.getBoundingClientRect().bottom ?? 0;
+      return {
+        revealTop: Math.max(headerBottom + 12, window.innerHeight * 0.08),
+        revealBottom: window.innerHeight * 0.92,
+        hideTop: headerBottom - Math.min(110, window.innerHeight * 0.12),
+        hideBottom: window.innerHeight * 1.12,
+      };
+    }
+
+    function applyMotionDecision(
+      section: HTMLElement,
+      decision: LandingSectionMotionDecision,
+      immediate = false,
+    ) {
+      if (decision === "show") showSection(section, scrollDirection, immediate);
+      else if (decision === "hide") hideSection(section, scrollDirection, immediate);
+    }
+
+    function syncSectionMotion(
+      forceVisibleSection: HTMLElement | null,
+      immediate = false,
+    ) {
+      if (reducedMotion.matches) {
+        sections.forEach((section) => showSection(section, scrollDirection, true));
+        return;
+      }
+
+      const viewport = resolveMotionViewport();
+      sections.forEach((section) => {
+        const bounds = section.getBoundingClientRect();
+        const decision = landingSectionMotionDecision(
+          bounds,
+          viewport,
+          section === forceVisibleSection,
+        );
+        applyMotionDecision(section, decision, immediate);
+      });
+    }
+
     function clearNavigationTarget() {
       navigationTarget = null;
       navigationDeadline = 0;
@@ -217,8 +284,10 @@ export function LandingDirectionalMotion() {
       }
       lastScrollY = nextScrollY;
 
+      const viewportActiveSection = resolveActiveSection();
+      syncSectionMotion(viewportActiveSection);
+
       if (navigationTarget) {
-        revealIfNearViewport(navigationTarget, scrollDirection);
         const bounds = navigationTarget.getBoundingClientRect();
         const reached = landingNavigationTargetReached(
           bounds.top,
@@ -235,10 +304,8 @@ export function LandingDirectionalMotion() {
         clearNavigationTarget();
       }
 
-      const activeSection = resolveActiveSection();
-      if (activeSection) {
-        revealIfNearViewport(activeSection, scrollDirection);
-        publishActiveSection(activeSection, "scroll");
+      if (viewportActiveSection) {
+        publishActiveSection(viewportActiveSection, "scroll");
       }
     }
 
@@ -260,7 +327,6 @@ export function LandingDirectionalMotion() {
       scrollDirection = targetTop > window.scrollY + 80 ? "down" : "up";
       navigationTarget = target;
       navigationDeadline = performance.now() + NAVIGATION_LOCK_TIMEOUT_MS;
-      revealIfNearViewport(target, scrollDirection);
       publishActiveSection(target, "navigation");
 
       event.preventDefault();
@@ -269,30 +335,33 @@ export function LandingDirectionalMotion() {
         behavior: reducedMotion.matches ? "auto" : "smooth",
         block: "start",
       });
+      handleScroll();
     }
 
     function handleUserScrollIntent() {
       clearNavigationTarget();
+      handleScroll();
     }
 
     function handleUserNavigationKey(event: KeyboardEvent) {
-      if (NAVIGATION_KEYS.has(event.key)) clearNavigationTarget();
+      if (!NAVIGATION_KEYS.has(event.key)) return;
+      clearNavigationTarget();
+      handleScroll();
     }
 
-    const revealObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          reveal(entry.target as HTMLElement, scrollDirection);
-        });
-      },
-      {
-        rootMargin: "6% 0px 6% 0px",
-        threshold: 0.01,
-      },
-    );
+    function handlePageShow() {
+      lastScrollY = window.scrollY;
+      handleScroll();
+    }
 
-    sections.forEach((section) => revealObserver.observe(section));
+    function handleVisibilityChange() {
+      if (document.visibilityState === "visible") handleScroll();
+    }
+
+    function handleReducedMotionChange() {
+      syncSectionMotion(resolveActiveSection(), true);
+      handleScroll();
+    }
 
     const navigationMutationObserver = new MutationObserver(
       scheduleNavigationState,
@@ -305,12 +374,18 @@ export function LandingDirectionalMotion() {
       });
     }
 
+    const layoutObserver = new ResizeObserver(handleScroll);
+    layoutObserver.observe(main);
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", handleScroll, { passive: true });
     window.addEventListener("wheel", handleUserScrollIntent, { passive: true });
     window.addEventListener("touchstart", handleUserScrollIntent, { passive: true });
+    window.addEventListener("pageshow", handlePageShow);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     document.addEventListener("keydown", handleUserNavigationKey);
     document.addEventListener("click", handleAnchorNavigation);
+    reducedMotion.addEventListener("change", handleReducedMotionChange);
 
     const initialHashTarget = window.location.hash
       ? document.getElementById(
@@ -318,25 +393,60 @@ export function LandingDirectionalMotion() {
         )
       : null;
     const initialSection = initialHashTarget ?? resolveActiveSection();
-    if (initialSection) {
-      revealIfNearViewport(initialSection, "down");
-      publishActiveSection(initialSection, "initial");
-    }
+
+    sections.forEach((section) => {
+      const bounds = section.getBoundingClientRect();
+      const initialDirection: LandingScrollDirection =
+        bounds.top >= window.innerHeight ? "down" : "up";
+      const viewport = resolveMotionViewport();
+      const decision = landingSectionMotionDecision(
+        bounds,
+        viewport,
+        section === initialSection,
+      );
+
+      if (decision === "show" || decision === "keep") {
+        showSection(section, initialDirection, true);
+      } else {
+        hideSection(section, initialDirection, true);
+      }
+    });
+
+    mainReadyFrame = window.requestAnimationFrame(() => {
+      main.dataset.landingMotionReady = "true";
+    });
+
+    if (initialSection) publishActiveSection(initialSection, "initial");
 
     return () => {
-      revealObserver.disconnect();
       navigationMutationObserver.disconnect();
+      layoutObserver.disconnect();
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
       window.removeEventListener("wheel", handleUserScrollIntent);
       window.removeEventListener("touchstart", handleUserScrollIntent);
+      window.removeEventListener("pageshow", handlePageShow);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       document.removeEventListener("keydown", handleUserNavigationKey);
       document.removeEventListener("click", handleAnchorNavigation);
+      reducedMotion.removeEventListener("change", handleReducedMotionChange);
       window.cancelAnimationFrame(scrollFrame);
+      window.cancelAnimationFrame(mainReadyFrame);
       window.cancelAnimationFrame(navigationSyncFrame);
-      runningAnimations.forEach((animation) => animation.cancel());
-      runningAnimations.clear();
+      revealFrames.forEach((frame) => window.cancelAnimationFrame(frame));
+      revealFrames.clear();
+      motionStates.clear();
       main.style.overflowX = previousOverflowX;
+      delete main.dataset.landingMotionReady;
+
+      sections.forEach((section) => {
+        section.inert = false;
+        section.removeAttribute("aria-hidden");
+        delete section.dataset.landingMotionState;
+        section.style.removeProperty("--landing-motion-x");
+        section.style.removeProperty("--landing-motion-y");
+      });
+
       navigationAnchors.forEach((anchor) => {
         anchor.classList.remove(
           "landing-nav-active",
