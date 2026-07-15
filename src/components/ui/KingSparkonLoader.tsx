@@ -59,7 +59,7 @@ export function KingSparkonLoader({
           {message}
         </p>
         <p className={`mx-auto mt-3 max-w-sm text-sm leading-6 ${compact ? "text-white/55" : "text-[var(--steel)]"}`}>
-          Loading the scene, camera timeline, scanner geometry, and responsive controls.
+          Loading the next workspace, secure data, and responsive controls.
         </p>
       </div>
 
