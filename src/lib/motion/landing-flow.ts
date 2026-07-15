@@ -1,5 +1,18 @@
 export type LandingScrollDirection = "down" | "up";
 export type LandingSectionSide = -1 | 1;
+export type LandingSectionMotionDecision = "show" | "hide" | "keep";
+
+export type LandingSectionBounds = {
+  top: number;
+  bottom: number;
+};
+
+export type LandingMotionViewport = {
+  revealTop: number;
+  revealBottom: number;
+  hideTop: number;
+  hideBottom: number;
+};
 
 const LANDING_SECTION_SIDES: Record<string, LandingSectionSide> = {
   vision: -1,
@@ -46,4 +59,22 @@ export function landingNavigationTargetReached(
   tolerance = 24,
 ) {
   return top <= marker + tolerance && bottom >= marker - tolerance;
+}
+
+export function landingSectionMotionDecision(
+  bounds: LandingSectionBounds,
+  viewport: LandingMotionViewport,
+  forceVisible = false,
+): LandingSectionMotionDecision {
+  if (forceVisible) return "show";
+
+  const intersectsRevealZone =
+    bounds.top <= viewport.revealBottom && bounds.bottom >= viewport.revealTop;
+  if (intersectsRevealZone) return "show";
+
+  const isOutsideHideZone =
+    bounds.bottom < viewport.hideTop || bounds.top > viewport.hideBottom;
+  if (isOutsideHideZone) return "hide";
+
+  return "keep";
 }
