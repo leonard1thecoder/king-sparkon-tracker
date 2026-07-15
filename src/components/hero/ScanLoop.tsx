@@ -29,7 +29,7 @@ export function ScanLoop() {
 
   return (
     <div
-      className="hero-circle-scene relative isolate mx-auto aspect-square w-full max-w-[34rem] overflow-hidden rounded-full border border-[var(--line-strong)] bg-white shadow-[0_24px_64px_rgba(14,165,233,0.14)] [perspective:1200px]"
+      className="hero-circle-scene relative isolate mx-auto aspect-square w-full max-w-[28rem] overflow-hidden rounded-full border border-[var(--line-strong)] bg-white shadow-[0_20px_52px_rgba(14,165,233,0.13)] [perspective:1200px]"
       onPointerMove={updateSceneTilt}
       onPointerLeave={resetSceneTilt}
     >
@@ -37,14 +37,14 @@ export function ScanLoop() {
       <div className="hero-circle-ring hero-circle-ring-one pointer-events-none absolute inset-[8%] rounded-full border border-[var(--line-strong)]" aria-hidden="true" />
       <div className="hero-circle-ring hero-circle-ring-two pointer-events-none absolute inset-[19%] rounded-full border border-[var(--line)]" aria-hidden="true" />
 
-      <div className="hero-circle-content absolute inset-[12%] overflow-hidden rounded-full border border-[var(--line)] bg-white shadow-[0_18px_42px_rgba(14,165,233,0.12)]">
+      <div className="hero-circle-content absolute inset-[12%] overflow-hidden rounded-full border border-[var(--line)] bg-white shadow-[0_16px_36px_rgba(14,165,233,0.11)]">
         <Image
           src={HERO_3D_IMAGE}
           alt="King Sparkon Tracker 3D scanner visual"
           fill
           priority
           unoptimized
-          sizes="(min-width: 1024px) 34rem, 92vw"
+          sizes="(min-width: 1024px) 28rem, 86vw"
           className="hero-circle-image hero-circle-image-primary object-contain p-[8%]"
         />
         <Image
@@ -52,17 +52,17 @@ export function ScanLoop() {
           alt="King Sparkon 3D platform visual"
           fill
           unoptimized
-          sizes="(min-width: 1024px) 34rem, 92vw"
+          sizes="(min-width: 1024px) 28rem, 86vw"
           className="hero-circle-image hero-circle-image-secondary object-contain p-[8%]"
         />
         <div className="hero-circle-scan pointer-events-none absolute inset-x-[8%] h-16" aria-hidden="true" />
       </div>
 
-      <div className="absolute left-1/2 top-[8%] z-20 -translate-x-1/2 rounded-full border border-[var(--line-strong)] bg-white px-4 py-2 text-center shadow-[var(--shadow-soft)]">
+      <div className="absolute left-1/2 top-[8%] z-20 -translate-x-1/2 rounded-lg border border-[var(--line-strong)] bg-white px-3 py-1.5 text-center shadow-[var(--shadow-soft)]">
         <p className="text-[0.58rem] font-extrabold uppercase tracking-[0.13em] text-[var(--signal-strong)]">Live scanner</p>
       </div>
 
-      <div className="absolute bottom-[8%] left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full border border-[var(--line-strong)] bg-white px-4 py-2 shadow-[var(--shadow-soft)]">
+      <div className="absolute bottom-[8%] left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-lg border border-[var(--line-strong)] bg-white px-3 py-1.5 shadow-[var(--shadow-soft)]">
         <ScanLine className="h-4 w-4 text-[var(--signal)]" />
         <span className="whitespace-nowrap text-xs font-extrabold text-[var(--ink)]">Scan · Sell · Track · Prove</span>
       </div>
