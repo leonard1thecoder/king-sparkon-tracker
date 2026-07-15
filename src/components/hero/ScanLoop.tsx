@@ -39,14 +39,14 @@ export function ScanLoop() {
   const pointerSampleRef = useRef<PointerSample | null>(null);
 
   useEffect(() => {
-    const scene = sceneRef.current;
-    if (!scene) return;
+    const sceneElement = sceneRef.current;
+    if (!sceneElement) return;
 
     let isNearViewport = true;
     let pageIsVisible = document.visibilityState === "visible";
 
     function syncPlayback() {
-      scene.dataset.heroMotion =
+      sceneElement.dataset.heroMotion =
         isNearViewport && pageIsVisible ? "running" : "paused";
     }
 
@@ -66,7 +66,7 @@ export function ScanLoop() {
       },
     );
 
-    observer.observe(scene);
+    observer.observe(sceneElement);
     document.addEventListener("visibilitychange", handleVisibilityChange);
     syncPlayback();
 
