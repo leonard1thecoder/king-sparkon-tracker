@@ -239,11 +239,15 @@ export function LandingDirectionalMotion() {
 
     function resolveMotionViewport() {
       const headerBottom = navigationRoot?.getBoundingClientRect().bottom ?? 0;
+      const viewportHeight = window.innerHeight;
       return {
-        revealTop: Math.max(headerBottom + 12, window.innerHeight * 0.08),
-        revealBottom: window.innerHeight * 0.92,
-        hideTop: headerBottom - Math.min(110, window.innerHeight * 0.12),
-        hideBottom: window.innerHeight * 1.12,
+        revealTop: Math.min(
+          viewportHeight * 0.44,
+          Math.max(headerBottom + 56, viewportHeight * 0.28),
+        ),
+        revealBottom: viewportHeight * 0.82,
+        hideTop: Math.max(headerBottom + 8, viewportHeight * 0.16),
+        hideBottom: viewportHeight * 0.96,
       };
     }
 
@@ -412,7 +416,7 @@ export function LandingDirectionalMotion() {
         section === initialSection,
       );
 
-      if (decision === "show" || decision === "keep") {
+      if (decision === "show") {
         showSection(section, initialDirection, true);
       } else {
         hideSection(section, initialDirection, true);
