@@ -27,3 +27,23 @@ export function landingEnterOffset(side: LandingSectionSide, direction: LandingS
 export function landingExitOffset(side: LandingSectionSide, direction: LandingScrollDirection) {
   return side * (direction === "up" ? 1 : -1) * 76;
 }
+
+export function landingActiveIndex(sectionTops: readonly number[], marker: number) {
+  let activeIndex = 0;
+
+  for (let index = 0; index < sectionTops.length; index += 1) {
+    if (sectionTops[index] > marker) break;
+    activeIndex = index;
+  }
+
+  return activeIndex;
+}
+
+export function landingNavigationTargetReached(
+  top: number,
+  bottom: number,
+  marker: number,
+  tolerance = 24,
+) {
+  return top <= marker + tolerance && bottom >= marker - tolerance;
+}
