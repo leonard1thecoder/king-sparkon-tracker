@@ -112,6 +112,7 @@ export function isActive(pathname: string, searchParams: URLSearchParams, href: 
   if (cleanHref === "/dashboard/user/shop") return pathname === cleanHref || pathname.startsWith("/dashboard/user/shop/products");
   if (cleanHref === "/dashboard/user/shop/cart") return pathname === cleanHref;
   if (cleanHref === "/dashboard/user/tickets/buy") return pathname === cleanHref || pathname.startsWith("/dashboard/user/tickets/events") || pathname.startsWith("/dashboard/user/tickets/checkout");
+  if (cleanHref === "/dashboard/user/tickets") return pathname === cleanHref;
   if (cleanHref === "/dashboard/user/tips") return pathname === cleanHref || pathname.startsWith("/dashboard/user/tips/");
   if (isDashboardRoot(cleanHref)) return pathname === cleanHref && !searchParams.has("tab");
   if (pathname !== cleanHref && !pathname.startsWith(`${cleanHref}/`)) return false;
