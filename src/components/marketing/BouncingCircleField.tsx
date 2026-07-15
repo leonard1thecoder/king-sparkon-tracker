@@ -38,12 +38,6 @@ type WaveMetrics = {
   amplitude: number;
 };
 
-type MovingBody = Point & {
-  vx: number;
-  vy: number;
-  radius: number;
-};
-
 type VariantMotionConfig = {
   desktopDiameter: number;
   desktopMinimum: number;
@@ -56,13 +50,11 @@ type VariantMotionConfig = {
 
 const DESKTOP_BREAKPOINT = 1024;
 const WAVE_CYCLES = 1.05;
-const WAVE_SPEED = 0.5;
-const SPRING_STRENGTH = 5.4;
-const VELOCITY_RETENTION_PER_SECOND = 0.18;
-const WALL_RESTITUTION = 0.68;
-const COLLISION_RESTITUTION = 0.62;
-const MAX_BODY_SPEED = 72;
-const COLLISION_GAP = 12;
+const WAVE_SPEED = 0.2;
+const FRAME_INTERVAL_MS = 1000 / 30;
+const PATH_SEGMENTS = 42;
+const DESKTOP_EDGE_PADDING = 76;
+const CIRCLE_GAP = 14;
 
 const motionConfig: Record<WaveVariant, VariantMotionConfig> = {
   vision: {
@@ -144,10 +136,17 @@ function resolveDiameter(
   }
 
   if (count <= 1) return config.desktopDiameter;
-  const centreSpacing = Math.max(1, (width - 64) / (count - 1));
-  return clamp(
-    centreSpacing * 0.86,
+
+  const collisionSafeMaximum =
+    (width - DESKTOP_EDGE_PADDING - CIRCLE_GAP * (count - 1)) / count;
+  const safeMinimum = Math.min(
     config.desktopMinimum,
+    collisionSafeMaximum,
+  );
+
+  return clamp(
+    collisionSafeMaximum,
+    safeMinimum,
     config.desktopDiameter,
   );
 }
@@ -211,7 +210,8 @@ function pointOnWave(
   phase: number,
 ): Point {
   const waveOffset =
-    Math.sin(progress * Math.PI * 2 * WAVE_CYCLES + phase) * metrics.amplitude;
+    Math.sin(progress * Math.PI * 2 * WAVE_CYCLES + phase) *
+    metrics.amplitude;
 
   return metrics.orientation === "horizontal"
     ? {
@@ -225,92 +225,14 @@ function pointOnWave(
 }
 
 function buildWavePath(metrics: WaveMetrics, phase: number) {
-  const segments = 96;
-  return Array.from({ length: segments + 1 }, (_, index) =>
-    pointOnWave(metrics, index / segments, phase),
+  return Array.from({ length: PATH_SEGMENTS + 1 }, (_, index) =>
+    pointOnWave(metrics, index / PATH_SEGMENTS, phase),
   )
     .map(
       (point, index) =>
         `${index === 0 ? "M" : "L"} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`,
     )
     .join(" ");
-}
-
-function limitSpeed(body: MovingBody) {
-  const speed = Math.hypot(body.vx, body.vy);
-  if (speed <= MAX_BODY_SPEED || speed === 0) return;
-  const scale = MAX_BODY_SPEED / speed;
-  body.vx *= scale;
-  body.vy *= scale;
-}
-
-function resolveWallCollision(body: MovingBody, width: number, height: number) {
-  const padding = 8;
-  const minimumX = body.radius + padding;
-  const maximumX = width - body.radius - padding;
-  const minimumY = body.radius + padding;
-  const maximumY = height - body.radius - padding;
-
-  if (body.x < minimumX) {
-    body.x = minimumX;
-    body.vx = Math.abs(body.vx) * WALL_RESTITUTION;
-  } else if (body.x > maximumX) {
-    body.x = maximumX;
-    body.vx = -Math.abs(body.vx) * WALL_RESTITUTION;
-  }
-
-  if (body.y < minimumY) {
-    body.y = minimumY;
-    body.vy = Math.abs(body.vy) * WALL_RESTITUTION;
-  } else if (body.y > maximumY) {
-    body.y = maximumY;
-    body.vy = -Math.abs(body.vy) * WALL_RESTITUTION;
-  }
-}
-
-function resolveBodyCollisions(bodies: MovingBody[]) {
-  for (let pass = 0; pass < 2; pass += 1) {
-    for (let first = 0; first < bodies.length; first += 1) {
-      for (let second = first + 1; second < bodies.length; second += 1) {
-        const a = bodies[first];
-        const b = bodies[second];
-        let dx = b.x - a.x;
-        let dy = b.y - a.y;
-        let distance = Math.hypot(dx, dy);
-        const minimumDistance = a.radius + b.radius + COLLISION_GAP;
-
-        if (distance >= minimumDistance) continue;
-        if (distance === 0) {
-          dx = 1;
-          dy = 0;
-          distance = 1;
-        }
-
-        const normalX = dx / distance;
-        const normalY = dy / distance;
-        const overlap = minimumDistance - distance;
-        a.x -= normalX * overlap * 0.5;
-        a.y -= normalY * overlap * 0.5;
-        b.x += normalX * overlap * 0.5;
-        b.y += normalY * overlap * 0.5;
-
-        const relativeVelocityX = b.vx - a.vx;
-        const relativeVelocityY = b.vy - a.vy;
-        const velocityAlongNormal =
-          relativeVelocityX * normalX + relativeVelocityY * normalY;
-
-        if (velocityAlongNormal >= 0) continue;
-        const impulse =
-          (-(1 + COLLISION_RESTITUTION) * velocityAlongNormal) / 2;
-        a.vx -= impulse * normalX;
-        a.vy -= impulse * normalY;
-        b.vx += impulse * normalX;
-        b.vy += impulse * normalY;
-        limitSpeed(a);
-        limitSpeed(b);
-      }
-    }
-  }
 }
 
 function applyBubbleTypography(
@@ -329,7 +251,7 @@ function applyBubbleTypography(
 
   const large = diameter >= 210;
   const medium = diameter >= 180;
-  let titleSize = isSubscription
+  const titleSize = isSubscription
     ? medium
       ? 0.94
       : 0.84
@@ -338,7 +260,7 @@ function applyBubbleTypography(
       : medium
         ? 0.92
         : 0.82;
-  let copySize = isSubscription
+  const copySize = isSubscription
     ? medium
       ? 0.68
       : 0.61
@@ -347,7 +269,7 @@ function applyBubbleTypography(
       : medium
         ? 0.68
         : 0.6;
-  let copyLineHeight = isSubscription
+  const copyLineHeight = isSubscription
     ? medium
       ? 0.98
       : 0.88
@@ -356,8 +278,8 @@ function applyBubbleTypography(
       : medium
         ? 0.98
         : 0.88;
-  let eyebrowSize = large ? 0.56 : medium ? 0.52 : 0.48;
-  let tagSize = large ? 0.54 : medium ? 0.5 : 0.46;
+  const eyebrowSize = large ? 0.56 : medium ? 0.52 : 0.48;
+  const tagSize = large ? 0.54 : medium ? 0.5 : 0.46;
 
   element.style.boxSizing = "border-box";
   element.style.overflow = "hidden";
@@ -377,44 +299,28 @@ function applyBubbleTypography(
     node.style.overflowWrap = "anywhere";
   });
 
-  if (title) title.style.marginTop = isSubscription ? "6px" : "7px";
-  if (copy) copy.style.marginTop = "6px";
-  if (eyebrow) eyebrow.style.marginTop = isSubscription ? "7px" : "9px";
+  if (title) {
+    title.style.marginTop = isSubscription ? "6px" : "7px";
+    title.style.fontSize = `${titleSize}rem`;
+    title.style.lineHeight = `${titleSize * 1.12}rem`;
+  }
+  if (copy) {
+    copy.style.marginTop = "6px";
+    copy.style.fontSize = `${copySize}rem`;
+    copy.style.lineHeight = `${copyLineHeight}rem`;
+  }
+  if (eyebrow) {
+    eyebrow.style.marginTop = isSubscription ? "7px" : "9px";
+    eyebrow.style.fontSize = `${eyebrowSize}rem`;
+  }
   if (tags) {
     tags.style.marginTop = "8px";
     tags.style.justifyContent = "center";
   }
-
-  const applySizes = () => {
-    if (title) {
-      title.style.fontSize = `${titleSize}rem`;
-      title.style.lineHeight = `${titleSize * 1.12}rem`;
-    }
-    if (copy) {
-      copy.style.fontSize = `${copySize}rem`;
-      copy.style.lineHeight = `${copyLineHeight}rem`;
-    }
-    if (eyebrow) eyebrow.style.fontSize = `${eyebrowSize}rem`;
-    tagItems.forEach((tag) => {
-      tag.style.fontSize = `${tagSize}rem`;
-      tag.style.padding = large ? "3px 8px" : "2px 6px";
-    });
-  };
-
-  applySizes();
-
-  for (
-    let attempt = 0;
-    attempt < 5 && element.scrollHeight > element.clientHeight + 1;
-    attempt += 1
-  ) {
-    titleSize *= 0.96;
-    copySize *= 0.94;
-    copyLineHeight *= 0.95;
-    eyebrowSize *= 0.96;
-    tagSize *= 0.94;
-    applySizes();
-  }
+  tagItems.forEach((tag) => {
+    tag.style.fontSize = `${tagSize}rem`;
+    tag.style.padding = large ? "3px 8px" : "2px 6px";
+  });
 }
 
 export function BouncingCircleField({
@@ -441,15 +347,17 @@ export function BouncingCircleField({
     const stage = stageElement;
     const elements = bubbles as HTMLElement[];
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let animationFrame = 0;
-    let lastTime = performance.now();
-    let phase = 0.35;
-    let bodies: MovingBody[] = [];
-    let layoutKey = "";
 
-    function prepareLayout(currentPhase: number) {
+    let animationFrame = 0;
+    let phase = 0.35;
+    let lastPaintTime = performance.now();
+    let layoutKey = "";
+    let isNearViewport = false;
+    let pageIsVisible = document.visibilityState === "visible";
+
+    function renderScene(currentPhase: number) {
       const width = stage.clientWidth;
-      if (!width) return null;
+      if (!width) return;
 
       const orientation = resolveOrientation();
       const diameter = resolveDiameter(
@@ -466,9 +374,8 @@ export function BouncingCircleField({
         config,
       );
       const nextLayoutKey = `${Math.round(width)}:${orientation}:${Math.round(diameter)}:${stageHeight}`;
-      const layoutChanged = nextLayoutKey !== layoutKey;
 
-      if (layoutChanged) {
+      if (nextLayoutKey !== layoutKey) {
         layoutKey = nextLayoutKey;
         stage.style.height = `${stageHeight}px`;
         stage.style.minHeight = `${stageHeight}px`;
@@ -479,11 +386,10 @@ export function BouncingCircleField({
         });
       }
 
-      const height = stageHeight;
       const radius = diameter / 2;
       const metrics = createWaveMetrics(
         width,
-        height,
+        stageHeight,
         radius,
         orientation,
         variant,
@@ -499,103 +405,93 @@ export function BouncingCircleField({
       const path = buildWavePath(metrics, currentPhase);
 
       stage.dataset.waveOrientation = orientation;
-      svgRef.current?.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      svgRef.current?.setAttribute("viewBox", `0 0 ${width} ${stageHeight}`);
       glowPathRef.current?.setAttribute("d", path);
       linePathRef.current?.setAttribute("d", path);
       if (linePathRef.current) {
-        linePathRef.current.style.strokeDashoffset = `${-currentPhase * 40}px`;
+        linePathRef.current.style.strokeDashoffset = `${-currentPhase * 24}px`;
       }
 
-      if (layoutChanged || bodies.length !== elements.length) {
-        bodies = anchors.map((anchor, index) => {
-          const direction = index % 2 === 0 ? 1 : -1;
-          return {
-            x: anchor.x,
-            y: anchor.y,
-            vx: orientation === "horizontal" ? direction * 5 : direction * 16,
-            vy: orientation === "horizontal" ? direction * 16 : direction * 5,
-            radius,
-          };
-        });
-      } else {
-        bodies.forEach((body) => {
-          body.radius = radius;
-          resolveWallCollision(body, width, height);
-        });
-      }
+      anchors.forEach((anchor, index) => {
+        const drift = Math.sin(currentPhase * 1.15 + index * 1.37) * 4;
+        const crossDrift = Math.cos(currentPhase * 0.8 + index * 0.91) * 3;
+        const x = orientation === "horizontal"
+          ? anchor.x + crossDrift
+          : anchor.x + drift;
+        const y = orientation === "horizontal"
+          ? anchor.y + drift
+          : anchor.y + crossDrift;
 
-      return { anchors, width, height };
-    }
-
-    function renderBodies() {
-      bodies.forEach((body, index) => {
-        elements[index].style.transform = `translate3d(${body.x - body.radius}px, ${body.y - body.radius}px, 0)`;
+        elements[index].style.transform = `translate3d(${x - radius}px, ${y - radius}px, 0)`;
       });
     }
 
-    function renderStatic() {
-      const scene = prepareLayout(phase);
-      if (!scene) return;
-      bodies = scene.anchors.map((anchor, index) => ({
-        ...anchor,
-        vx: 0,
-        vy: 0,
-        radius: elements[index].offsetWidth / 2,
-      }));
-      renderBodies();
+    function shouldAnimate() {
+      return isNearViewport && pageIsVisible && !reducedMotion.matches;
     }
 
     function animate(now: number) {
-      const delta = Math.min((now - lastTime) / 1000, 0.04);
-      lastTime = now;
-      phase += delta * WAVE_SPEED;
-      const scene = prepareLayout(phase);
-
-      if (!scene) {
-        animationFrame = window.requestAnimationFrame(animate);
+      if (!shouldAnimate()) {
+        animationFrame = 0;
+        stage.dataset.waveMotion = "paused";
         return;
       }
 
-      const damping = Math.pow(VELOCITY_RETENTION_PER_SECOND, delta);
-      bodies.forEach((body, index) => {
-        const anchor = scene.anchors[index];
-        body.vx += (anchor.x - body.x) * SPRING_STRENGTH * delta;
-        body.vy += (anchor.y - body.y) * SPRING_STRENGTH * delta;
-        body.vx *= damping;
-        body.vy *= damping;
-        limitSpeed(body);
-        body.x += body.vx * delta;
-        body.y += body.vy * delta;
-        resolveWallCollision(body, scene.width, scene.height);
-      });
+      const elapsed = now - lastPaintTime;
+      if (elapsed >= FRAME_INTERVAL_MS) {
+        phase += Math.min(elapsed / 1000, 0.08) * WAVE_SPEED;
+        lastPaintTime = now;
+        renderScene(phase);
+      }
 
-      resolveBodyCollisions(bodies);
-      bodies.forEach((body) =>
-        resolveWallCollision(body, scene.width, scene.height),
-      );
-      renderBodies();
       animationFrame = window.requestAnimationFrame(animate);
     }
 
-    function startMotion() {
+    function syncMotion() {
       window.cancelAnimationFrame(animationFrame);
-      lastTime = performance.now();
-      if (reducedMotion.matches) renderStatic();
-      else animationFrame = window.requestAnimationFrame(animate);
+      animationFrame = 0;
+      renderScene(phase);
+      stage.dataset.waveMotion = shouldAnimate() ? "running" : "paused";
+
+      if (shouldAnimate()) {
+        lastPaintTime = performance.now();
+        animationFrame = window.requestAnimationFrame(animate);
+      }
     }
 
-    const resizeObserver = new ResizeObserver(startMotion);
+    function handleVisibilityChange() {
+      pageIsVisible = document.visibilityState === "visible";
+      syncMotion();
+    }
+
+    const resizeObserver = new ResizeObserver(syncMotion);
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        isNearViewport = entry?.isIntersecting ?? false;
+        syncMotion();
+      },
+      {
+        rootMargin: "180px 0px",
+        threshold: 0.01,
+      },
+    );
+
     resizeObserver.observe(stage);
-    reducedMotion.addEventListener("change", startMotion);
-    window.addEventListener("resize", startMotion);
-    startMotion();
+    visibilityObserver.observe(stage);
+    reducedMotion.addEventListener("change", syncMotion);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("resize", syncMotion, { passive: true });
+    syncMotion();
 
     return () => {
       window.cancelAnimationFrame(animationFrame);
       resizeObserver.disconnect();
-      reducedMotion.removeEventListener("change", startMotion);
-      window.removeEventListener("resize", startMotion);
+      visibilityObserver.disconnect();
+      reducedMotion.removeEventListener("change", syncMotion);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("resize", syncMotion);
       delete stage.dataset.waveOrientation;
+      delete stage.dataset.waveMotion;
       stage.style.removeProperty("height");
       stage.style.removeProperty("min-height");
       elements.forEach((element) => {
@@ -651,7 +547,7 @@ export function BouncingCircleField({
           ref={(element: HTMLElement | null) => {
             bubbleRefs.current[index] = element;
           }}
-          className="absolute left-0 top-0 z-10 flex aspect-square min-h-0 will-change-transform flex-col items-center justify-center rounded-full border border-[var(--line-strong)] bg-white text-center shadow-[0_18px_45px_rgba(14,165,233,0.13)]"
+          className="absolute left-0 top-0 z-10 flex aspect-square min-h-0 transform-gpu flex-col items-center justify-center rounded-full border border-[var(--line-strong)] bg-white text-center shadow-[0_18px_45px_rgba(14,165,233,0.13)] [backface-visibility:hidden]"
         >
           <div
             className={`grid shrink-0 place-items-center rounded-full border border-[var(--line)] bg-[var(--signal-soft)] text-[var(--signal)] ${isSubscription ? "h-10 w-10" : "h-11 w-11 sm:h-12 sm:w-12"}`}
