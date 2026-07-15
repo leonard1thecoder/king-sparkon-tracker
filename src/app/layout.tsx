@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { FloatingChatbot } from "@/components/chatbot/FloatingChatbot";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { LandingDirectionalMotion } from "@/components/motion/LandingDirectionalMotion";
 import { MotionDirector } from "@/components/motion/MotionDirector";
 import "./globals.css";
 import "./brand-polish.css";
@@ -124,6 +125,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col">
         <MotionDirector />
+        <LandingDirectionalMotion />
         {children}
         <SiteFooter marketingOnly />
         <FloatingChatbot />
