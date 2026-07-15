@@ -14,17 +14,14 @@
 
 html {
   min-height: 100%;
-  background: #f8fbff;
+  background: #ffffff;
   scroll-behavior: smooth;
 }
 
 body {
   min-height: 100vh;
   overflow-x: hidden;
-  background:
-    radial-gradient(circle at top left, rgba(255, 179, 107, 0.2), transparent 28rem),
-    radial-gradient(circle at top right, rgba(74, 169, 223, 0.16), transparent 30rem),
-    linear-gradient(180deg, #ffffff 0%, #f4f9fd 52%, #ffffff 100%);
+  background: #ffffff;
   color: var(--ink);
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
   text-rendering: geometricPrecision;
@@ -56,8 +53,8 @@ button:disabled {
 }
 
 ::selection {
-  background: var(--gold);
-  color: var(--ink);
+  background: var(--signal);
+  color: #ffffff;
 }
 
 :focus-visible {
@@ -73,19 +70,18 @@ textarea {
 
 .depth-panel {
   position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
-    var(--ink);
-  box-shadow: var(--shadow-depth);
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: var(--ink);
+  box-shadow: var(--shadow-soft);
 }
 
 .depth-panel::before {
   content: "";
   position: absolute;
-  inset: 0.75rem -0.75rem -0.75rem 0.75rem;
+  inset: 0;
   z-index: -1;
-  border: 1px solid rgba(40, 214, 198, 0.35);
+  border: 0;
   border-radius: inherit;
 }
 
@@ -116,7 +112,7 @@ textarea {
 }
 
 .table-ledger th {
-  background: rgba(247, 250, 252, 0.88);
+  background: #f8fcff;
   color: var(--steel);
   font-family: var(--font-jetbrains-mono), monospace;
   font-size: 0.68rem;
@@ -390,4 +386,186 @@ textarea {
     scroll-behavior: auto !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* White / sky-blue visual system ----------------------------------------- */
+:where(main, section, article, aside, header, footer, form, dialog) {
+  --surface-focus: #f8fcff;
+}
+
+/* Remove legacy dark panels without breaking blue action controls. */
+:where(
+  [class~="bg-[var(--ink)]"],
+  [class~="bg-[var(--ink-2)]"],
+  [class~="bg-[var(--ink)]/85"],
+  [class~="bg-[#8e3f68]"],
+  [class~="bg-[#8e3f68]/94"],
+  [class~="bg-[#000510]"],
+  [class~="bg-[#1e2229]/72"]
+) {
+  background: #ffffff !important;
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+}
+
+:where(
+  [class~="bg-[var(--ink)]"],
+  [class~="bg-[var(--ink-2)]"],
+  [class~="bg-[var(--ink)]/85"],
+  [class~="bg-[#8e3f68]"],
+  [class~="bg-[#8e3f68]/94"],
+  [class~="bg-[#000510]"],
+  [class~="bg-[#1e2229]/72"]
+) :where(
+  [class~="text-white"],
+  [class~="text-white/38"],
+  [class~="text-white/40"],
+  [class~="text-white/42"],
+  [class~="text-white/44"],
+  [class~="text-white/45"],
+  [class~="text-white/48"],
+  [class~="text-white/52"],
+  [class~="text-white/55"],
+  [class~="text-white/60"],
+  [class~="text-white/62"],
+  [class~="text-white/64"],
+  [class~="text-white/65"],
+  [class~="text-white/66"],
+  [class~="text-white/68"],
+  [class~="text-white/70"],
+  [class~="text-white/72"],
+  [class~="text-white/78"],
+  [class~="text-white/80"],
+  [class~="text-white/90"]
+) {
+  color: var(--ink) !important;
+}
+
+/* Legacy gold is now a restrained sky-blue support accent, never orange. */
+[class~="bg-[var(--gold)]"] {
+  background-color: #ffffff !important;
+  border-color: var(--line-strong) !important;
+}
+
+.enterprise-grid,
+.scan-grid {
+  background-image:
+    linear-gradient(rgba(14, 165, 233, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(14, 165, 233, 0.035) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  border-radius: var(--radius-md);
+}
+
+input,
+select,
+textarea {
+  border-color: var(--line);
+  background: #ffffff;
+  box-shadow: none;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--line-strong);
+  background: #ffffff;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--signal);
+  background: #ffffff;
+}
+
+/* Orange is reserved for interactive hover feedback only. */
+button:not(:disabled):hover,
+a[data-orange-hover="true"]:hover {
+  border-color: var(--accent-hover);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* White theme text normalization. Solid action colors keep white labels. */
+:where(
+  [class~="text-white"],
+  [class~="text-white/38"],
+  [class~="text-white/40"],
+  [class~="text-white/42"],
+  [class~="text-white/44"],
+  [class~="text-white/45"],
+  [class~="text-white/48"],
+  [class~="text-white/52"],
+  [class~="text-white/55"],
+  [class~="text-white/60"],
+  [class~="text-white/62"],
+  [class~="text-white/64"],
+  [class~="text-white/65"],
+  [class~="text-white/66"],
+  [class~="text-white/68"],
+  [class~="text-white/70"],
+  [class~="text-white/72"],
+  [class~="text-white/78"],
+  [class~="text-white/80"],
+  [class~="text-white/90"]
+) {
+  color: var(--ink) !important;
+}
+
+/* Keep legacy page markup visually disciplined without mass component rewrites. */
+:where(
+  [class~="rounded-[1.1rem]"],
+  [class~="rounded-[1.15rem]"],
+  [class~="rounded-[1.2rem]"],
+  [class~="rounded-[1.25rem]"],
+  [class~="rounded-[1.3rem]"],
+  [class~="rounded-[1.35rem]"],
+  [class~="rounded-[1.4rem]"],
+  [class~="rounded-[1.45rem]"],
+  [class~="rounded-[1.5rem]"],
+  [class~="rounded-[1.55rem]"],
+  [class~="rounded-[1.6rem]"],
+  [class~="rounded-[1.65rem]"],
+  [class~="rounded-[1.7rem]"],
+  [class~="rounded-[1.75rem]"],
+  [class~="rounded-[1.8rem]"],
+  [class~="rounded-[1.85rem]"],
+  [class~="rounded-[1.9rem]"],
+  [class~="rounded-[1.95rem]"],
+  [class~="rounded-[2rem]"],
+  [class~="rounded-[2.2rem]"],
+  [class~="rounded-[2.25rem]"],
+  [class~="rounded-[2.35rem]"],
+  [class~="rounded-[2.4rem]"],
+  [class~="rounded-[2.5rem]"],
+  [class~="rounded-[2.75rem]"],
+  [class~="rounded-[3rem]"]
+) {
+  border-radius: var(--radius-xl) !important;
+}
+
+/* Preserve white labels only on deliberate solid action/status surfaces. */
+:where(
+  [class~="bg-[var(--signal)]"],
+  [class~="bg-[var(--danger)]"],
+  [class~="bg-red-600"],
+  [class~="bg-sky-500"]
+)[class~="text-white"] {
+  color: #ffffff !important;
 }

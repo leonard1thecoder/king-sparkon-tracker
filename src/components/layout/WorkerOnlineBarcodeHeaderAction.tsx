@@ -61,11 +61,11 @@ export function WorkerOnlineBarcodeHeaderAction() {
       href="/dashboard/worker/scan"
       aria-label={title}
       title={title}
-      className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--signal)] bg-white text-[var(--signal)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[var(--signal)] hover:text-white"
+      className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--signal)] bg-white text-[var(--signal)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)] hover:text-white"
     >
       {loading ? <Loader2 className="h-4.5 w-4.5 animate-spin" /> : <PackageSearch className="h-4.5 w-4.5" />}
       <span
-        className="absolute -right-2 -top-2 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-orange-500 px-1 text-[0.62rem] font-black leading-none text-white shadow-md"
+        className="absolute -right-2 -top-2 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-sky-500 px-1 text-[0.62rem] font-black leading-none text-white shadow-md"
         aria-hidden="true"
       >
         {loading ? "…" : countLabel(required)}

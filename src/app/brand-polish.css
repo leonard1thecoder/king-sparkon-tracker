@@ -1,24 +1,36 @@
-main > section:first-child header nav a[href="/"] p:last-child {
-  font-size: 0 !important;
-  line-height: 1 !important;
-}
-
-main > section:first-child header nav a[href="/"] p:last-child::after {
-  content: "King Sparkon";
-  font-size: 0.875rem;
-  line-height: 1.15;
-}
-
-#pricing article > span.absolute {
-  position: static !important;
-  display: inline-flex !important;
-  margin-bottom: 0.85rem;
-  width: fit-content;
-}
-
+/* White-first responsive adjustments kept separate from the core design tokens. */
 main.relative.min-h-screen form > button[type="submit"] {
-  width: min(100%, 20rem) !important;
-  justify-self: center !important;
+  width: min(100%, 20rem);
+  justify-self: start;
+}
+
+main [data-orange-hover="true"]:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--signal) 30%, transparent);
+  outline-offset: 3px;
+}
+
+/* Legacy pages now share the same restrained geometry as the rebuilt surfaces. */
+:where([class~="rounded-2xl"], [class~="rounded-3xl"]) {
+  border-radius: var(--radius-xl) !important;
+}
+
+:where(button, a)[class~="rounded-full"] {
+  border-radius: var(--radius-md) !important;
+}
+
+/* Remove decorative generated gradients while preserving image-legibility overlays. */
+[class*="linear-gradient"] {
+  background-image: none !important;
+  background-color: #ffffff !important;
+}
+
+:where([class~="bg-amber-50"], [class~="bg-yellow-50"]) {
+  background-color: #ffffff !important;
+  border-color: var(--line) !important;
+}
+
+[class~="bg-slate-950/28"] {
+  background: rgb(240 249 255 / 0.92) !important;
 }
 
 @media (min-width: 1024px) {
@@ -28,27 +40,134 @@ main.relative.min-h-screen form > button[type="submit"] {
 }
 
 @media (max-width: 640px) {
-  #complaints .capacity-hero-deck {
-    min-height: 39rem !important;
+  main.relative.min-h-screen form > button[type="submit"] {
+    width: 100%;
   }
+}
 
-  #complaints .capacity-hero-deck > div.absolute.left-5.top-6 {
-    left: 1rem !important;
-    right: 1rem !important;
-    top: 1rem !important;
-    width: auto;
-    text-align: center;
-  }
+/* Purposeful 3D motion: white surfaces, sky-blue structure, orange only on interactive hover. */
+.landing-motion-ring {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
 
-  #complaints .capacity-hero-deck > div.absolute.right-5.top-6 {
-    left: 1rem !important;
-    right: 1rem !important;
-    top: 4.25rem !important;
-    width: auto;
-    text-align: center;
-  }
+.landing-motion-ring-one {
+  animation: landing-ring-spin 20s linear infinite;
+  box-shadow: 0 0 34px rgb(14 165 233 / 0.08);
+}
 
-  #complaints .capacity-card-3d-admin {
-    top: 8.5rem !important;
+.landing-motion-ring-two {
+  animation: landing-ring-spin-reverse 14s linear infinite;
+  box-shadow: 0 0 28px rgb(56 189 248 / 0.1);
+}
+
+.landing-motion-glow {
+  animation: capacity-dashboard-glow 4.2s ease-in-out infinite;
+}
+
+.landing-motion-scan {
+  left: -22%;
+  background: linear-gradient(90deg, transparent, rgb(186 230 253 / 0.72), transparent);
+  animation: capacity-signal-pass 3s ease-in-out infinite;
+}
+
+.landing-motion-dot {
+  position: absolute;
+  z-index: 5;
+  display: block;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: var(--signal);
+  box-shadow: 0 0 20px rgb(14 165 233 / 0.45);
+  animation: contact-orbit-pulse 4s ease-in-out infinite;
+}
+
+.landing-motion-dot-one { left: 8%; top: 20%; }
+.landing-motion-dot-two { right: 9%; top: 34%; animation-delay: -1.4s; }
+.landing-motion-dot-three { bottom: 18%; left: 18%; width: 0.4rem; height: 0.4rem; animation-delay: -2.6s; }
+
+@keyframes landing-ring-spin {
+  from { transform: translate(-50%, -50%) rotateX(68deg) rotateZ(0deg); }
+  to { transform: translate(-50%, -50%) rotateX(68deg) rotateZ(360deg); }
+}
+
+@keyframes landing-ring-spin-reverse {
+  from { transform: translate(-50%, -50%) rotateX(72deg) rotateZ(360deg); }
+  to { transform: translate(-50%, -50%) rotateX(72deg) rotateZ(0deg); }
+}
+
+/* The restored hero terminal keeps the animation but follows the white visual system. */
+.hero-3d-scene .hero-scan-card__shell {
+  background: #ffffff !important;
+  border-color: var(--line-strong) !important;
+  box-shadow: 0 28px 70px rgb(14 165 233 / 0.16) !important;
+}
+
+.hero-3d-scene .hero-scan-card__shell > .relative,
+.hero-3d-scene .hero-scan-display,
+.hero-3d-scene .hero-scan-window,
+.hero-3d-scene .hero-metric-card {
+  background: #ffffff !important;
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+}
+
+.hero-3d-scene .hero-scan-display {
+  box-shadow: 0 22px 52px rgb(14 165 233 / 0.14) !important;
+}
+
+.hero-3d-scene .hero-scan-window {
+  background-image: radial-gradient(circle at 50% 38%, #e0f2fe, #ffffff 68%) !important;
+}
+
+.hero-3d-scene .hero-terminal-glow {
+  background: radial-gradient(circle at var(--hero-glow-x) var(--hero-glow-y), rgb(14 165 233 / 0.16), transparent 64%) !important;
+}
+
+.hero-3d-scene .hero-scene-halo {
+  background: radial-gradient(circle at var(--hero-glow-x) var(--hero-glow-y), rgb(56 189 248 / 0.2), rgb(240 249 255 / 0.72) 42%, transparent 72%) !important;
+}
+
+.hero-3d-scene .hero-image-aura {
+  background: rgb(224 242 254 / 0.8) !important;
+}
+
+.hero-3d-scene .hero-metric-card :where(p) {
+  color: var(--ink) !important;
+}
+
+.hero-3d-scene .hero-scan-display > .absolute.inset-x-0.bottom-0 {
+  background: linear-gradient(to top, rgb(255 255 255 / 0.98), rgb(255 255 255 / 0.82), transparent) !important;
+  color: var(--ink) !important;
+}
+
+.hero-3d-scene .hero-floor {
+  background: rgb(14 165 233 / 0.12) !important;
+}
+
+.hero-3d-scene .hero-floor-light,
+.hero-3d-scene .hero-particle-field span {
+  background: var(--signal) !important;
+  box-shadow: 0 0 20px rgb(14 165 233 / 0.45) !important;
+}
+
+.hero-3d-scene .hero-card-edge,
+.hero-3d-scene .hero-corner {
+  border-color: var(--signal) !important;
+}
+
+.hero-3d-scene .logo-reflection-wick {
+  background: linear-gradient(104deg, transparent 0%, transparent 35%, rgb(186 230 253 / 0.62) 49%, transparent 64%, transparent 100%) !important;
+}
+
+.hero-3d-scene .barcode-scan-beam {
+  background: linear-gradient(to bottom, transparent, rgb(14 165 233 / 0.18), transparent) !important;
+}
+
+@media (max-width: 640px) {
+  .capacity-card-3d-admin,
+  .capacity-card-3d-owner {
+    max-width: 21rem;
   }
 }

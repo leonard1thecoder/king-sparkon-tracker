@@ -1,18 +1,19 @@
-import type * as React from "react";
-import { cn } from "@/lib/utils";
+import * as React from "react";
+import { cn } from "@/lib/utils/cn";
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
-  return (
-    <input
-      type={type}
-      data-slot="input"
-      className={cn(
-        "h-11 w-full rounded-md border border-[#d3c9b9] bg-white px-3 text-sm text-[#10201d] shadow-sm shadow-[#10201d]/5 outline-none transition placeholder:text-[#8d9793] hover:border-[#9eb6aa] hover:bg-[#f9fbfa] hover:text-[#10201d] focus:border-[#237a5b] focus:bg-white focus:text-[#10201d] focus:ring-4 focus:ring-[#237a5b]/15 disabled:cursor-not-allowed disabled:opacity-60",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
+export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
+
+const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type, ...props }, ref) => (
+  <input
+    type={type}
+    className={cn(
+      "h-11 w-full rounded-lg border border-[var(--line)] bg-white px-3 text-sm text-[var(--ink)] shadow-none outline-none transition placeholder:text-[var(--muted)] hover:border-[var(--line-strong)] focus:border-[var(--signal)] focus:ring-4 focus:ring-sky-100 disabled:cursor-not-allowed disabled:opacity-60",
+      className,
+    )}
+    ref={ref}
+    {...props}
+  />
+));
+Input.displayName = "Input";
 
 export { Input };

@@ -1,0 +1,35 @@
+name: Agent Generate OpenAPI Contract
+
+on:
+  push:
+    branches:
+      - "agent/production-readiness-phase2"
+    paths:
+      - ".agent/generate-openapi"
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/production-readiness-phase2
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+      - name: Generate DTOs and operations from backend OpenAPI
+        env:
+          OPENAPI_URL: https://king-sparkon-tracker-backend-75756350962.africa-south1.run.app/v3/api-docs
+        run: bun run api:contract:generate
+      - name: Commit generated contract
+        run: |
+          rm -f .agent/generate-openapi .github/workflows/agent-generate-openapi.yml
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/lib/api/generated .agent/generate-openapi .github/workflows/agent-generate-openapi.yml
+          git commit -m "Generate full backend OpenAPI contract"
+          git push origin HEAD:agent/production-readiness-phase2
