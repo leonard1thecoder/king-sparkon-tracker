@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  landingActiveIndex,
   landingEnterOffset,
   landingExitOffset,
+  landingNavigationTargetReached,
   landingSectionSide,
 } from "@/lib/motion/landing-flow";
 
@@ -22,5 +24,16 @@ describe("landing directional motion", () => {
     const visionSide = landingSectionSide("vision", 0);
     expect(landingEnterOffset(visionSide, "up")).toBeGreaterThan(0);
     expect(landingExitOffset(visionSide, "up")).toBeLessThan(0);
+  });
+
+  it("hands navigation from a tall Features section to Jobs as soon as Jobs crosses the marker", () => {
+    const marker = 220;
+    const sectionTops = [-1800, -900, 180, 1400];
+    expect(landingActiveIndex(sectionTops, marker)).toBe(2);
+  });
+
+  it("keeps a clicked navigation target active until its section reaches the viewport marker", () => {
+    expect(landingNavigationTargetReached(700, 1700, 220)).toBe(false);
+    expect(landingNavigationTargetReached(210, 1210, 220)).toBe(true);
   });
 });
