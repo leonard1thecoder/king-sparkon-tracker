@@ -44,6 +44,8 @@ const navLinks = [
   ["Subscribe", "#subscribe"],
 ] as const;
 
+const ORIGINAL_COMPLAINT_LINK = "https://www.facebook.com/share/1CaAzEGBJb/";
+
 const features: Array<{ icon: LucideIcon; title: string; copy: string; tags: string[] }> = [
   { icon: ScanLine, title: "Barcode inventory", copy: "Register products, scan units, track stock movement and preserve a clean history.", tags: ["Products", "Workers", "Audit"] },
   { icon: Ticket, title: "QR tickets", copy: "Sell event tickets, control capacity, verify entry and keep buyer tickets visible.", tags: ["Events", "Gate scan", "Capacity"] },
@@ -131,7 +133,7 @@ export function KingSparkonLanding() {
           </div>
         </header>
 
-        <div className="mx-auto grid max-w-7xl gap-12 px-5 pb-20 pt-14 md:px-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:pb-28 lg:pt-20">
+        <div className="mx-auto grid max-w-7xl gap-8 px-5 pb-14 pt-8 md:px-8 lg:grid-cols-[1.12fr_0.88fr] lg:items-center lg:pb-20 lg:pt-10">
           <div>
             <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Operations without the spreadsheet chaos</p>
             <h1 className="mt-5 max-w-4xl text-5xl font-black leading-[0.98] tracking-[-0.06em] md:text-7xl">Scan it. Sell it. Track it. Prove it.</h1>
@@ -143,7 +145,7 @@ export function KingSparkonLanding() {
             </div>
           </div>
 
-          <div className="min-w-0 lg:-mr-6">
+          <div className="min-w-0 lg:w-full lg:max-w-[28rem] lg:justify-self-end">
             <ScanLoop />
           </div>
         </div>
@@ -204,7 +206,18 @@ export function KingSparkonLanding() {
               <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Engineering principles</p>
               <h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-5xl">Build trust through evidence.</h2>
               <p className="mt-5 text-base leading-8 text-[var(--steel)]">Motion explains how feedback becomes a tested product response. It supports the story instead of decorating every surface.</p>
-              <div className="mt-8 grid gap-4">{engineeringPrinciples.map(([title, copy], index) => <article key={title} className="grid gap-3 rounded-xl border border-[var(--line)] bg-white p-5 sm:grid-cols-[3rem_1fr]"><span className="text-sm font-black text-[var(--signal-strong)]">0{index + 1}</span><div><h3 className="font-black">{title}</h3><p className="mt-2 text-sm leading-6 text-[var(--steel)]">{copy}</p></div></article>)}</div>
+              <div className="my-7 flex justify-center">
+                <a
+                  data-orange-hover="true"
+                  href={ORIGINAL_COMPLAINT_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-extrabold text-white transition hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]"
+                >
+                  Read Original Complaint <ArrowRight className="h-4 w-4" />
+                </a>
+              </div>
+              <div className="grid gap-4">{engineeringPrinciples.map(([title, copy], index) => <article key={title} className="grid gap-3 rounded-xl border border-[var(--line)] bg-white p-5 sm:grid-cols-[3rem_1fr]"><span className="text-sm font-black text-[var(--signal-strong)]">0{index + 1}</span><div><h3 className="font-black">{title}</h3><p className="mt-2 text-sm leading-6 text-[var(--steel)]">{copy}</p></div></article>)}</div>
             </div>
             <Engineering3DVisual />
           </div>
