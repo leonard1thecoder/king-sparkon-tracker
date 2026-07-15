@@ -4,8 +4,31 @@
 }
 
 [data-wave-connector] > article {
-  opacity: 0;
-  visibility: hidden;
+  opacity: 1;
+  visibility: visible;
+}
+
+[data-wave-connector]:not([data-wave-orientation]) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+  min-height: auto;
+  overflow: visible;
+  padding: 1rem 0;
+}
+
+[data-wave-connector]:not([data-wave-orientation]) > svg {
+  display: none;
+}
+
+[data-wave-connector]:not([data-wave-orientation]) > article {
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 15rem;
+  transform: none !important;
+  border-radius: 1.5rem;
 }
 
 [data-wave-connector][data-wave-orientation] > article {
@@ -26,10 +49,16 @@ header [aria-label="Section navigation"] a.landing-nav-active {
   color: var(--signal-strong) !important;
   box-shadow: inset 0 -2px 0 var(--signal);
   transition:
-    background-color 320ms ease,
-    border-color 320ms ease,
-    color 320ms ease,
-    box-shadow 320ms ease;
+    background-color 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+@media (max-width: 640px) {
+  [data-wave-connector]:not([data-wave-orientation]) {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
