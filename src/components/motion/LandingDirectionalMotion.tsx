@@ -55,7 +55,6 @@ export function LandingDirectionalMotion() {
     const runningAnimations = new Map<HTMLElement, Animation>();
     const previousOverflowX = main.style.overflowX;
 
-    let disposed = false;
     let scrollFrame = 0;
     let lastScrollY = window.scrollY;
     let scrollDirection: LandingScrollDirection = "down";
@@ -115,10 +114,19 @@ export function LandingDirectionalMotion() {
     function applyNavigationState(href: string) {
       navigationAnchors.forEach((anchor) => {
         const isActive = anchor.getAttribute("href") === href;
-        anchor.classList.toggle("landing-nav-active", isActive);
-        anchor.classList.toggle("landing-nav-inactive", !isActive);
-        if (isActive) anchor.setAttribute("aria-current", "location");
-        else anchor.removeAttribute("aria-current");
+        if (anchor.classList.contains("landing-nav-active") !== isActive) {
+          anchor.classList.toggle("landing-nav-active", isActive);
+        }
+        if (anchor.classList.contains("landing-nav-inactive") === isActive) {
+          anchor.classList.toggle("landing-nav-inactive", !isActive);
+        }
+
+        const current = anchor.getAttribute("aria-current");
+        if (isActive && current !== "location") {
+          anchor.setAttribute("aria-current", "location");
+        } else if (!isActive && current !== null) {
+          anchor.removeAttribute("aria-current");
+        }
       });
     }
 
@@ -236,7 +244,7 @@ export function LandingDirectionalMotion() {
       navigationMutationObserver.observe(navigationRoot, {
         attributes: true,
         subtree: true,
-        attributeFilter: ["aria-current", "class"],
+        attributeFilter: ["aria-current"],
       });
     }
 
@@ -256,25 +264,22 @@ export function LandingDirectionalMotion() {
     }
 
     return () => {
-      disposed = true;
-      if (disposed) {
-        revealObserver.disconnect();
-        navigationMutationObserver.disconnect();
-        window.removeEventListener("scroll", handleScroll);
-        window.removeEventListener("resize", handleScroll);
-        document.removeEventListener("click", handleAnchorNavigation);
-        window.cancelAnimationFrame(scrollFrame);
-        window.cancelAnimationFrame(navigationSyncFrame);
-        runningAnimations.forEach((animation) => animation.cancel());
-        runningAnimations.clear();
-        main.style.overflowX = previousOverflowX;
-        navigationAnchors.forEach((anchor) => {
-          anchor.classList.remove(
-            "landing-nav-active",
-            "landing-nav-inactive",
-          );
-        });
-      }
+      revealObserver.disconnect();
+      navigationMutationObserver.disconnect();
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+      document.removeEventListener("click", handleAnchorNavigation);
+      window.cancelAnimationFrame(scrollFrame);
+      window.cancelAnimationFrame(navigationSyncFrame);
+      runningAnimations.forEach((animation) => animation.cancel());
+      runningAnimations.clear();
+      main.style.overflowX = previousOverflowX;
+      navigationAnchors.forEach((anchor) => {
+        anchor.classList.remove(
+          "landing-nav-active",
+          "landing-nav-inactive",
+        );
+      });
     };
   }, []);
 
