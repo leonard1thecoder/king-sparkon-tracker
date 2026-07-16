@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { BadgeCheck, BriefcaseBusiness, Crown, Megaphone, QrCode, ScanLine, ShieldCheck } from "lucide-react";
+import { BadgeCheck, BriefcaseBusiness, Code2, Crown, Mail, Megaphone, QrCode, ScanLine, ShieldCheck } from "lucide-react";
 
 const TIP_KING_SPARKON_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/AAA.png";
 const CHOOSE_FORM_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/AXA.png";
@@ -11,6 +11,8 @@ const OWNER_CAPACITY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v
 const CONTACT_FORM_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_35_42%20PM%20(1).png";
 const APPLICATION_COMPLAINT_PRIMARY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_35_42%20PM%20(2).png";
 const APPLICATION_COMPLAINT_SECONDARY_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%202,%202026,%2004_26_11%20PM%20(2).png";
+const DEV_HUB_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%2016,%202026,%2007_45_50%20AM.png";
+const SUBSCRIPTION_IMAGE = "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jul%2016,%202026,%2007_46_42%20AM.png";
 
 function CircleStage({ children, label, icon }: { children: ReactNode; label: string; icon: ReactNode }) {
   return (
@@ -70,6 +72,14 @@ export function Engineering3DVisual() {
 
 export function Contact3DVisual() {
   return <SingleCircleVisual image={CONTACT_FORM_IMAGE} alt="3D King Sparkon contact workflow visual" label="Message becomes action" icon={<QrCode className="h-4 w-4" />} />;
+}
+
+export function DevHub3DVisual() {
+  return <SingleCircleVisual image={DEV_HUB_IMAGE} alt="3D King Sparkon Dev Hub software delivery visual" label="Build · Test · Deploy" icon={<Code2 className="h-4 w-4" />} />;
+}
+
+export function Subscription3DVisual() {
+  return <SingleCircleVisual image={SUBSCRIPTION_IMAGE} alt="3D King Sparkon subscription and product updates visual" label="Updates worth opening" icon={<Mail className="h-4 w-4" />} />;
 }
 
 export function CompactScanBadge() {
