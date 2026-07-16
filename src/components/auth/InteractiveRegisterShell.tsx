@@ -123,10 +123,11 @@ export function InteractiveRegisterShell({ endpoint, title, description, note, f
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
     setSubmitting(true);
     setStatus(null);
     try {
-      const payload = { ...buildPayload(new FormData(event.currentTarget)), ...(extraPayload ?? {}) };
+      const payload = { ...buildPayload(new FormData(form)), ...(extraPayload ?? {}) };
       if (addressRequired && !addressOpen) throw new Error("Open Physical address and complete the required address fields.");
       const fieldsToCheck = [...mainFields, ...(addressOpen ? addressFields : []), ...(referralOpen ? referralFields : [])];
       const missing = fieldsToCheck.find((field) => field.type !== "hidden" && field.required !== false && !payload[field.name]);
@@ -135,7 +136,7 @@ export function InteractiveRegisterShell({ endpoint, title, description, note, f
       if (allowedEmailAddress && payload.emailAddress?.toLowerCase() !== allowedEmailAddress.toLowerCase()) throw new Error(`Admin registration is restricted to ${allowedEmailAddress}.`);
       await axios.post(endpoint, payload, { withCredentials: true });
       setStatus({ tone: "success", message: "Account created. Check your inbox for verification before signing in." });
-      event.currentTarget.reset();
+      form.reset();
     } catch (error) {
       setStatus({ tone: "error", message: axios.isAxiosError(error) ? messageFromBackendPayload(error.response?.data) : error instanceof Error ? error.message : "Unable to reach the auth API." });
     } finally {
