@@ -40,7 +40,7 @@ const PAYPAL_HELP = "Need a payment link? Create or find your PayPal.me link her
 
 const planNotes: Record<string, string> = {
   FREE_USER: "Selected plan: Free User at R0. Best for tickets, job applications, cart checkout, profile, and purchase QR flows.",
-  FREE_AFFILIATE: `Selected plan: Free Affiliate at R0. Add your PayPal.me link for earnings setup. ${PAYPAL_HELP}`,
+  FREE_AFFILIATE: `Selected plan: Free Affiliate at R0. Add your physical address and PayPal.me link for earnings setup. ${PAYPAL_HELP}`,
   FREE_TRIAL_BUSINESS: `Selected plan: Free Trial Business for 14 days. Business owner payment link is optional during registration. ${PAYPAL_HELP}`,
   FREE_TRIAL: `Selected plan: Free Trial Business for 14 days. Business owner payment link is optional during registration. ${PAYPAL_HELP}`,
   PLUS: `Selected plan: Plus at R880 per month. Register as Business owner first, then complete billing from the dashboard. ${PAYPAL_HELP}`,
@@ -50,7 +50,7 @@ const planNotes: Record<string, string> = {
 const privilegeNotes: Record<string, string> = {
   BUSINESS_OWNER: "Privilege selected: Business owner. The backend creates an Owner account, business workspace, and business QR code.",
   USER: "Privilege selected: User. The backend creates a free User account for tickets, jobs, cart checkout, profile, and purchase QR flows.",
-  AFFILIATE: "Privilege selected: Affiliate. The backend creates a free Affiliate account with referral code, promotion link, and QR code.",
+  AFFILIATE: "Privilege selected: Affiliate. Complete the required physical address. The backend creates a free Affiliate account with referral code, promotion link, and QR code.",
 };
 
 const serviceNotes: Record<string, string> = {
@@ -114,13 +114,13 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
         { name: "businessPaypalLink", label: "Business PayPal payment link", type: "url", placeholder: "Example: https://paypal.me/kingsparkonstore", autoComplete: "url", required: false, visibleForPrivileges: ["BUSINESS_OWNER"], helper: `Optional for Business owner payments during registration. ${PAYPAL_HELP}` },
         { name: "paypalLink", label: "Affiliate PayPal link", type: "url", placeholder: "Example: https://paypal.me/kingaffiliate", autoComplete: "url", visibleForPrivileges: ["AFFILIATE"], helper: `Required for Affiliate. Used for affiliate earnings setup. ${PAYPAL_HELP}` },
         { name: "password", label: "Create password", type: "password", placeholder: "Minimum 8 characters with letters and numbers", autoComplete: "new-password", helper: "Required. Use a strong password for this account." },
-        { name: "addressStreet", label: "Street address", type: "text", placeholder: "Example: 12 Main Road", autoComplete: "street-address", visibleForPrivileges: ["USER", "BUSINESS_OWNER"], section: "address", helper: "Required for User and Business owner." },
-        { name: "addressLine2", label: "Unit, building, complex", type: "text", placeholder: "Example: Unit 4, Sparkon Heights", autoComplete: "address-line2", required: false, visibleForPrivileges: ["USER", "BUSINESS_OWNER"], section: "address" },
-        { name: "addressSuburb", label: "Suburb or township", type: "text", placeholder: "Example: Sandton", autoComplete: "address-level3", visibleForPrivileges: ["USER", "BUSINESS_OWNER"], section: "address" },
-        { name: "addressCity", label: "City", type: "text", placeholder: "Example: Johannesburg", autoComplete: "address-level2", visibleForPrivileges: ["USER", "BUSINESS_OWNER"], section: "address" },
-        { name: "addressProvince", label: "Province", type: "text", placeholder: "Example: Gauteng", autoComplete: "address-level1", visibleForPrivileges: ["USER", "BUSINESS_OWNER"], section: "address" },
-        { name: "addressPostalCode", label: "Postal code", type: "text", placeholder: "Example: 2196", autoComplete: "postal-code", visibleForPrivileges: ["USER", "BUSINESS_OWNER"], section: "address" },
-        { name: "addressCountry", label: "Country", type: "text", placeholder: "South Africa", autoComplete: "country-name", defaultValue: "South Africa", visibleForPrivileges: ["USER", "BUSINESS_OWNER"], section: "address" },
+        { name: "addressStreet", label: "Street address", type: "text", placeholder: "Example: 12 Main Road", autoComplete: "street-address", visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE"], section: "address", helper: "Required for User, Business owner, and Affiliate." },
+        { name: "addressLine2", label: "Unit, building, complex", type: "text", placeholder: "Example: Unit 4, Sparkon Heights", autoComplete: "address-line2", required: false, visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE"], section: "address" },
+        { name: "addressSuburb", label: "Suburb or township", type: "text", placeholder: "Example: Sandton", autoComplete: "address-level3", visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE"], section: "address" },
+        { name: "addressCity", label: "City", type: "text", placeholder: "Example: Johannesburg", autoComplete: "address-level2", visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE"], section: "address" },
+        { name: "addressProvince", label: "Province", type: "text", placeholder: "Example: Gauteng", autoComplete: "address-level1", visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE"], section: "address" },
+        { name: "addressPostalCode", label: "Postal code", type: "text", placeholder: "Example: 2196", autoComplete: "postal-code", visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE"], section: "address" },
+        { name: "addressCountry", label: "Country", type: "text", placeholder: "South Africa", autoComplete: "country-name", defaultValue: "South Africa", visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE"], section: "address" },
         { name: "affiliateCode", label: "Who referred you? Promo code", type: "text", placeholder: "Example: KING-PROMO-2026", autoComplete: "off", required: false, visibleForPrivileges: ["BUSINESS_OWNER"], section: "referral", helper: "Optional. Do not use this for User or Affiliate registration." },
         { name: "localizationCountry", label: "Localization country", type: "select", placeholder: "SOUTH_AFRICA", autoComplete: "country-name", defaultValue: "SOUTH_AFRICA", helper: "Required. Choose South Africa for local pricing, phone, and payment copy.", options: [{ label: "South Africa", value: "SOUTH_AFRICA" }, { label: "Rest of the world", value: "REST_OF_WORLD" }] },
       ]}
