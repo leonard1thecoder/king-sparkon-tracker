@@ -3,6 +3,7 @@
 import { type FormEvent, useState } from "react";
 import { ArrowRight, CheckCircle2, Crown, Loader2, Mail, ShieldCheck, TriangleAlert } from "lucide-react";
 import { BouncingCircleField, type BouncingCircleItem } from "@/components/marketing/BouncingCircleField";
+import { Subscription3DVisual } from "@/components/marketing/Landing3DVisuals";
 import { subscribe, type SubscribePayload } from "@/lib/api/subscribers";
 
 type SubscriptionStatus = {
@@ -94,22 +95,26 @@ export function SubscriptionSection() {
 
   return (
     <section id="subscribe" className="scroll-mt-28 border-t border-[var(--line)] bg-white px-5 py-16 md:px-8 lg:py-24">
-      <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-        <div>
-          <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Subscription</p>
-          <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Subscribe for focused product updates.</h2>
-          <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--steel)]">
-            Get scanner, tickets, worker tips, affiliate, Dev Hub, dashboard, and capacity updates without digging through the whole platform.
-          </p>
-          <BouncingCircleField
-            items={subscriptionNotes}
-            ariaLabel="King Sparkon subscription update types"
-            variant="subscription"
-            connectorOpacity={1}
-          />
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Subscription</p>
+            <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] md:text-6xl">Subscribe for focused product updates.</h2>
+            <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--steel)]">
+              Get scanner, tickets, worker tips, affiliate, Dev Hub, dashboard, and capacity updates without digging through the whole platform.
+            </p>
+            <BouncingCircleField
+              items={subscriptionNotes}
+              ariaLabel="King Sparkon subscription update types"
+              variant="subscription"
+              connectorOpacity={1}
+            />
+          </div>
+
+          <Subscription3DVisual />
         </div>
 
-        <div className="relative border border-[var(--line-strong)] bg-white p-5 shadow-[var(--shadow-soft)] md:p-8">
+        <div className="relative mt-10 border border-[var(--line-strong)] bg-white p-5 shadow-[var(--shadow-soft)] md:p-8">
           <div className="relative z-10">
             <div className="flex items-center gap-3">
               <div className="grid h-12 w-12 place-items-center rounded-full border border-[var(--line)] bg-[var(--signal-soft)] text-[var(--signal)] shadow-[var(--shadow-soft)]">
