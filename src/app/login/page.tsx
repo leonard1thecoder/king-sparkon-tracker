@@ -20,7 +20,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Login to King Sparkon Tracker",
-    description: "Secure access for Business Owners, Users, Workers, Affiliates, and Admins using King Sparkon Tracker commerce software.",
+    description:
+      "Secure access for Business Owners, Users, Workers, Affiliates, and Admins using King Sparkon Tracker commerce software.",
     type: "website",
     siteName: "King Sparkon Tracker",
     images: [{ url: "/king-sparkon-logo.png", width: 512, height: 512, alt: "King Sparkon Tracker login page" }],
@@ -28,7 +29,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "King Sparkon Tracker Login",
-    description: "Access barcode scanning, job opportunities, product tracking, tips, payouts, affiliates, and dashboard reporting.",
+    description:
+      "Access barcode scanning, job opportunities, product tracking, tips, payouts, affiliates, and dashboard reporting.",
     images: ["/king-sparkon-logo.png"],
   },
   robots: {
@@ -48,7 +50,7 @@ export default function LoginPage() {
       submitLabel="Sign in securely"
       footerText="New to King Sparkon Tracker?"
       footerHref="/register"
-      footerLink="Register business"
+      footerLink="Register account"
       visualTitle="Secure access for barcode inventory teams."
       visualText="One clean entry point for tickets, job opportunities, product stock, barcode scanning, returnable claims, reports, payouts, promotions, affiliate visibility, and billing."
       fields={[
