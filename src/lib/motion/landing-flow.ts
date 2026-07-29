@@ -34,11 +34,11 @@ export function landingSectionSide(sectionId: string, index: number): LandingSec
 }
 
 export function landingEnterOffset(side: LandingSectionSide, direction: LandingScrollDirection) {
-  return side * (direction === "down" ? 1 : -1) * 92;
+  return side * (direction === "down" ? 1 : -1) * 28;
 }
 
 export function landingExitOffset(side: LandingSectionSide, direction: LandingScrollDirection) {
-  return side * (direction === "up" ? 1 : -1) * 76;
+  return side * (direction === "up" ? 1 : -1) * 20;
 }
 
 export function landingActiveIndex(sectionTops: readonly number[], marker: number) {
