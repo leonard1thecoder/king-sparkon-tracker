@@ -535,13 +535,15 @@ export function InteractiveRegisterShell({
               </div>
             ) : null}
 
-            <button
-              type="submit"
-              disabled={submitting}
-              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 py-2 text-sm font-black text-white shadow-[0_12px_28px_rgba(29,92,131,0.18)] transition duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--gold)] hover:bg-[var(--ink)] disabled:opacity-55 sm:w-auto sm:justify-self-start"
-            >
-              {submitting ? "Submitting..." : "Create account"} <ArrowRight className="h-4 w-4" />
-            </button>
+            <div className="mt-2 flex w-full justify-center">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="inline-flex min-h-11 w-full max-w-xs items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 py-2.5 text-sm font-black text-white shadow-[0_12px_28px_rgba(29,92,131,0.18)] transition duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--gold)] hover:bg-[var(--ink)] disabled:opacity-55 sm:w-auto"
+              >
+                {submitting ? "Submitting..." : "Create account"} <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
           </form>
 
           <p className="mt-6 rounded-[1.4rem] border border-[var(--line)] bg-[var(--surface)] p-4 text-sm font-bold text-[var(--steel)]">

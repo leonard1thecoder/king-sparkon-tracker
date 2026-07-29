@@ -316,12 +316,14 @@ export function AuthPage({ mode }: AuthPageProps) {
                   <RegisterFields mode={mode} />
                 )}
 
-                <button
-                  type="submit"
-                  className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]"
-                >
-                  {copy.primaryAction} <ArrowRight className="h-4 w-4" />
-                </button>
+                <div className="mt-2 flex w-full justify-center">
+                  <button
+                    type="submit"
+                    className="inline-flex min-h-13 w-full max-w-xs items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] sm:w-auto"
+                  >
+                    {copy.primaryAction} <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
               </form>
 
               <div className="mt-6 rounded-[1.75rem] border border-[var(--line)] bg-[var(--paper)] p-4">
