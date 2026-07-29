@@ -32,7 +32,7 @@ const initialState: FormState = {
   eventTime: "",
   location: "",
   bannerUrl: "",
-  status: "DRAFT",
+  status: "PUBLISHED",
   ticketTypes: {
     REGULAR: { price: "0", capacity: "100" },
     VIP: { price: "0", capacity: "50" },
@@ -120,7 +120,8 @@ export function CreateEventForm() {
     try {
       setIsSubmitting(true);
       const createdEvent = await createEvent(payload);
-      setStatusMessage({ tone: "success", message: `${createdEvent.name} was created successfully. Opening your ticket list in a moment.` });
+      const visibility = payload.status === "PUBLISHED" ? "It is now visible to users." : "It remains a draft and is visible only to owners.";
+      setStatusMessage({ tone: "success", message: `${createdEvent.name} was created successfully. ${visibility} Opening your ticket list in a moment.` });
       router.refresh();
       window.setTimeout(() => router.push("/dashboard/owner/tickets"), 2200);
     } catch (error) {

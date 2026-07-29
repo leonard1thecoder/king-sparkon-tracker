@@ -18,9 +18,9 @@ const DEFAULT_USER_ID = "user-demo-001";
 const DEFAULT_WORKER_ID = "worker-demo-001";
 const PLATFORM_FEE_RATE = 0.04;
 
-// Temporary UI preview switch. Keep true while reviewing bulk ticket/event screens.
-// Change to false when you want the live backend API to drive dashboard ticket data again.
-const USE_TICKET_PREVIEW_MOCK = true;
+// Preview data is opt-in only. Production owner and user dashboards must share
+// the live ticket API so newly created events are immediately discoverable.
+const USE_TICKET_PREVIEW_MOCK = process.env.NEXT_PUBLIC_TICKET_PREVIEW_MODE === "true";
 
 type TicketTypeSeed = { type: TicketType; price: number; capacity: number; sold: number };
 type PreviewEventSeed = {
@@ -579,6 +579,14 @@ function verifyTicket(ticket: UserTicket): TicketVerificationResult {
 }
 
 export async function createEvent(payload: CreateTicketEventPayload) {
+  if (!USE_TICKET_PREVIEW_MOCK && typeof window !== "undefined") {
+    const { data } = await apiClient.post<TicketEvent>("/v1/tickets/events", {
+      ...payload,
+      ownerId: payload.ownerId ?? "current-owner",
+    });
+    return normalizeTicketEvent(data);
+  }
+
   await delay();
   validateEventPayload(payload);
 
@@ -606,6 +614,11 @@ export async function createEvent(payload: CreateTicketEventPayload) {
 }
 
 export async function updateEvent(eventId: string, payload: UpdateTicketEventPayload) {
+  if (!USE_TICKET_PREVIEW_MOCK && typeof window !== "undefined") {
+    const { data } = await apiClient.patch<TicketEvent>(`/v1/tickets/events/${eventId}`, payload);
+    return normalizeTicketEvent(data);
+  }
+
   await delay();
   const event = requireEvent(eventId);
   if (payload.name !== undefined) event.name = payload.name.trim();
@@ -620,11 +633,21 @@ export async function updateEvent(eventId: string, payload: UpdateTicketEventPay
 }
 
 export async function getOwnerEvents() {
+  if (!USE_TICKET_PREVIEW_MOCK && typeof window !== "undefined") {
+    const { data } = await apiClient.get<TicketEvent[]>("/v1/tickets/owner/events");
+    return normalizeTicketEvents(Array.isArray(data) ? data : []);
+  }
+
   await delay();
   return cloneEvents(events).sort((left, right) => right.createdAt.localeCompare(left.createdAt));
 }
 
 export async function getOwnerTicketDashboard(): Promise<OwnerTicketDashboard> {
+  if (!USE_TICKET_PREVIEW_MOCK && typeof window !== "undefined") {
+    const { data } = await apiClient.get<OwnerTicketDashboard>("/v1/tickets/owner/dashboard");
+    return data;
+  }
+
   await delay();
   const totals = events.reduce(
     (summary, event) => {
