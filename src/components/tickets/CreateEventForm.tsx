@@ -119,9 +119,10 @@ export function CreateEventForm() {
 
     try {
       setIsSubmitting(true);
-      await createEvent(payload);
-      setStatusMessage({ tone: "success", message: "Event created. Redirecting to owner dashboard." });
-      window.setTimeout(() => router.push("/dashboard/owner/tickets"), 450);
+      const createdEvent = await createEvent(payload);
+      setStatusMessage({ tone: "success", message: `${createdEvent.name} was created successfully. Opening your ticket list in a moment.` });
+      router.refresh();
+      window.setTimeout(() => router.push("/dashboard/owner/tickets"), 2200);
     } catch (error) {
       setStatusMessage({ tone: "error", message: error instanceof Error ? error.message : "Unable to create event." });
     } finally {
@@ -202,7 +203,7 @@ export function CreateEventForm() {
       </div>
 
       {statusMessage ? (
-        <div className={`flex gap-3 rounded-[1.5rem] border px-4 py-3 text-sm font-semibold leading-6 ${statusMessage.tone === "error" ? "border-[var(--danger)]/25 bg-[var(--danger)]/10 text-[var(--danger)]" : "border-[var(--confirm)]/25 bg-[var(--confirm)]/10 text-[var(--confirm)]"}`}>
+        <div role={statusMessage.tone === "error" ? "alert" : "status"} className={`flex gap-3 rounded-[1.5rem] border px-4 py-3 text-sm font-semibold leading-6 ${statusMessage.tone === "error" ? "border-[var(--danger)]/25 bg-[var(--danger)]/10 text-[var(--danger)]" : "border-[var(--confirm)]/25 bg-[var(--confirm)]/10 text-[var(--confirm)]"}`}>
           {statusMessage.tone === "error" ? <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /> : <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />}
           <span>{statusMessage.message}</span>
         </div>

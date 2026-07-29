@@ -225,7 +225,7 @@ export function OwnerTuckShopProductManager() {
       if (newProductImage) await uploadProductImage(created.id, newProductImage);
       setForm(emptyProductForm);
       selectNewProductImage(null);
-      setSuccess(form.barcodeMode === "AUTO_GENERATED" ? "Non-barcoded product created. Workers can create the internal stock-unit codes." : "Barcoded brand created and ready for stock preparation.");
+      setSuccess(form.barcodeMode === "AUTO_GENERATED" ? `${created.name} was created successfully. Workers can now create its internal stock-unit codes.` : `${created.name} was created successfully and is ready for stock preparation.`);
       await loadProducts();
     } catch (exception) {
       setError(normalizeApiError(exception).message);
@@ -322,15 +322,14 @@ export function OwnerTuckShopProductManager() {
         <MetricCard label="Missing photos" value={loading ? "..." : String(missingImages)} detail="Products needing customer images" />
       </div>
 
-      {error ? <p className="rounded-[var(--radius-lg)] border border-[var(--danger)]/30 bg-white p-4 text-sm font-bold text-[var(--danger)]">{error}</p> : null}
-      {success ? <p className="rounded-[var(--radius-lg)] border border-[var(--confirm)]/30 bg-[var(--confirm)]/10 p-4 text-sm font-bold text-[var(--confirm)]">{success}</p> : null}
-
       <Card>
         <CardHeader>
           <CardTitle>Create inventory product</CardTitle>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--steel)]">Choose whether customers and workers scan a manufacturer barcode or King Sparkon creates private stock-unit codes automatically.</p>
         </CardHeader>
         <CardContent>
+          {error ? <p role="alert" className="mb-5 rounded-[var(--radius-lg)] border border-[var(--danger)]/30 bg-white p-4 text-sm font-bold text-[var(--danger)]">Product could not be created: {error}</p> : null}
+          {success ? <p role="status" className="mb-5 rounded-[var(--radius-lg)] border border-[var(--confirm)]/30 bg-[var(--confirm)]/10 p-4 text-sm font-bold text-[var(--confirm)]">{success}</p> : null}
           <form className="grid gap-5" onSubmit={createProduct}>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               <FieldLabel label="Product name" hint="required"><input value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} required placeholder="e.g. Still Water 750ml" className={fieldClass()} /></FieldLabel>

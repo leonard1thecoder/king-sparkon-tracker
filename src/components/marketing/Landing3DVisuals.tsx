@@ -33,7 +33,7 @@ function SingleCircleVisual({ image, alt, label, icon }: { image: string; alt: s
   return (
     <CircleStage label={label} icon={icon}>
       <div className="landing-circle-image absolute inset-[16%] z-20 overflow-hidden rounded-full border border-[var(--line)] bg-white shadow-[0_16px_38px_rgba(14,165,233,0.12)]">
-        <Image src={image} alt={alt} fill unoptimized sizes="(min-width: 1024px) 28rem, 88vw" className="object-contain p-[8%]" />
+        <Image src={image} alt={alt} fill unoptimized priority sizes="(min-width: 1024px) 28rem, 88vw" className="object-contain p-[8%]" />
         <div className="landing-circle-scan pointer-events-none absolute inset-x-[8%] h-14" aria-hidden="true" />
       </div>
     </CircleStage>
@@ -44,10 +44,10 @@ function DoubleCircleVisual({ primaryImage, primaryAlt, secondaryImage, secondar
   return (
     <CircleStage label={label} icon={icon}>
       <div className="landing-circle-card landing-circle-card-primary absolute left-[12%] top-[16%] z-10 aspect-square w-[55%] overflow-hidden rounded-full border border-[var(--line-strong)] bg-white shadow-[0_16px_40px_rgba(14,165,233,0.12)]">
-        <Image src={primaryImage} alt={primaryAlt} fill unoptimized sizes="16rem" className="object-contain p-[8%]" />
+        <Image src={primaryImage} alt={primaryAlt} fill unoptimized priority sizes="16rem" className="object-contain p-[8%]" />
       </div>
       <div className="landing-circle-card landing-circle-card-secondary absolute bottom-[16%] right-[10%] z-20 aspect-square w-[55%] overflow-hidden rounded-full border border-[var(--line-strong)] bg-white shadow-[0_18px_44px_rgba(14,165,233,0.15)]">
-        <Image src={secondaryImage} alt={secondaryAlt} fill unoptimized sizes="16rem" className="object-contain p-[8%]" />
+        <Image src={secondaryImage} alt={secondaryAlt} fill unoptimized priority sizes="16rem" className="object-contain p-[8%]" />
       </div>
       <div className="landing-circle-scan pointer-events-none absolute inset-x-[14%] z-30 h-14" aria-hidden="true" />
     </CircleStage>

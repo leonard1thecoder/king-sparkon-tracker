@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import {
   landingActiveIndex,
   landingEnterOffset,
-  landingExitOffset,
   landingNavigationTargetReached,
   landingSectionMotionDecision,
   landingSectionSide,
@@ -156,18 +155,9 @@ export function LandingDirectionalMotion() {
       direction: LandingScrollDirection,
       immediate = false,
     ) {
-      cancelRevealFrame(section);
-      setMotionOffset(
-        section,
-        landingExitOffset(sideFor(section), direction),
-        direction === "down" ? -12 : 12,
-      );
-
-      if (motionStates.get(section) === "hidden" && !immediate) return;
-
-      section.dataset.landingMotionState = "hidden";
-      motionStates.set(section, "hidden");
-      setSectionAccessibility(section, false);
+      // Keep landing sections mounted so image requests begin immediately and
+      // users never wait for a section to reappear after scrolling.
+      showSection(section, direction, immediate);
     }
 
     function applyNavigationState(href: string) {
