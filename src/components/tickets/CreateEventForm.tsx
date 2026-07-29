@@ -3,7 +3,7 @@
 import { type FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, Calendar, CheckCircle2, Image as ImageIcon, MapPin, Plus } from "lucide-react";
-import { createEvent } from "@/services/ticketService";
+import { createEvent, uploadEventBanner } from "@/services/ticketService";
 import type { CreateTicketEventPayload, EventStatus, TicketType } from "@/types/tickets";
 
 const ticketTypes: TicketType[] = ["REGULAR", "VIP", "VVIP"];
@@ -20,7 +20,6 @@ type FormState = {
   eventDate: string;
   eventTime: string;
   location: string;
-  bannerUrl: string;
   status: EventStatus;
   ticketTypes: Record<TicketType, TicketTypeInput>;
 };
@@ -31,7 +30,6 @@ const initialState: FormState = {
   eventDate: "",
   eventTime: "",
   location: "",
-  bannerUrl: "",
   status: "PUBLISHED",
   ticketTypes: {
     REGULAR: { price: "0", capacity: "100" },
@@ -51,6 +49,7 @@ function labelFromType(type: TicketType) {
 export function CreateEventForm() {
   const router = useRouter();
   const [formState, setFormState] = useState<FormState>(initialState);
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [statusMessage, setStatusMessage] = useState<{ tone: "success" | "error"; message: string } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -108,7 +107,6 @@ export function CreateEventForm() {
       location: formState.location,
       eventDate: formState.eventDate,
       eventTime: formState.eventTime,
-      bannerUrl: formState.bannerUrl,
       status: formState.status,
       ticketTypes: ticketTypes.map((type) => ({
         type,
@@ -120,8 +118,10 @@ export function CreateEventForm() {
     try {
       setIsSubmitting(true);
       const createdEvent = await createEvent(payload);
+      const eventWithBanner = bannerFile ? await uploadEventBanner(createdEvent.id, bannerFile) : createdEvent;
+      setBannerFile(null);
       const visibility = payload.status === "PUBLISHED" ? "It is now visible to users." : "It remains a draft and is visible only to owners.";
-      setStatusMessage({ tone: "success", message: `${createdEvent.name} was created successfully. ${visibility} Opening your ticket list in a moment.` });
+      setStatusMessage({ tone: "success", message: `${eventWithBanner.name} was created successfully. ${visibility} Opening your ticket list in a moment.` });
       router.refresh();
       window.setTimeout(() => router.push("/dashboard/owner/tickets"), 2200);
     } catch (error) {
@@ -169,10 +169,10 @@ export function CreateEventForm() {
           <input type="time" value={formState.eventTime} onChange={(event) => updateField("eventTime", event.target.value)} className="min-h-13 rounded-[1.35rem] border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]" />
         </label>
         <label className="grid gap-2 lg:col-span-2">
-          <span className="text-sm font-black">Banner image URL / file placeholder</span>
+          <span className="text-sm font-black">Banner image</span>
           <span className="flex min-h-13 items-center gap-3 rounded-[1.35rem] border border-[var(--line)] bg-white px-4 focus-within:border-[var(--signal)] focus-within:shadow-[var(--focus-ring)]">
             <ImageIcon className="h-4 w-4 text-[var(--signal)]" />
-            <input value={formState.bannerUrl} onChange={(event) => updateField("bannerUrl", event.target.value)} placeholder="Example: https://images.unsplash.com/event-banner.jpg" className="w-full bg-transparent text-sm font-bold outline-none placeholder:text-[var(--muted)]" />
+            <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={(event) => setBannerFile(event.target.files?.[0] ?? null)} className="w-full bg-transparent text-sm font-bold outline-none file:mr-3 file:rounded-full file:border-0 file:bg-[var(--signal-soft)] file:px-3 file:py-2 file:font-black file:text-[var(--signal-strong)]" />
           </span>
         </label>
         <label className="grid gap-2 lg:col-span-2">

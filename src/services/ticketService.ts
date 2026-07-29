@@ -613,6 +613,13 @@ export async function createEvent(payload: CreateTicketEventPayload) {
   return cloneEvent(event);
 }
 
+export async function uploadEventBanner(eventId: string, file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const { data } = await apiClient.patch<TicketEvent>(`/v1/tickets/events/${eventId}/banner-file`, formData);
+  return normalizeTicketEvent(data);
+}
+
 export async function updateEvent(eventId: string, payload: UpdateTicketEventPayload) {
   if (!USE_TICKET_PREVIEW_MOCK && typeof window !== "undefined") {
     const { data } = await apiClient.patch<TicketEvent>(`/v1/tickets/events/${eventId}`, payload);
