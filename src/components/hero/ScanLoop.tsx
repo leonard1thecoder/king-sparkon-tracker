@@ -120,7 +120,7 @@ export function ScanLoop() {
       <div
         ref={sceneRef}
         data-hero-motion="paused"
-        className="hero-3d-scene relative min-h-[35rem] overflow-hidden rounded-[2.65rem] border border-[var(--line)] bg-white shadow-[0_28px_80px_rgba(7,19,31,0.18)] [perspective:1600px] sm:min-h-[43rem]"
+        className="hero-3d-scene relative min-h-[42rem] overflow-hidden rounded-[2.65rem] border border-[var(--line)] bg-white shadow-[0_28px_80px_rgba(7,19,31,0.18)] [perspective:1600px] sm:min-h-[43rem]"
         onPointerMove={updateSceneTilt}
         onPointerLeave={resetSceneTilt}
       >
@@ -143,7 +143,7 @@ export function ScanLoop() {
           </span>
         </div>
 
-        <div className="hero-scan-stage absolute inset-x-4 bottom-24 top-20 sm:inset-x-8 sm:bottom-28 sm:top-24">
+        <div className="hero-scan-stage absolute inset-x-4 bottom-20 top-20 sm:inset-x-8 sm:bottom-28 sm:top-24">
           {heroCards.map((card, index) => (
             <article
               key={card.title}

@@ -27,7 +27,7 @@ const softwareApplicationJsonLd = {
     "@type": "Offer",
     price: "0",
     priceCurrency: "ZAR",
-    description: "Free user, free affiliate, 14-day business trial, and King-Sparkon-Strengths free quote path.",
+    description: "Free access for users, affiliates, and business owners.",
   },
   featureList: [
     "Barcode inventory tracking",
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     "continuous integration development",
     "Quality Assurance support",
     "cloud maintenance software",
-    "free business trial software",
+    "free business operations software",
     "South Africa barcode tracking",
   ],
   authors: [{ name: "Sizolwakhe Leonard Mthimunye", url: "https://github.com/leonard1thecoder" }],

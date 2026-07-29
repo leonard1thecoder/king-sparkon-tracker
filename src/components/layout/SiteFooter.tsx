@@ -10,7 +10,7 @@ import { SOCIAL_LINKS } from "@/lib/config/social-links";
 type SiteFooterProps = { marketingOnly?: boolean };
 
 const footerGroups = [
-  { title: "Platform", links: [{ label: "Features", href: "/#features" }, { label: "Jobs", href: "/#jobs" }, { label: "Affiliate Program", href: "/#affiliate" }, { label: "Dev Hub", href: "/#dev-hub" }, { label: "Pricing", href: "/#pricing" }, { label: "Contact", href: "/#contact" }] },
+  { title: "Platform", links: [{ label: "Features", href: "/#features" }, { label: "Jobs", href: "/#jobs" }, { label: "Affiliate Program", href: "/#affiliate" }, { label: "Dev Hub", href: "/#dev-hub" }, { label: "Contact", href: "/#contact" }] },
   { title: "Access", links: [{ label: "Login", href: "/login" }, { label: "Register Business", href: "/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" }, { label: "Buy Tickets", href: "/dashboard/user/tickets/buy" }, { label: "My Tickets", href: "/dashboard/user/tickets" }, { label: "Scan Ticket", href: "/dashboard/worker/tickets/scan" }] },
   { title: "Operations", links: [{ label: "Owner Dashboard", href: "/dashboard/owner" }, { label: "Owner Tickets", href: "/dashboard/owner/tickets" }, { label: "Create Event", href: "/dashboard/owner/tickets/create" }, { label: "Scan Verification", href: "/dashboard/worker/tickets/scan" }] },
 ] as const;
@@ -32,7 +32,7 @@ export function SiteFooter({ marketingOnly = false }: SiteFooterProps) {
             <p className="mt-6 text-sm leading-7 text-[var(--steel)] md:text-base">Barcode inventory, QR tickets, jobs, affiliate marketing, Dev Hub software delivery, QA, cloud operations and audit-ready reports in one role-safe platform.</p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link data-orange-hover="true" href="/dashboard/user/tickets/buy" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-extrabold text-white hover:bg-[var(--accent-hover)]">Buy tickets <ArrowRight className="h-4 w-4" /></Link>
-              <Link data-orange-hover="true" href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--line-strong)] bg-white px-5 text-sm font-extrabold text-[var(--ink)] hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)] hover:text-white">Start 14-day trial</Link>
+              <Link data-orange-hover="true" href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--line-strong)] bg-white px-5 text-sm font-extrabold text-[var(--ink)] hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)] hover:text-white">Create business account</Link>
             </div>
             <div className="mt-8"><p className="mb-3 text-[0.68rem] font-extrabold uppercase tracking-[0.12em] text-[var(--steel)]">Social profiles</p><SocialLinks variant="light" /></div>
           </div>

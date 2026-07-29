@@ -28,7 +28,6 @@ import { JobOpportunitiesSection } from "@/components/marketing/JobOpportunities
 import { Capacity3DVisual, Contact3DVisual, Engineering3DVisual, Role3DVisual, Sponsor3DVisual } from "@/components/marketing/Landing3DVisuals";
 import { SubscriptionSection } from "@/components/marketing/SubscriptionSection";
 import { VisionBubbleField } from "@/components/marketing/VisionBubbleField";
-import { BUSINESS_PRICING_PLANS } from "@/lib/config/business-policy";
 
 const navLinks = [
   ["Vision", "#vision"],
@@ -39,7 +38,6 @@ const navLinks = [
   ["Roles", "#roles"],
   ["Capacity", "#capacity"],
   ["Engineering", "#complaints"],
-  ["Pricing", "#pricing"],
   ["Contact", "#contact"],
   ["Subscribe", "#subscribe"],
 ] as const;
@@ -58,13 +56,13 @@ const features: Array<{ icon: LucideIcon; title: string; copy: string; tags: str
 const visionPillars: Array<{ icon: LucideIcon; title: string; copy: string }> = [
   { icon: ScanLine, title: "Trace every action", copy: "Products, tickets, tips, promotions and purchases should always have a clear record." },
   { icon: Crown, title: "One owner workspace", copy: "Owners run stock, events, jobs, workers, affiliates, tips and reports from one place." },
-  { icon: WalletCards, title: "Transparent money", copy: "Payments, tips, withdrawals and platform fees remain visible and reviewable." },
+  { icon: WalletCards, title: "Transparent money", copy: "Sales, tips, withdrawals and platform fees remain visible and reviewable." },
 ];
 
 const roleCards = [
   { icon: UsersRound, title: "User", price: "Free", href: "/register?plan=FREE_USER&privilege=USER&service=FREE_USER_ACCESS", copy: "Buy products and tickets, apply for jobs and keep purchase records." },
   { icon: QrCode, title: "Affiliate", price: "Free", href: "/register?plan=FREE_AFFILIATE&privilege=AFFILIATE&service=FREE_AFFILIATE_ACCESS", copy: "Share referral links, use campaign assets and track commissions." },
-  { icon: Crown, title: "Business Owner", price: "14-day trial", href: "/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE", copy: "Control inventory, workers, tickets, jobs, payments and reports." },
+  { icon: Crown, title: "Business Owner", price: "Free access", href: "/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE", copy: "Control inventory, workers, tickets, jobs, transactions and reports." },
   { icon: ShieldCheck, title: "Worker", price: "Business access", href: "/login", copy: "Scan products and tickets, process sales and review tip activity." },
 ] as const;
 
@@ -80,23 +78,18 @@ const capacityRows = [
 const sponsorMaintains = [
   "Cloud hosting, storage, backups and uptime.",
   "QR and barcode scanning reliability.",
-  "Security, QA, audits and payment safety.",
+  "Security, QA, audits and transaction safety.",
   "New features for every platform role.",
 ] as const;
 
 const engineeringPrinciples = [
-  ["Public interest", "Protect users, businesses and payment integrity before shortcuts."],
+  ["Public interest", "Protect users, businesses and transaction integrity before shortcuts."],
   ["Professional standards", "Build changes that are testable, reviewable and production-safe."],
   ["Evidence over decoration", "Use clear states, real data and audit trails instead of visual noise."],
 ] as const;
 
-function planRegisterHref(plan: (typeof BUSINESS_PRICING_PLANS)[number]) {
-  return `/register?plan=${plan.planCode}&privilege=${plan.registrationPrivilege}&service=${plan.registrationService}`;
-}
-
 export function KingSparkonLanding() {
   const [activeSection, setActiveSection] = useState("#vision");
-  const [pricingAudience, setPricingAudience] = useState<"USER" | "AFFILIATE" | "BUSINESS">("BUSINESS");
 
   useEffect(() => {
     const sections = navLinks.map(([, href]) => document.querySelector(href)).filter((section): section is Element => Boolean(section));
@@ -116,7 +109,7 @@ export function KingSparkonLanding() {
       <section className="relative bg-white pt-32">
         <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
           <div className="border-b border-[var(--line)] bg-[var(--signal-soft)] px-5 py-2 text-center text-xs font-bold text-[var(--signal-strong)]">
-            Barcode operations, QR tickets, jobs, payments and role-safe dashboards in one platform.
+            Barcode operations, QR tickets, jobs, transactions and role-safe dashboards in one platform.
           </div>
           <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3 md:px-8" aria-label="Primary navigation">
             <Link href="/" className="flex min-w-0 items-center gap-3">
@@ -137,10 +130,10 @@ export function KingSparkonLanding() {
           <div>
             <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Operations without the spreadsheet chaos</p>
             <h1 className="mt-5 max-w-4xl text-5xl font-black leading-[0.98] tracking-[-0.06em] md:text-7xl">Scan it. Sell it. Track it. Prove it.</h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--steel)]">King Sparkon Tracker connects inventory, tickets, carts, jobs, worker tips, affiliates and payments through focused dashboards for each role.</p>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--steel)]">King Sparkon Tracker connects inventory, tickets, carts, jobs, worker tips, affiliates and transactions through focused dashboards for each role.</p>
             <FounderVerificationCard />
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link data-orange-hover="true" href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-extrabold text-white hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]">Start business trial <ArrowRight className="h-4 w-4" /></Link>
+              <Link data-orange-hover="true" href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-extrabold text-white hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]">Create business account <ArrowRight className="h-4 w-4" /></Link>
               <Link href="/#features" className="inline-flex min-h-12 items-center justify-center rounded-lg border border-[var(--line-strong)] bg-white px-6 text-sm font-extrabold text-[var(--ink)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]">See platform features</Link>
             </div>
           </div>
@@ -153,7 +146,7 @@ export function KingSparkonLanding() {
 
       <section id="vision" className="scroll-mt-28 border-t border-[var(--line)] bg-white px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end"><div><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Vision</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Control real-world operations from one trusted record.</h2></div><p className="text-base leading-8 text-[var(--steel)] lg:text-lg">Every scan, sale, ticket, payment and role action should be understandable without searching through disconnected systems.</p></div>
+          <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end"><div><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Vision</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Control real-world operations from one trusted record.</h2></div><p className="text-base leading-8 text-[var(--steel)] lg:text-lg">Every scan, sale, ticket, transaction and role action should be understandable without searching through disconnected systems.</p></div>
           <VisionBubbleField items={visionPillars} />
         </div>
       </section>
@@ -224,26 +217,10 @@ export function KingSparkonLanding() {
         </div>
       </section>
 
-      <section id="pricing" className="scroll-mt-28 bg-white px-5 py-16 md:px-8 lg:py-24">
-        <div className="mx-auto max-w-7xl">
-          <div className="max-w-3xl"><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Pricing</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Simple plans. Serious business control.</h2><p className="mt-4 text-base leading-7 text-[var(--steel)] md:text-lg">Choose the experience that matches what you are here to do. Free accounts stay free. Business plans start with a 14-day trial.</p></div>
-
-          <div className="mt-8 inline-grid w-full gap-2 rounded-xl border border-[var(--line)] bg-white p-2 sm:w-auto sm:grid-cols-3" aria-label="Pricing audience">
-            {([["USER", "Use King Sparkon"], ["AFFILIATE", "Earn as an affiliate"], ["BUSINESS", "Run a business"]] as const).map(([value, label]) => <button key={value} type="button" onClick={() => setPricingAudience(value)} aria-pressed={pricingAudience === value} className={`min-h-11 rounded-lg border px-4 text-sm font-extrabold transition ${pricingAudience === value ? "border-[var(--signal)] bg-[var(--signal-soft)] text-[var(--signal-strong)]" : "border-transparent bg-white text-[var(--steel)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]"}`}>{label}</button>)}
-          </div>
-
-          {pricingAudience !== "BUSINESS" ? (() => {
-            const plan = BUSINESS_PRICING_PLANS.find((item) => item.registrationPrivilege === pricingAudience);
-            if (!plan) return null;
-            return <div className="mt-10 grid gap-8 rounded-xl border border-[var(--line-strong)] bg-white p-6 shadow-[var(--shadow-soft)] md:grid-cols-[1fr_0.9fr] md:items-center md:p-8"><div><span className="inline-flex rounded-md border border-[var(--line)] bg-[var(--signal-soft)] px-3 py-1.5 text-xs font-extrabold uppercase tracking-[0.1em] text-[var(--signal-strong)]">Free forever</span><h3 className="mt-5 text-3xl font-black tracking-[-0.04em] md:text-4xl">{plan.name}</h3><p className="money mt-3 text-5xl font-black">R0</p><p className="mt-5 max-w-2xl text-base leading-7 text-[var(--steel)]">{plan.description}</p><Link data-orange-hover="true" href={planRegisterHref(plan)} className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-extrabold text-white hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]">{pricingAudience === "USER" ? "Create free account" : "Start earning"} <ArrowRight className="h-4 w-4" /></Link></div><ul className="grid gap-3 border-[var(--line)] md:border-l md:pl-8">{plan.features.map((feature) => <li key={feature} className="flex items-start gap-3 text-sm font-semibold text-[var(--steel)]"><CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--signal)]" />{feature}</li>)}</ul></div>;
-          })() : <><div className="mt-10 grid gap-5 lg:grid-cols-3 lg:items-stretch">{BUSINESS_PRICING_PLANS.filter((plan) => plan.registrationPrivilege === "BUSINESS_OWNER").map((plan) => { const isRecommended = plan.planCode === "PLUS"; return <article key={plan.planCode} className={`relative flex h-full flex-col rounded-xl border bg-white p-6 transition ${isRecommended ? "border-[var(--signal)] shadow-[0_18px_45px_rgba(14,165,233,0.14)] lg:-translate-y-2" : "border-[var(--line)] shadow-[var(--shadow-soft)]"}`}>{isRecommended ? <span className="mb-5 inline-flex w-fit rounded-md border border-[var(--line-strong)] bg-[var(--signal-soft)] px-3 py-1.5 text-xs font-extrabold uppercase tracking-[0.1em] text-[var(--signal-strong)]">Most popular</span> : null}<p className="text-xs font-extrabold uppercase tracking-[0.1em] text-[var(--steel)]">{plan.planCode === "FREE_TRIAL_BUSINESS" ? "Explore the platform" : plan.planCode === "PLUS" ? "Growing businesses" : "Full operations"}</p><h3 className="mt-3 text-3xl font-black tracking-[-0.04em]">{plan.name === "Free Trial Business" ? "Starter Trial" : plan.name}</h3><div className="mt-5 flex items-end gap-2"><p className="money text-4xl font-black">{plan.planCode === "FREE_TRIAL_BUSINESS" ? "R0" : `R${Number(plan.price).toLocaleString("en-ZA")}`}</p><span className="pb-1 text-sm font-semibold text-[var(--muted)]">{plan.planCode === "FREE_TRIAL_BUSINESS" ? "for 14 days" : "/ month"}</span></div><p className="mt-5 text-sm leading-7 text-[var(--steel)]">{plan.description}</p><ul className="mt-6 grid flex-1 gap-3">{plan.features.slice(0, 6).map((feature) => <li key={feature} className="flex items-start gap-3 text-sm font-semibold text-[var(--steel)]"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--signal)]" />{feature}</li>)}</ul><Link data-orange-hover="true" href={planRegisterHref(plan)} className={`mt-7 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg border px-5 text-sm font-extrabold transition ${isRecommended ? "border-[var(--signal)] bg-[var(--signal)] text-white" : "border-[var(--line-strong)] bg-white text-[var(--ink)]"} hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)] hover:text-white`}>{plan.planCode === "FREE_TRIAL_BUSINESS" ? "Start free trial" : `Choose ${plan.name}`} <ArrowRight className="h-4 w-4" /></Link></article>; })}</div><div className="mt-8 grid gap-3 border-t border-[var(--line)] pt-6 text-sm font-semibold text-[var(--steel)] sm:grid-cols-3"><p className="flex items-center gap-2"><ShieldCheck className="h-5 w-5 text-[var(--signal)]" /> Role-safe access</p><p className="flex items-center gap-2"><CheckCircle2 className="h-5 w-5 text-[var(--signal)]" /> No setup fee</p><p className="flex items-center gap-2"><BadgeCheck className="h-5 w-5 text-[var(--signal)]" /> Upgrade as operations grow</p></div></>}
-        </div>
-      </section>
-
       <section id="contact" className="scroll-mt-28 border-t border-[var(--line)] bg-white px-5 py-16 md:px-8 lg:py-24">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">
-            <div><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Contact</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-5xl">Tell us what your operation needs to prove.</h2><p className="mt-5 text-base leading-8 text-[var(--steel)]">Share the roles, products, ticket flow or payment problem you need the platform to manage.</p><div className="mt-8 grid gap-4">{[["01", "Describe the operation"], ["02", "Identify the users and roles"], ["03", "Define the first successful outcome"]].map(([number, label]) => <div key={number} className="flex items-center gap-4 border-b border-[var(--line)] pb-4"><span className="font-black text-[var(--signal-strong)]">{number}</span><span className="font-semibold text-[var(--steel)]">{label}</span></div>)}</div></div>
+            <div><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Contact</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-5xl">Tell us what your operation needs to prove.</h2><p className="mt-5 text-base leading-8 text-[var(--steel)]">Share the roles, products, ticket flow or transaction problem you need the platform to manage.</p><div className="mt-8 grid gap-4">{[["01", "Describe the operation"], ["02", "Identify the users and roles"], ["03", "Define the first successful outcome"]].map(([number, label]) => <div key={number} className="flex items-center gap-4 border-b border-[var(--line)] pb-4"><span className="font-black text-[var(--signal-strong)]">{number}</span><span className="font-semibold text-[var(--steel)]">{label}</span></div>)}</div></div>
             <Contact3DVisual />
           </div>
           <div className="mt-10 rounded-xl border border-[var(--line-strong)] bg-white p-5 shadow-[var(--shadow-soft)] md:p-8"><ContactForm /></div>

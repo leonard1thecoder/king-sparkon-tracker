@@ -13,7 +13,7 @@ const devHubStats: readonly BouncingCircleItem[] = [
 ];
 
 const devHubStrengths: readonly BouncingCircleItem[] = [
-  { icon: Code2, title: "Software development", copy: "Web apps, dashboards, portals, scanning flows, payment flows, and business tools." },
+  { icon: Code2, title: "Software development", copy: "Web apps, dashboards, portals, scanning flows, sales flows, and business tools." },
   { icon: GitBranch, title: "Continuous integration development", copy: "GitHub workflows, test gates, deployment flow, branch discipline, and release checks." },
   { icon: ShieldCheck, title: "Quality assurance", copy: "Unit tests, edge cases, negative paths, regression coverage, and user-flow validation." },
   { icon: BadgeCheck, title: "Lifetime support", copy: "Long-term product improvement, issue review, maintenance planning, and safer upgrades." },
@@ -43,7 +43,7 @@ export function DevHubSection() {
           <p className="mt-5 text-2xl font-black tracking-[-0.04em] text-[var(--ink)]">Built, tested, deployed, maintained, and improved properly.</p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Link data-orange-hover="true" href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-[var(--signal)] bg-[var(--signal)] px-6 font-black text-white hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]">
-              Start business trial <ArrowRight className="h-4 w-4" />
+              Create business account <ArrowRight className="h-4 w-4" />
             </Link>
             <Link href="/dashboard/owner/developer" className="inline-flex min-h-12 items-center justify-center rounded-lg border border-[var(--line-strong)] bg-white px-6 font-bold text-[var(--ink)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]">
               Request Dev Hub quote

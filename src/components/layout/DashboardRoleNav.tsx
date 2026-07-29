@@ -66,7 +66,6 @@ export const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Jobs", href: "/dashboard/owner/jobs", icon: BriefcaseBusiness, description: "Business opportunities" },
     { label: "Applications", href: "/dashboard/owner/jobs?tab=applications", icon: FileCheck2, description: "Review job applicants" },
     { label: "Promotions", href: "/dashboard/owner/promotions", icon: Megaphone, description: "Subscriber campaigns" },
-    { label: "Plan & Billing", href: "/dashboard/owner/billing", icon: CreditCard, description: "Monthly and yearly subscriptions" },
     { label: "Settings", href: "/dashboard/owner/settings", icon: Settings, description: "Business preferences" },
     { label: "Profile", href: "/dashboard/owner/profile", icon: UserRound, description: "Identity and session" },
   ],
