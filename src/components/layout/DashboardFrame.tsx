@@ -7,11 +7,20 @@ import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
+export function getDashboardHomeHref(role: string): string {
+  const value = role.toLowerCase();
+  if (value.includes("admin")) return "/dashboard/admin";
+  if (value.includes("owner")) return "/dashboard/owner";
+  if (value.includes("worker")) return "/dashboard/worker";
+  if (value.includes("affiliate")) return "/dashboard/affiliate";
+  return "/dashboard/user";
+}
+
 export function DashboardFrame({ role, nav, children }: { role: string; nav: ReactNode; children: ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const dashboardHomeHref = `/dashboard/${role.toLowerCase()}`;
+  const dashboardHomeHref = getDashboardHomeHref(role);
 
   useEffect(() => setOpen(false), [pathname]);
 

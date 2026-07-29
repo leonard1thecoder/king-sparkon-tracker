@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { DashboardFrame, getDashboardHomeHref } from "@/components/layout/DashboardFrame";
 import { isActive, navByRole } from "@/components/layout/DashboardRoleNav";
 import type { UserRole } from "@/lib/types/backend";
 
@@ -40,5 +41,13 @@ describe("dashboard navigation contract", () => {
     const search = new URLSearchParams();
     expect(isActive("/dashboard/user/tickets/checkout/event-1", search, "/dashboard/user/tickets/buy")).toBe(true);
     expect(isActive("/dashboard/user/tickets/checkout/event-1", search, "/dashboard/user/tickets")).toBe(false);
+  });
+
+  it("resolves valid dashboard home hrefs for logo clicking across all role layouts", () => {
+    expect(getDashboardHomeHref("ADMIN CONSOLE")).toBe("/dashboard/admin");
+    expect(getDashboardHomeHref("OWNER LEDGER")).toBe("/dashboard/owner");
+    expect(getDashboardHomeHref("WORKER TERMINAL")).toBe("/dashboard/worker");
+    expect(getDashboardHomeHref("USER WORKSPACE")).toBe("/dashboard/user");
+    expect(getDashboardHomeHref("AFFILIATE LEDGER")).toBe("/dashboard/affiliate");
   });
 });
