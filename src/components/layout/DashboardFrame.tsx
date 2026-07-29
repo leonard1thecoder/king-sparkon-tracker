@@ -11,6 +11,7 @@ export function DashboardFrame({ role, nav, children }: { role: string; nav: Rea
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const dashboardHomeHref = `/dashboard/${role.toLowerCase()}`;
 
   useEffect(() => setOpen(false), [pathname]);
 
@@ -32,7 +33,7 @@ export function DashboardFrame({ role, nav, children }: { role: string; nav: Rea
   return (
     <div className="h-dvh overflow-hidden bg-white text-[var(--ink)] lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
       <header className="sticky top-0 z-[60] flex min-h-[4.5rem] items-center justify-between gap-3 border-b border-[var(--line)] bg-white px-4 py-3 shadow-[var(--shadow-soft)] lg:hidden">
-        <Link href="/" className="flex min-w-0 items-center gap-3">
+        <Link href={dashboardHomeHref} className="flex min-w-0 items-center gap-3">
           <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker" width={42} height={42} className="rounded-lg border border-[var(--line)] bg-white p-1" priority />
           <div className="min-w-0">
             <p className="truncate text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">{role}</p>
@@ -59,7 +60,7 @@ export function DashboardFrame({ role, nav, children }: { role: string; nav: Rea
         )}
       >
         <div className="flex shrink-0 items-center justify-between gap-4 border-b border-[var(--line)] p-4 lg:block lg:p-5">
-          <Link href="/" className="flex min-w-0 items-center gap-3">
+          <Link href={dashboardHomeHref} className="flex min-w-0 items-center gap-3">
             <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker" width={48} height={48} className="rounded-lg border border-[var(--line)] bg-white p-1" />
             <div className="min-w-0">
               <p className="truncate text-[0.65rem] font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">{role}</p>
