@@ -23,18 +23,16 @@ export function TicketEventCard({ event, detailsHref, checkoutHref }: TicketEven
   const eventCheckoutHref = checkoutHref ?? `/dashboard/user/tickets/checkout/${event.id}`;
 
   return (
-    <article className="group overflow-hidden rounded-[2rem] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
-      <div className="relative min-h-52 overflow-hidden bg-[var(--ink)]">
+    <article className="group flex flex-col overflow-hidden rounded-[2rem] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
+      <div className="relative flex min-h-60 flex-col items-center justify-center border-b border-[var(--line)] bg-slate-950 p-3 sm:min-h-64">
         {hasImage ? (
-          <img src={bannerSrc} alt={`${event.name} banner`} className="absolute inset-0 h-full w-full object-cover opacity-86 transition duration-300 group-hover:scale-105" loading="lazy" />
+          <img src={bannerSrc} alt={`${event.name} banner`} className="h-auto max-h-56 w-full rounded-xl object-contain transition duration-300 group-hover:scale-[1.02]" loading="lazy" />
         ) : (
-          <div className="absolute inset-0 scan-grid bg-[var(--ink)]" />
+          <div className="h-48 w-full rounded-xl scan-grid" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--ink)] via-[var(--ink)]/30 to-transparent" />
-        <div className="absolute left-4 top-4"><TicketStatusBadge status={event.status} /></div>
-        <div className="absolute bottom-4 left-4 right-4">
-          <div className="barcode-rule mb-4 text-white" />
-          <h2 className="text-2xl font-black tracking-[-0.04em] text-white">{event.name}</h2>
+        <div className="mt-3 flex w-full items-center justify-between gap-2 px-1">
+          <TicketStatusBadge status={event.status} />
+          <h2 className="truncate text-base font-black text-white">{event.name}</h2>
         </div>
       </div>
 

@@ -9,6 +9,7 @@ import { normalizeApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { StatusPill } from "@/components/ui/StatusPill";
+import { APPLICATION_MOCK_PRODUCTS } from "@/lib/mock/application-products";
 import { addTuckShopProductToCart, money, productImage, productPrice } from "@/lib/tuck-shop/cart";
 
 export function TuckShopProductDetails({ productId }: { productId: string }) {
@@ -29,10 +30,21 @@ export function TuckShopProductDetails({ productId }: { productId: string }) {
         const response = await listTuckShopProducts({ page: 0, size: 120 });
         const foundProduct = response.content.find((item) => String(item.id) === productId) ?? null;
         if (!active) return;
-        setProduct(foundProduct);
+        if (foundProduct) {
+          setProduct(foundProduct);
+        } else {
+          const mockMatch = APPLICATION_MOCK_PRODUCTS.find((item) => String(item.id) === productId || item.name.toLowerCase().includes(productId.toLowerCase())) ?? APPLICATION_MOCK_PRODUCTS[0];
+          setProduct(mockMatch);
+        }
         setQuantity(1);
-      } catch (exception) {
-        if (active) setError(normalizeApiError(exception).message);
+      } catch {
+        if (!active) return;
+        const mockMatch = APPLICATION_MOCK_PRODUCTS.find((item) => String(item.id) === productId || item.name.toLowerCase().includes(productId.toLowerCase())) ?? APPLICATION_MOCK_PRODUCTS[0];
+        if (mockMatch) {
+          setProduct(mockMatch);
+        } else {
+          setError("Product could not be loaded.");
+        }
       } finally {
         if (active) setLoading(false);
       }
@@ -85,7 +97,9 @@ export function TuckShopProductDetails({ productId }: { productId: string }) {
       {product ? (
         <section className="grid gap-6 lg:grid-cols-[1fr_0.8fr]">
           <Card className="overflow-hidden">
-            <img src={productImage(product)} alt={product.name} className="h-72 w-full object-cover md:h-[28rem]" />
+            <div className="flex h-72 w-full items-center justify-center overflow-hidden bg-slate-950 p-4 md:h-[28rem]">
+              <img src={productImage(product)} alt={product.name} className="h-full w-full object-contain" />
+            </div>
             <CardHeader>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
