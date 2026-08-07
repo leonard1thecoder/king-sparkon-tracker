@@ -77,22 +77,69 @@ export function DashboardTicketEventDetails({ eventId }: DashboardTicketEventDet
     <>
       <DashboardHeader role="USER WORKSPACE" title={event.name} description="Review live event details, ticket classes, comments, and verified checkout from inside the user dashboard." />
       <main className="grid gap-7 bg-[var(--surface)] p-5 md:p-8">
-        <section className="relative overflow-hidden rounded-[2.5rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-7">
-          <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
-            <div className="overflow-hidden rounded-[2.4rem] border border-[var(--line)] bg-slate-950 p-4 shadow-[var(--shadow-depth)]">
-              <div className="relative flex flex-col items-center justify-center min-h-[22rem] sm:min-h-[26rem]">
-                {bannerSrc ? (
-                  <img src={bannerSrc} alt={`${event.name} banner`} className="h-auto w-full max-h-[28rem] object-contain rounded-2xl" loading="lazy" />
-                ) : (
-                  <div className="h-64 w-full scan-grid rounded-2xl" />
-                )}
-                <div className="mt-4 flex w-full items-center justify-between px-2">
-                  <TicketStatusBadge status={event.status} />
-                  <span className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-white/70">Verified Event Poster</span>
-                </div>
+        <section className="overflow-hidden rounded-[2.5rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-8">
+          {/* Large Hero Poster Image Banner */}
+          <div className="w-full overflow-hidden rounded-[2.4rem] border border-[var(--line)] bg-slate-950 p-4 sm:p-6 shadow-[var(--shadow-depth)]">
+            <div className="relative flex min-h-[26rem] sm:min-h-[34rem] lg:min-h-[40rem] flex-col items-center justify-center">
+              {bannerSrc ? (
+                <img
+                  src={bannerSrc}
+                  alt={`${event.name} banner`}
+                  className="h-auto w-full max-h-[40rem] rounded-2xl object-contain shadow-2xl transition duration-300"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="h-80 w-full rounded-2xl scan-grid" />
+              )}
+              <div className="mt-4 flex w-full items-center justify-between px-2">
+                <TicketStatusBadge status={event.status} />
+                <span className="text-xs font-black uppercase tracking-[0.16em] text-white/80">Verified Event Poster</span>
               </div>
             </div>
-            <div><p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Live dashboard event details</p><h1 className="mt-4 text-5xl font-black leading-[0.96] tracking-[-0.07em] md:text-7xl">{event.name}</h1><p className="mt-6 text-lg leading-8 text-[var(--steel)]">{event.description}</p><div className="mt-6 grid gap-3 text-sm font-bold text-[var(--steel)] md:grid-cols-2"><span className="inline-flex items-center gap-2 rounded-[1.2rem] border border-[var(--line)] bg-white px-4 py-3 shadow-[var(--shadow-soft)]"><Calendar className="h-4 w-4 text-[var(--signal)]" />{formatDate(event.eventDate, event.eventTime)}</span><span className="inline-flex items-center gap-2 rounded-[1.2rem] border border-[var(--line)] bg-white px-4 py-3 shadow-[var(--shadow-soft)]"><MapPin className="h-4 w-4 text-[var(--signal)]" />{event.location}</span></div><div className="mt-6 grid grid-cols-3 gap-3 text-center"><div className="rounded-[1.2rem] border border-[var(--line)] bg-[var(--surface)] p-4"><p className="money text-2xl font-black">{totals.totalCapacity}</p><p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Capacity</p></div><div className="rounded-[1.2rem] border border-[var(--line)] bg-[var(--surface)] p-4"><p className="money text-2xl font-black">{totals.totalSold}</p><p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Sold</p></div><div className="rounded-[1.2rem] border border-[var(--line)] bg-[var(--surface)] p-4"><p className="money text-2xl font-black">{totals.totalAvailable}</p><p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Available</p></div></div>{soldOut ? <div className="mt-6 rounded-[1.4rem] border border-[var(--danger)]/25 bg-[var(--danger)]/10 p-4 text-sm font-black text-[var(--danger)]">All ticket classes are sold out.</div> : <Link href={`/dashboard/user/tickets/checkout/${event.id}`} className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]">Buy tickets <ArrowRight className="h-4 w-4" /></Link>}</div>
+          </div>
+
+          {/* Event Information */}
+          <div className="mt-8">
+            <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Live dashboard event details</p>
+            <h1 className="mt-3 text-4xl font-black leading-[0.96] tracking-[-0.06em] md:text-6xl">{event.name}</h1>
+            <p className="mt-5 text-lg leading-8 text-[var(--steel)]">{event.description}</p>
+
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <span className="inline-flex items-center gap-2 rounded-[1.2rem] border border-[var(--line)] bg-[var(--surface)] px-4 py-3 text-sm font-bold text-[var(--steel)] shadow-[var(--shadow-soft)]">
+                <Calendar className="h-4.5 w-4.5 text-[var(--signal)]" />{formatDate(event.eventDate, event.eventTime)}
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-[1.2rem] border border-[var(--line)] bg-[var(--surface)] px-4 py-3 text-sm font-bold text-[var(--steel)] shadow-[var(--shadow-soft)]">
+                <MapPin className="h-4.5 w-4.5 text-[var(--signal)]" />{event.location}
+              </span>
+            </div>
+
+            <div className="mt-6 grid grid-cols-3 gap-3 text-center sm:max-w-xl">
+              <div className="rounded-[1.2rem] border border-[var(--line)] bg-[var(--surface)] p-4">
+                <p className="money text-2xl font-black">{totals.totalCapacity}</p>
+                <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Capacity</p>
+              </div>
+              <div className="rounded-[1.2rem] border border-[var(--line)] bg-[var(--surface)] p-4">
+                <p className="money text-2xl font-black">{totals.totalSold}</p>
+                <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Sold</p>
+              </div>
+              <div className="rounded-[1.2rem] border border-[var(--line)] bg-[var(--surface)] p-4">
+                <p className="money text-2xl font-black">{totals.totalAvailable}</p>
+                <p className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Available</p>
+              </div>
+            </div>
+
+            {soldOut ? (
+              <div className="mt-6 rounded-[1.4rem] border border-[var(--danger)]/25 bg-[var(--danger)]/10 p-4 text-sm font-black text-[var(--danger)]">
+                All ticket classes are sold out.
+              </div>
+            ) : (
+              <Link
+                href={`/dashboard/user/tickets/checkout/${event.id}`}
+                className="mt-7 inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-8 font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]"
+              >
+                Buy tickets <ArrowRight className="h-4 w-4" />
+              </Link>
+            )}
           </div>
         </section>
 

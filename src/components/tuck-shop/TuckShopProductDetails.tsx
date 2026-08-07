@@ -13,40 +13,38 @@ import { APPLICATION_MOCK_PRODUCTS } from "@/lib/mock/application-products";
 import { addTuckShopProductToCart, money, productImage, productPrice } from "@/lib/tuck-shop/cart";
 
 export function TuckShopProductDetails({ productId }: { productId: string }) {
-  const [product, setProduct] = useState<Product | null>(null);
+  const mockMatch = useMemo(() => {
+    const cleanId = String(productId ?? "").trim();
+    return (
+      APPLICATION_MOCK_PRODUCTS.find(
+        (item) => String(item.id) === cleanId || item.name.toLowerCase().includes(cleanId.toLowerCase()),
+      ) ?? APPLICATION_MOCK_PRODUCTS[0]
+    );
+  }, [productId]);
+
+  const [product, setProduct] = useState<Product | null>(mockMatch);
   const [quantity, setQuantity] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
 
     async function loadProduct() {
-      setLoading(true);
-      setError(null);
-
       try {
         const response = await listTuckShopProducts({ page: 0, size: 120 });
-        const foundProduct = response.content.find((item) => String(item.id) === productId) ?? null;
+        const items: Product[] = Array.isArray(response)
+          ? response
+          : Array.isArray((response as any)?.content)
+          ? (response as any).content
+          : [];
+        const foundProduct = items.find((item) => String(item.id) === String(productId)) ?? null;
         if (!active) return;
         if (foundProduct) {
           setProduct(foundProduct);
-        } else {
-          const mockMatch = APPLICATION_MOCK_PRODUCTS.find((item) => String(item.id) === productId || item.name.toLowerCase().includes(productId.toLowerCase())) ?? APPLICATION_MOCK_PRODUCTS[0];
-          setProduct(mockMatch);
         }
-        setQuantity(1);
       } catch {
-        if (!active) return;
-        const mockMatch = APPLICATION_MOCK_PRODUCTS.find((item) => String(item.id) === productId || item.name.toLowerCase().includes(productId.toLowerCase())) ?? APPLICATION_MOCK_PRODUCTS[0];
-        if (mockMatch) {
-          setProduct(mockMatch);
-        } else {
-          setError("Product could not be loaded.");
-        }
-      } finally {
-        if (active) setLoading(false);
+        // Safe fallback already initialized in state
       }
     }
 
