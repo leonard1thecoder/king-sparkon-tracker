@@ -35,7 +35,6 @@ describe("user dashboard sidebar contract", () => {
 
   it("keeps the user sidebar focused on primary commerce actions", () => {
     expect(navByRole.User.map((item) => item.label)).toEqual([
-      "Overview",
       "Buy Products",
       "Cart",
       "Buy Tickets",

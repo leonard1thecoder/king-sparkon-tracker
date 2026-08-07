@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { DashboardFrame, getDashboardHomeHref } from "@/components/layout/DashboardFrame";
-import { isActive, navByRole } from "@/components/layout/DashboardRoleNav";
+import { getRoleNavConfig, isActive, navByRole } from "@/components/layout/DashboardRoleNav";
 import type { UserRole } from "@/lib/types/backend";
 
 const roleSegments: Record<UserRole, string> = {
@@ -12,6 +12,22 @@ const roleSegments: Record<UserRole, string> = {
 };
 
 describe("dashboard navigation contract", () => {
+  it("completely excludes Overview from all role navigation lists", () => {
+    Object.values(navByRole).forEach((items) => {
+      const labels = items.map((item) => item.label);
+      expect(labels).not.toContain("Overview");
+    });
+  });
+
+  it("splits role navigation into 4 primary items and secondary items for mobile", () => {
+    (Object.keys(navByRole) as UserRole[]).forEach((role) => {
+      const { primary, secondary } = getRoleNavConfig(role);
+      expect(primary.length).toBeLessThanOrEqual(4);
+      expect(primary.map((item) => item.label)).not.toContain("Overview");
+      expect(secondary.map((item) => item.label)).not.toContain("Overview");
+    });
+  });
+
   it("keeps every role destination inside its own dashboard boundary", () => {
     Object.entries(navByRole).forEach(([role, items]) => {
       const expectedPrefix = `/dashboard/${roleSegments[role as UserRole]}`;
