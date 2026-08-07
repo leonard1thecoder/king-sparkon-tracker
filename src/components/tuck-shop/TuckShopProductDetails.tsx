@@ -116,7 +116,7 @@ export function TuckShopProductDetails({
           return;
         }
 
-        setError(normalizeApiError(requestError));
+        setError(normalizeApiError(requestError).message);
       } finally {
         if (active) {
           setLoading(false);
