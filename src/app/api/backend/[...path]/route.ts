@@ -1,4 +1,3 @@
-```tsx
 import { AUTH_COOKIE_NAME, backendBaseUrl } from "@/lib/backend-auth";
 import type { NextRequest } from "next/server";
 
@@ -155,4 +154,4 @@ export async function OPTIONS() {
     },
   });
 }
-```
+
