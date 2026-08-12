@@ -358,12 +358,13 @@ export function BulkSubscriberImport() {
                   <RefreshCw className="h-4 w-4" aria-hidden="true" />
                   Import another file
                 </Button>
-                <Button variant="quiet" asChild>
-                  <Link href="/dashboard/admin/subscribers" className="gap-2">
-                    <Users2 className="h-4 w-4" aria-hidden="true" />
-                    View Subscribers
-                  </Link>
-                </Button>
+                <Link
+                  href="/dashboard/admin/subscribers"
+                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-[var(--line)] bg-white px-4 py-2 text-sm font-extrabold text-[var(--ink)] shadow-[var(--shadow-soft)] transition duration-200 hover:-translate-y-0.5 hover:border-[var(--signal)] hover:bg-[var(--signal-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--signal)] focus-visible:ring-offset-2"
+                >
+                  <Users2 className="h-4 w-4" aria-hidden="true" />
+                  View Subscribers
+                </Link>
               </div>
             </CardContent>
           </Card>
