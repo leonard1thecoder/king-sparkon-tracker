@@ -319,3 +319,31 @@ export type ApplyForJobPayload = {
   coverMessage?: string;
   cvUrl?: string;
 };
+
+// ─── Subscriber Import ─────────────────────────────────────────────────────────
+
+export type SubscriberType =
+  | "KINGSPARKON_SUBSCRIBER"
+  | "CLIENT"
+  | "FREE_USER"
+  | "BUSINESS_OWNER"
+  | "AFFILIATE"
+  | "DEV_HUB_CLIENT";
+
+export type SubscriberImportError = {
+  row: number;
+  contact: string;
+  message: string;
+};
+
+export type SubscriberImportResponse = {
+  filename: string;
+  totalRows: number;
+  processedRows: number;
+  created: number;
+  reactivated: number;
+  duplicates: number;
+  failed: number;
+  errors: SubscriberImportError[];
+};
+

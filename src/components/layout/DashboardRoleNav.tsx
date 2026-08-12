@@ -26,7 +26,9 @@ import {
   ShieldCheck,
   ShoppingCart,
   Ticket,
+  Upload,
   UserRound,
+  Users2,
   UsersRound,
   WalletCards,
 } from "lucide-react";
@@ -47,6 +49,8 @@ export const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Affiliates", href: "/dashboard/admin/affiliates", icon: Handshake, description: "Poster uploads and partner tools", shortLabel: "Affiliates" },
     { label: "Tips", href: "/dashboard/admin/tips", icon: WalletCards, description: "Tip payments and activity", shortLabel: "Tips" },
     { label: "Promotions", href: "/dashboard/admin/promotions", icon: Megaphone, description: "Platform campaigns", shortLabel: "Promos" },
+    { label: "Subscribers", href: "/dashboard/admin/subscribers", icon: Users2, description: "Registered subscriber list", shortLabel: "Subscribers" },
+    { label: "Bulk Import", href: "/dashboard/admin/subscribers/bulk-import", icon: Upload, description: "Import subscribers from CSV", shortLabel: "Bulk" },
     { label: "Services & Discounts", href: "/dashboard/admin/discounts", icon: BadgePercent, description: "Plus and Pro pricing offers", shortLabel: "Discounts" },
     { label: "Reports", href: "/dashboard/admin/reports", icon: BarChart3, description: "Platform performance", shortLabel: "Reports" },
     { label: "Audit Logs", href: "/dashboard/admin/audit", icon: ClipboardList, description: "Security and action history", shortLabel: "Audit" },
@@ -114,6 +118,8 @@ export function isActive(pathname: string, searchParams: URLSearchParams, href: 
   if (cleanHref === "/dashboard/user/tickets/buy") return pathname === cleanHref || pathname.startsWith("/dashboard/user/tickets/events") || pathname.startsWith("/dashboard/user/tickets/checkout");
   if (cleanHref === "/dashboard/user/tickets") return pathname === cleanHref;
   if (cleanHref === "/dashboard/user/tips") return pathname === cleanHref || pathname.startsWith("/dashboard/user/tips/");
+  // Exact match for admin/subscribers so bulk-import sub-route doesn't activate the parent
+  if (cleanHref === "/dashboard/admin/subscribers") return pathname === cleanHref;
   if (isDashboardRoot(cleanHref)) return pathname === cleanHref && !searchParams.has("tab");
   if (pathname !== cleanHref && !pathname.startsWith(`${cleanHref}/`)) return false;
   return pathname !== cleanHref || !searchParams.has("tab");
