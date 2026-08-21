@@ -88,7 +88,7 @@ const engineeringPrinciples = [
   ["Evidence over decoration", "Use clear states, real data and audit trails instead of visual noise."],
 ] as const;
 
-export function KingSparkonLanding() {
+export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolean }) {
   const [activeSection, setActiveSection] = useState("#vision");
 
   useEffect(() => {
@@ -106,25 +106,27 @@ export function KingSparkonLanding() {
 
   return (
     <main className="bg-white text-[var(--ink)]">
-      <section className="relative bg-white pt-32">
-        <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
-          <div className="border-b border-[var(--line)] bg-[var(--signal-soft)] px-5 py-2 text-center text-xs font-bold text-[var(--signal-strong)]">
-            Barcode operations, QR tickets, jobs, transactions and role-safe dashboards in one platform.
-          </div>
-          <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3 md:px-8" aria-label="Primary navigation">
-            <Link href="/" className="flex min-w-0 items-center gap-3">
-              <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker barcode logo" width={46} height={46} className="rounded-lg border border-[var(--line)] bg-white p-1" priority />
-              <div><p className="text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">King Sparkon</p><p className="font-black tracking-[-0.02em]">Tracker</p></div>
-            </Link>
-            <div className="flex items-center gap-2">
-              <Link href="/login" className="hidden min-h-11 items-center justify-center rounded-lg border border-[var(--line)] bg-white px-4 text-sm font-extrabold text-[var(--steel)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)] sm:inline-flex">Login</Link>
-              <Link data-orange-hover="true" href="/register?plan=FREE_USER&privilege=USER&service=FREE_USER_ACCESS" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[var(--signal)] bg-[var(--signal)] px-4 text-sm font-extrabold text-white hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]">Start free <ArrowRight className="h-4 w-4" /></Link>
+      <section className={`relative bg-white ${hideHeader ? "" : "pt-32"}`}>
+        {!hideHeader ? (
+          <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
+            <div className="border-b border-[var(--line)] bg-[var(--signal-soft)] px-5 py-2 text-center text-xs font-bold text-[var(--signal-strong)]">
+              Barcode operations, QR tickets, jobs, transactions and role-safe dashboards in one platform.
             </div>
-          </nav>
-          <div className="mx-auto flex max-w-7xl gap-1 overflow-x-auto border-t border-[var(--line)] px-5 py-2 text-[0.68rem] font-extrabold text-[var(--steel)] md:px-8" aria-label="Section navigation">
-            {navLinks.map(([label, href]) => <a key={href} href={href} aria-current={activeSection === href ? "location" : undefined} className={`shrink-0 rounded-md border px-3 py-1.5 ${activeSection === href ? "border-[var(--signal)] bg-[var(--signal-soft)] text-[var(--signal-strong)]" : "border-transparent bg-white hover:border-[var(--line)] hover:text-[var(--ink)]"}`}>{label}</a>)}
-          </div>
-        </header>
+            <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3 md:px-8" aria-label="Primary navigation">
+              <Link href="/" className="flex min-w-0 items-center gap-3">
+                <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker barcode logo" width={46} height={46} className="rounded-lg border border-[var(--line)] bg-white p-1" priority />
+                <div><p className="text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">King Sparkon</p><p className="font-black tracking-[-0.02em]">Tracker</p></div>
+              </Link>
+              <div className="flex items-center gap-2">
+                <Link href="/login" className="hidden min-h-11 items-center justify-center rounded-lg border border-[var(--line)] bg-white px-4 text-sm font-extrabold text-[var(--steel)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)] sm:inline-flex">Login</Link>
+                <Link data-orange-hover="true" href="/register?plan=FREE_USER&privilege=USER&service=FREE_USER_ACCESS" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[var(--signal)] bg-[var(--signal)] px-4 text-sm font-extrabold text-white hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]">Start free <ArrowRight className="h-4 w-4" /></Link>
+              </div>
+            </nav>
+            <div className="mx-auto flex max-w-7xl gap-1 overflow-x-auto border-t border-[var(--line)] px-5 py-2 text-[0.68rem] font-extrabold text-[var(--steel)] md:px-8" aria-label="Section navigation">
+              {navLinks.map(([label, href]) => <a key={href} href={href} aria-current={activeSection === href ? "location" : undefined} className={`shrink-0 rounded-md border px-3 py-1.5 ${activeSection === href ? "border-[var(--signal)] bg-[var(--signal-soft)] text-[var(--signal-strong)]" : "border-transparent bg-white hover:border-[var(--line)] hover:text-[var(--ink)]"}`}>{label}</a>)}
+            </div>
+          </header>
+        ) : null}
 
         <div className="mx-auto grid max-w-7xl gap-8 px-5 pb-14 pt-8 md:px-8 lg:grid-cols-[1.12fr_0.88fr] lg:items-center lg:pb-20 lg:pt-10">
           <div>
