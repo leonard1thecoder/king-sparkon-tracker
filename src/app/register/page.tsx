@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     description: "Choose User, Affiliate, or Business Owner and see only the fields that role needs.",
     images: ["/king-sparkon-logo.png"],
   },
-  robots: { index: true, follow: true },
+  robots: { index: false, follow: false },
 };
 
 const PAYPAL_HELP = "Need a payment link? Create or find your PayPal.me link here: https://www.paypal.com/paypalme";

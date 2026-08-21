@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "Recover Barcode Inventory Account",
   description:
     "Recover access to King Sparkon Tracker barcode inventory software for product stock, worker scans, reports, claims, and billing.",
+  robots: { index: false, follow: false },
 };
 
 export default function ForgotPasswordPage() {

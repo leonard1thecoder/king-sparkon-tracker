@@ -34,8 +34,8 @@ export const metadata: Metadata = {
     images: ["/king-sparkon-logo.png"],
   },
   robots: {
-    index: true,
-    follow: true,
+    index: false,
+    follow: false,
   },
 };
 
