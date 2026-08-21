@@ -215,15 +215,15 @@ export function ScanLoop() {
         .hero-scan-stage, .hero-scan-card, .hero-scan-card__shell { transform-style: preserve-3d; }
         .hero-scene-halo {
           background: radial-gradient(circle at var(--hero-glow-x) var(--hero-glow-y), rgb(56 189 248 / 0.22), rgb(240 249 255 / 0.78) 44%, transparent 73%);
-          animation: heroHaloPulse 7.5s ease-in-out infinite;
+          animation: heroHaloPulse 13s ease-in-out infinite;
         }
         .hero-scene-ring {
           width: 82%;
           aspect-ratio: 1;
           transform: translate(-50%, -50%) rotateX(70deg);
-          animation: heroRingSpin 26s linear infinite;
+          animation: heroRingSpin 44s linear infinite;
         }
-        .hero-scene-ring--inner { width: 62%; opacity: 0.72; animation-direction: reverse; animation-duration: 32s; }
+        .hero-scene-ring--inner { width: 62%; opacity: 0.72; animation-direction: reverse; animation-duration: 52s; }
         .hero-particle-field span {
           position: absolute;
           width: 0.34rem;
@@ -231,7 +231,7 @@ export function ScanLoop() {
           border-radius: 999px;
           background: var(--signal);
           box-shadow: 0 0 14px rgb(14 165 233 / 0.42);
-          animation: heroParticleFloat 9s ease-in-out infinite;
+          animation: heroParticleFloat 15s ease-in-out infinite;
         }
         .hero-particle-field span:nth-child(1) { left: 7%; top: 19%; animation-delay: -1.2s; }
         .hero-particle-field span:nth-child(2) { left: 15%; top: 66%; animation-delay: -4.1s; }
@@ -244,17 +244,17 @@ export function ScanLoop() {
           transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
         }
         .hero-3d-scene[data-hero-motion="running"] .hero-scan-card__shell { will-change: transform; }
-        .hero-scan-card--1 { animation: heroShowFirst 22s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
-        .hero-scan-card--2 { animation: heroShowSecond 22s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
-        .hero-3d-image { animation: heroImageFloat 7.2s ease-in-out infinite; }
+        .hero-scan-card--1 { animation: heroShowFirst 38s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+        .hero-scan-card--2 { animation: heroShowSecond 38s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+        .hero-3d-image { animation: heroImageFloat 13s ease-in-out infinite; }
         .hero-image-aura { background: radial-gradient(circle, rgb(186 230 253 / 0.72), transparent 68%); }
         .hero-orbit {
           width: 68%;
           aspect-ratio: 1;
           transform: translate(-50%, -50%) rotateX(67deg);
-          animation: heroInnerOrbit 17s linear infinite;
+          animation: heroInnerOrbit 32s linear infinite;
         }
-        .barcode-scan-line { animation: barcodeLineDown 3.4s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+        .barcode-scan-line { animation: barcodeLineDown 6.5s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
         .hero-corner { position: absolute; z-index: 30; width: 2rem; height: 2rem; color: var(--signal); opacity: 0.72; }
         .hero-corner--tl { left: 1rem; top: 1rem; border-left: 2px solid; border-top: 2px solid; border-radius: 0.6rem 0 0; }
         .hero-corner--tr { right: 1rem; top: 1rem; border-right: 2px solid; border-top: 2px solid; border-radius: 0 0.6rem 0 0; }
@@ -292,7 +292,7 @@ export function ScanLoop() {
           .hero-scene-ring--inner { width: 72%; }
           .hero-particle-field span:nth-child(n + 5) { display: none; }
           .hero-scan-card__shell { transform: none; }
-          .hero-orbit { animation-duration: 24s; }
+          .hero-orbit { animation-duration: 40s; }
         }
         @media (prefers-reduced-motion: reduce), (update: slow) {
           .hero-scan-card--1 { opacity: 1; transform: none; }

@@ -19,13 +19,13 @@ main section[id][data-landing-motion-state="visible"] {
 
 main[data-landing-motion-ready="true"] section[id] {
   transition:
-    opacity 300ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 350ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 650ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 750ms cubic-bezier(0.16, 1, 0.3, 1),
     visibility 0s linear;
 }
 
 main[data-landing-motion-ready="true"] section[id][data-landing-motion-state="hidden"] {
-  transition-delay: 0s, 0s, 350ms;
+  transition-delay: 0s, 0s, 750ms;
 }
 
 main[data-landing-motion-ready="true"] section[id][data-landing-motion-state="preparing"] {
@@ -72,7 +72,7 @@ main[data-landing-motion-ready="true"] section[id][data-landing-motion-state="vi
 [data-wave-connector][data-wave-orientation] > article {
   opacity: 1;
   visibility: visible;
-  transition: opacity 220ms ease-out;
+  transition: opacity 420ms ease-out;
 }
 
 header [aria-label="Section navigation"] a.landing-nav-inactive {
