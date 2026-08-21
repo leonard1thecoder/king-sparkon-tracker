@@ -10,13 +10,45 @@ import { SOCIAL_LINKS } from "@/lib/config/social-links";
 type SiteFooterProps = { marketingOnly?: boolean };
 
 const footerGroups = [
-  { title: "Platform", links: [{ label: "Features", href: "/#features" }, { label: "Jobs", href: "/#jobs" }, { label: "Affiliate Program", href: "/#affiliate" }, { label: "Dev Hub", href: "/#dev-hub" }, { label: "Contact", href: "/#contact" }] },
-  { title: "Access", links: [{ label: "Login", href: "/login" }, { label: "Register Business", href: "/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" }, { label: "Buy Tickets", href: "/dashboard/user/tickets/buy" }, { label: "My Tickets", href: "/dashboard/user/tickets" }, { label: "Scan Ticket", href: "/dashboard/worker/tickets/scan" }] },
-  { title: "Operations", links: [{ label: "Owner Dashboard", href: "/dashboard/owner" }, { label: "Owner Tickets", href: "/dashboard/owner/tickets" }, { label: "Create Event", href: "/dashboard/owner/tickets/create" }, { label: "Scan Verification", href: "/dashboard/worker/tickets/scan" }] },
+  {
+    title: "Platform",
+    links: [
+      { label: "How it works", href: "/how-it-works" },
+      { label: "Features", href: "/features" },
+      { label: "Guides", href: "/guides" },
+      { label: "Articles", href: "/guides" },
+      { label: "Jobs", href: "/jobs" },
+      { label: "About", href: "/about" },
+      { label: "Contact", href: "/contact" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { label: "Barcode Inventory Guide", href: "/guides/barcode-inventory-guide" },
+      { label: "QR Ticket Operations", href: "/guides/qr-ticket-operations" },
+      { label: "Worker Tips & Payouts", href: "/guides/worker-tips-payouts" },
+      { label: "Affiliate Referrals", href: "/guides/affiliate-referrals" },
+      { label: "Dev Hub", href: "/dev-hub" },
+      { label: "FAQ", href: "/faq" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Terms of Service", href: "/terms" },
+      { label: "Login", href: "/login" },
+      { label: "Register Business", href: "/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" },
+    ],
+  },
 ] as const;
 
 export function SiteFooter({ marketingOnly = false }: SiteFooterProps) {
   const pathname = usePathname();
+  // Hide footer on authenticated dashboards and auth flows — keep it on all public pages for AdSense trust
+  if (pathname?.startsWith("/dashboard")) return null;
+  if (pathname?.startsWith("/login") || pathname?.startsWith("/register") || pathname?.startsWith("/forgot-password") || pathname?.startsWith("/reset-password") || pathname?.startsWith("/verify-email") || pathname?.startsWith("/resend-verification")) return null;
   if (marketingOnly && pathname !== "/") return null;
   const year = new Date().getFullYear();
 
