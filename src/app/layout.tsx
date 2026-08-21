@@ -107,6 +107,32 @@ export const metadata: Metadata = {
   },
 };
 
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "King Sparkon Tracker",
+  url: process.env.NEXT_PUBLIC_APP_URL ?? "https://king-sparkon-tracker.com",
+  logo: "https://king-sparkon-tracker.com/king-sparkon-logo.png",
+  founder: {
+    "@type": "Person",
+    name: "Sizolwakhe Leonard Mthimunye",
+    sameAs: ["https://github.com/leonard1thecoder"],
+  },
+  sameAs: ["https://github.com/leonard1thecoder"],
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "King Sparkon Tracker",
+  url: process.env.NEXT_PUBLIC_APP_URL ?? "https://king-sparkon-tracker.com",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: "https://king-sparkon-tracker.com/jobs?search={search_term_string}",
+    "query-input": "required name=search_term_string",
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -122,11 +148,13 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8918343184695576"
           crossOrigin="anonymous"
         />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }} />
       </head>
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-white">
         <MotionRouter />
         {children}
-        <SiteFooter marketingOnly />
+        <SiteFooter />
         <FloatingChatbot />
       </body>
     </html>
