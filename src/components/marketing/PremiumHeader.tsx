@@ -9,8 +9,12 @@ const navLinks = [
   { label: "How it works", href: "/how-it-works" },
   { label: "Features", href: "/features" },
   { label: "Guides", href: "/guides" },
+  { label: "Articles", href: "/articles" },
   { label: "Jobs", href: "/jobs" },
   { label: "About", href: "/about" },
+  { label: "FAQ", href: "/faq" },
+  { label: "Terms", href: "/terms" },
+  { label: "Privacy", href: "/privacy" },
   { label: "Contact", href: "/contact" },
 ] as const;
 
@@ -53,12 +57,12 @@ export function PremiumHeader() {
           </Link>
 
           {/* Desktop nav */}
-          <div className="hidden items-center gap-1 lg:flex">
+          <div className="hidden items-center gap-1 xl:flex">
             {navLinks.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
-                className="rounded-full px-3.5 py-2 text-sm font-semibold text-[var(--steel)] hover:bg-[var(--signal-soft)] hover:text-[var(--signal-strong)]"
+                className="rounded-full px-3 py-2 text-sm font-semibold text-[var(--steel)] hover:bg-[var(--signal-soft)] hover:text-[var(--signal-strong)]"
               >
                 {l.label}
               </Link>
@@ -68,17 +72,17 @@ export function PremiumHeader() {
           <div className="flex items-center gap-2">
             <Link
               href="/login"
-              className="hidden min-h-10 items-center justify-center rounded-xl border border-[var(--line)] bg-white px-4 text-sm font-extrabold text-[var(--steel)] hover:border-[var(--line-strong)] hover:text-[var(--ink)] sm:inline-flex"
+              className="inline-flex min-h-10 items-center justify-center rounded-xl border border-[var(--line)] bg-white px-3 text-sm font-extrabold text-[var(--steel)] hover:border-[var(--line-strong)] hover:text-[var(--ink)] sm:px-4"
             >
               Login
             </Link>
             <Link
               href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE"
-              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-4 text-sm font-extrabold text-white shadow-[0_8px_20px_rgba(14,165,233,0.22)] hover:bg-[var(--signal-strong)]"
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-3 text-sm font-extrabold text-white shadow-[0_8px_20px_rgba(14,165,233,0.22)] hover:bg-[var(--signal-strong)] sm:px-4"
             >
-              <span className="hidden sm:inline">Start free</span>
-              <span className="sm:hidden">Start</span>
-              <ArrowRight className="h-4 w-4" />
+              <span className="hidden sm:inline">Register</span>
+              <span className="sm:hidden">Register</span>
+              <ArrowRight className="hidden h-4 w-4 sm:block" />
             </Link>
 
             <button
@@ -86,7 +90,7 @@ export function PremiumHeader() {
               aria-label={open ? "Close menu" : "Open menu"}
               aria-expanded={open}
               onClick={() => setOpen((v) => !v)}
-              className="grid h-10 w-10 place-items-center rounded-xl border border-[var(--line)] bg-white text-[var(--ink)] lg:hidden"
+              className="ml-1 grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[var(--line)] bg-white text-[var(--ink)] xl:hidden"
             >
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
@@ -96,7 +100,7 @@ export function PremiumHeader() {
 
       {/* Mobile panel */}
       {open ? (
-        <div className="absolute inset-x-0 top-full border-b border-[var(--line)] bg-[rgba(255,255,255,0.96)] backdrop-blur-[20px] shadow-[var(--shadow-depth)] lg:hidden">
+        <div className="absolute inset-x-0 top-full border-b border-[var(--line)] bg-[rgba(255,255,255,0.96)] backdrop-blur-[20px] shadow-[var(--shadow-depth)] xl:hidden">
           <div className="mx-auto max-w-7xl px-5 py-4 md:px-8">
             <div className="grid gap-1">
               {navLinks.map((l) => (
