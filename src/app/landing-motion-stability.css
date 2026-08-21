@@ -4,8 +4,8 @@ main section[id][data-landing-motion-state="preparing"] {
   visibility: hidden;
   pointer-events: none;
   transform: translate3d(
-    var(--landing-motion-x, 0px),
-    var(--landing-motion-y, 14px),
+    var(--landing-motion-x, 80px),
+    0,
     0
   );
 }
@@ -19,13 +19,13 @@ main section[id][data-landing-motion-state="visible"] {
 
 main[data-landing-motion-ready="true"] section[id] {
   transition:
-    opacity 1450ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 1650ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 2000ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 2000ms cubic-bezier(0.22, 1, 0.36, 1),
     visibility 0s linear;
 }
 
 main[data-landing-motion-ready="true"] section[id][data-landing-motion-state="hidden"] {
-  transition-delay: 0s, 0s, 1650ms;
+  transition-delay: 0s, 0s, 2000ms;
 }
 
 main[data-landing-motion-ready="true"] section[id][data-landing-motion-state="preparing"] {

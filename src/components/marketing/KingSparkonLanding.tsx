@@ -104,6 +104,77 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
     return () => observer.disconnect();
   }, []);
 
+  // Landing section slide: alternating right/left, 2s appear/disappear, gap closed
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (media.matches) return;
+    const main = document.querySelector("main");
+    if (!main) return;
+    const landingSections = Array.from(document.querySelectorAll("main section[id]")) as HTMLElement[];
+    if (!landingSections.length) return;
+
+    let scrollDir: "up" | "down" = "down";
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      scrollDir = y < lastY ? "up" : "down";
+      lastY = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    landingSections.forEach((el, idx) => {
+      el.style.setProperty("--landing-motion-x", idx % 2 === 0 ? "90px" : "-90px");
+      el.dataset.landingMotionState = "preparing";
+    });
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        (main as HTMLElement).dataset.landingMotionReady = "true";
+        landingSections.forEach((el) => {
+          const rect = el.getBoundingClientRect();
+          const inView = rect.top < window.innerHeight * 0.88 && rect.bottom > 80;
+          el.dataset.landingMotionState = inView ? "visible" : "hidden";
+        });
+      });
+    });
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const el = entry.target as HTMLElement;
+          if (entry.isIntersecting) {
+            el.dataset.landingMotionState = "visible";
+          } else {
+            // When scrolling down, keep already-seen sections (above) visible; only hide those still below
+            // When scrolling up, slide back to hidden (same side) as they leave viewport
+            const rect = entry.boundingClientRect;
+            if (scrollDir === "down") {
+              if (rect.top > window.innerHeight - 80) {
+                el.dataset.landingMotionState = "hidden";
+              }
+              // if element is above viewport while scrolling down, keep it visible (don't hide)
+            } else {
+              // scrolling up: hide any that left viewport (slide back)
+              el.dataset.landingMotionState = "hidden";
+            }
+          }
+        });
+      },
+      { rootMargin: "0px 0px -14% 0px", threshold: 0.14 },
+    );
+
+    landingSections.forEach((s) => io.observe(s));
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      io.disconnect();
+      landingSections.forEach((el) => {
+        delete el.dataset.landingMotionState;
+        el.style.removeProperty("--landing-motion-x");
+      });
+      delete (main as HTMLElement).dataset.landingMotionReady;
+    };
+  }, []);
+
   return (
     <main className="bg-white text-[var(--ink)]">
       <section className={`relative bg-white ${hideHeader ? "" : "pt-32"}`}>
