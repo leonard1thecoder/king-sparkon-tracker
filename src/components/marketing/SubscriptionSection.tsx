@@ -153,7 +153,7 @@ export function SubscriptionSection() {
   return (
     <section
       id="subscribe"
-      className="scroll-mt-28 border-t border-[var(--line)] bg-white px-5 py-16 md:px-8 lg:py-24"
+      className="scroll-mt-24 border-t border-[var(--line)] bg-white px-5 py-10 md:px-8 lg:py-14"
     >
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">

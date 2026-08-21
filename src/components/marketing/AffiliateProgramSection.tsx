@@ -18,7 +18,7 @@ const affiliateChannels = [
 
 export function AffiliateProgramSection() {
   return (
-    <section id="affiliate" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
+    <section id="affiliate" className="scroll-mt-24 px-5 py-10 md:px-8 lg:py-14">
       <div className="mx-auto grid max-w-7xl gap-8 overflow-hidden rounded-[2.75rem] border border-[var(--line)] bg-white p-5 text-[var(--ink)] shadow-[var(--shadow-ledger)] md:p-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
         <div>
           <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--signal)]">05 / affiliate program</p>

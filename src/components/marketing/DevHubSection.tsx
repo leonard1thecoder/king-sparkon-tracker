@@ -22,7 +22,7 @@ const devHubStrengths: readonly BouncingCircleItem[] = [
 
 export function DevHubSection() {
   return (
-    <section id="dev-hub" className="scroll-mt-28 border-y border-[var(--line)] bg-white px-5 py-16 md:px-8 lg:py-24">
+    <section id="dev-hub" className="scroll-mt-24 border-y border-[var(--line)] bg-white px-5 py-10 md:px-8 lg:py-14">
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">
           <div>

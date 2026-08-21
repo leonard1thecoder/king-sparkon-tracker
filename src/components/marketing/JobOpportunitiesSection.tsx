@@ -18,7 +18,7 @@ const jobHighlights = [
 
 export function JobOpportunitiesSection() {
   return (
-    <section id="jobs" className="scroll-mt-28 px-5 py-16 md:px-8 lg:py-24">
+    <section id="jobs" className="scroll-mt-24 px-5 py-10 md:px-8 lg:py-14">
       <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.75rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-8">
         <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-end">
           <div>

@@ -128,7 +128,7 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
           </header>
         ) : null}
 
-        <div className="mx-auto grid max-w-7xl gap-8 px-5 pb-14 pt-8 md:px-8 lg:grid-cols-[1.12fr_0.88fr] lg:items-center lg:pb-20 lg:pt-10">
+        <div className="mx-auto grid max-w-7xl gap-8 px-5 pb-8 pt-8 md:px-8 lg:grid-cols-[1.12fr_0.88fr] lg:items-center lg:pb-12 lg:pt-10">
           <div>
             <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Operations without the spreadsheet chaos</p>
             <h1 className="mt-5 max-w-4xl text-5xl font-black leading-[0.98] tracking-[-0.06em] md:text-7xl">Scan it. Sell it. Track it. Prove it.</h1>
@@ -146,14 +146,14 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
         </div>
       </section>
 
-      <section id="vision" className="scroll-mt-28 border-t border-[var(--line)] bg-white px-5 py-16 md:px-8 lg:py-24">
+      <section id="vision" className="scroll-mt-24 border-t border-[var(--line)] bg-white px-5 py-10 md:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end"><div><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Vision</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Control real-world operations from one trusted record.</h2></div><p className="text-base leading-8 text-[var(--steel)] lg:text-lg">Every scan, sale, ticket, transaction and role action should be understandable without searching through disconnected systems.</p></div>
           <VisionBubbleField items={visionPillars} />
         </div>
       </section>
 
-      <section id="sponsor" className="scroll-mt-28 border-y border-[var(--line)] bg-white px-5 py-16 md:px-8 lg:py-20">
+      <section id="sponsor" className="scroll-mt-24 border-y border-[var(--line)] bg-white px-5 py-10 md:px-8 lg:py-14">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div>
             <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Support King Sparkon</p>
@@ -166,7 +166,7 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
         </div>
       </section>
 
-      <section id="features" className="scroll-mt-28 bg-white px-5 py-16 md:px-8 lg:py-24">
+      <section id="features" className="scroll-mt-24 bg-white px-5 py-10 md:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl"><div className="max-w-3xl"><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Features</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Built around the work, not the dashboard decoration.</h2><p className="mt-5 text-base leading-8 text-[var(--steel)]">Each feature supports a real operational task and a clearly defined role.</p></div><div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">{features.map(({ icon: Icon, title, copy, tags }) => <article key={title} className="rounded-xl border border-[var(--line)] bg-white p-6 transition hover:border-[var(--line-strong)]"><div className="grid h-11 w-11 place-items-center rounded-lg border border-[var(--line)] text-[var(--signal)]"><Icon className="h-5 w-5" /></div><h3 className="mt-5 text-xl font-black tracking-[-0.03em]">{title}</h3><p className="mt-3 text-sm leading-7 text-[var(--steel)]">{copy}</p><div className="mt-5 flex flex-wrap gap-2">{tags.map((tag) => <span key={tag} className="rounded-md border border-[var(--line)] bg-[var(--signal-soft)] px-2.5 py-1 text-xs font-bold text-[var(--signal-strong)]">{tag}</span>)}</div></article>)}</div></div>
       </section>
 
@@ -174,7 +174,7 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
       <AffiliateProgramSection />
       <DevHubSection />
 
-      <section id="roles" className="scroll-mt-28 border-y border-[var(--line)] bg-white px-5 py-16 md:px-8 lg:py-24">
+      <section id="roles" className="scroll-mt-24 border-y border-[var(--line)] bg-white px-5 py-10 md:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
             <div><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Choose your role</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">See only the tools you need.</h2><p className="mt-5 text-base leading-8 text-[var(--steel)]">Registration and navigation change according to the selected responsibility.</p></div>
@@ -184,7 +184,7 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
         </div>
       </section>
 
-      <section id="capacity" className="scroll-mt-28 bg-white px-5 py-16 md:px-8 lg:py-24">
+      <section id="capacity" className="scroll-mt-24 bg-white px-5 py-10 md:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:items-center">
             <div><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Capacity</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-5xl">Know what is available before operations become a problem.</h2><p className="mt-5 text-base leading-8 text-[var(--steel)]">Capacity views turn activity into clear, actionable totals.</p><Link href="/dashboard/owner/capacity" className="mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[var(--line-strong)] bg-white px-5 text-sm font-extrabold text-[var(--ink)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]">View owner capacity <ArrowRight className="h-4 w-4" /></Link></div>
@@ -194,7 +194,7 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
         </div>
       </section>
 
-      <section id="complaints" className="scroll-mt-28 border-y border-[var(--line)] bg-white px-5 py-16 md:px-8 lg:py-20">
+      <section id="complaints" className="scroll-mt-24 border-y border-[var(--line)] bg-white px-5 py-10 md:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">
             <div>
@@ -219,7 +219,7 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
         </div>
       </section>
 
-      <section id="contact" className="scroll-mt-28 border-t border-[var(--line)] bg-white px-5 py-16 md:px-8 lg:py-24">
+      <section id="contact" className="scroll-mt-24 border-t border-[var(--line)] bg-white px-5 py-10 md:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">
             <div><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Contact</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-5xl">Tell us what your operation needs to prove.</h2><p className="mt-5 text-base leading-8 text-[var(--steel)]">Share the roles, products, ticket flow or transaction problem you need the platform to manage.</p><div className="mt-8 grid gap-4">{[["01", "Describe the operation"], ["02", "Identify the users and roles"], ["03", "Define the first successful outcome"]].map(([number, label]) => <div key={number} className="flex items-center gap-4 border-b border-[var(--line)] pb-4"><span className="font-black text-[var(--signal-strong)]">{number}</span><span className="font-semibold text-[var(--steel)]">{label}</span></div>)}</div></div>
