@@ -52,23 +52,23 @@ main [data-orange-hover="true"]:focus-visible {
 }
 
 .landing-motion-ring-one {
-  animation: landing-ring-spin 36s linear infinite;
+  animation: landing-ring-spin 55s linear infinite;
   box-shadow: 0 0 34px rgb(14 165 233 / 0.08);
 }
 
 .landing-motion-ring-two {
-  animation: landing-ring-spin-reverse 28s linear infinite;
+  animation: landing-ring-spin-reverse 42s linear infinite;
   box-shadow: 0 0 28px rgb(56 189 248 / 0.1);
 }
 
 .landing-motion-glow {
-  animation: capacity-dashboard-glow 7s ease-in-out infinite;
+  animation: capacity-dashboard-glow 10s ease-in-out infinite;
 }
 
 .landing-motion-scan {
   left: -22%;
   background: linear-gradient(90deg, transparent, rgb(186 230 253 / 0.72), transparent);
-  animation: capacity-signal-pass 6s ease-in-out infinite;
+  animation: capacity-signal-pass 9s ease-in-out infinite;
 }
 
 .landing-motion-dot {
@@ -80,7 +80,7 @@ main [data-orange-hover="true"]:focus-visible {
   border-radius: 999px;
   background: var(--signal);
   box-shadow: 0 0 20px rgb(14 165 233 / 0.45);
-  animation: contact-orbit-pulse 7s ease-in-out infinite;
+  animation: contact-orbit-pulse 10.5s ease-in-out infinite;
 }
 
 .landing-motion-dot-one { left: 8%; top: 20%; }

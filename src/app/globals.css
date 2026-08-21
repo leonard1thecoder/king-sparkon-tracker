@@ -140,12 +140,12 @@ textarea {
 }
 
 .scan-sweep {
-  animation: scan-pass 5.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: scan-pass 8.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 .scan-sweep-logo {
   top: -8%;
-  animation: scan-logo-pass 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: scan-logo-pass 9.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 .logo-reflection-wick {
@@ -153,7 +153,7 @@ textarea {
   mix-blend-mode: screen;
   opacity: 0;
   transform: translateX(-135%);
-  animation: logo-reflection-pass 7s ease-in-out infinite;
+  animation: logo-reflection-pass 10.5s ease-in-out infinite;
 }
 
 .stamp-tag {
@@ -201,35 +201,35 @@ textarea {
 }
 
 .capacity-card-3d-admin {
-  animation: capacity-card-admin-float 13.5s ease-in-out infinite;
+  animation: capacity-card-admin-float 20s ease-in-out infinite;
 }
 
 .capacity-card-3d-owner {
-  animation: capacity-card-owner-float 14s ease-in-out infinite;
+  animation: capacity-card-owner-float 22s ease-in-out infinite;
 }
 
 .capacity-dashboard-glow {
-  animation: capacity-dashboard-glow 6.5s ease-in-out infinite;
+  animation: capacity-dashboard-glow 10s ease-in-out infinite;
 }
 
 .capacity-signal-line {
-  animation: capacity-signal-pass 5.6s ease-in-out infinite;
+  animation: capacity-signal-pass 8.5s ease-in-out infinite;
 }
 
 .contact-card-3d {
-  animation: contact-card-float 14.5s ease-in-out infinite;
+  animation: contact-card-float 22s ease-in-out infinite;
 }
 
 .contact-dashboard-glow {
-  animation: contact-dashboard-glow 7s ease-in-out infinite;
+  animation: contact-dashboard-glow 11s ease-in-out infinite;
 }
 
 .contact-signal-line {
-  animation: contact-signal-pass 6s ease-in-out infinite;
+  animation: contact-signal-pass 9s ease-in-out infinite;
 }
 
 .contact-orbit-dot {
-  animation: contact-orbit-pulse 7s ease-in-out infinite;
+  animation: contact-orbit-pulse 10.5s ease-in-out infinite;
 }
 
 @keyframes scan-pass {
