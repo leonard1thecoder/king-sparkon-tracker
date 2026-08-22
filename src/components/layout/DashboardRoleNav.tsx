@@ -89,11 +89,10 @@ export const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Profile", href: "/dashboard/affiliate/profile", icon: UserRound, description: "Payout identity and session", shortLabel: "Profile" },
   ],
   User: [
-    { label: "Buy Products", href: "/dashboard/user/shop", icon: ShoppingCart, description: "Browse the Tuck Shop", shortLabel: "Shop" },
+    { label: "King Sparkon Lego Mall", href: "/dashboard/user/shop", icon: ShoppingCart, description: "Browse the Tuck Shop", shortLabel: "Lego Mall" },
     { label: "Cart", href: "/dashboard/user/shop/cart", icon: ShoppingCart, description: "Review and pay", shortLabel: "Cart" },
-    { label: "Buy Ticket", href: "/dashboard/user/tickets/buy", icon: Ticket, description: "Browse live events", shortLabel: "Tickets" },
-    { label: "Jobs", href: "/dashboard/user/jobs", icon: BriefcaseBusiness, description: "Browse job opportunities", shortLabel: "Jobs" },
-    { label: "Profile", href: "/dashboard/user/profile", icon: UserRound, description: "Manage profile", shortLabel: "Profile" },
+    { label: "King Sparkon Lego Tickets", href: "/dashboard/user/tickets/buy", icon: Ticket, description: "Browse live events", shortLabel: "Lego Tickets" },
+    { label: "King Sparkon Job posts", href: "/dashboard/user/jobs", icon: BriefcaseBusiness, description: "Browse job opportunities", shortLabel: "Job posts" },
   ],
 };
 
