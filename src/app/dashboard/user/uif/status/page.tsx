@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { UifIdForm } from "@/components/uif/UifIdForm";
 
 export const metadata: Metadata = {
   title: "Check UIF Status | User Dashboard",
@@ -22,11 +23,8 @@ export default function UifStatusPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <p className="text-sm leading-6 text-[var(--steel)]">Blank placeholder for UIF status checks. Add lookup form or status display here.</p>
-          <div className="rounded-xl border border-dashed border-[var(--line)] bg-[var(--surface)] p-8 text-center">
-            <p className="text-sm font-black text-[var(--ink)]">Blank page — no redirect</p>
-            <p className="mt-1 text-xs leading-5 text-[var(--muted)]">Will show UIF status when implemented.</p>
-          </div>
+          <p className="text-sm leading-6 text-[var(--steel)]">Enter your 13-digit ID to check UIF status. Input blocks non-digits and enforces 13-digit length.</p>
+          <UifIdForm actionLabel="Check UIF Status" placeholderStatus="Checked UIF status" />
         </CardContent>
       </Card>
     </div>

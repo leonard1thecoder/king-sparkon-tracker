@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, Landmark } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { SassaStatusForm } from "@/components/sassa/SassaStatusForm";
 
 export const metadata: Metadata = {
   title: "SASSA 370 Status | User Dashboard",
@@ -22,11 +23,8 @@ export default function SassaStatusPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <p className="text-sm leading-6 text-[var(--steel)]">This is a blank placeholder for SASSA 370 status checks. Integrate SRD status API or external lookup here when ready.</p>
-          <div className="rounded-xl border border-dashed border-[var(--line)] bg-[var(--surface)] p-8 text-center">
-            <p className="text-sm font-black text-[var(--ink)]">Blank page — no redirect</p>
-            <p className="mt-1 text-xs leading-5 text-[var(--muted)]">Content will be added here. Currently no external redirect.</p>
-          </div>
+          <p className="text-sm leading-6 text-[var(--steel)]">Enter your 13-digit ID and 10-digit cellphone (e.g. 0824557712) to check SASSA 370 status. Inputs block non-digits and enforce length.</p>
+          <SassaStatusForm />
         </CardContent>
       </Card>
     </div>
