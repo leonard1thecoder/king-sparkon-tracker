@@ -1,15 +1,27 @@
+import Image from "next/image";
+import Link from "next/link";
 import { UserAwareDashboardHeaderActions } from "@/components/layout/UserAwareDashboardHeaderActions";
-import { Badge } from "@/components/ui/Badge";
+
+function dashboardHomeHref(role: string) {
+  const v = role.toLowerCase();
+  if (v.includes("admin")) return "/dashboard/admin/capacity";
+  if (v.includes("owner")) return "/dashboard/owner/products";
+  if (v.includes("worker")) return "/dashboard/worker/scan";
+  if (v.includes("affiliate")) return "/dashboard/affiliate/referrals";
+  return "/dashboard/user/shop";
+}
 
 export function DashboardHeader({ title, description, role }: { title: string; description: string; role: string }) {
   return (
-    <header className="sticky top-0 z-20 border-b border-[var(--line)] bg-white px-5 py-4 shadow-[var(--shadow-soft)] md:px-8">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="min-w-0">
-          <Badge>{role}</Badge>
-          <h1 className="mt-2 truncate text-2xl font-black tracking-[-0.04em] md:text-3xl">{title}</h1>
-          <p className="mt-1 line-clamp-2 max-w-4xl text-sm leading-6 text-[var(--steel)]">{description}</p>
-        </div>
+    <header className="sticky top-0 z-20 border-b border-[var(--line)] bg-white px-5 py-3 shadow-[var(--shadow-soft)] md:px-8">
+      <div className="flex items-center justify-between gap-4">
+        <Link href={dashboardHomeHref(role)} className="flex min-w-0 items-center gap-3">
+          <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker" width={40} height={40} className="rounded-lg border border-[var(--line)] bg-white p-1 shrink-0" priority />
+          <div className="min-w-0">
+            <p className="truncate text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">King Sparkon</p>
+            <p className="truncate text-sm font-black tracking-[-0.02em]">Tracker</p>
+          </div>
+        </Link>
         <UserAwareDashboardHeaderActions role={role} />
       </div>
     </header>
