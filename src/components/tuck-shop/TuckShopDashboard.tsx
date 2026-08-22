@@ -1,11 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Bell,
   BellRing,
-  Boxes,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
@@ -22,8 +22,6 @@ import type { Product } from "@/lib/types/backend";
 import { normalizeApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { MetricCard } from "@/components/ui/MetricCard";
-import { SectionHeader } from "@/components/ui/SectionHeader";
 import { StatusPill } from "@/components/ui/StatusPill";
 import {
   addTuckShopProductToCart,
@@ -271,15 +269,6 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
     setBusinessPage((current) => Math.min(current, businessPageCount - 1));
   }, [businessPageCount]);
 
-  const totalStock = useMemo(
-    () => products.reduce((total, product) => total + Math.max(Number(product.stockQuantity ?? 0), 0), 0),
-    [products],
-  );
-  const promotedProducts = useMemo(
-    () => products.filter((product) => product.salePrice !== undefined && product.salePrice < product.price).length,
-    [products],
-  );
-
   function addToCart(product: Product) {
     addTuckShopProductToCart(product);
     setCartNotice(`${product.name} added to cart.`);
@@ -317,17 +306,16 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
 
   return (
     <section className="grid gap-6">
-      <SectionHeader
-        eyebrow="King Sparkon Tuck Shop"
-        title="Browse four businesses per page."
-        description="Each page shows up to four businesses. Every business keeps a horizontal product scroller so customers can move right to see more products."
-      />
-
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Products visible" value={loading ? "..." : String(products.length)} detail="Complete loaded catalogue" tone="confirm" icon={<Boxes className="h-5 w-5" />} />
-        <MetricCard label="Businesses" value={loading ? "..." : String(businessGroups.length)} detail="Four businesses per page" tone="signal" icon={<Store className="h-5 w-5" />} />
-        <MetricCard label="Units in stock" value={loading ? "..." : String(totalStock)} detail="Across all loaded products" />
-        <MetricCard label="Special prices" value={loading ? "..." : String(promotedProducts)} detail="Products with sale pricing" />
+      <div className="overflow-hidden rounded-[1.5rem] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
+        <Image
+          src="https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/products_picture.png"
+          alt="King Sparkon Tuck Shop products picture"
+          width={1200}
+          height={675}
+          className="h-auto w-full object-contain"
+          priority
+          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1100px"
+        />
       </div>
 
       <Card>

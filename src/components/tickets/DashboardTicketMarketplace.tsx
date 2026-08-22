@@ -1,8 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Filter, QrCode, Search, ShieldCheck, Ticket } from "lucide-react";
+import { Filter, Search, ShieldCheck, Ticket } from "lucide-react";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { TicketEventCard } from "@/components/tickets/TicketEventCard";
 import { getLiveUpcomingEvents } from "@/lib/api/tickets";
@@ -54,32 +55,17 @@ export function DashboardTicketMarketplace() {
     <>
       <DashboardHeader role="USER WORKSPACE" title="Buy event tickets" description="Browse live backend ticket events, inspect capacity, and add QR tickets to the verified Stripe cart." />
       <main className="grid gap-7 bg-[var(--surface)] p-5 md:p-8">
-        <section className="grid gap-6 rounded-[2.5rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-7 xl:grid-cols-[1fr_0.72fr]">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-white px-3 py-2 font-mono text-[0.68rem] font-black uppercase tracking-[0.16em] text-[var(--steel)] shadow-[var(--shadow-soft)]">
-              <span className="h-2 w-2 rounded-full bg-[var(--confirm)]" /> Live user ticket marketplace
-            </div>
-            <h2 className="mt-5 max-w-4xl text-4xl font-black leading-[0.98] tracking-[-0.06em] md:text-6xl">Find, buy, and keep verified QR tickets inside your dashboard.</h2>
-            <p className="mt-5 max-w-2xl text-sm leading-7 text-[var(--steel)] md:text-base">Only backend-published events are shown. Tickets are issued after Stripe confirms payment and the signed webhook completes fulfilment.</p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <Link href="#events" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]">Browse events <ArrowRight className="h-4 w-4" /></Link>
-              <Link href="/dashboard/user/tickets" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--line)] bg-white px-6 font-black text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--signal)]">My purchased tickets</Link>
-            </div>
-          </div>
-          <div className="rounded-[2rem] bg-[var(--ink)] p-6 text-white enterprise-grid">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--gold)]">Verified QR commerce</p>
-                <h2 className="mt-3 text-3xl font-black tracking-[-0.05em]">Stripe success first. Ticket issue second.</h2>
-              </div>
-              <QrCode className="h-8 w-8 text-[var(--gold)]" />
-            </div>
-            <div className="barcode-rule mt-8 h-20 text-white" />
-            <div className="mt-6 grid gap-3 sm:grid-cols-3">
-              {["Regular", "VIP", "VVIP"].map((label) => <div key={label} className="rounded-[1.2rem] border border-white/10 bg-white/[0.06] p-4"><p className="font-mono text-[0.66rem] uppercase tracking-[0.14em] text-white/42">Class</p><p className="mt-1 font-black text-white">{label}</p></div>)}
-            </div>
-          </div>
-        </section>
+        <div className="overflow-hidden rounded-[1.5rem] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
+          <Image
+            src="https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/lego_party.png"
+            alt="King Sparkon Lego party"
+            width={1200}
+            height={675}
+            className="h-auto w-full object-contain"
+            priority
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1100px"
+          />
+        </div>
 
         <section id="events" className="scroll-mt-28">
           <div className="rounded-[2.2rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] md:p-6">
