@@ -242,16 +242,14 @@ function ProfileDropdown({ role }: { role: string }) {
               </Link>
               {label === "My Tickets" ? (
                 <>
-                  <a
-                    href="https://srd.sassa.gov.za/sc19/status"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    href="/dashboard/user/sassa-status"
                     onClick={() => setOpen(false)}
                     className="inline-flex min-h-11 w-full items-center gap-3 rounded-[1rem] px-3 text-sm font-black text-[var(--ink)] transition hover:bg-[var(--surface)]"
                     role="menuitem"
                   >
                     <Landmark className="h-4 w-4 text-[var(--signal)]" /> SASSA 370 Status
-                  </a>
+                  </Link>
                   <div className="rounded-[1rem] border border-transparent transition data-[open=true]:border-[var(--line)] data-[open=true]:bg-[var(--surface)]/60" data-open={uifOpen}>
                     <button
                       type="button"
@@ -267,26 +265,22 @@ function ProfileDropdown({ role }: { role: string }) {
                     </button>
                     {uifOpen ? (
                       <div className="grid gap-1 p-1 pt-0" role="menu">
-                        <a
-                          href="https://ufiling.labour.gov.za/uif/"
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <Link
+                          href="/dashboard/user/uif/status"
                           onClick={() => setOpen(false)}
                           className="inline-flex min-h-10 items-center gap-3 rounded-[0.85rem] bg-white px-3 pl-9 text-sm font-bold text-[var(--steel)] transition hover:bg-white hover:text-[var(--signal-strong)]"
                           role="menuitem"
                         >
                           <ShieldCheck className="h-4 w-4 text-[var(--signal)]" /> Check UIF Status
-                        </a>
-                        <a
-                          href="https://ufiling.labour.gov.za/"
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        </Link>
+                        <Link
+                          href="/dashboard/user/uif/password"
                           onClick={() => setOpen(false)}
                           className="inline-flex min-h-10 items-center gap-3 rounded-[0.85rem] bg-white px-3 pl-9 text-sm font-bold text-[var(--steel)] transition hover:bg-white hover:text-[var(--signal-strong)]"
                           role="menuitem"
                         >
                           <Landmark className="h-4 w-4 text-[var(--signal)]" /> Update UIF Password
-                        </a>
+                        </Link>
                       </div>
                     ) : null}
                   </div>
