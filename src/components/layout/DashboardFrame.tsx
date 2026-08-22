@@ -32,7 +32,7 @@ export function DashboardFrame({ role, nav, children }: { role: string; nav: Rea
 
       {/* Desktop Sidebar */}
       <aside className="hidden lg:sticky lg:top-0 lg:z-30 lg:flex lg:h-dvh lg:w-auto lg:flex-col border-r border-[var(--line)] bg-white text-[var(--ink)]">
-        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-[var(--line)] p-5">
+        <div className="flex h-16 shrink-0 items-center justify-between gap-4 border-b border-[var(--line)] px-5">
           <Link href={dashboardHomeHref} className="flex min-w-0 items-center gap-3">
             <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker" width={48} height={48} className="rounded-lg border border-[var(--line)] bg-white p-1" />
             <div className="min-w-0">
