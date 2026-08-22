@@ -50,11 +50,11 @@ export function rolesFromClaims(claims: Record<string, unknown> | null | undefin
 }
 
 export function primaryDashboardForRoles(roles: UserRole[]) {
-  if (roles.includes("Admin")) return "/dashboard/admin";
-  if (roles.includes("Owner")) return "/dashboard/owner";
-  if (roles.includes("Worker")) return "/dashboard/worker";
-  if (roles.includes("Affiliate")) return "/dashboard/affiliate";
-  if (roles.includes("User")) return "/dashboard/user";
+  if (roles.includes("Admin")) return "/dashboard/admin/capacity";
+  if (roles.includes("Owner")) return "/dashboard/owner/products";
+  if (roles.includes("Worker")) return "/dashboard/worker/scan";
+  if (roles.includes("Affiliate")) return "/dashboard/affiliate/referrals";
+  if (roles.includes("User")) return "/dashboard/user/shop";
   return "/dashboard";
 }
 

@@ -1,5 +1,5 @@
-import { DashboardShell } from "../dashboard-shell";
+import { redirect } from "next/navigation";
 
 export default function AdminDashboardPage() {
-  return <DashboardShell role="Admin" />;
+  redirect("/dashboard/admin/capacity");
 }

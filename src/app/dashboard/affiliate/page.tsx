@@ -1,5 +1,5 @@
-import { AffiliateWorkspace } from "@/components/affiliate/AffiliateWorkspace";
+import { redirect } from "next/navigation";
 
 export default function AffiliateDashboardPage() {
-  return <AffiliateWorkspace section="overview" />;
+  redirect("/dashboard/affiliate/referrals");
 }
