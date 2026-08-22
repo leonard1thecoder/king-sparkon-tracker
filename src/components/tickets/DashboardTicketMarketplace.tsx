@@ -61,7 +61,7 @@ export function DashboardTicketMarketplace() {
             alt="King Sparkon Lego party"
             width={1200}
             height={675}
-            className="h-auto max-h-[180px] w-full object-contain sm:max-h-[220px] md:max-h-[280px] lg:max-h-[320px]"
+            className="h-auto max-h-[207px] w-full object-contain sm:max-h-[253px] md:max-h-[322px] lg:max-h-[368px]"
             priority
             sizes="100vw"
           />
