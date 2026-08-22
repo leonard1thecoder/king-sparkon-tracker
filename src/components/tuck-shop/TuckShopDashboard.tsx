@@ -306,13 +306,13 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
 
   return (
     <section className="grid gap-6">
-      <div className="-mx-5 -mt-6 overflow-hidden border-b border-[var(--line)] bg-white md:-mx-8">
+      <div className="-mx-5 -mt-5 overflow-hidden border-b border-[var(--line)] bg-white md:-mx-8 md:-mt-8">
         <Image
           src="https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/products_picture.png"
           alt="King Sparkon Tuck Shop products picture"
           width={1200}
           height={675}
-          className="h-auto max-h-[260px] w-full object-contain sm:max-h-[340px] md:max-h-[420px] lg:max-h-[480px]"
+          className="h-auto max-h-[180px] w-full object-contain sm:max-h-[220px] md:max-h-[280px] lg:max-h-[320px]"
           priority
           sizes="100vw"
         />
