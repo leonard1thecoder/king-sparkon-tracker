@@ -92,7 +92,7 @@ export const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Buy Products", href: "/dashboard/user/shop", icon: ShoppingCart, description: "Browse the Tuck Shop", shortLabel: "Shop" },
     { label: "Cart", href: "/dashboard/user/shop/cart", icon: ShoppingCart, description: "Review and pay", shortLabel: "Cart" },
     { label: "Buy Ticket", href: "/dashboard/user/tickets/buy", icon: Ticket, description: "Browse live events", shortLabel: "Tickets" },
-    { label: "Applications", href: "/dashboard/user/applications", icon: FileCheck2, description: "Track job applications", shortLabel: "Apps" },
+    { label: "Jobs", href: "/dashboard/user/jobs", icon: BriefcaseBusiness, description: "Browse job opportunities", shortLabel: "Jobs" },
     { label: "Profile", href: "/dashboard/user/profile", icon: UserRound, description: "Manage profile", shortLabel: "Profile" },
   ],
 };
