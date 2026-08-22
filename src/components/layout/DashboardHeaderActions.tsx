@@ -142,6 +142,7 @@ function OwnerBalanceAction() {
 
 function ProfileDropdown({ role }: { role: string }) {
   const [open, setOpen] = useState(false);
+  const [uifOpen, setUifOpen] = useState(false);
   const [profile, setProfile] = useState<HeaderProfile | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
 
@@ -234,10 +235,64 @@ function ProfileDropdown({ role }: { role: string }) {
             </div>
           </section>
 
-          {shortcuts.map(({ label, href: shortcutHref, icon: Icon }) => (
-            <Link key={shortcutHref} href={shortcutHref} onClick={() => setOpen(false)} className="inline-flex min-h-11 items-center gap-3 rounded-[1rem] px-3 text-sm font-black text-[var(--ink)] transition hover:bg-[var(--surface)]" role="menuitem">
-              <Icon className="h-4 w-4 text-[var(--signal)]" /> {label}
-            </Link>
+          {shortcuts.map(({ label, href: shortcutHref, icon: Icon }, idx) => (
+            <div key={shortcutHref}>
+              <Link href={shortcutHref} onClick={() => setOpen(false)} className="inline-flex min-h-11 w-full items-center gap-3 rounded-[1rem] px-3 text-sm font-black text-[var(--ink)] transition hover:bg-[var(--surface)]" role="menuitem">
+                <Icon className="h-4 w-4 text-[var(--signal)]" /> {label}
+              </Link>
+              {label === "My Tickets" ? (
+                <>
+                  <a
+                    href="https://srd.sassa.gov.za/sc19/status"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setOpen(false)}
+                    className="inline-flex min-h-11 w-full items-center gap-3 rounded-[1rem] px-3 text-sm font-black text-[var(--ink)] transition hover:bg-[var(--surface)]"
+                    role="menuitem"
+                  >
+                    <Landmark className="h-4 w-4 text-[var(--signal)]" /> SASSA 370 Status
+                  </a>
+                  <div className="rounded-[1rem] border border-transparent transition data-[open=true]:border-[var(--line)] data-[open=true]:bg-[var(--surface)]/60" data-open={uifOpen}>
+                    <button
+                      type="button"
+                      onClick={() => setUifOpen((v) => !v)}
+                      className="inline-flex min-h-11 w-full items-center justify-between gap-3 rounded-[1rem] px-3 text-sm font-black text-[var(--ink)] transition hover:bg-[var(--surface)]"
+                      aria-expanded={uifOpen}
+                      aria-haspopup="menu"
+                    >
+                      <span className="inline-flex items-center gap-3">
+                        <FileCheck2 className="h-4 w-4 text-[var(--signal)]" /> UIF
+                      </span>
+                      <ChevronDown className={`h-4 w-4 transition ${uifOpen ? "rotate-180" : ""}`} />
+                    </button>
+                    {uifOpen ? (
+                      <div className="grid gap-1 p-1 pt-0" role="menu">
+                        <a
+                          href="https://ufiling.labour.gov.za/uif/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setOpen(false)}
+                          className="inline-flex min-h-10 items-center gap-3 rounded-[0.85rem] bg-white px-3 pl-9 text-sm font-bold text-[var(--steel)] transition hover:bg-white hover:text-[var(--signal-strong)]"
+                          role="menuitem"
+                        >
+                          <ShieldCheck className="h-4 w-4 text-[var(--signal)]" /> Check UIF Status
+                        </a>
+                        <a
+                          href="https://ufiling.labour.gov.za/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setOpen(false)}
+                          className="inline-flex min-h-10 items-center gap-3 rounded-[0.85rem] bg-white px-3 pl-9 text-sm font-bold text-[var(--steel)] transition hover:bg-white hover:text-[var(--signal-strong)]"
+                          role="menuitem"
+                        >
+                          <Landmark className="h-4 w-4 text-[var(--signal)]" /> Update UIF Password
+                        </a>
+                      </div>
+                    ) : null}
+                  </div>
+                </>
+              ) : null}
+            </div>
           ))}
 
           <Link href={href} onClick={() => setOpen(false)} className="inline-flex min-h-11 items-center gap-3 rounded-[1rem] border-t border-[var(--line)] px-3 pt-2 text-sm font-black text-[var(--ink)] transition hover:bg-[var(--surface)]" role="menuitem">
