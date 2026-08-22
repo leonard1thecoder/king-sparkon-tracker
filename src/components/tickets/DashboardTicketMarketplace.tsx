@@ -55,15 +55,15 @@ export function DashboardTicketMarketplace() {
     <>
       <DashboardHeader role="USER WORKSPACE" title="Buy event tickets" description="Browse live backend ticket events, inspect capacity, and add QR tickets to the verified Stripe cart." />
       <main className="grid gap-7 bg-[var(--surface)] p-5 md:p-8">
-        <div className="flex justify-center overflow-hidden rounded-[1.5rem] border border-[var(--line)] bg-white p-2 shadow-[var(--shadow-soft)] md:p-3">
+        <div className="-mx-5 -mt-7 overflow-hidden border-b border-[var(--line)] bg-white md:-mx-8">
           <Image
             src="https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/lego_party.png"
             alt="King Sparkon Lego party"
             width={1200}
             height={675}
-            className="h-auto max-h-[220px] w-auto max-w-full object-contain sm:max-h-[280px] md:max-h-[360px] lg:max-h-[400px]"
+            className="h-auto max-h-[260px] w-full object-contain sm:max-h-[340px] md:max-h-[420px] lg:max-h-[480px]"
             priority
-            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1100px"
+            sizes="100vw"
           />
         </div>
 
