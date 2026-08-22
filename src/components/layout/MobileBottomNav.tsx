@@ -6,7 +6,6 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronRight, MoreHorizontal, Power, UserRound, X } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { getRoleNavConfig, isActive, type NavItem } from "@/components/layout/DashboardRoleNav";
-import { userProfileShortcuts } from "@/components/layout/DashboardHeaderActions";
 import type { UserRole } from "@/lib/types/backend";
 import { cn } from "@/lib/utils/cn";
 
@@ -27,18 +26,10 @@ export function MobileBottomNav({ role: rawRole }: { role: string }) {
   const role = useMemo(() => normalizedRole(rawRole), [rawRole]);
   const { primary, secondary } = useMemo(() => getRoleNavConfig(role), [role]);
 
-  // For User role, add secondary user shortcuts if secondary is empty
+  // User secondary navs are on profile header, no More needed on footer
   const allSecondaryItems: NavItem[] = useMemo(() => {
+    if (role === "User") return [];
     if (secondary.length > 0) return secondary;
-    if (role === "User") {
-      return userProfileShortcuts.map((s) => ({
-        label: s.label,
-        href: s.href,
-        icon: s.icon,
-        shortLabel: s.label,
-        description: `View ${s.label.toLowerCase()}`,
-      }));
-    }
     return [];
   }, [secondary, role]);
 
