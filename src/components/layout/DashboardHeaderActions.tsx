@@ -183,10 +183,19 @@ function ProfileDropdown({ role }: { role: string }) {
   const href = profileRoute(role);
 
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onFocus={() => setOpen(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpen(false);
+      }}
+    >
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
+        onMouseEnter={() => setOpen(true)}
         className={`${iconButtonClass} relative overflow-hidden`}
         aria-label="Open profile menu"
         aria-expanded={open}
