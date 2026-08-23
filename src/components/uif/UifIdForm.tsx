@@ -50,9 +50,42 @@ export function UifIdForm({ actionLabel, placeholderStatus }: { actionLabel: str
       </button>
 
       {status ? (
-        <div className="rounded-xl border border-[var(--line)] bg-[var(--signal-soft)] p-4 text-sm font-semibold leading-6 text-[var(--ink)]" role="status">
-          {status}
-        </div>
+        <>
+          <div className="rounded-xl border border-[var(--line)] bg-[var(--signal-soft)] p-4 text-sm font-semibold leading-6 text-[var(--ink)]" role="status">
+            {status}
+          </div>
+          {actionLabel.toLowerCase().includes("check") ? (
+            <div className="overflow-hidden rounded-xl border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
+              <div className="border-b border-[var(--line)] bg-[var(--surface)] px-4 py-3">
+                <h3 className="text-sm font-black tracking-[-0.02em] text-[var(--ink)]">Application for Benefit History</h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[640px] border-collapse text-left">
+                  <thead>
+                    <tr className="border-b border-[var(--line)] bg-white">
+                      <th className="px-4 py-3 text-xs font-black uppercase tracking-[0.08em] text-[var(--muted)]">ID Number</th>
+                      <th className="px-4 py-3 text-xs font-black uppercase tracking-[0.08em] text-[var(--muted)]">Benefit Type</th>
+                      <th className="px-4 py-3 text-xs font-black uppercase tracking-[0.08em] text-[var(--muted)]">Application Number</th>
+                      <th className="px-4 py-3 text-xs font-black uppercase tracking-[0.08em] text-[var(--muted)]">Application Date</th>
+                      <th className="px-4 py-3 text-xs font-black uppercase tracking-[0.08em] text-[var(--muted)]">Claim Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-[var(--line)] last:border-0">
+                      <td className="px-4 py-3 font-mono text-sm font-bold text-[var(--ink)]">{idNumber}</td>
+                      <td className="px-4 py-3 text-sm font-semibold text-[var(--steel)]">Unemployment</td>
+                      <td className="px-4 py-3 font-mono text-sm font-bold text-[var(--ink)]">UIF202403001</td>
+                      <td className="px-4 py-3 text-sm font-semibold text-[var(--steel)]">2024-03-15</td>
+                      <td className="px-4 py-3">
+                        <span className="inline-flex rounded-full border border-[var(--confirm)]/30 bg-[var(--confirm)]/10 px-2.5 py-1 text-xs font-black text-[var(--confirm)]">Approved</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : null}
+        </>
       ) : null}
     </form>
   );
