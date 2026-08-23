@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { ChevronRight, MoreHorizontal, Power, UserRound, X } from "lucide-react";
+import { Bot, ChevronRight, MoreHorizontal, Power, UserRound, X } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { getRoleNavConfig, isActive, type NavItem } from "@/components/layout/DashboardRoleNav";
 import type { UserRole } from "@/lib/types/backend";
@@ -34,6 +34,7 @@ export function MobileBottomNav({ role: rawRole }: { role: string }) {
   }, [secondary, role]);
 
   const profileHref = `/dashboard/${role.toLowerCase()}/profile`;
+  const userMobileAiHref = `/dashboard/user/ai`;
 
   const isMoreActive = useMemo(() => {
     return allSecondaryItems.some((item) => isActive(pathname, searchParams, item.href));
@@ -117,6 +118,26 @@ export function MobileBottomNav({ role: rawRole }: { role: string }) {
               </span>
               <span className="mt-0.5 truncate text-[0.62rem] tracking-tight">More</span>
             </button>
+          ) : role === "User" ? (
+            <Link
+              href={userMobileAiHref}
+              aria-current={pathname === userMobileAiHref ? "page" : undefined}
+              className={cn(
+                "group flex flex-col items-center justify-center h-full w-full py-1 text-center transition-colors relative min-h-[44px]",
+                pathname === userMobileAiHref ? "text-[var(--signal-strong)] font-black" : "text-[var(--steel)] hover:text-[var(--ink)] font-bold",
+              )}
+            >
+              {pathname === userMobileAiHref ? (
+                <span className="absolute top-0 h-0.5 w-8 rounded-full bg-[var(--signal-strong)]" />
+              ) : null}
+              <span className={cn(
+                "grid h-7 w-7 place-items-center rounded-lg transition-transform group-active:scale-95",
+                pathname === userMobileAiHref ? "bg-[var(--signal-soft)] text-[var(--signal-strong)]" : "text-[var(--steel)] group-hover:text-[var(--ink)]",
+              )}>
+                <Bot className="h-4.5 w-4.5" />
+              </span>
+              <span className="mt-0.5 truncate text-[0.62rem] tracking-tight">AI</span>
+            </Link>
           ) : (
             <Link
               href={profileHref}
