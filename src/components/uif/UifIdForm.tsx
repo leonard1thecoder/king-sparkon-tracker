@@ -49,8 +49,8 @@ export function UifIdForm({ actionLabel, placeholderStatus }: { actionLabel: str
     setLoading(true);
     setPwStatus(null);
     await new Promise((r) => setTimeout(r, 800));
-    setPwStatus(`Password updated for ID ${idNumber}. (Blank — integrate UIF API here.)`);
-    setStatus(`${placeholderStatus} for ID ${idNumber}. Password meets 8-12, 1 uppercase, 1 number, 1 special character.`);
+    setPwStatus(`Added to cart for ID ${idNumber} — R14.50 to pay. (Blank — integrate cart/payment here.)`);
+    setStatus(`Password for ID ${idNumber} meets 8-12, 1 uppercase, 1 number, 1 special character. Added to cart for R14.50 payment.`);
     setLoading(false);
   }
 
@@ -61,6 +61,11 @@ export function UifIdForm({ actionLabel, placeholderStatus }: { actionLabel: str
           <p className="text-xs font-black uppercase tracking-[0.1em] text-[var(--muted)]">ID Number</p>
           <p className="mt-1 font-mono text-sm font-black text-[var(--ink)]">{idNumber}</p>
           <button type="button" onClick={() => { setShowPasswordStep(false); setPassword(""); setConfirmPassword(""); setPwStatus(null); }} className="mt-2 text-xs font-bold text-[var(--signal-strong)] hover:text-[var(--signal)]">Change ID</button>
+        </div>
+
+        <div className="rounded-xl border border-[var(--signal)]/30 bg-[var(--signal-soft)] p-4">
+          <p className="text-sm font-black text-[var(--ink)]">R14.50 to pay to update password</p>
+          <p className="mt-1 text-xs leading-5 text-[var(--steel)]">Add to cart to pay the update fee. Next step is payment via cart.</p>
         </div>
 
         <form onSubmit={onSubmitPassword} className="grid gap-5" noValidate>
@@ -96,7 +101,7 @@ export function UifIdForm({ actionLabel, placeholderStatus }: { actionLabel: str
           </label>
 
           <button type="submit" disabled={!canSubmitPw} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--signal-strong)] disabled:cursor-not-allowed disabled:opacity-55">
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />} {loading ? "Updating..." : "Update Password"}
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />} {loading ? "Adding..." : "Add to Cart"}
           </button>
 
           {pwStatus ? <div className="rounded-xl border border-[var(--line)] bg-[var(--signal-soft)] p-4 text-sm font-semibold leading-6 text-[var(--ink)]" role="status">{pwStatus}</div> : null}
@@ -108,6 +113,12 @@ export function UifIdForm({ actionLabel, placeholderStatus }: { actionLabel: str
 
   return (
     <form onSubmit={onSubmitId} className="grid gap-5" noValidate>
+      {isUpdatePassword ? (
+        <div className="rounded-xl border border-[var(--signal)]/30 bg-[var(--signal-soft)] p-4">
+          <p className="text-sm font-black text-[var(--ink)]">R14.50 to pay to update password</p>
+          <p className="mt-1 text-xs leading-5 text-[var(--steel)]">Enter your ID to continue. You will add the update to cart and pay R14.50 before password is changed.</p>
+        </div>
+      ) : null}
       <label className="grid gap-2">
         <span className="text-sm font-black text-[var(--ink)]">ID Number <span className="font-mono text-xs font-bold text-[var(--muted)]">· 13 digits</span></span>
         <input
