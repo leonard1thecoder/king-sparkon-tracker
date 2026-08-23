@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Barcode, Bot, Crown, Loader2, MessageCircle, Send, ShieldCheck, Sparkles, X, Zap } from "lucide-react";
 
@@ -73,6 +74,15 @@ export function FloatingChatbot() {
     return null;
   }
 
+  return <FloatingChatbotGate />;
+}
+
+function FloatingChatbotGate() {
+  const pathname = usePathname();
+  // Hide floating widget inside dashboards — AI is now in left sidebar as King Sparkon AI
+  if (pathname?.startsWith("/dashboard")) {
+    return null;
+  }
   return <FloatingChatbotPanel />;
 }
 

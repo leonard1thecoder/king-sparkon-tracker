@@ -7,6 +7,7 @@ import {
   Activity,
   BadgePercent,
   BarChart3,
+  Bot,
   Boxes,
   BriefcaseBusiness,
   Building2,
@@ -25,6 +26,7 @@ import {
   Settings,
   ShieldCheck,
   ShoppingCart,
+  Sparkles,
   Ticket,
   Upload,
   UserRound,
@@ -55,6 +57,7 @@ export const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Reports", href: "/dashboard/admin/reports", icon: BarChart3, description: "Platform performance", shortLabel: "Reports" },
     { label: "Audit Logs", href: "/dashboard/admin/audit", icon: ClipboardList, description: "Security and action history", shortLabel: "Audit" },
     { label: "Developer Hub", href: "/dashboard/admin/developer", icon: Code2, description: "Stages and implementation", shortLabel: "Dev" },
+    { label: "King Sparkon AI", href: "/dashboard/admin/ai", icon: Bot, description: "AI assistant", shortLabel: "AI" },
     { label: "Settings", href: "/dashboard/admin/settings", icon: Settings, description: "Platform policy and controls", shortLabel: "Settings" },
     { label: "Profile", href: "/dashboard/admin/profile", icon: UserRound, description: "Account and session", shortLabel: "Profile" },
   ],
@@ -68,6 +71,7 @@ export const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Jobs", href: "/dashboard/owner/jobs", icon: BriefcaseBusiness, description: "Business opportunities", shortLabel: "Jobs" },
     { label: "Applications", href: "/dashboard/owner/jobs?tab=applications", icon: FileCheck2, description: "Review job applicants", shortLabel: "Apps" },
     { label: "Promotions", href: "/dashboard/owner/promotions", icon: Megaphone, description: "Subscriber campaigns", shortLabel: "Promos" },
+    { label: "King Sparkon AI", href: "/dashboard/owner/ai", icon: Bot, description: "AI assistant", shortLabel: "AI" },
     { label: "Settings", href: "/dashboard/owner/settings", icon: Settings, description: "Business preferences", shortLabel: "Settings" },
     { label: "Profile", href: "/dashboard/owner/profile", icon: UserRound, description: "Identity and session", shortLabel: "Profile" },
   ],
@@ -78,6 +82,7 @@ export const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Ticket Entry", href: "/dashboard/worker/tickets/scan", icon: QrCode, description: "Face and QR verification", shortLabel: "Tickets" },
     { label: "Product Sales", href: "/dashboard/worker/transactions", icon: CreditCard, description: "Completed carts", shortLabel: "Sales" },
     { label: "Tips & QR", href: "/dashboard/worker/tips", icon: WalletCards, description: "Owner-enabled tips", shortLabel: "Tips" },
+    { label: "King Sparkon AI", href: "/dashboard/worker/ai", icon: Bot, description: "AI assistant", shortLabel: "AI" },
     { label: "Profile", href: "/dashboard/worker/profile", icon: UserRound, description: "Identity and business assignment", shortLabel: "Profile" },
   ],
   Affiliate: [
@@ -86,6 +91,7 @@ export const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Commissions", href: "/dashboard/affiliate/commissions", icon: BarChart3, description: "Approved earnings ledger", shortLabel: "Earnings" },
     { label: "Payouts", href: "/dashboard/affiliate/payouts", icon: WalletCards, description: "Cash out and settlements", shortLabel: "Payouts" },
     { label: "Affiliate Leads", href: "/dashboard/affiliate/leads", icon: UsersRound, description: "Subscriber contacts and sales angles", shortLabel: "Leads" },
+    { label: "King Sparkon AI", href: "/dashboard/affiliate/ai", icon: Bot, description: "AI assistant", shortLabel: "AI" },
     { label: "Profile", href: "/dashboard/affiliate/profile", icon: UserRound, description: "Payout identity and session", shortLabel: "Profile" },
   ],
   User: [
@@ -93,6 +99,7 @@ export const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Cart", href: "/dashboard/user/shop/cart", icon: ShoppingCart, description: "Review and pay", shortLabel: "Cart" },
     { label: "King Sparkon Lego Tickets", href: "/dashboard/user/tickets/buy", icon: Ticket, description: "Browse live events", shortLabel: "Lego Tickets" },
     { label: "King Sparkon Job posts", href: "/dashboard/user/jobs", icon: BriefcaseBusiness, description: "Browse job opportunities", shortLabel: "Job posts" },
+    { label: "King Sparkon AI", href: "/dashboard/user/ai", icon: Bot, description: "AI assistant", shortLabel: "AI" },
   ],
 };
 
