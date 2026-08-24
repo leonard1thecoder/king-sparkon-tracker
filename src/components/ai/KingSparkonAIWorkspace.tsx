@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/purity -- King Sparkon AI ids use Date.now/Math.random for chat messages, stable per user action */
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
