@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ShoppingCart } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { UifCartWorkspace } from "@/components/uif\UifCartWorkspace";
+import { UifCartWorkspace } from "@/components/uif/UifCartWorkspace";
 
 export const metadata: Metadata = {
   title: "UIF Cart | User Dashboard",
