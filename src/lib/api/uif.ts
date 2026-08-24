@@ -77,3 +77,26 @@ export async function fetchUifBenefits(idNumber: string) {
     throw err;
   }
 }
+
+export type UifResetPasswordRequest = { idNumber: string; password: string; confirmPassword: string };
+
+export type UifResetCartResponse = {
+  orderId: number;
+  paymentIntentId: string;
+  clientSecret: string;
+  amount: number | string;
+  currency: string;
+  status: string;
+  requesterUsername?: string;
+  targetIdNumber?: string;
+  createdAt?: string;
+  message?: string;
+};
+
+export async function createUifResetCart(payload: UifResetPasswordRequest) {
+  return apiPost<UifResetCartResponse, UifResetPasswordRequest>(`/uif/reset-password`, payload);
+}
+
+export async function getUifResetCartStatus(paymentIntentId: string) {
+  return apiGet<UifResetCartResponse>(`/uif/reset-password/status/${encodeURIComponent(paymentIntentId)}`);
+}

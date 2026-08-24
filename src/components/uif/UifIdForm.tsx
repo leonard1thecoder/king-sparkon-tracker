@@ -1,8 +1,9 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Loader2, ShieldCheck } from "lucide-react";
-import { fetchUifBenefits, normalizeUifRows, getUifBenefitRows } from "@/lib/api/uif";
+import { Loader2, ShieldCheck, ShoppingCart } from "lucide-react";
+import { createUifResetCart, fetchUifBenefits, normalizeUifRows, getUifBenefitRows } from "@/lib/api/uif";
 import { normalizeApiError } from "@/lib/api/client";
 
 function onlyDigits(v: string, max: number) {
@@ -10,6 +11,7 @@ function onlyDigits(v: string, max: number) {
 }
 
 export function UifIdForm({ actionLabel, placeholderStatus }: { actionLabel: string; placeholderStatus: string }) {
+  const router = useRouter();
   const [idNumber, setIdNumber] = useState("");
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -71,10 +73,25 @@ export function UifIdForm({ actionLabel, placeholderStatus }: { actionLabel: str
     if (!canSubmitPw) return;
     setLoading(true);
     setPwStatus(null);
-    await new Promise((r) => setTimeout(r, 800));
-    setPwStatus(`Added to cart for ID ${idNumber} — R14.50 to pay. (Blank — integrate cart/payment here.)`);
-    setStatus(`Password for ID ${idNumber} meets 8-12, 1 uppercase, 1 number, 1 special character. Added to cart for R14.50 payment.`);
-    setLoading(false);
+    setStatus(null);
+    try {
+      const cart = await createUifResetCart({ idNumber, password, confirmPassword });
+      // Store cart info for cart page and go to cart
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("uif-reset-cart", JSON.stringify(cart));
+      }
+      setPwStatus(`Added to cart — R${Number(cart.amount).toFixed(2)} ${cart.currency} to pay. Order #${cart.orderId} — redirecting to cart...`);
+      setStatus(`Password for ID ${idNumber} meets 8-12, 1 uppercase, 1 number, 1 special. Added to cart order ${cart.orderId}.`);
+      // Go to cart after brief delay so user sees status, per request goes to cart
+      setTimeout(() => {
+        router.push(`/dashboard/user/uif/cart?paymentIntentId=${encodeURIComponent(cart.paymentIntentId)}`);
+      }, 900);
+    } catch (err) {
+      const normalized = normalizeApiError(err);
+      setPwStatus(normalized.message || "Failed to add UIF password reset to cart. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (isUpdatePassword && showPasswordStep) {
@@ -87,7 +104,7 @@ export function UifIdForm({ actionLabel, placeholderStatus }: { actionLabel: str
         </div>
 
         <div className="rounded-xl border border-[var(--signal)]/30 bg-[var(--signal-soft)] p-4">
-          <p className="text-sm font-black text-[var(--ink)]">R14.50 to pay to update password</p>
+          <p className="text-sm font-black text-[var(--ink)]">R14.28 to pay to update password</p>
           <p className="mt-1 text-xs leading-5 text-[var(--steel)]">Add to cart to pay the update fee. Next step is payment via cart.</p>
         </div>
 
@@ -138,8 +155,8 @@ export function UifIdForm({ actionLabel, placeholderStatus }: { actionLabel: str
     <form onSubmit={onSubmitId} className="grid gap-5" noValidate>
       {isUpdatePassword ? (
         <div className="rounded-xl border border-[var(--signal)]/30 bg-[var(--signal-soft)] p-4">
-          <p className="text-sm font-black text-[var(--ink)]">R14.50 to pay to update password</p>
-          <p className="mt-1 text-xs leading-5 text-[var(--steel)]">Enter your ID to continue. You will add the update to cart and pay R14.50 before password is changed.</p>
+          <p className="text-sm font-black text-[var(--ink)]">R14.28 to pay to update password</p>
+          <p className="mt-1 text-xs leading-5 text-[var(--steel)]">Enter your ID to continue. You will add the update to cart and pay R14.28 before password is changed.</p>
         </div>
       ) : null}
       <label className="grid gap-2">
