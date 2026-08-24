@@ -251,14 +251,6 @@ function ProfileDropdown({ role }: { role: string }) {
               </Link>
               {label === "My Tickets" ? (
                 <>
-                  <Link
-                    href="/dashboard/user/sassa-status"
-                    onClick={() => setOpen(false)}
-                    className="inline-flex min-h-11 w-full items-center gap-3 rounded-[1rem] px-3 text-sm font-black text-[var(--ink)] transition hover:bg-[var(--surface)]"
-                    role="menuitem"
-                  >
-                    <Landmark className="h-4 w-4 text-[var(--signal)]" /> SASSA 370 Status
-                  </Link>
                   <div className="rounded-[1rem] border border-transparent transition data-[open=true]:border-[var(--line)] data-[open=true]:bg-[var(--surface)]/60" data-open={uifOpen}>
                     <button
                       type="button"
