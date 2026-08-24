@@ -1,4 +1,4 @@
-import { apiGet } from "@/lib/api/client";
+import { apiPost } from "@/lib/api/client";
 
 export type UifBenefitRow = {
   idNumber?: string;
@@ -48,7 +48,9 @@ export function getUifBenefitRows(row: UifBenefitRow) {
   return { idNumber, benefitType, applicationNumber, applicationDate, claimStatus };
 }
 
+export type UifBenefitsRequest = { idNumber: string };
+
 export async function fetchUifBenefits(idNumber: string) {
-  const encoded = encodeURIComponent(idNumber.trim());
-  return apiGet<UifBenefitsResponse>(`/api/uif/benefits?idNumber=${encoded}`);
+  // POST with body {idNumber} to avoid sensitive ID in URL/logs per backend UifBenefitsController
+  return apiPost<UifBenefitsResponse, UifBenefitsRequest>(`/api/uif/benefits`, { idNumber: idNumber.trim() });
 }
