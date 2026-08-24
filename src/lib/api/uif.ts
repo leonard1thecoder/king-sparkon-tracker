@@ -1,4 +1,4 @@
-import { apiPost } from "@/lib/api/client";
+import { apiGet, apiPost } from "@/lib/api/client";
 
 export type UifBenefitRow = {
   idNumber?: string;
@@ -51,6 +51,21 @@ export function getUifBenefitRows(row: UifBenefitRow) {
 export type UifBenefitsRequest = { idNumber: string };
 
 export async function fetchUifBenefits(idNumber: string) {
-  // POST with body {idNumber} to avoid sensitive ID in URL/logs per backend UifBenefitsController
-  return apiPost<UifBenefitsResponse, UifBenefitsRequest>(`/api/uif/benefits`, { idNumber: idNumber.trim() });
+  const payload: UifBenefitsRequest = { idNumber: idNumber.trim() };
+  try {
+    // Primary: POST with body {idNumber} to avoid sensitive ID in URL/logs per backend UifBenefitsController
+    return await apiPost<UifBenefitsResponse, UifBenefitsRequest>(`/api/uif/benefits`, payload);
+  } catch (err) {
+    const status = (err as { status?: number })?.status;
+    // Fallback to GET for backward compatibility if backend still on old GET endpoint
+    if (status === 404) {
+      try {
+        const encoded = encodeURIComponent(payload.idNumber);
+        return await apiGet<UifBenefitsResponse>(`/api/uif/benefits?idNumber=${encoded}`);
+      } catch {
+        throw err;
+      }
+    }
+    throw err;
+  }
 }
