@@ -2,9 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Loader2, ShieldCheck, ShoppingCart } from "lucide-react";
+import { Loader2, ShieldCheck } from "lucide-react";
 import { createUifResetCart, fetchUifBenefits, normalizeUifRows, getUifBenefitRows } from "@/lib/api/uif";
 import { normalizeApiError } from "@/lib/api/client";
+import { addTuckShopProductToCart } from "@/lib/tuck-shop/cart";
+import type { Product } from "@/lib/types/backend";
 
 function onlyDigits(v: string, max: number) {
   return v.replace(/\D/g, "").slice(0, max);
@@ -76,15 +78,29 @@ export function UifIdForm({ actionLabel, placeholderStatus }: { actionLabel: str
     setStatus(null);
     try {
       const cart = await createUifResetCart({ idNumber, password, confirmPassword });
-      // Store cart info for cart page and go to cart
+      // Store UIF cart info and also add to existing Tuck Shop cart so it shows in /dashboard/user/shop/cart
       if (typeof window !== "undefined") {
         window.localStorage.setItem("uif-reset-cart", JSON.stringify(cart));
+        // Ensure it adds to existing cart (Tuck Shop cart at /dashboard/user/shop/cart)
+        const uifProduct: Product = {
+          id: 900001,
+          name: "UIF Password Update",
+          businessName: "UIF Online",
+          category: "Service",
+          price: Number(cart.amount) || 14.28,
+          stockQuantity: 1,
+          productImageUrl: "/king-sparkon-logo.png",
+          status: "AVAILABLE",
+        } as unknown as Product;
+        try {
+          addTuckShopProductToCart(uifProduct, 1);
+        } catch {}
       }
       setPwStatus(`Added to cart — R${Number(cart.amount).toFixed(2)} ${cart.currency} to pay. Order #${cart.orderId} — redirecting to cart...`);
       setStatus(`Password for ID ${idNumber} meets 8-12, 1 uppercase, 1 number, 1 special. Added to cart order ${cart.orderId}.`);
-      // Go to cart after brief delay so user sees status, per request goes to cart
+      // Go to existing cart (Tuck Shop cart) per request - also keep UIF cart available
       setTimeout(() => {
-        router.push(`/dashboard/user/uif/cart?paymentIntentId=${encodeURIComponent(cart.paymentIntentId)}`);
+        router.push(`/dashboard/user/shop/cart`);
       }, 900);
     } catch (err) {
       const normalized = normalizeApiError(err);

@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { Bot, Crown, Loader2, Send, ShieldCheck, Sparkles } from "lucide-react";
+import { Bot, Loader2, Send, ShieldCheck, Sparkles } from "lucide-react";
 
 type ChatMessage = { id: string; role: "assistant" | "user"; content: string; pending?: boolean };
 
@@ -25,6 +25,7 @@ export function KingSparkonAIWorkspace() {
     const stored = typeof window !== "undefined" ? window.localStorage.getItem("king-sparkon-chatbot-conversation-id") : null;
     if (stored) setConversationId(stored);
     else {
+      // eslint-disable-next-line react-hooks/purity -- stable id generation on mount, not during render
       const id = `kst-ui-${Date.now()}-${Math.random().toString(36).slice(2)}`;
       setConversationId(id);
       if (typeof window !== "undefined") window.localStorage.setItem("king-sparkon-chatbot-conversation-id", id);
@@ -38,7 +39,9 @@ export function KingSparkonAIWorkspace() {
   async function sendMessage(text: string) {
     const trimmed = text.trim();
     if (!trimmed || sending) return;
+    // eslint-disable-next-line react-hooks/purity -- id generation for chat messages on user action, not render
     const userId = `m-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    // eslint-disable-next-line react-hooks/purity -- id generation for pending message
     const pendingId = `m-${Date.now()}-${Math.random().toString(36).slice(2)}-p`;
     setMessages((m) => [...m, { id: userId, role: "user", content: trimmed }, { id: pendingId, role: "assistant", content: "Thinking with King Sparkon AI...", pending: true }]);
     setInput("");
@@ -57,7 +60,7 @@ export function KingSparkonAIWorkspace() {
       setConversationId(nextId);
       if (typeof window !== "undefined") window.localStorage.setItem("king-sparkon-chatbot-conversation-id", nextId);
       setMessages((m) => m.map((x) => (x.id === pendingId ? { id: pendingId, role: "assistant", content: answer } : x)));
-    } catch (e) {
+    } catch {
       setError("Backend unavailable. Try again or use contact support.");
       setMessages((m) => m.map((x) => (x.id === pendingId ? { id: pendingId, role: "assistant", content: "King Sparkon Assistant could not reach the backend right now. Please try again." } : x)));
     } finally {
