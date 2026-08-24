@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Loader2, ShieldCheck } from "lucide-react";
+import { fetchUifBenefits, normalizeUifRows, getUifBenefitRows } from "@/lib/api/uif";
+import { normalizeApiError } from "@/lib/api/client";
 
 function onlyDigits(v: string, max: number) {
   return v.replace(/\D/g, "").slice(0, max);
@@ -15,8 +17,11 @@ export function UifIdForm({ actionLabel, placeholderStatus }: { actionLabel: str
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [pwStatus, setPwStatus] = useState<string | null>(null);
+  const [benefitRows, setBenefitRows] = useState<ReturnType<typeof getUifBenefitRows>[]>([]);
+  const [benefitError, setBenefitError] = useState<string | null>(null);
 
   const isUpdatePassword = actionLabel.toLowerCase().includes("update") && actionLabel.toLowerCase().includes("password");
+  const isCheckStatus = actionLabel.toLowerCase().includes("check");
   const idValid = idNumber.length === 13;
   const canSubmitId = idValid && !loading;
 
@@ -36,11 +41,31 @@ export function UifIdForm({ actionLabel, placeholderStatus }: { actionLabel: str
       setPwStatus(null);
       return;
     }
+    // Check UIF Status -> call backend GET /api/uif/benefits?idNumber=13digits
     setLoading(true);
     setStatus(null);
-    await new Promise((r) => setTimeout(r, 800));
-    setStatus(`${placeholderStatus} for ID ${idNumber}. (Blank page — integrate UIF API here.)`);
-    setLoading(false);
+    setBenefitError(null);
+    setBenefitRows([]);
+    try {
+      const response = await fetchUifBenefits(idNumber);
+      const rows = normalizeUifRows(response).map(getUifBenefitRows);
+      if (rows.length === 0) {
+        // No rows returned: show demo single row fallback and info status
+        setBenefitRows([{ idNumber, benefitType: "Unemployment", applicationNumber: "UIF202403001", applicationDate: "2024-03-15", claimStatus: "Approved" }]);
+        setStatus(`No benefit history found for ID ${idNumber}. Showing demo row.`);
+      } else {
+        setBenefitRows(rows);
+        setStatus(`${placeholderStatus} for ID ${idNumber}. Found ${rows.length} row(s) from UIF online.`);
+      }
+    } catch (err) {
+      const normalized = normalizeApiError(err);
+      setBenefitError(normalized.message || "Failed to fetch UIF benefit history. Please try again.");
+      // Fallback demo row so table still shows 1 row as requested
+      setBenefitRows([{ idNumber, benefitType: "Unemployment", applicationNumber: "UIF202403001", applicationDate: "2024-03-15", claimStatus: "Approved" }]);
+      setStatus(`Backend error for ID ${idNumber}: ${normalized.message}. Showing demo row.`);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function onSubmitPassword(e: React.FormEvent) {
@@ -146,11 +171,12 @@ export function UifIdForm({ actionLabel, placeholderStatus }: { actionLabel: str
           <div className="rounded-xl border border-[var(--line)] bg-[var(--signal-soft)] p-4 text-sm font-semibold leading-6 text-[var(--ink)]" role="status">
             {status}
           </div>
-          {actionLabel.toLowerCase().includes("check") ? (
+          {isCheckStatus ? (
             <div className="overflow-hidden rounded-xl border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
               <div className="border-b border-[var(--line)] bg-[var(--surface)] px-4 py-3">
                 <h3 className="text-sm font-black tracking-[-0.02em] text-[var(--ink)]">Application for Benefit History</h3>
               </div>
+              {benefitError ? <div className="border-b border-[var(--danger)]/20 bg-[var(--danger)]/5 px-4 py-2 text-xs font-bold text-[var(--danger)]">{benefitError}</div> : null}
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[640px] border-collapse text-left">
                   <thead>
@@ -163,18 +189,21 @@ export function UifIdForm({ actionLabel, placeholderStatus }: { actionLabel: str
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="border-b border-[var(--line)] last:border-0">
-                      <td className="px-4 py-3 font-mono text-sm font-bold text-[var(--ink)]">{idNumber}</td>
-                      <td className="px-4 py-3 text-sm font-semibold text-[var(--steel)]">Unemployment</td>
-                      <td className="px-4 py-3 font-mono text-sm font-bold text-[var(--ink)]">UIF202403001</td>
-                      <td className="px-4 py-3 text-sm font-semibold text-[var(--steel)]">2024-03-15</td>
-                      <td className="px-4 py-3">
-                        <span className="inline-flex rounded-full border border-[var(--confirm)]/30 bg-[var(--confirm)]/10 px-2.5 py-1 text-xs font-black text-[var(--confirm)]">Approved</span>
-                      </td>
-                    </tr>
+                    {(benefitRows.length ? benefitRows : [{ idNumber, benefitType: "Unemployment", applicationNumber: "UIF202403001", applicationDate: "2024-03-15", claimStatus: "Approved" }]).map((row, idx) => (
+                      <tr key={idx} className="border-b border-[var(--line)] last:border-0">
+                        <td className="px-4 py-3 font-mono text-sm font-bold text-[var(--ink)]">{row.idNumber || idNumber}</td>
+                        <td className="px-4 py-3 text-sm font-semibold text-[var(--steel)]">{row.benefitType || "Unemployment"}</td>
+                        <td className="px-4 py-3 font-mono text-sm font-bold text-[var(--ink)]">{row.applicationNumber || "UIF202403001"}</td>
+                        <td className="px-4 py-3 text-sm font-semibold text-[var(--steel)]">{row.applicationDate || "2024-03-15"}</td>
+                        <td className="px-4 py-3">
+                          <span className="inline-flex rounded-full border border-[var(--confirm)]/30 bg-[var(--confirm)]/10 px-2.5 py-1 text-xs font-black text-[var(--confirm)]">{row.claimStatus || "Approved"}</span>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
+              <p className="border-t border-[var(--line)] bg-[var(--surface)]/60 px-4 py-2 text-xs font-semibold text-[var(--muted)]">Source: UIF online via your backend GET /api/uif/benefits?idNumber=13digits (scrapes https://uifonline.labour.gov.za). Only 1 demo row shown when backend returns empty.</p>
             </div>
           ) : null}
         </>
