@@ -50,9 +50,8 @@ export function UifIdForm({ actionLabel, placeholderStatus }: { actionLabel: str
       const response = await fetchUifBenefits(idNumber);
       const rows = normalizeUifRows(response).map(getUifBenefitRows);
       if (rows.length === 0) {
-        // No rows returned: show demo single row fallback and info status
-        setBenefitRows([{ idNumber, benefitType: "Unemployment", applicationNumber: "UIF202403001", applicationDate: "2024-03-15", claimStatus: "Approved" }]);
-        setStatus(`No benefit history found for ID ${idNumber}. Showing demo row.`);
+        setBenefitRows([]);
+        setStatus(`No benefit history found for ID ${idNumber}.`);
       } else {
         setBenefitRows(rows);
         setStatus(`${placeholderStatus} for ID ${idNumber}. Found ${rows.length} row(s) from UIF online.`);
@@ -60,9 +59,8 @@ export function UifIdForm({ actionLabel, placeholderStatus }: { actionLabel: str
     } catch (err) {
       const normalized = normalizeApiError(err);
       setBenefitError(normalized.message || "Failed to fetch UIF benefit history. Please try again.");
-      // Fallback demo row so table still shows 1 row as requested
-      setBenefitRows([{ idNumber, benefitType: "Unemployment", applicationNumber: "UIF202403001", applicationDate: "2024-03-15", claimStatus: "Approved" }]);
-      setStatus(`Backend error for ID ${idNumber}: ${normalized.message}. Showing demo row.`);
+      setBenefitRows([]);
+      setStatus(`Backend error for ID ${idNumber}: ${normalized.message}.`);
     } finally {
       setLoading(false);
     }
@@ -189,21 +187,27 @@ export function UifIdForm({ actionLabel, placeholderStatus }: { actionLabel: str
                     </tr>
                   </thead>
                   <tbody>
-                    {(benefitRows.length ? benefitRows : [{ idNumber, benefitType: "Unemployment", applicationNumber: "UIF202403001", applicationDate: "2024-03-15", claimStatus: "Approved" }]).map((row, idx) => (
-                      <tr key={idx} className="border-b border-[var(--line)] last:border-0">
-                        <td className="px-4 py-3 font-mono text-sm font-bold text-[var(--ink)]">{row.idNumber || idNumber}</td>
-                        <td className="px-4 py-3 text-sm font-semibold text-[var(--steel)]">{row.benefitType || "Unemployment"}</td>
-                        <td className="px-4 py-3 font-mono text-sm font-bold text-[var(--ink)]">{row.applicationNumber || "UIF202403001"}</td>
-                        <td className="px-4 py-3 text-sm font-semibold text-[var(--steel)]">{row.applicationDate || "2024-03-15"}</td>
-                        <td className="px-4 py-3">
-                          <span className="inline-flex rounded-full border border-[var(--confirm)]/30 bg-[var(--confirm)]/10 px-2.5 py-1 text-xs font-black text-[var(--confirm)]">{row.claimStatus || "Approved"}</span>
-                        </td>
+                    {benefitRows.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="px-4 py-8 text-center text-sm font-semibold text-[var(--muted)]">No benefit history to display. Submit a valid ID to fetch straight from UIF online.</td>
                       </tr>
-                    ))}
+                    ) : (
+                      benefitRows.map((row, idx) => (
+                        <tr key={idx} className="border-b border-[var(--line)] last:border-0">
+                          <td className="px-4 py-3 font-mono text-sm font-bold text-[var(--ink)]">{row.idNumber || idNumber}</td>
+                          <td className="px-4 py-3 text-sm font-semibold text-[var(--steel)]">{row.benefitType || "-"}</td>
+                          <td className="px-4 py-3 font-mono text-sm font-bold text-[var(--ink)]">{row.applicationNumber || "-"}</td>
+                          <td className="px-4 py-3 text-sm font-semibold text-[var(--steel)]">{row.applicationDate || "-"}</td>
+                          <td className="px-4 py-3">
+                            <span className="inline-flex rounded-full border border-[var(--confirm)]/30 bg-[var(--confirm)]/10 px-2.5 py-1 text-xs font-black text-[var(--confirm)]">{row.claimStatus || "-"}</span>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
-              <p className="border-t border-[var(--line)] bg-[var(--surface)]/60 px-4 py-2 text-xs font-semibold text-[var(--muted)]">Source: UIF online via your backend GET /api/uif/benefits?idNumber=13digits (scrapes https://uifonline.labour.gov.za). Only 1 demo row shown when backend returns empty.</p>
+              <p className="border-t border-[var(--line)] bg-[var(--surface)]/60 px-4 py-2 text-xs font-semibold text-[var(--muted)]">Source: UIF online via your backend POST /api/uif/benefits (body {`{idNumber}`}) scraping https://uifonline.labour.gov.za — no demo data, straight from backend.</p>
             </div>
           ) : null}
         </>
