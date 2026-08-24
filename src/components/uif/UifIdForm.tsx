@@ -207,7 +207,7 @@ export function UifIdForm({ actionLabel, placeholderStatus }: { actionLabel: str
                   </tbody>
                 </table>
               </div>
-              <p className="border-t border-[var(--line)] bg-[var(--surface)]/60 px-4 py-2 text-xs font-semibold text-[var(--muted)]">Source: UIF online via your backend POST /api/uif/benefits (body {`{idNumber}`}) scraping https://uifonline.labour.gov.za — no demo data, straight from backend.</p>
+              <p className="border-t border-[var(--line)] bg-[var(--surface)]/60 px-4 py-2 text-xs font-semibold text-[var(--muted)]">Data source: <a href="https://uifonline.labour.gov.za" target="_blank" rel="noopener noreferrer" className="font-bold text-[var(--signal-strong)] hover:underline">https://uifonline.labour.gov.za</a></p>
             </div>
           ) : null}
         </>
