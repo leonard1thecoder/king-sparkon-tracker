@@ -54,14 +54,15 @@ export async function fetchUifBenefits(idNumber: string) {
   const payload: UifBenefitsRequest = { idNumber: idNumber.trim() };
   try {
     // Primary: POST with body {idNumber} to avoid sensitive ID in URL/logs per backend UifBenefitsController
-    return await apiPost<UifBenefitsResponse, UifBenefitsRequest>(`/api/uif/benefits`, payload);
+    // Note: api client base is /api/backend, so path must be /uif/benefits (proxy adds /api prefix) — not /api/uif/benefits which would become /api/api/uif/benefits
+    return await apiPost<UifBenefitsResponse, UifBenefitsRequest>(`/uif/benefits`, payload);
   } catch (err) {
     const status = (err as { status?: number })?.status;
     // Fallback to GET for backward compatibility if backend still on old GET endpoint
     if (status === 404) {
       try {
         const encoded = encodeURIComponent(payload.idNumber);
-        return await apiGet<UifBenefitsResponse>(`/api/uif/benefits?idNumber=${encoded}`);
+        return await apiGet<UifBenefitsResponse>(`/uif/benefits?idNumber=${encoded}`);
       } catch {
         throw err;
       }
