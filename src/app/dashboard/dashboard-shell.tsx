@@ -100,10 +100,10 @@ const roleIcons: Record<Role, LucideIcon> = { Admin: ShieldCheck, Owner: Buildin
 
 function ActionCard({ action }: { action: Action }) {
   return (
-    <Link href={action.href} className="group rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] hover:-translate-y-1 hover:border-[var(--gold)]">
+    <Link href={action.href} className="group rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[var(--shadow-ledger)] hover:border-[var(--line-strong)]">
       <div className="flex items-start justify-between gap-4">
         <StatusPill label={action.label} tone={action.tone ?? "neutral"} />
-        <ArrowRight className="h-5 w-5 text-[var(--signal)] group-hover:text-[var(--ember)]" />
+        <ArrowRight className="h-5 w-5 text-[var(--signal)] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-[var(--accent-hover)]" />
       </div>
       <p className="mt-4 text-sm leading-6 text-[var(--steel)]">{action.detail}</p>
     </Link>
@@ -118,8 +118,8 @@ export function DashboardShell({ role }: { role: Role }) {
     <>
       <DashboardHeader role={role.toUpperCase()} title={copy.title} description={copy.description} />
       <main className="grid gap-7 bg-[var(--surface)] p-5 md:p-8">
-        <section className="grid gap-6 rounded-[2.5rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-7 xl:grid-cols-[1fr_0.85fr]">
-          <div className="rounded-[2rem] bg-[var(--ink)] p-6 text-white enterprise-grid md:p-8">
+        <section className="grid gap-6 rounded-[var(--radius-2xl)] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-7 xl:grid-cols-[1fr_0.85fr]">
+          <div className="rounded-[var(--radius-xl)] bg-[var(--ink)] p-6 text-white enterprise-grid md:p-8">
             <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--gold)]">{role} workspace plan</p>
             <h2 className="mt-4 max-w-3xl text-3xl font-black tracking-[-0.05em] md:text-5xl">{copy.description}</h2>
             <div className="mt-8 grid gap-3 sm:grid-cols-2">

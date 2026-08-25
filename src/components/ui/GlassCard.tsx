@@ -40,7 +40,7 @@ export function GlassCard({
   return (
     <div
       className={cn(
-        "rounded-xl border transition-all duration-300 ease-out",
+        "rounded-[var(--radius-xl)] border transition-all duration-200 ease-out",
         variantStyles[variant],
         paddings[padding],
         className,
@@ -60,7 +60,7 @@ export function GlassPanel({
   return (
     <div
       className={cn(
-        "rounded-xl border border-[rgba(186,230,253,0.6)] bg-[rgba(255,255,255,0.64)] backdrop-blur-[16px] shadow-[var(--shadow-glass)]",
+        "rounded-[var(--radius-xl)] border border-[rgba(186,230,253,0.6)] bg-[rgba(255,255,255,0.64)] backdrop-blur-[16px] shadow-[var(--shadow-glass)]",
         className,
       )}
       {...props}

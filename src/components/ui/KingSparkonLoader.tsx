@@ -26,17 +26,17 @@ export function KingSparkonLoader({
       aria-label={label}
     >
       <div className={compact
-        ? "relative w-full max-w-sm overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.06] p-6 shadow-[0_28px_90px_rgba(0,0,0,0.26)] backdrop-blur-xl"
-        : "relative w-full max-w-lg overflow-hidden rounded-[2.5rem] border border-[var(--line)] bg-white/92 p-8 text-center shadow-[var(--shadow-depth)] backdrop-blur-xl"}
+        ? "relative w-full max-w-sm overflow-hidden rounded-[var(--radius-2xl)] border border-white/10 bg-white/[0.06] p-6 shadow-[0_28px_90px_rgba(0,0,0,0.26)] backdrop-blur-xl"
+        : "relative w-full max-w-lg overflow-hidden rounded-[var(--radius-2xl)] border border-[var(--line)] bg-white/92 p-8 text-center shadow-[var(--shadow-depth)] backdrop-blur-xl"}
       >
         <div className="king-loader-aura pointer-events-none absolute left-1/2 top-20 h-44 w-44 -translate-x-1/2 rounded-full bg-[var(--gold)]/24 blur-3xl" aria-hidden="true" />
 
-        <div className="relative mx-auto grid h-24 w-24 place-items-center rounded-[1.9rem] border border-[var(--gold)]/70 bg-[#8e3f68] text-[var(--gold)] shadow-[0_24px_70px_rgba(7,19,31,0.24)]">
+        <div className="relative mx-auto grid h-24 w-24 place-items-center rounded-[var(--radius-2xl)] border border-[var(--gold)]/70 bg-[#8e3f68] text-[var(--gold)] shadow-[0_24px_70px_rgba(7,19,31,0.24)]">
           <Crown className="king-loader-crown h-12 w-12" strokeWidth={1.8} />
-          <span className="king-loader-orbit absolute inset-2 rounded-[1.45rem] border border-[var(--gold)]/40" aria-hidden="true" />
+          <span className="king-loader-orbit absolute inset-2 rounded-[var(--radius-xl)] border border-[var(--gold)]/40" aria-hidden="true" />
         </div>
 
-        <div className="relative mx-auto mt-7 h-20 max-w-xs overflow-hidden rounded-[1.25rem] border border-current/10 bg-black/8 px-5 py-3">
+        <div className="relative mx-auto mt-7 h-20 max-w-xs overflow-hidden rounded-[var(--radius-xl)] border border-current/10 bg-black/8 px-5 py-3">
           <div className="flex h-full items-end justify-center gap-1.5" aria-hidden="true">
             {BAR_HEIGHTS.map((height, index) => (
               <span

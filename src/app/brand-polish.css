@@ -11,7 +11,7 @@ main [data-orange-hover="true"]:focus-visible {
 
 /* Legacy pages now share the same restrained geometry as the rebuilt surfaces. */
 :where([class~="rounded-2xl"], [class~="rounded-3xl"]) {
-  border-radius: var(--radius-xl) !important;
+  border-radius: var(--radius-2xl) !important;
 }
 
 :where(button, a)[class~="rounded-full"] {

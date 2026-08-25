@@ -169,7 +169,7 @@ function FieldInput({ field, onValueChange }: { field: AuthField; onValueChange?
         <label htmlFor={field.name} className="text-sm font-black text-[var(--ink)]">{field.label}</label>
         {!required ? <span className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Optional</span> : null}
       </span>
-      <span className={`flex border border-[var(--line)] bg-white px-4 shadow-[var(--shadow-soft)] focus-within:border-[var(--gold)] focus-within:shadow-[var(--focus-ring)] ${isTextarea ? "min-h-32 items-start gap-3 rounded-[1.65rem] py-4" : "min-h-12 items-center gap-3 rounded-[1.65rem]"}`}>
+      <span className={`flex border border-[var(--line)] bg-white px-4 shadow-[var(--shadow-soft)] transition-all duration-200 focus-within:border-[var(--signal)] focus-within:shadow-[var(--focus-ring)] ${isTextarea ? "min-h-32 items-start gap-3 rounded-[var(--radius-xl)] py-4" : "min-h-12 items-center gap-3 rounded-[var(--radius-xl)]"}`}>
         <span className={`shrink-0 text-[var(--signal)] ${isTextarea ? "mt-1" : ""}`}>{icon}</span>
         {field.options ? (
           <select
@@ -276,10 +276,10 @@ export function AuthShell({ mode, eyebrow, title, description, fields, submitLab
               <div className="grid h-13 w-13 shrink-0 place-items-center rounded-[1.35rem] bg-[var(--ink)] text-[var(--gold)] shadow-[var(--shadow-soft)]">{isLogin ? <ShieldCheck className="h-6 w-6" /> : <Barcode className="h-6 w-6" />}</div>
             </div>
 
-            {activeNote ? <div className="mt-5 flex gap-3 rounded-[1.5rem] border border-[var(--gold)]/45 bg-[var(--gold)]/10 p-4 text-sm font-semibold leading-6 text-[var(--steel)]"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--signal)]" /><span>{activeNote}</span></div> : null}
+            {activeNote ? <div className="mt-5 flex gap-3 rounded-[var(--radius-xl)] border border-[var(--gold)]/45 bg-[var(--gold)]/10 p-4 text-sm font-semibold leading-6 text-[var(--steel)]"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--signal)]" /><span>{activeNote}</span></div> : null}
 
             {isRegister && roleSnapshot ? (
-              <div className="mt-5 rounded-[1.75rem] border border-[var(--line)] bg-[var(--ink)] p-4 text-white shadow-[var(--shadow-soft)]">
+              <div className="mt-5 rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--ink)] p-4 text-white shadow-[var(--shadow-soft)]">
                 <p className="font-mono text-[0.66rem] font-black uppercase tracking-[0.16em] text-[var(--gold)]">Selected role</p>
                 <h3 className="mt-2 text-2xl font-black tracking-[-0.04em]">{roleSnapshot.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-white/68">{roleSnapshot.copy}</p>
@@ -289,17 +289,17 @@ export function AuthShell({ mode, eyebrow, title, description, fields, submitLab
 
             <form className="mt-7 grid gap-5" onSubmit={handleSubmit}>
               <div className={isRegister ? "grid gap-5 md:grid-cols-2" : "grid gap-5"}>{visibleFields.map((field) => <FieldInput key={field.name} field={field} onValueChange={(name, value) => { if (name === "serviceRegisteringFor") setSelectedPrivilege(value); }} />)}</div>
-              {isLogin ? <div className="flex flex-col gap-3 text-sm font-bold text-[var(--steel)] sm:flex-row sm:items-center sm:justify-between"><label className="inline-flex items-center gap-2"><input type="checkbox" name="remember" className="h-4 w-4 rounded border-[var(--line)] accent-[var(--signal)]" />Remember this device</label><div className="flex flex-wrap gap-3"><Link href="/resend-verification" className="text-[var(--signal)] hover:text-[var(--ember)]">Resend verification</Link><Link href="/forgot-password" className="text-[var(--signal)] hover:text-[var(--ember)]">Forgot password?</Link></div></div> : null}
-              {isRegister ? <label className="flex items-start gap-3 rounded-[1.5rem] border border-[var(--line)] bg-[var(--surface)] p-4 text-sm font-semibold leading-6 text-[var(--steel)]"><input type="checkbox" name="terms" required className="mt-1 h-4 w-4 accent-[var(--signal)]" /><span>I confirm this account is being created for the selected King Sparkon role and service.</span></label> : null}
-              {status ? <div aria-live="polite" role={status.tone === "error" ? "alert" : "status"} className={`flex gap-3 rounded-[1.5rem] border px-4 py-3 text-sm font-semibold leading-6 ${status.tone === "error" ? "border-[var(--danger)] bg-[var(--danger)]/10 text-[var(--danger)]" : "border-[var(--confirm)] bg-[var(--confirm)]/10 text-[var(--confirm)]"}`}>{status.tone === "error" ? <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /> : <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />}<span>{status.message}</span></div> : null}
+              {isLogin ? <div className="flex flex-col gap-3 text-sm font-bold text-[var(--steel)] sm:flex-row sm:items-center sm:justify-between"><label className="inline-flex items-center gap-2"><input type="checkbox" name="remember" className="h-4 w-4 rounded border-[var(--line)] accent-[var(--signal)]" />Remember this device</label><div className="flex flex-wrap gap-3"><Link href="/resend-verification" className="text-[var(--signal)] hover:text-[var(--accent-hover)] transition-colors duration-200">Resend verification</Link>                    <Link href="/forgot-password" className="text-[var(--signal)] hover:text-[var(--accent-hover)] transition-colors duration-200">Forgot password?</Link></div></div> : null}
+              {isRegister ? <label className="flex items-start gap-3 rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface)] p-4 text-sm font-semibold leading-6 text-[var(--steel)]"><input type="checkbox" name="terms" required className="mt-1 h-4 w-4 accent-[var(--signal)]" /><span>I confirm this account is being created for the selected King Sparkon role and service.</span></label> : null}
+              {status ? <div aria-live="polite" role={status.tone === "error" ? "alert" : "status"} className={`flex gap-3 rounded-[var(--radius-xl)] border px-4 py-3 text-sm font-semibold leading-6 ${status.tone === "error" ? "border-[var(--danger)] bg-[var(--danger)]/10 text-[var(--danger)]" : "border-[var(--confirm)] bg-[var(--confirm)]/10 text-[var(--confirm)]"}`}>{status.tone === "error" ? <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /> : <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />}<span>{status.message}</span></div> : null}
               <div className="mt-2 flex w-full justify-center">
-                <button type="submit" disabled={isSubmitting} className="inline-flex min-h-11 w-full max-w-xs items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 py-2.5 text-sm font-black text-white shadow-[0_12px_28px_rgba(29,92,131,0.18)] transition duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--gold)] hover:bg-[var(--ink)] disabled:opacity-55 sm:w-auto">
+                <button type="submit" disabled={isSubmitting} className="inline-flex min-h-11 w-full max-w-xs items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-6 py-2.5 text-sm font-black text-white shadow-[0_8px_20px_rgba(14,165,233,0.18)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)] disabled:opacity-50 sm:w-auto">
                   {isSubmitting ? "Submitting..." : submitLabel} <ArrowRight className="h-4 w-4" />
                 </button>
               </div>
             </form>
 
-            <div className="mt-6 rounded-[1.75rem] border border-[var(--line)] bg-[var(--surface)] p-4"><p className="text-sm font-bold text-[var(--steel)]">{footerText} <Link href={footerHref} className="font-black text-[var(--signal)] hover:text-[var(--ember)]">{footerLink}</Link></p></div>
+            <div className="mt-6 rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface)] p-4"><p className="text-sm font-bold text-[var(--steel)]">{footerText} <Link href={footerHref} className="font-black text-[var(--signal)] hover:text-[var(--accent-hover)] transition-colors duration-200">{footerLink}</Link></p></div>
             <div className="mt-6 border-t border-[var(--line)] pt-6"><p className="mb-3 font-mono text-[0.68rem] font-black uppercase tracking-[0.16em] text-[var(--muted)]">Official profiles</p><SocialLinks variant="light" /></div>
           </div>
         </section>
@@ -317,7 +317,7 @@ export function AuthShell({ mode, eyebrow, title, description, fields, submitLab
 
           <div className="mt-6 grid gap-3 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
             {serviceCards.map(([Icon, heading, copy]) => (
-              <article key={heading} className="rounded-[1.6rem] border border-[var(--line)] bg-white/82 p-4 shadow-[var(--shadow-soft)] backdrop-blur">
+              <article key={heading} className="rounded-[var(--radius-xl)] border border-[var(--line)] bg-white/82 p-4 shadow-[var(--shadow-soft)] backdrop-blur">
                 <Icon className="h-5 w-5 text-[var(--signal)]" />
                 <h3 className="mt-3 text-sm font-black tracking-[-0.02em]">{heading}</h3>
                 <p className="mt-2 text-xs leading-5 text-[var(--steel)]">{copy}</p>

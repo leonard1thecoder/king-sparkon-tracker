@@ -18,7 +18,7 @@ export function RouteSectionPage({
   return (
     <>
       <DashboardHeader role={role} title={title} description={description} />
-      <main className="grid gap-5 p-5 md:p-8">
+      <main className="grid gap-6 p-5 md:p-8">
         {children ? children : null}
         {endpoint ? <DomainDataWorkspace endpoint={endpoint} title={title} /> : null}
       </main>

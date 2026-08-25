@@ -456,11 +456,14 @@ textarea {
 }
 
 button,
-a,
 input,
 select,
 textarea {
   border-radius: var(--radius-md);
+}
+
+a {
+  border-radius: var(--radius-sm);
 }
 
 input,
@@ -483,6 +486,7 @@ select:focus,
 textarea:focus {
   border-color: var(--signal);
   background: #ffffff;
+  box-shadow: var(--focus-ring);
 }
 
 /* Orange is reserved for interactive hover feedback only. */
@@ -557,7 +561,7 @@ a[data-orange-hover="true"]:hover {
   [class~="rounded-[2.75rem]"],
   [class~="rounded-[3rem]"]
 ) {
-  border-radius: var(--radius-xl) !important;
+  border-radius: var(--radius-2xl) !important;
 }
 
 /* Preserve white labels only on deliberate solid action/status surfaces. */

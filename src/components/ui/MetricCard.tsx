@@ -15,10 +15,10 @@ export function MetricCard({
   icon?: ReactNode;
 }) {
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] transition duration-200 ease-out hover:border-[var(--line-strong)]">
+    <div className="group relative overflow-hidden rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] transition-all duration-200 ease-out hover:shadow-[var(--shadow-ledger)] hover:border-[var(--line-strong)]">
       <div className="flex items-start justify-between gap-4">
         <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-[var(--steel)]">{label}</p>
-        {icon ? <div className="grid h-10 w-10 place-items-center rounded-lg border border-[var(--line)] bg-white text-[var(--signal)] transition group-hover:border-[var(--line-strong)]">{icon}</div> : null}
+        {icon ? <div className="grid h-10 w-10 place-items-center rounded-[var(--radius-md)] border border-[var(--line)] bg-white text-[var(--signal)] transition-colors duration-200 group-hover:border-[var(--line-strong)] group-hover:bg-[var(--signal-soft)]">{icon}</div> : null}
       </div>
       <p className={cn("money mt-4 text-3xl font-black tracking-tight md:text-4xl", tone === "signal" && "text-[var(--signal-strong)]", tone === "confirm" && "text-[var(--signal-strong)]")}>{value}</p>
       {detail ? <p className="mt-3 text-sm leading-6 text-[var(--steel)]">{detail}</p> : null}

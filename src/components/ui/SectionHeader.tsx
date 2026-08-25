@@ -22,10 +22,10 @@ export function SectionHeader({
             {eyebrow}
           </p>
         ) : null}
-        <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-[var(--ink)] md:text-4xl">
+        <h2 className={cn("mt-2 text-2xl font-black tracking-[-0.04em] text-[var(--ink)] md:text-3xl", eyebrow ? "" : "md:text-4xl")}>
           {title}
         </h2>
-        {description ? <p className="mt-3 text-sm leading-6 text-[var(--steel)] md:text-base">{description}</p> : null}
+        {description ? <p className="mt-2.5 text-sm leading-6 text-[var(--steel)] md:text-base">{description}</p> : null}
       </div>
       {actions ? <div className="flex shrink-0 flex-wrap gap-3">{actions}</div> : null}
     </div>

@@ -125,7 +125,6 @@ export function isActive(pathname: string, searchParams: URLSearchParams, href: 
   if (cleanHref === "/dashboard/user/tickets/buy") return pathname === cleanHref || pathname.startsWith("/dashboard/user/tickets/events") || pathname.startsWith("/dashboard/user/tickets/checkout");
   if (cleanHref === "/dashboard/user/tickets") return pathname === cleanHref;
   if (cleanHref === "/dashboard/user/tips") return pathname === cleanHref || pathname.startsWith("/dashboard/user/tips/");
-  // Exact match for admin/subscribers so bulk-import sub-route doesn't activate the parent
   if (cleanHref === "/dashboard/admin/subscribers") return pathname === cleanHref;
   if (isDashboardRoot(cleanHref)) return pathname === cleanHref && !searchParams.has("tab");
   if (pathname !== cleanHref && !pathname.startsWith(`${cleanHref}/`)) return false;
@@ -142,8 +141,8 @@ export function DashboardRoleNav({ role }: { role: UserRole }) {
       {items.map(({ label, href, icon: Icon, description }) => {
         const active = isActive(pathname, searchParams, href);
         return (
-          <Link key={`${role}-${href}-${label}`} href={href} aria-current={active ? "page" : undefined} className={cn("group inline-flex min-h-11 w-full shrink-0 items-center gap-3 rounded-lg border px-3.5 py-2.5 text-sm font-extrabold transition duration-200 ease-out", description ? "min-h-[3.65rem]" : "", active ? "border-[var(--signal)] bg-[var(--signal-soft)] text-[var(--signal-strong)]" : "border-transparent bg-white text-[var(--steel)] hover:border-[var(--line)] hover:text-[var(--ink)]") }>
-            <span className={cn("grid h-8 w-8 shrink-0 place-items-center rounded-[0.8rem] border transition-colors", active ? "border-[var(--line-strong)] bg-white text-[var(--signal-strong)]" : "border-[var(--line)] bg-white text-[var(--signal)] group-hover:border-[var(--line-strong)]")}><Icon className="h-4 w-4" /></span>
+          <Link key={`${role}-${href}-${label}`} href={href} aria-current={active ? "page" : undefined} className={cn("group inline-flex min-h-11 w-full shrink-0 items-center gap-3 rounded-[var(--radius-md)] border px-3.5 py-2.5 text-sm font-extrabold transition-all duration-200 ease-out", description ? "min-h-[3.65rem]" : "", active ? "border-[var(--signal)] bg-[var(--signal-soft)] text-[var(--signal-strong)]" : "border-transparent bg-white text-[var(--steel)] hover:border-[var(--line)] hover:bg-[var(--signal-soft)]/50 hover:text-[var(--ink)]") }>
+            <span className={cn("grid h-8 w-8 shrink-0 place-items-center rounded-[var(--radius-md)] border transition-colors duration-200", active ? "border-[var(--line-strong)] bg-white text-[var(--signal-strong)]" : "border-[var(--line)] bg-white text-[var(--signal)] group-hover:border-[var(--line-strong)]")}><Icon className="h-4 w-4" /></span>
             <span className="min-w-0"><span className="block truncate">{label}</span>{description ? <span className={cn("mt-0.5 block truncate text-[0.65rem] font-bold tracking-normal", active ? "text-[var(--signal-strong)]/70" : "text-[var(--muted)]")}>{description}</span> : null}</span>
           </Link>
         );
