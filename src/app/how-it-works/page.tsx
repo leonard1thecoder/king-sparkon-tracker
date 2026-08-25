@@ -62,8 +62,9 @@ export default function HowItWorksPage() {
             <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-[-0.05em] md:text-5xl">Different roles different worlds, using cutting edge solutions</h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--steel)]">No hidden steps. Each role has it&apos;s own dashboard with specific features for specific roles, easy to use in both mobile and Desktop view. The guide below follows the actual data flow</p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/guides/barcode-inventory-guide" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-extrabold text-white hover:bg-[var(--signal-strong)]">Inventory guide <ArrowRight className="h-4 w-4" /></Link>
-              <Link href="/guides/qr-ticket-operations" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[var(--line-strong)] bg-white px-5 text-sm font-extrabold hover:border-[var(--signal)]">QR tickets guide</Link>
+              <Link href="/dashboard/user/shop" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-extrabold text-white hover:bg-[var(--signal-strong)]">Users <ArrowRight className="h-4 w-4" /></Link>
+              <Link href="/dashboard/owner/products" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--line-strong)] bg-white px-5 text-sm font-extrabold hover:border-[var(--signal)] hover:text-[var(--signal-strong)]">King Businesses <ArrowRight className="h-4 w-4" /></Link>
+              <Link href="/guides/affiliate-referrals" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--line-strong)] bg-white px-5 text-sm font-extrabold hover:border-[var(--signal)] hover:text-[var(--signal-strong)]">Affiliates <ArrowRight className="h-4 w-4" /></Link>
             </div>
           </div>
         </section>
