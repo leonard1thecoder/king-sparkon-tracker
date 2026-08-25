@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ShoppingCart } from "lucide-react";
 import { DashboardHeaderActions } from "@/components/layout/DashboardHeaderActions";
+import { FavoriteHeaderAction } from "@/components/layout/FavoriteHeaderAction";
 import { WorkerOnlineBarcodeHeaderAction } from "@/components/layout/WorkerOnlineBarcodeHeaderAction";
 import { cn } from "@/lib/utils/cn";
 import { isProductLine, isTicketLine, readTuckShopCart } from "@/lib/tuck-shop/cart";
@@ -169,6 +170,7 @@ export function UserAwareDashboardHeaderActions({ role }: { role: string }) {
       `}</style>
 
       <div className="user-dashboard-header-actions flex items-center justify-end gap-2">
+        <FavoriteHeaderAction />
         <UserCartHeaderAction />
         <DashboardHeaderActions role={role} />
       </div>

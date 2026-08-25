@@ -4,12 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Bell,
-  BellRing,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
   Eye,
+  Heart,
   Loader2,
   PackageCheck,
   RotateCcw,
@@ -23,6 +22,7 @@ import { normalizeApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { StatusPill } from "@/components/ui/StatusPill";
+import { businessKey, readFavoriteBusinessKeys, writeFavoriteBusinessKeys } from "@/lib/favorites";
 import {
   addTuckShopProductToCart,
   groupProductsByBusiness,
@@ -31,31 +31,10 @@ import {
   productPrice,
 } from "@/lib/tuck-shop/cart";
 
-const JOB_ALERTS_STORAGE_KEY = "king-sparkon-job-alert-businesses";
 const CATALOGUE_PAGE_SIZE = 100;
 const BUSINESSES_PER_PAGE = 4;
 
 type BusinessGroup = ReturnType<typeof groupProductsByBusiness>[number];
-
-function businessKey(businessId?: number | null, businessName?: string) {
-  return String(businessId ?? businessName ?? "unknown");
-}
-
-function readJobAlertBusinessKeys() {
-  if (typeof window === "undefined") return new Set<string>();
-
-  try {
-    const stored = JSON.parse(window.localStorage.getItem(JOB_ALERTS_STORAGE_KEY) ?? "[]") as string[];
-    return new Set(Array.isArray(stored) ? stored : []);
-  } catch {
-    return new Set<string>();
-  }
-}
-
-function writeJobAlertBusinessKeys(keys: Set<string>) {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(JOB_ALERTS_STORAGE_KEY, JSON.stringify(Array.from(keys)));
-}
 
 async function loadCompleteCatalogue(search: string, businessId: string) {
   const firstPage = await listTuckShopProducts({
@@ -86,14 +65,14 @@ async function loadCompleteCatalogue(search: string, businessId: string) {
 function BusinessProductSection({
   group,
   compact,
-  followed,
-  onToggleJobAlert,
+  favorited,
+  onToggleFavorite,
   onAddToCart,
 }: {
   group: BusinessGroup;
   compact: boolean;
-  followed: boolean;
-  onToggleJobAlert: (group: BusinessGroup) => void;
+  favorited: boolean;
+  onToggleFavorite: (group: BusinessGroup) => void;
   onAddToCart: (product: Product) => void;
 }) {
   const productRowRef = useRef<HTMLDivElement | null>(null);
@@ -115,7 +94,7 @@ function BusinessProductSection({
           </div>
           <div className="min-w-0">
             <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">
-              {followed ? "Followed business · job alerts on" : "Business catalogue"}
+              {favorited ? "Favorited business" : "Business catalogue"}
             </p>
             <h2 className="mt-1 text-2xl font-black tracking-[-0.04em] text-[var(--ink)]">{group.businessName}</h2>
             <p className="mt-1 text-xs font-bold uppercase tracking-[0.1em] text-[var(--muted)]">
@@ -128,11 +107,11 @@ function BusinessProductSection({
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            onClick={() => onToggleJobAlert(group)}
-            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--gold)] bg-white px-4 text-xs font-black uppercase tracking-[0.08em] text-[var(--ink)] hover:bg-[var(--gold)]"
+            onClick={() => onToggleFavorite(group)}
+            className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-[var(--radius-md)] border px-4 text-xs font-black uppercase tracking-[0.08em] transition ${favorited ? "border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100" : "border-[var(--line)] bg-white text-[var(--ink)] hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"}`}
           >
-            {followed ? <BellRing className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
-            {followed ? "Job alerts on" : "Job alert"}
+            <Heart className={`h-4 w-4 ${favorited ? "fill-rose-500 text-rose-500" : ""}`} />
+            {favorited ? "Favorited" : "Favorite"}
           </button>
 
           <div className="inline-flex items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--line)] bg-white p-1 shadow-[var(--shadow-soft)]">
@@ -224,7 +203,7 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
   const [search, setSearch] = useState("");
   const [businessId, setBusinessId] = useState("");
   const [businessPage, setBusinessPage] = useState(0);
-  const [jobAlertBusinesses, setJobAlertBusinesses] = useState<Set<string>>(() => new Set());
+  const [favoriteBusinesses, setFavoriteBusinesses] = useState<Set<string>>(() => new Set());
   const [cartNotice, setCartNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -244,20 +223,28 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
   }
 
   useEffect(() => {
-    setJobAlertBusinesses(readJobAlertBusinessKeys());
+    setFavoriteBusinesses(readFavoriteBusinessKeys());
     void loadProducts("", "");
+    // Keep UI in sync when favorites change from header or other tabs
+    const handler = () => setFavoriteBusinesses(readFavoriteBusinessKeys());
+    window.addEventListener("storage", handler);
+    window.addEventListener("king-sparkon:favorites", handler as EventListener);
+    return () => {
+      window.removeEventListener("storage", handler);
+      window.removeEventListener("king-sparkon:favorites", handler as EventListener);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const businessGroups = useMemo(() => {
     const groups = groupProductsByBusiness(products);
     return groups.sort((left, right) => {
-      const leftFollowed = jobAlertBusinesses.has(businessKey(left.businessId, left.businessName));
-      const rightFollowed = jobAlertBusinesses.has(businessKey(right.businessId, right.businessName));
-      if (leftFollowed !== rightFollowed) return leftFollowed ? -1 : 1;
+      const leftFavorited = favoriteBusinesses.has(businessKey(left.businessId, left.businessName));
+      const rightFavorited = favoriteBusinesses.has(businessKey(right.businessId, right.businessName));
+      if (leftFavorited !== rightFavorited) return leftFavorited ? -1 : 1;
       return left.businessName.localeCompare(right.businessName);
     });
-  }, [jobAlertBusinesses, products]);
+  }, [favoriteBusinesses, products]);
 
   const businessPageCount = Math.max(Math.ceil(businessGroups.length / BUSINESSES_PER_PAGE), 1);
   const visibleBusinessGroups = useMemo(() => {
@@ -274,20 +261,21 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
     setCartNotice(`${product.name} added to cart.`);
   }
 
-  function toggleJobAlert(group: BusinessGroup) {
+  function toggleFavorite(group: BusinessGroup) {
     const key = businessKey(group.businessId, group.businessName);
-    const nextKeys = new Set(jobAlertBusinesses);
+    const nextKeys = new Set(favoriteBusinesses);
 
     if (nextKeys.has(key)) {
       nextKeys.delete(key);
-      setCartNotice(`Job alerts muted for ${group.businessName}.`);
+      setCartNotice(`Removed ${group.businessName} from favorites.`);
     } else {
       nextKeys.add(key);
-      setCartNotice(`Job alerts enabled for ${group.businessName}.`);
+      setCartNotice(`Added ${group.businessName} to favorites.`);
     }
 
-    writeJobAlertBusinessKeys(nextKeys);
-    setJobAlertBusinesses(nextKeys);
+    writeFavoriteBusinessKeys(nextKeys);
+    setFavoriteBusinesses(nextKeys);
+    // Backend: POST /api/user/favorites { businessKey: key, action: nextKeys.has(key) ? "add" : "remove" }
   }
 
   function resetFilters() {
@@ -375,8 +363,8 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
                   key={group.key}
                   group={group}
                   compact={compact}
-                  followed={jobAlertBusinesses.has(businessKey(group.businessId, group.businessName))}
-                  onToggleJobAlert={toggleJobAlert}
+                  favorited={favoriteBusinesses.has(businessKey(group.businessId, group.businessName))}
+                  onToggleFavorite={toggleFavorite}
                   onAddToCart={addToCart}
                 />
               ))}
