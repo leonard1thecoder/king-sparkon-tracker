@@ -370,14 +370,6 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
             </div>
           ) : (
             <div className="grid gap-8">
-              <div className="flex flex-col gap-2 rounded-[1.25rem] border border-[var(--gold)]/50 bg-[var(--gold)]/20 p-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--ink)]">Catalogue grouped by business</p>
-                  <p className="mt-1 text-sm font-bold text-[var(--steel)]">Showing businesses {firstVisibleBusiness}–{lastVisibleBusiness} of {businessGroups.length}. Scroll right inside each business to see more products.</p>
-                </div>
-                <Link href="/dashboard/user/shop/cart" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--ink)] bg-[var(--ink)] px-4 text-xs font-black uppercase tracking-[0.08em] text-white hover:border-[var(--signal)] hover:bg-[var(--signal)]">Open cart <ShoppingCart className="h-4 w-4" /></Link>
-              </div>
-
               {visibleBusinessGroups.map((group) => (
                 <BusinessProductSection
                   key={group.key}
