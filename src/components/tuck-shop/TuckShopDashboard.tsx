@@ -319,13 +319,13 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
       </div>
 
       <Card>
-        <CardHeader className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(36rem,0.95fr)] xl:items-end">
+        <CardHeader className="grid gap-6 xl:grid-cols-[minmax(0,0.7fr)_minmax(40rem,1.35fr)] xl:items-end">
           <div>
             <CardTitle>Product catalogue</CardTitle>
           </div>
 
           <form
-            className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_10rem_auto_auto] sm:items-end"
+            className="grid gap-4 sm:grid-cols-[minmax(17rem,1.55fr)_12rem_auto_auto] sm:items-end"
             onSubmit={(event) => {
               event.preventDefault();
               void loadProducts(search, businessId);
