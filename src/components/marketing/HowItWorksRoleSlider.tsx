@@ -48,7 +48,7 @@ export function HowItWorksRoleSlider() {
                   { n: "01", title: "Browse King Sparkon Lego Mall", copy: "Explore four businesses per page, scroll horizontally per business, search by product or business ID, add to cart and checkout via Stripe.", icon: ShoppingCart },
                   { n: "02", title: "King Sparkon Lego Ticket", copy: "Buy ticket created by businesses registered, and use the purchased ticket to attend event through verification processes", icon: QrCode },
                   { n: "03", title: "Track job applications", copy: "Browse job posts, apply, and track application status from applied to shortlisted. All inside the user workspace.", icon: BriefcaseBusiness },
-                  { n: "04", title: "Manage profile & cart", copy: "Update profile, manage cart, check UIF and SASSA status via the header profile — no owner-like metrics or inventory controls.", icon: UsersRound },
+                  { n: "04", title: "Check UIF status and Update UIF Online System password", copy: "Check UIF status and update UIF Online System password via the header profile — no owner-like metrics or inventory controls.", icon: UsersRound },
                 ].map((s) => (
                   <div key={s.n} className="rounded-xl border border-[var(--line)] bg-white p-5">
                     <div className="flex items-center gap-3"><span className="font-mono text-xs font-black text-[var(--signal-strong)]">{s.n}</span><div className="grid h-8 w-8 place-items-center rounded-lg border border-[var(--line)] bg-white text-[var(--signal)]"><s.icon className="h-4 w-4" /></div><h4 className="font-black">{s.title}</h4></div>
