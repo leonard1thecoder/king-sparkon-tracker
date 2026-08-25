@@ -59,8 +59,8 @@ export default function HowItWorksPage() {
           <div className="absolute inset-0 bg-gradient-to-br from-[var(--signal-soft)] via-white to-sky-50/60" aria-hidden="true" />
           <div className="relative mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-14">
             <p className="inline-flex rounded-full border border-[var(--signal)]/20 bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Workflow</p>
-            <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-[-0.05em] md:text-5xl">From barcode registration to auditable payout in five steps.</h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--steel)]">No hidden steps. Each operation is a concrete screen, API call and ledger entry. The guide below follows the actual data flow in <code className="rounded bg-[var(--signal-soft)] px-1.5 py-0.5 font-mono text-sm">src/lib/types/backend.ts</code> and <code className="rounded bg-[var(--signal-soft)] px-1.5 py-0.5 font-mono text-sm">src/lib/api/client.ts</code>.</p>
+            <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-[-0.05em] md:text-5xl">Different roles different worlds, using cutting edge solutions</h1>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--steel)]">No hidden steps. Each role has it&apos;s own dashboard with specific features for specific roles, easy to use in both mobile and Desktop view. The guide below follows the actual data flow</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link href="/guides/barcode-inventory-guide" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-extrabold text-white hover:bg-[var(--signal-strong)]">Inventory guide <ArrowRight className="h-4 w-4" /></Link>
               <Link href="/guides/qr-ticket-operations" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[var(--line-strong)] bg-white px-5 text-sm font-extrabold hover:border-[var(--signal)]">QR tickets guide</Link>
