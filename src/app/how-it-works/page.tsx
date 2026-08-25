@@ -4,6 +4,7 @@ import { ArrowRight, Barcode, CheckCircle2, QrCode, ScanLine, UsersRound, Wallet
 import { Breadcrumbs } from "@/components/content/Breadcrumbs";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { PremiumHeader } from "@/components/marketing/PremiumHeader";
+import { HowItWorksRoleSlider } from "@/components/marketing/HowItWorksRoleSlider";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -61,13 +62,10 @@ export default function HowItWorksPage() {
             <p className="inline-flex rounded-full border border-[var(--signal)]/20 bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Workflow</p>
             <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-[-0.05em] md:text-5xl">Different roles different worlds, using cutting edge solutions</h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--steel)]">No hidden steps. Each role has it&apos;s own dashboard with specific features for specific roles, easy to use in both mobile and Desktop view. The guide below follows the actual data flow</p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/dashboard/user/shop" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-extrabold text-white hover:bg-[var(--signal-strong)]">Users <ArrowRight className="h-4 w-4" /></Link>
-              <Link href="/dashboard/owner/products" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--line-strong)] bg-white px-5 text-sm font-extrabold hover:border-[var(--signal)] hover:text-[var(--signal-strong)]">King Businesses <ArrowRight className="h-4 w-4" /></Link>
-              <Link href="/guides/affiliate-referrals" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--line-strong)] bg-white px-5 text-sm font-extrabold hover:border-[var(--signal)] hover:text-[var(--signal-strong)]">Affiliates <ArrowRight className="h-4 w-4" /></Link>
-            </div>
           </div>
         </section>
+
+        <HowItWorksRoleSlider />
 
         <section className="mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-14">
           <div className="grid gap-5">
