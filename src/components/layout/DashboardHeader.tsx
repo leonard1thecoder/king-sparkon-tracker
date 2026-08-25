@@ -13,7 +13,7 @@ function dashboardHomeHref(role: string) {
 
 export function DashboardHeader({ title, description, role }: { title: string; description: string; role: string }) {
   return (
-    <header className="sticky top-0 z-20 flex h-16 items-center border-b border-[var(--line)] bg-white/95 backdrop-blur-md px-5 shadow-[var(--shadow-xs)] md:px-8">
+    <header className="sticky top-0 z-20 hidden h-16 items-center border-b border-[var(--line)] bg-white/95 backdrop-blur-md px-5 shadow-[var(--shadow-xs)] md:px-8 lg:flex">
       <div className="flex w-full items-center justify-between gap-4">
         <Link href={dashboardHomeHref(role)} className="flex min-w-0 items-center gap-3">
           <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker" width={40} height={40} className="rounded-[var(--radius-md)] border border-[var(--line)] bg-white p-1 shrink-0" priority />
