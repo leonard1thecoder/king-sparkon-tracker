@@ -125,7 +125,7 @@ export function TicketScannerPanel() {
             <video ref={videoRef} className="aspect-video w-full bg-[var(--ink)] object-cover" muted playsInline aria-label="Ticket QR camera preview" />
             <div className="pointer-events-none absolute inset-0 scan-grid" />
             <div className="pointer-events-none absolute left-8 right-8 top-1/2 h-0.5 bg-[var(--signal)] shadow-[0_0_28px_rgba(242,100,42,0.8)]" />
-            <div className="absolute bottom-4 left-4 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-white/78 backdrop-blur">
+            <div className="absolute bottom-4 left-4 rounded-[var(--radius-md)] border border-white/10 bg-white/10 px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-white/78 backdrop-blur">
               {cameraActive ? "Camera active" : "Camera standby"}
             </div>
           </div>
@@ -133,10 +133,10 @@ export function TicketScannerPanel() {
           {cameraError ? <p className="mt-4 rounded-[1.2rem] border border-[var(--danger)]/20 bg-[var(--danger)]/10 px-4 py-3 text-sm font-bold text-[var(--danger)]">{cameraError}</p> : null}
 
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <button type="button" onClick={startCamera} disabled={cameraActive || isVerifying} className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] disabled:opacity-50">
+            <button type="button" onClick={startCamera} disabled={cameraActive || isVerifying} className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] disabled:opacity-50">
               <Camera className="h-4 w-4" /> Start camera scan
             </button>
-            <button type="button" onClick={stopCamera} disabled={!cameraActive} className="inline-flex min-h-12 flex-1 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--signal)] disabled:opacity-40">
+            <button type="button" onClick={stopCamera} disabled={!cameraActive} className="inline-flex min-h-12 items-center justify-center rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--signal)] disabled:opacity-40">
               Stop camera
             </button>
           </div>

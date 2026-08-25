@@ -46,11 +46,11 @@ export function TicketRoleGate({ allowedRoles, title, description, children }: T
 
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {allowedRoles.map((role) => (
-                <button key={role} type="button" onClick={() => setSession(setDemoTicketRole(role))} className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]">
+                <button key={role} type="button" onClick={() => setSession(setDemoTicketRole(role))} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]">
                   Switch demo to {role}
                 </button>
               ))}
-              <Link href="/tickets" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--signal)]">
+              <Link href="/tickets" className="inline-flex min-h-12 items-center justify-center rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--signal)]">
                 Back to public tickets
               </Link>
             </div>

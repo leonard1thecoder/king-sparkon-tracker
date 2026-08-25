@@ -129,19 +129,19 @@ function BusinessProductSection({
           <button
             type="button"
             onClick={() => onToggleJobAlert(group)}
-            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-white px-4 text-xs font-black uppercase tracking-[0.08em] text-[var(--ink)] hover:bg-[var(--gold)]"
+            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--gold)] bg-white px-4 text-xs font-black uppercase tracking-[0.08em] text-[var(--ink)] hover:bg-[var(--gold)]"
           >
             {followed ? <BellRing className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
             {followed ? "Job alerts on" : "Job alert"}
           </button>
 
-          <div className="inline-flex items-center gap-1 rounded-full border border-[var(--line)] bg-white p-1 shadow-[var(--shadow-soft)]">
+          <div className="inline-flex items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--line)] bg-white p-1 shadow-[var(--shadow-soft)]">
             <button
               type="button"
               onClick={() => scrollProducts("left")}
               disabled={group.products.length <= 1}
               aria-label={`Scroll ${group.businessName} products left`}
-              className="grid h-9 w-9 place-items-center rounded-full text-[var(--ink)] transition hover:bg-[var(--gold)] disabled:cursor-not-allowed disabled:opacity-35"
+              className="grid h-9 w-9 place-items-center rounded-[var(--radius-md)] text-[var(--ink)] transition hover:bg-[var(--gold)] disabled:cursor-not-allowed disabled:opacity-35"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -151,7 +151,7 @@ function BusinessProductSection({
               onClick={() => scrollProducts("right")}
               disabled={group.products.length <= 1}
               aria-label={`Scroll ${group.businessName} products right`}
-              className="grid h-9 w-9 place-items-center rounded-full text-[var(--ink)] transition hover:bg-[var(--gold)] disabled:cursor-not-allowed disabled:opacity-35"
+              className="grid h-9 w-9 place-items-center rounded-[var(--radius-md)] text-[var(--ink)] transition hover:bg-[var(--gold)] disabled:cursor-not-allowed disabled:opacity-35"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -319,16 +319,13 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
       </div>
 
       <Card>
-        <CardHeader className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(34rem,0.9fr)] xl:items-end">
+        <CardHeader className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(36rem,0.95fr)] xl:items-end">
           <div>
             <CardTitle>Product catalogue</CardTitle>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--steel)]">
-              Search by product or business, or use a business ID. Matching businesses are grouped into pages of four.
-            </p>
           </div>
 
           <form
-            className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_10rem_auto_auto]"
+            className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_10rem_auto_auto] sm:items-end"
             onSubmit={(event) => {
               event.preventDefault();
               void loadProducts(search, businessId);
@@ -338,13 +335,13 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
               <span className="text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">Product or business</span>
               <span className="relative block">
                 <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
-                <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search the catalogue" className="min-h-11 w-full rounded-[1rem] border border-[var(--line)] bg-white pl-10 pr-4 text-sm font-semibold outline-none focus:border-[var(--signal)]" />
+                <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search the catalogue" className="min-h-11 w-full rounded-[var(--radius-md)] border border-[var(--line)] bg-white pl-10 pr-4 text-sm font-semibold outline-none transition-all duration-200 placeholder:text-[var(--muted)] hover:border-[var(--line-strong)] focus:border-[var(--signal)] focus:ring-4 focus:ring-sky-50" />
               </span>
             </label>
 
             <label className="grid gap-1.5">
               <span className="text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">Business ID</span>
-              <input value={businessId} onChange={(event) => setBusinessId(event.target.value.replace(/\D/g, ""))} placeholder="e.g. 501" inputMode="numeric" className="min-h-11 rounded-[1rem] border border-[var(--line)] bg-white px-4 text-sm font-semibold outline-none focus:border-[var(--signal)]" />
+              <input value={businessId} onChange={(event) => setBusinessId(event.target.value.replace(/\D/g, ""))} placeholder="e.g. 501" inputMode="numeric" className="min-h-11 w-full rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-sm font-semibold outline-none transition-all duration-200 placeholder:text-[var(--muted)] hover:border-[var(--line-strong)] focus:border-[var(--signal)] focus:ring-4 focus:ring-sky-50" />
             </label>
 
             <Button type="submit" variant="secondary" className="self-end"><Search className="h-4 w-4" /> Filter</Button>
@@ -358,7 +355,7 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
           {cartNotice ? (
             <div className="flex flex-col gap-3 rounded-[var(--radius-lg)] border border-[var(--confirm)]/30 bg-[var(--confirm)]/10 p-4 text-sm font-bold text-[var(--ink)] sm:flex-row sm:items-center sm:justify-between">
               <span className="inline-flex items-center gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-[var(--confirm)]" /> {cartNotice}</span>
-              <Link href="/dashboard/user/shop/cart" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-4 text-xs font-black uppercase tracking-[0.08em] text-white hover:bg-[var(--ink)]">View cart <ShoppingCart className="h-4 w-4" /></Link>
+              <Link href="/dashboard/user/shop/cart" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-4 text-xs font-black uppercase tracking-[0.08em] text-white hover:bg-[var(--ink)]">View cart <ShoppingCart className="h-4 w-4" /></Link>
             </div>
           ) : null}
 
@@ -378,7 +375,7 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
                   <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--ink)]">Catalogue grouped by business</p>
                   <p className="mt-1 text-sm font-bold text-[var(--steel)]">Showing businesses {firstVisibleBusiness}–{lastVisibleBusiness} of {businessGroups.length}. Scroll right inside each business to see more products.</p>
                 </div>
-                <Link href="/dashboard/user/shop/cart" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--ink)] bg-[var(--ink)] px-4 text-xs font-black uppercase tracking-[0.08em] text-white hover:border-[var(--signal)] hover:bg-[var(--signal)]">Open cart <ShoppingCart className="h-4 w-4" /></Link>
+                <Link href="/dashboard/user/shop/cart" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--ink)] bg-[var(--ink)] px-4 text-xs font-black uppercase tracking-[0.08em] text-white hover:border-[var(--signal)] hover:bg-[var(--signal)]">Open cart <ShoppingCart className="h-4 w-4" /></Link>
               </div>
 
               {visibleBusinessGroups.map((group) => (
@@ -413,7 +410,7 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
                         onClick={() => openBusinessPage(index)}
                         aria-label={`Open business page ${index + 1}`}
                         aria-current={index === businessPage ? "page" : undefined}
-                        className={`h-2.5 rounded-full transition ${index === businessPage ? "w-8 bg-[var(--signal)]" : "w-2.5 bg-[var(--line)] hover:bg-[var(--gold)]"}`}
+                        className={`h-2.5 rounded-[var(--radius-md)] transition ${index === businessPage ? "w-8 bg-[var(--signal)]" : "w-2.5 bg-[var(--line)] hover:bg-[var(--gold)]"}`}
                       />
                     ))}
                   </div>
@@ -423,7 +420,7 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
                   type="button"
                   onClick={() => openBusinessPage(businessPage + 1)}
                   disabled={businessPage >= businessPageCount - 1}
-                  className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[var(--ink)] bg-[var(--ink)] px-5 text-sm font-black text-white transition hover:border-[var(--signal)] hover:bg-[var(--signal)] disabled:cursor-not-allowed disabled:opacity-35 sm:w-auto"
+                  className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--ink)] bg-[var(--ink)] px-5 text-sm font-black text-white transition hover:border-[var(--signal)] hover:bg-[var(--signal)] disabled:cursor-not-allowed disabled:opacity-35 sm:w-auto"
                 >
                   Next 4 businesses <ChevronRight className="h-5 w-5" />
                 </button>
