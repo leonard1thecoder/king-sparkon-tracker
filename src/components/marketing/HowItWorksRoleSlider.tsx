@@ -46,7 +46,7 @@ export function HowItWorksRoleSlider() {
               <div className="mt-6 grid gap-4 md:grid-cols-2">
                 {[
                   { n: "01", title: "Browse King Sparkon Lego Mall", copy: "Explore four businesses per page, scroll horizontally per business, search by product or business ID, add to cart and checkout via Stripe.", icon: ShoppingCart },
-                  { n: "02", title: "Check QR tickets", copy: "View purchased tickets with QR codes, scan at collection or gate, keep purchase history and ticket details inside the user dashboard.", icon: QrCode },
+                  { n: "02", title: "King Sparkon Lego Ticket", copy: "Buy ticket created by businesses registered, and use the purchased ticket to attend event through verification processes", icon: QrCode },
                   { n: "03", title: "Track job applications", copy: "Browse job posts, apply, and track application status from applied to shortlisted. All inside the user workspace.", icon: BriefcaseBusiness },
                   { n: "04", title: "Manage profile & cart", copy: "Update profile, manage cart, check UIF and SASSA status via the header profile — no owner-like metrics or inventory controls.", icon: UsersRound },
                 ].map((s) => (
