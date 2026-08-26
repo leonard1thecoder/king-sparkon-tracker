@@ -12,6 +12,7 @@ function countLabel(count: number) {
 export function FavoriteHeaderAction() {
   const [count, setCount] = useState(0);
   const [keys, setKeys] = useState<string[]>([]);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     function refresh() {
@@ -28,13 +29,33 @@ export function FavoriteHeaderAction() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+    function onDocClick(e: MouseEvent) {
+      const target = e.target as HTMLElement;
+      if (!target.closest("[data-favorite-dropdown]")) setOpen(false);
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
   const title = count === 0 ? "No favorites yet" : `${count} favorite business${count === 1 ? "" : "es"}`;
 
   return (
-    <div className="relative group">
-      <Link
-        href="/dashboard/user/favorites"
+    <div className="relative" data-favorite-dropdown>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
         aria-label={title}
+        aria-expanded={open}
+        aria-haspopup="menu"
         title="View favorites"
         className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border bg-white text-[var(--ink)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--line-strong)] hover:bg-[var(--surface)]"
       >
@@ -47,10 +68,10 @@ export function FavoriteHeaderAction() {
             {countLabel(count)}
           </span>
         ) : null}
-      </Link>
+      </button>
 
-      {/* Hover dropdown */}
-      <div className="pointer-events-none absolute right-0 top-full z-40 hidden w-72 -translate-y-1 pt-2 opacity-0 transition-all duration-200 group-hover:block group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:block group-focus-within:opacity-100">
+      {open ? (
+        <div className="absolute right-0 top-full z-40 w-72 pt-2">
         <div className="rounded-xl border border-[var(--line)] bg-white p-3 shadow-[var(--shadow-ledger)]">
           <p className="text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">Favorites</p>
           <p className="mt-1 text-xs font-semibold text-[var(--muted)]">{title}</p>
@@ -68,6 +89,7 @@ export function FavoriteHeaderAction() {
           )}
           <Link
             href="/dashboard/user/favorites"
+            onClick={() => setOpen(false)}
             className="mt-3 flex min-h-9 w-full items-center justify-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 text-xs font-black text-rose-600 hover:bg-rose-100"
           >
             <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" /> View all favorites
@@ -75,6 +97,7 @@ export function FavoriteHeaderAction() {
           {/* Backend: on click favorites page fetches GET /api/user/favorites and renders business sections */}
         </div>
       </div>
+      ) : null}
     </div>
   );
 }

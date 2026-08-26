@@ -174,6 +174,23 @@ function ProfileDropdown({ role }: { role: string }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+    function onDocClick(e: MouseEvent) {
+      const target = e.target as HTMLElement;
+      if (!target.closest("[data-profile-dropdown]")) setOpen(false);
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
   const source = profile ?? ({} as HeaderProfile);
   const displayName = source.username || source.name || "King Sparkon user";
   const emailAddress = source.emailAddress || source.email || "Email address not available";
@@ -183,19 +200,10 @@ function ProfileDropdown({ role }: { role: string }) {
   const href = profileRoute(role);
 
   return (
-    <div
-      className="relative"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-      onFocus={() => setOpen(true)}
-      onBlur={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpen(false);
-      }}
-    >
+    <div className="relative" data-profile-dropdown>
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
-        onMouseEnter={() => setOpen(true)}
         className={`${iconButtonClass} relative overflow-hidden`}
         aria-label="Open profile menu"
         aria-expanded={open}
