@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Heart, Package, Ticket, BriefcaseBusiness, Store, Trash2, MapPin, Calendar } from "lucide-react";
-import { businessKey, readFavoriteBusinessKeys, writeFavoriteBusinessKeys } from "@/lib/favorites";
+import { businessKey, fetchFavoriteKeysFromBackend, readFavoriteBusinessKeys, removeFavoriteFromBackend, writeFavoriteBusinessKeys } from "@/lib/favorites";
 import { listTuckShopProducts } from "@/lib/api/tuck-shop";
 import { getLiveUpcomingEvents } from "@/lib/api/tickets";
 import { getPublicJobs } from "@/lib/api/job-opportunities";
@@ -24,6 +24,7 @@ export function FavoritesWorkspace() {
 
   useEffect(() => {
     setFavoriteKeys(readFavoriteBusinessKeys());
+    void fetchFavoriteKeysFromBackend().then(setFavoriteKeys).catch(() => {});
     const handler = () => setFavoriteKeys(readFavoriteBusinessKeys());
     window.addEventListener("storage", handler);
     window.addEventListener("king-sparkon:favorites", handler as EventListener);
@@ -78,7 +79,7 @@ export function FavoritesWorkspace() {
     next.delete(key);
     writeFavoriteBusinessKeys(next);
     setFavoriteKeys(next);
-    // TODO backend: DELETE /api/user/favorites/{key}
+    void removeFavoriteFromBackend(key);
   }
 
   if (favoriteKeys.size === 0) {

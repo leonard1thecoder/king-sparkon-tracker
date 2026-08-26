@@ -22,7 +22,7 @@ import { normalizeApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { StatusPill } from "@/components/ui/StatusPill";
-import { businessKey, readFavoriteBusinessKeys, writeFavoriteBusinessKeys } from "@/lib/favorites";
+import { addFavoriteToBackend, businessKey, fetchFavoriteKeysFromBackend, readFavoriteBusinessKeys, removeFavoriteFromBackend, writeFavoriteBusinessKeys } from "@/lib/favorites";
 import {
   addTuckShopProductToCart,
   groupProductsByBusiness,
@@ -229,6 +229,8 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
 
   useEffect(() => {
     setFavoriteBusinesses(readFavoriteBusinessKeys());
+    // Sync from backend — ensures cross-device favorites
+    void fetchFavoriteKeysFromBackend().then(setFavoriteBusinesses).catch(() => {});
     void loadProducts("", "");
     // Keep UI in sync when favorites change from header or other tabs
     const handler = () => setFavoriteBusinesses(readFavoriteBusinessKeys());
@@ -269,18 +271,20 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
   function toggleFavorite(group: BusinessGroup) {
     const key = businessKey(group.businessId, group.businessName);
     const nextKeys = new Set(favoriteBusinesses);
+    const wasFavorited = nextKeys.has(key);
 
-    if (nextKeys.has(key)) {
+    if (wasFavorited) {
       nextKeys.delete(key);
       setCartNotice(`Removed ${group.businessName} from favorites.`);
+      void removeFavoriteFromBackend(key);
     } else {
       nextKeys.add(key);
       setCartNotice(`Added ${group.businessName} to favorites.`);
+      void addFavoriteToBackend(key);
     }
 
     writeFavoriteBusinessKeys(nextKeys);
     setFavoriteBusinesses(nextKeys);
-    // Backend: POST /api/user/favorites { businessKey: key, action: nextKeys.has(key) ? "add" : "remove" }
   }
 
   function resetFilters() {

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, BriefcaseBusiness, Heart, MapPin, Package, Store, Ticket, Calendar } from "lucide-react";
-import { businessKey, readFavoriteBusinessKeys, writeFavoriteBusinessKeys } from "@/lib/favorites";
+import { addFavoriteToBackend, businessKey, fetchFavoriteKeysFromBackend, readFavoriteBusinessKeys, removeFavoriteFromBackend, writeFavoriteBusinessKeys } from "@/lib/favorites";
 import { listTuckShopProducts } from "@/lib/api/tuck-shop";
 import { getLiveUpcomingEvents } from "@/lib/api/tickets";
 import { getPublicJobs } from "@/lib/api/job-opportunities";
@@ -26,6 +26,7 @@ export function BusinessWorkspace({ businessKeyParam }: { businessKeyParam: stri
 
   useEffect(() => {
     setFavoriteKeys(readFavoriteBusinessKeys());
+    void fetchFavoriteKeysFromBackend().then(setFavoriteKeys).catch(() => {});
     const handler = () => setFavoriteKeys(readFavoriteBusinessKeys());
     window.addEventListener("storage", handler);
     window.addEventListener("king-sparkon:favorites", handler as EventListener);
@@ -74,14 +75,16 @@ export function BusinessWorkspace({ businessKeyParam }: { businessKeyParam: stri
 
   function toggleFavorite() {
     const next = new Set(favoriteKeys);
-    if (next.has(decodedKey)) {
+    const wasFavorited = next.has(decodedKey);
+    if (wasFavorited) {
       next.delete(decodedKey);
+      void removeFavoriteFromBackend(decodedKey);
     } else {
       next.add(decodedKey);
+      void addFavoriteToBackend(decodedKey);
     }
     writeFavoriteBusinessKeys(next);
     setFavoriteKeys(next);
-    // TODO backend: POST /api/user/favorites { businessKey: decodedKey, action: isFavorited ? "remove" : "add" }
   }
 
   return (

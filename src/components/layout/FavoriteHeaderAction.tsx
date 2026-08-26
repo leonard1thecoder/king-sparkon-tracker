@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
-import { readFavoriteBusinessKeys } from "@/lib/favorites";
+import { fetchFavoriteKeysFromBackend, readFavoriteBusinessKeys } from "@/lib/favorites";
 
 function countLabel(count: number) {
   return count > 99 ? "99+" : String(count);
@@ -15,17 +15,27 @@ export function FavoriteHeaderAction() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    function refresh() {
+    function refreshLocal() {
       const set = readFavoriteBusinessKeys();
       setCount(set.size);
       setKeys(Array.from(set));
     }
-    refresh();
-    window.addEventListener("storage", refresh);
-    window.addEventListener("king-sparkon:favorites", refresh as EventListener);
+    async function refreshFromBackend() {
+      try {
+        const backendKeys = await fetchFavoriteKeysFromBackend();
+        setCount(backendKeys.size);
+        setKeys(Array.from(backendKeys));
+      } catch {
+        refreshLocal();
+      }
+    }
+    refreshLocal();
+    void refreshFromBackend();
+    window.addEventListener("storage", refreshLocal);
+    window.addEventListener("king-sparkon:favorites", refreshLocal as EventListener);
     return () => {
-      window.removeEventListener("storage", refresh);
-      window.removeEventListener("king-sparkon:favorites", refresh as EventListener);
+      window.removeEventListener("storage", refreshLocal);
+      window.removeEventListener("king-sparkon:favorites", refreshLocal as EventListener);
     };
   }, []);
 
