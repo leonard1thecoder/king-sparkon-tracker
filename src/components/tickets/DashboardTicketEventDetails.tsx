@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ArrowRight, Calendar, MapPin, MessageCircle, ShieldCheck, Ticket } from "lucide-react";
+import { ArrowRight, Calendar, MapPin, MessageCircle, ShieldCheck, Store, Ticket } from "lucide-react";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { TicketTypeCard } from "@/components/tickets/TicketTypeCard";
 import { TicketStatusBadge } from "@/components/tickets/TicketStatusBadge";
@@ -133,12 +133,20 @@ export function DashboardTicketEventDetails({ eventId }: DashboardTicketEventDet
                 All ticket classes are sold out.
               </div>
             ) : (
-              <Link
-                href={`/dashboard/user/tickets/checkout/${event.id}`}
-                className="mt-7 inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-8 font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]"
-              >
-                Buy tickets <ArrowRight className="h-4 w-4" />
-              </Link>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Link
+                  href={`/dashboard/user/businesses/${encodeURIComponent(event.ownerId || event.id)}`}
+                  className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-8 font-black text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--signal)] hover:bg-[var(--surface)]"
+                >
+                  <Store className="h-4 w-4" /> View business
+                </Link>
+                <Link
+                  href={`/dashboard/user/tickets/checkout/${event.id}`}
+                  className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-8 font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]"
+                >
+                  Buy tickets <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
             )}
           </div>
         </section>
