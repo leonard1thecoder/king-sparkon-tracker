@@ -38,10 +38,21 @@ export function FavoritesWorkspace() {
     async function load() {
       setLoading(true);
       try {
-        // Products
+        // Products - load complete catalogue (all pages) so all favorite businesses' products appear
         // TODO backend: GET /api/user/favorites/products — returns only products from favorited businesses
-        const p = await listTuckShopProducts({ page: 0, size: 100 });
-        setProducts(p.content ?? []);
+        const first = await listTuckShopProducts({ page: 0, size: 100 });
+        let allProducts = [...(first.content ?? [])];
+        const totalPages = Math.max(Number((first as unknown as { totalPages?: number }).totalPages ?? 1), 1);
+        for (let page = 1; page < totalPages; page += 1) {
+          try {
+            const next = await listTuckShopProducts({ page, size: 100 });
+            allProducts.push(...(next.content ?? []));
+          } catch {}
+        }
+        // Deduplicate by id
+        const unique = new Map<number, Product>();
+        allProducts.forEach((p) => unique.set(p.id, p));
+        setProducts(Array.from(unique.values()));
       } catch {}
       try {
         // Events — TODO backend: GET /api/user/favorites/events?businessKeys=...
@@ -49,9 +60,12 @@ export function FavoritesWorkspace() {
         setEvents(e);
       } catch {}
       try {
-        // Jobs — TODO backend: GET /api/user/favorites/jobs
-        const j = await getPublicJobs({ size: 50 });
-        setJobs(j.content);
+        // Jobs — load first 100 for favorites aggregation
+        // TODO backend: GET /api/user/favorites/jobs
+        const j = await getPublicJobs({ size: 100 });
+        let allJobs = [...(j.content ?? [])];
+        // If paginated, could loop similarly; for now keep first page
+        setJobs(allJobs);
       } catch {}
       setLoading(false);
     }
@@ -208,7 +222,7 @@ export function FavoritesWorkspace() {
           </Card>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {favoriteBusinessGroups.flatMap((g) => g.products.slice(0, 2)).slice(0, 6).map((p) => (
+            {favoriteBusinessGroups.flatMap((g) => g.products).slice(0, 12).map((p) => (
               <article key={p.id} className="flex flex-col overflow-hidden rounded-2xl border border-[var(--line)] bg-white shadow-sm">
                 <div className="flex h-56 items-center justify-center overflow-hidden bg-[var(--surface)] p-4">
                   <img src={productImage(p)} alt={p.name} className="h-full w-full object-contain" loading="lazy" />
@@ -271,7 +285,7 @@ export function FavoritesWorkspace() {
           </Card>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
-            {favoriteJobs.slice(0, 4).map((job) => (
+            {favoriteJobs.slice(0, 8).map((job) => (
               <Card key={job.id} className="p-4">
                 <h3 className="line-clamp-2 text-sm font-black">{job.title}</h3>
                 <p className="mt-1 text-xs font-semibold text-[var(--muted)]">{job.companyName}</p>
