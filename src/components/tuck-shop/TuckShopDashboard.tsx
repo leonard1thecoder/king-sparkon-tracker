@@ -222,11 +222,40 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
     setError(null);
 
     try {
-      setProducts(await loadCompleteCatalogue(nextSearch, nextBusinessId));
+      // Fast path: show first page immediately, then load remaining pages in background
+      const firstPage = await listTuckShopProducts({
+        page: 0,
+        size: CATALOGUE_PAGE_SIZE,
+        search: nextSearch,
+        businessId: nextBusinessId ? Number(nextBusinessId) : undefined,
+      });
+      const firstProducts = firstPage.content ?? [];
+      const totalPages = Math.max(Number((firstPage as unknown as { totalPages?: number }).totalPages ?? 1), 1);
+      const unique = new Map<number, Product>();
+      firstProducts.forEach((p) => unique.set(p.id, p));
+      setProducts(Array.from(unique.values()));
       setBusinessPage(0);
+      setLoading(false);
+
+      if (totalPages > 1) {
+        // Fetch remaining pages in parallel without blocking UI
+        const remaining = await Promise.all(
+          Array.from({ length: totalPages - 1 }, (_, idx) =>
+            listTuckShopProducts({
+              page: idx + 1,
+              size: CATALOGUE_PAGE_SIZE,
+              search: nextSearch,
+              businessId: nextBusinessId ? Number(nextBusinessId) : undefined,
+            }).catch(() => ({ content: [] as Product[] } as unknown as typeof firstPage))
+          )
+        );
+        const all = Array.from(unique.values());
+        remaining.forEach((page) => ((page as unknown as { content?: Product[] }).content ?? []).forEach((p: Product) => unique.set(p.id, p)));
+        // Only update if still relevant (search/businessId unchanged)
+        setProducts(Array.from(unique.values()));
+      }
     } catch (exception) {
       setError(normalizeApiError(exception).message);
-    } finally {
       setLoading(false);
     }
   }
