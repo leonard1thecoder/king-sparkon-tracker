@@ -10,10 +10,11 @@ import { getPublicJobs } from "@/lib/api/job-opportunities";
 import type { Product } from "@/lib/types/backend";
 import type { TicketEvent } from "@/types/tickets";
 import type { JobOpportunity } from "@/lib/types/backend";
-import { groupProductsByBusiness, productImage, productPrice, money } from "@/lib/tuck-shop/cart";
+import { groupProductsByBusiness, productPrice, money } from "@/lib/tuck-shop/cart";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { StatusPill } from "@/components/ui/StatusPill";
+import { ProductCard } from "@/components/tuck-shop/ProductCard";
 
 export function FavoritesWorkspace() {
   const [favoriteKeys, setFavoriteKeys] = useState<Set<string>>(new Set());
@@ -227,7 +228,7 @@ export function FavoritesWorkspace() {
         {loading ? (
           <div className="grid gap-4 md:grid-cols-3">
             {[0, 1, 2].map((i) => (
-              <div key={i} className="h-64 animate-pulse rounded-2xl border border-[var(--line)] bg-white" />
+              <div key={i} className="h-64 animate-pulse rounded-[var(--radius-2xl)] border border-[var(--line)] bg-white" />
             ))}
           </div>
         ) : favoriteBusinessGroups.length === 0 ? (
@@ -237,20 +238,7 @@ export function FavoritesWorkspace() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {favoriteBusinessGroups.flatMap((g) => g.products).slice(0, 12).map((p) => (
-              <article key={p.id} className="flex flex-col overflow-hidden rounded-2xl border border-[var(--line)] bg-white shadow-sm">
-                <div className="flex h-56 items-center justify-center overflow-hidden bg-[var(--surface)] p-4">
-                  <img src={productImage(p)} alt={p.name} className="h-full w-full object-contain" loading="lazy" />
-                </div>
-                <div className="flex flex-1 flex-col gap-3 p-4">
-                  <p className="truncate text-xs font-black uppercase tracking-[0.1em] text-[var(--signal)]">{p.businessName}</p>
-                  <h3 className="line-clamp-2 text-sm font-black">{p.name}</h3>
-                  <p className="text-sm font-black">{money(productPrice(p))}</p>
-                  <div className="mt-auto flex gap-2">
-                    <Link href={`/dashboard/user/shop/products/${p.id}`} className="flex-1 inline-flex min-h-10 items-center justify-center gap-1 rounded-xl border border-[var(--line)] bg-white text-xs font-black">Details</Link>
-                    <Link href="/dashboard/user/shop/cart" className="flex-1 inline-flex min-h-10 items-center justify-center gap-1 rounded-xl border border-[var(--signal)] bg-[var(--signal)] text-xs font-black text-white">Cart</Link>
-                  </div>
-                </div>
-              </article>
+              <ProductCard key={p.id} product={p} showBusiness size="sm" />
             ))}
           </div>
         )}

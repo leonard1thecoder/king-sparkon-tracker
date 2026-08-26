@@ -10,9 +10,9 @@ import { getPublicJobs } from "@/lib/api/job-opportunities";
 import type { Product } from "@/lib/types/backend";
 import type { TicketEvent } from "@/types/tickets";
 import type { JobOpportunity } from "@/lib/types/backend";
-import { groupProductsByBusiness, productImage, productPrice, money } from "@/lib/tuck-shop/cart";
+import { groupProductsByBusiness } from "@/lib/tuck-shop/cart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
+import { ProductCard } from "@/components/tuck-shop/ProductCard";
 
 export function BusinessWorkspace({ businessKeyParam }: { businessKeyParam: string }) {
   const decodedKey = decodeURIComponent(businessKeyParam);
@@ -145,22 +145,13 @@ export function BusinessWorkspace({ businessKeyParam }: { businessKeyParam: stri
           <Link href="/dashboard/user/shop" className="text-xs font-black text-[var(--signal)] hover:underline">View all products</Link>
         </div>
         {loading ? (
-          <div className="grid gap-4 md:grid-cols-3">{[0, 1, 2].map((i) => <div key={i} className="h-64 animate-pulse rounded-2xl border border-[var(--line)] bg-white" />)}</div>
+          <div className="grid gap-4 md:grid-cols-3">{[0, 1, 2].map((i) => <div key={i} className="h-64 animate-pulse rounded-[var(--radius-2xl)] border border-[var(--line)] bg-white" />)}</div>
         ) : businessProducts.length === 0 ? (
           <Card className="p-8 text-center"><p className="text-sm font-semibold text-[var(--muted)]">No products found for this business.</p></Card>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {businessProducts.slice(0, 6).map((p) => (
-              <article key={p.id} className="flex flex-col overflow-hidden rounded-2xl border border-[var(--line)] bg-white shadow-sm">
-                <div className="flex h-48 items-center justify-center overflow-hidden bg-[var(--surface)] p-4">
-                  <img src={productImage(p)} alt={p.name} className="h-full w-full object-contain" loading="lazy" />
-                </div>
-                <div className="flex flex-1 flex-col gap-2 p-4">
-                  <h3 className="line-clamp-2 text-sm font-black">{p.name}</h3>
-                  <p className="text-sm font-black">{money(productPrice(p))}</p>
-                  <Link href={`/dashboard/user/shop/products/${p.id}`} className="mt-auto inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-[var(--line)] bg-white text-xs font-black">View product</Link>
-                </div>
-              </article>
+              <ProductCard key={p.id} product={p} showBusiness={false} size="sm" />
             ))}
           </div>
         )}
