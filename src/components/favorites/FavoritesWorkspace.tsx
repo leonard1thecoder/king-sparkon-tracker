@@ -38,39 +38,53 @@ export function FavoritesWorkspace() {
     async function load() {
       setLoading(true);
       try {
-        // Products - load complete catalogue (all pages) so all favorite businesses' products appear
-        // TODO backend: GET /api/user/favorites/products — returns only products from favorited businesses
-        const first = await listTuckShopProducts({ page: 0, size: 100 });
-        let allProducts = [...(first.content ?? [])];
-        const totalPages = Math.max(Number((first as unknown as { totalPages?: number }).totalPages ?? 1), 1);
-        for (let page = 1; page < totalPages; page += 1) {
-          try {
-            const next = await listTuckShopProducts({ page, size: 100 });
-            allProducts.push(...(next.content ?? []));
-          } catch {}
+        // Products — fetch only favorited businesses in parallel (much faster than complete catalogue)
+        // TODO backend: GET /api/v1/favorites/products — returns only products from favorited businesses in one call
+        if (favoriteKeys.size === 0) {
+          setProducts([]);
+        } else {
+          const perBusiness = await Promise.all(
+            Array.from(favoriteKeys).map(async (key) => {
+              const businessId = Number(key);
+              const isNumeric = !isNaN(businessId) && String(businessId) === key;
+              try {
+                const res = await listTuckShopProducts({
+                  page: 0,
+                  size: 100,
+                  businessId: isNumeric ? businessId : undefined,
+                  search: isNumeric ? undefined : key,
+                });
+                return res.content ?? [];
+              } catch {
+                return [] as Product[];
+              }
+            })
+          );
+          const flat = perBusiness.flat();
+          const unique = new Map<number, Product>();
+          flat.forEach((p) => unique.set(p.id, p));
+          // Fallback: if per-business fetch returned empty (e.g., key is name with no exact match), load first page as fallback
+          if (unique.size === 0) {
+            try {
+              const fallback = await listTuckShopProducts({ page: 0, size: 100 });
+              (fallback.content ?? []).forEach((p: Product) => unique.set(p.id, p));
+            } catch {}
+          }
+          setProducts(Array.from(unique.values()));
         }
-        // Deduplicate by id
-        const unique = new Map<number, Product>();
-        allProducts.forEach((p) => unique.set(p.id, p));
-        setProducts(Array.from(unique.values()));
       } catch {}
       try {
-        // Events — TODO backend: GET /api/user/favorites/events?businessKeys=...
         const e = await getLiveUpcomingEvents();
         setEvents(e);
       } catch {}
       try {
-        // Jobs — load first 100 for favorites aggregation
-        // TODO backend: GET /api/user/favorites/jobs
         const j = await getPublicJobs({ size: 100 });
-        let allJobs = [...(j.content ?? [])];
-        // If paginated, could loop similarly; for now keep first page
-        setJobs(allJobs);
+        setJobs(j.content ?? []);
       } catch {}
       setLoading(false);
     }
     void load();
-  }, []);
+  }, [favoriteKeys]);
 
   const favoriteBusinessGroups = useMemo(() => {
     const groups = groupProductsByBusiness(products);

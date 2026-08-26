@@ -45,16 +45,20 @@ async function loadCompleteCatalogue(search: string, businessId: string) {
   });
 
   const products = [...(firstPage.content ?? [])];
-  const totalPages = Math.max(Number(firstPage.totalPages ?? 1), 1);
+  const totalPages = Math.max(Number((firstPage as unknown as { totalPages?: number }).totalPages ?? 1), 1);
 
-  for (let page = 1; page < totalPages; page += 1) {
-    const response = await listTuckShopProducts({
-      page,
-      size: CATALOGUE_PAGE_SIZE,
-      search,
-      businessId: businessId ? Number(businessId) : undefined,
-    });
-    products.push(...(response.content ?? []));
+  if (totalPages > 1) {
+    const remaining = await Promise.all(
+      Array.from({ length: totalPages - 1 }, (_, idx) =>
+        listTuckShopProducts({
+          page: idx + 1,
+          size: CATALOGUE_PAGE_SIZE,
+          search,
+          businessId: businessId ? Number(businessId) : undefined,
+        }).catch(() => ({ content: [] as Product[] } as unknown as typeof firstPage))
+      )
+    );
+    remaining.forEach((page) => products.push(...((page as unknown as { content?: Product[] }).content ?? [])));
   }
 
   const uniqueProducts = new Map<number, Product>();

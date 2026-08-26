@@ -40,28 +40,23 @@ export function BusinessWorkspace({ businessKeyParam }: { businessKeyParam: stri
     async function load() {
       setLoading(true);
       try {
-        // TODO backend: GET /api/businesses/{businessKey}/overview
-        // Load complete catalogue so business products not limited to first page
-        const first = await listTuckShopProducts({ page: 0, size: 100 });
-        let allProducts = [...(first.content ?? [])];
-        const totalPages = Math.max(Number((first as unknown as { totalPages?: number }).totalPages ?? 1), 1);
-        for (let page = 1; page < totalPages; page += 1) {
-          try {
-            const next = await listTuckShopProducts({ page, size: 100 });
-            allProducts.push(...(next.content ?? []));
-          } catch {}
-        }
-        const unique = new Map<number, Product>();
-        allProducts.forEach((p) => unique.set(p.id, p));
-        setProducts(Array.from(unique.values()));
+        // Fetch only this business's products via filtered endpoint — single request, not complete catalogue
+        // TODO backend: GET /api/v1/businesses/{businessKey}/overview handles this server-side
+        const businessIdNum = Number(decodedKey);
+        const isNumeric = !isNaN(businessIdNum) && String(businessIdNum) === decodedKey;
+        const p = await listTuckShopProducts({
+          page: 0,
+          size: 100,
+          businessId: isNumeric ? businessIdNum : undefined,
+          search: isNumeric ? undefined : decodedKey,
+        });
+        setProducts(p.content ?? []);
       } catch {}
       try {
-        // TODO backend: GET /api/businesses/{businessKey}/tickets
         const e = await getLiveUpcomingEvents();
         setEvents(e);
       } catch {}
       try {
-        // TODO backend: GET /api/businesses/{businessKey}/jobs — load larger page for business filtering
         const j = await getPublicJobs({ size: 100 });
         setJobs(j.content);
       } catch {}
