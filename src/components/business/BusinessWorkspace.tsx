@@ -64,8 +64,8 @@ export function BusinessWorkspace({ businessKeyParam }: { businessKeyParam: stri
   const businessName = currentGroup?.businessName ?? decodedKey;
   const businessId = currentGroup?.businessId ?? (Number(decodedKey) ? Number(decodedKey) : null);
 
-  const businessProducts = currentGroup?.products ?? products.filter((p) => businessKey((p as unknown as { businessId?: number }).businessId, p.businessName) === decodedKey || p.businessName === businessName).slice(0, 12);
-  const businessJobs = useMemo(() => jobs.filter((j) => businessKey(j.businessId, j.companyName) === decodedKey || j.companyName === businessName), [jobs, decodedKey, businessName]);
+  const businessProducts = currentGroup?.products ?? products.filter((p) => businessKey((p as unknown as { businessId?: number | null }).businessId ?? undefined, p.businessName ?? undefined) === decodedKey || p.businessName === businessName).slice(0, 12);
+  const businessJobs = useMemo(() => jobs.filter((j) => businessKey(j.businessId ?? undefined, j.companyName ?? undefined) === decodedKey || j.companyName === businessName), [jobs, decodedKey, businessName]);
   const businessEvents = useMemo(() => {
     // No direct business linkage on TicketEvent; show all with note until backend adds ownerId/businessId to events
     // TODO backend: filter by event.ownerId -> business
