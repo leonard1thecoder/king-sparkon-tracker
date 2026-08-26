@@ -96,7 +96,9 @@ function BusinessProductSection({
             <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">
               {favorited ? "Favorited business" : "Business catalogue"}
             </p>
-            <h2 className="mt-1 text-2xl font-black tracking-[-0.04em] text-[var(--ink)]">{group.businessName}</h2>
+            <Link href={`/dashboard/user/businesses/${encodeURIComponent(businessKey(group.businessId, group.businessName))}`} className="mt-1 block text-2xl font-black tracking-[-0.04em] text-[var(--ink)] hover:text-[var(--signal)] hover:underline">
+              {group.businessName}
+            </Link>
             <p className="mt-1 text-xs font-bold uppercase tracking-[0.1em] text-[var(--muted)]">
               {group.products.length} product{group.products.length === 1 ? "" : "s"}
               {group.businessId ? ` · Business ID ${group.businessId}` : ""}
@@ -105,6 +107,9 @@ function BusinessProductSection({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <Link href={`/dashboard/user/businesses/${encodeURIComponent(businessKey(group.businessId, group.businessName))}`} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-xs font-black uppercase tracking-[0.08em] text-[var(--ink)] hover:border-[var(--signal)] hover:bg-[var(--surface)]">
+            <Store className="h-4 w-4" /> View business
+          </Link>
           <button
             type="button"
             onClick={() => onToggleFavorite(group)}

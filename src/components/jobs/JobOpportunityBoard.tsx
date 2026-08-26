@@ -3,7 +3,8 @@
 import axios from "axios";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowRight, BriefcaseBusiness, CheckCircle2, Loader2, MapPin, RefreshCw, Search, XCircle } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, CheckCircle2, Loader2, MapPin, RefreshCw, Search, Store, XCircle } from "lucide-react";
+import { businessKey } from "@/lib/favorites";
 import {
   archiveJobOpportunity,
   closeJobOpportunity,
@@ -169,7 +170,9 @@ export function JobOpportunityBoard({ audience = "public", title, description }:
                 <div>
                   <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-black uppercase tracking-[0.12em] ${statusClass(job.status)}`}>{job.status}</span>
                   <h2 className="mt-4 text-2xl font-black tracking-[-0.04em] text-[var(--ink)]">{job.title}</h2>
-                  <p className="mt-2 text-sm font-bold text-[var(--steel)]">{job.companyName}</p>
+                  <Link href={`/dashboard/user/businesses/${encodeURIComponent(businessKey(job.businessId, job.companyName))}`} className="mt-2 inline-flex text-sm font-bold text-[var(--steel)] hover:text-[var(--signal)] hover:underline">
+                    {job.companyName}
+                  </Link>
                 </div>
                 <div className="grid h-12 w-12 place-items-center rounded-[1.2rem] bg-[var(--ink)] text-[var(--gold)]"><BriefcaseBusiness className="h-6 w-6" /></div>
               </div>
@@ -186,6 +189,9 @@ export function JobOpportunityBoard({ audience = "public", title, description }:
               <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Link href={isManagement ? `/dashboard/${audience}/jobs/${job.id}` : `/jobs/${job.id}`} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white hover:bg-[var(--ink)]">
                   {isManagement ? "Manage job" : "View role"} <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link href={`/dashboard/user/businesses/${encodeURIComponent(businessKey(job.businessId, job.companyName))}`} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--steel)] hover:border-[var(--signal)] hover:text-[var(--signal)]">
+                  <Store className="h-4 w-4" /> View business
                 </Link>
                 {isManagement && job.status !== "OPEN" ? (
                   <button type="button" disabled={isActioning === job.id} onClick={() => void runAction(job.id, "publish")} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--confirm)] bg-white px-5 text-sm font-black text-[var(--confirm)] hover:bg-[var(--confirm)] hover:text-white disabled:opacity-50">
