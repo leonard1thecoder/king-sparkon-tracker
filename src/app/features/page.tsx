@@ -4,7 +4,6 @@ import { ArrowRight, BadgeCheck, Barcode, BriefcaseBusiness, Megaphone, QrCode, 
 import { Breadcrumbs } from "@/components/content/Breadcrumbs";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { PremiumHeader } from "@/components/marketing/PremiumHeader";
-import { HowItWorksRoleSlider } from "@/components/marketing/HowItWorksRoleSlider";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -73,13 +72,11 @@ export default function FeaturesPage() {
         <section className="relative overflow-hidden border-y border-[var(--line)]">
           <div className="absolute inset-0 bg-gradient-to-br from-white via-[var(--signal-soft)] to-white" aria-hidden="true" />
           <div className="relative mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-14">
-            <p className="inline-flex rounded-full border border-[var(--signal)]/20 bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Workflow & Features</p>
-            <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-[-0.05em] md:text-5xl">Different roles, different worlds, using cutting-edge solutions</h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--steel)]">No hidden steps. Each role has its own dashboard with specific features built for its responsibilities, easy to use on both mobile and desktop view. Detailed step-by-step role guides are available on the <Link href="/how-it-works" className="font-bold text-[var(--signal-strong)] hover:underline">How It Works page</Link>.</p>
+            <p className="inline-flex rounded-full border border-[var(--signal)]/20 bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Platform Capabilities</p>
+            <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-[-0.05em] md:text-5xl">Built around real work, not dashboard decoration</h1>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--steel)]">Explore King Sparkon Tracker features: barcode inventory with unit-level tracking, QR ticket capacity & gate verification, cart checkout, job opportunities, worker tips, affiliate referrals, promotions, and role-safe dashboards.</p>
           </div>
         </section>
-
-        <HowItWorksRoleSlider />
 
         <section className="mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-12">
           <div className="grid gap-6 md:grid-cols-2">

@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, BookOpen, Barcode, QrCode, Wallet, Megaphone } from "lucide-react";
+import { ArrowRight, Barcode, QrCode, Wallet, Megaphone } from "lucide-react";
 import { Breadcrumbs } from "@/components/content/Breadcrumbs";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { PremiumHeader } from "@/components/marketing/PremiumHeader";
-import { HowItWorksRoleSlider } from "@/components/marketing/HowItWorksRoleSlider";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -55,13 +54,11 @@ export default function GuidesPage() {
         <section className="relative overflow-hidden border-y border-[var(--line)]">
           <div className="absolute inset-0 bg-gradient-to-br from-[var(--signal-soft)] via-white to-white" aria-hidden="true" />
           <div className="relative mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-14">
-            <p className="inline-flex rounded-full border border-[var(--signal)]/20 bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Workflow</p>
-            <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-[-0.05em] md:text-5xl">Different roles different worlds, using cutting edge solutions</h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--steel)]">No hidden steps. Each role has it&apos;s own dashboard with specific features for specific roles, easy to use in both mobile and Desktop view. The guide below follows the actual data flow</p>
+            <p className="inline-flex rounded-full border border-[var(--signal)]/20 bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Documentation & Guides</p>
+            <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-[-0.05em] md:text-5xl">Step-by-step guides for everyday operations</h1>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--steel)]">Learn how to register products, scan unit barcodes, handle QR gate check-ins, process worker tips, and manage affiliate commissions without spreadsheet errors.</p>
           </div>
         </section>
-
-        <HowItWorksRoleSlider />
 
         <section className="mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-12">
           <div className="grid gap-6 md:grid-cols-2">

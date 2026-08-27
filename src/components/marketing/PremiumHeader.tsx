@@ -11,6 +11,7 @@ const navLinks = [
   { label: "Guides", href: "/guides" },
   { label: "Articles", href: "/articles" },
   { label: "Jobs", href: "/jobs" },
+  { label: "UIF System", href: "/uif" },
   { label: "About", href: "/about" },
   { label: "FAQ", href: "/faq" },
   { label: "Terms", href: "/terms" },
