@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 import {
@@ -421,7 +421,7 @@ export function OwnerWithdrawalsWorkspace() {
               </div>
 
               <p className="text-xs leading-5 text-slate-300">
-                King Sparkon uses PayPal's automated Payout API to process withdrawal requests instantly. Funds are dispatched directly from the platform wallet straight to your linked PayPal email address.
+                King Sparkon uses PayPal&apos;s automated Payout API to process withdrawal requests instantly. Funds are dispatched directly from the platform wallet straight to your linked PayPal email address.
               </p>
 
               <div className="grid gap-3 pt-2">

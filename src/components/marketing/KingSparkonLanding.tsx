@@ -7,7 +7,6 @@ import {
   ArrowRight,
   BadgeCheck,
   BriefcaseBusiness,
-  CheckCircle2,
   Crown,
   Megaphone,
   QrCode,
