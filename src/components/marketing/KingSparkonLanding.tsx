@@ -26,7 +26,6 @@ import { FounderVerificationCard } from "@/components/marketing/FounderVerificat
 import { JobOpportunitiesSection } from "@/components/marketing/JobOpportunitiesSection";
 import { Capacity3DVisual, Contact3DVisual, Engineering3DVisual, Role3DVisual, Sponsor3DVisual } from "@/components/marketing/Landing3DVisuals";
 import { SubscriptionSection } from "@/components/marketing/SubscriptionSection";
-import { UifCalculator } from "@/components/marketing/UifCalculator";
 import { VisionBubbleField } from "@/components/marketing/VisionBubbleField";
 
 const navLinks = [
@@ -214,11 +213,6 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
           <div className="min-w-0 lg:w-full lg:max-w-[28rem] lg:justify-self-end">
             <ScanLoop />
           </div>
-        </div>
-
-        {/* Hero Section UIF Calculator */}
-        <div className="mx-auto max-w-7xl px-5 pb-12 md:px-8">
-          <UifCalculator />
         </div>
       </section>
 
