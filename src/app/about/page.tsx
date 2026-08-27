@@ -89,13 +89,35 @@ export default function AboutPage() {
             </GlassCard>
             <GlassCard variant="subtle" className="flex gap-4">
               <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[var(--line)] bg-white text-[var(--signal)]"><ShieldCheck className="h-5 w-5" /></div>
-              <div><h2 className="font-black">Built for trust</h2><p className="mt-2 text-sm leading-6 text-[var(--steel)]">From login to withdrawal, money and access are validated server-side. The Next.js proxy never exposes backend secrets to the browser.</p></div>
+              <div><h2 className="font-black">Built for trust & POPIA compliance</h2><p className="mt-2 text-sm leading-6 text-[var(--steel)]">From login to UIF status checks, sensitive user data is handled under South Africa&apos;s POPIA principles. Personal identifiers are encrypted and never abused.</p></div>
             </GlassCard>
             <GlassCard variant="subtle" className="flex gap-4">
               <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[var(--line)] bg-white text-[var(--signal)]"><UsersRound className="h-5 w-5" /></div>
-              <div><h2 className="font-black">People first</h2><p className="mt-2 text-sm leading-6 text-[var(--steel)]">Users buy tickets, workers scan, affiliates earn, owners decide. Each role gets a dashboard that matches its daily work.</p></div>
+              <div><h2 className="font-black">People first & public services</h2><p className="mt-2 text-sm leading-6 text-[var(--steel)]">Users buy tickets, workers scan, affiliates earn, and users access government UIF services like status checks and password updates seamlessly.</p></div>
             </GlassCard>
           </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-5 pb-12 md:px-8">
+          <GlassCard variant="highlighted" className="grid gap-6 md:grid-cols-2">
+            <div>
+              <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Public Service Integration</p>
+              <h2 className="mt-2 text-2xl font-black">How We Use the UIF System</h2>
+              <p className="mt-3 text-sm leading-6 text-[var(--steel)]">
+                Our platform provides direct user dashboard access to South Africa&apos;s UIF Online System services. Citizens can check benefit claims via <Link href="/dashboard/user/uif/status" className="font-bold text-[var(--signal-strong)] hover:underline">/dashboard/user/uif/status</Link> and request secure UIF Online password updates via <Link href="/dashboard/user/uif/password" className="font-bold text-[var(--signal-strong)] hover:underline">/dashboard/user/uif/password</Link>.
+              </p>
+            </div>
+            <div className="rounded-xl border border-[var(--line)] bg-white p-5">
+              <h3 className="font-black text-sm text-[var(--ink)]">POPIA Protection Safeguards</h3>
+              <p className="mt-2 text-xs leading-5 text-[var(--steel)]">
+                To guarantee the Protection of Personal Information Act (POPIA) is never abused, 13-digit SA ID numbers are validated strictly on demand. Identifiers are never cached, sold to third parties, or harvested for marketing.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2 text-xs font-bold">
+                <Link href="/privacy" className="text-[var(--signal-strong)] hover:underline">POPIA Policy →</Link>
+                <Link href="/features" className="text-[var(--signal-strong)] hover:underline">UIF System Specs →</Link>
+              </div>
+            </div>
+          </GlassCard>
         </section>
 
         <section className="mx-auto max-w-7xl px-5 pb-12 md:px-8">
