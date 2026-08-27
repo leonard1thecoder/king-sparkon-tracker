@@ -45,7 +45,7 @@ export function generateSalaryHistoryMonths(endDateStr: string): string[] {
 
   for (let i = 0; i < 6; i++) {
     const d = new Date(endDate.getFullYear(), endDate.getMonth() - i, 1);
-    const monthName = d.toLocaleString("en-US", { month: "Long", year: "numeric" });
+    const monthName = d.toLocaleString("en-US", { month: "long", year: "numeric" });
     months.push(monthName);
   }
 
