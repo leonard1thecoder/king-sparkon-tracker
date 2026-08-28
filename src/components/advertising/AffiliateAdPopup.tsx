@@ -14,7 +14,7 @@ export function AffiliateAdPopup({ ad, onClose, onAffiliateClick }: AffiliateAdP
     <div
       role="region"
       aria-label={`Sponsored advertisement for ${ad.advertiser}`}
-      className="affiliate-ad-root pointer-events-none fixed inset-x-3 bottom-3 z-[75] sm:inset-auto sm:bottom-6 sm:right-6 sm:w-[400px] sm:max-w-[calc(100vw-48px)]"
+      className="affiliate-ad-root pointer-events-none fixed inset-x-3 bottom-3 z-[75] sm:inset-auto sm:bottom-6 sm:left-1/2 sm:w-[400px] sm:max-w-[calc(100vw-48px)] sm:-translate-x-1/2"
     >
       <div className="affiliate-ad-card pointer-events-auto relative flex max-h-[min(88vh,640px)] w-full flex-col overflow-hidden rounded-[20px] border border-[var(--line)] bg-white shadow-[0_16px_48px_rgba(15,23,42,0.14),0_4px_12px_rgba(15,23,42,0.08)]">
         {/* Header – sponsored + close */}
