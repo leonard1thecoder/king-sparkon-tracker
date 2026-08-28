@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import type { ReactNode } from "react";
+import { AffiliateAdManager } from "@/components/advertising/AffiliateAdManager";
 import { FloatingChatbot } from "@/components/chatbot/FloatingChatbot";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { MotionRouter } from "@/components/motion/MotionRouter";
@@ -156,6 +157,7 @@ export default function RootLayout({
         {children}
         <SiteFooter />
         <FloatingChatbot />
+        <AffiliateAdManager />
       </body>
     </html>
   );

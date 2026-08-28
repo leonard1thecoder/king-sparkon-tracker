@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         hostname: "veizbtzugssszhxabzrv.supabase.co",
         pathname: "/storage/v1/object/public/king-sparkon-logo/**",
       },
+      {
+        protocol: "https",
+        hostname: "veizbtzugssszhxabzrv.supabase.co",
+        pathname: "/storage/v1/object/public/smartbuyglasses/**",
+      },
     ],
   },
 };
