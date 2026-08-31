@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Calendar, Instagram, Facebook, MapPin, Music, Wallet } from "lucide-react";
+import { Calendar, Globe, MapPin, Music, Share2, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -58,9 +58,9 @@ export function ArtistProfileView({ artistId, editable = false }: { artistId?: s
               <p className="mt-2 flex items-center justify-center gap-1.5 text-xs font-semibold text-[var(--steel)] md:justify-start"><MapPin className="h-3.5 w-3.5" /> {profile.location}</p>
             </div>
             <div className="flex gap-2">
-              <a href={profile.socialLinks.instagram} target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full border border-[var(--line)] bg-white hover:bg-[var(--surface)]"><Instagram className="h-4 w-4" /></a>
-              <a href={profile.socialLinks.facebook} target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full border border-[var(--line)] bg-white hover:bg-[var(--surface)]"><Facebook className="h-4 w-4" /></a>
-              <a href={profile.socialLinks.tiktok} target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full border border-[var(--line)] bg-white hover:bg-[var(--surface)]"><Music className="h-4 w-4" /></a>
+              <a href={profile.socialLinks.instagram} target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full border border-[var(--line)] bg-white hover:bg-[var(--surface)]" aria-label="Instagram"><Globe className="h-4 w-4" /></a>
+              <a href={profile.socialLinks.facebook} target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full border border-[var(--line)] bg-white hover:bg-[var(--surface)]" aria-label="Facebook"><Share2 className="h-4 w-4" /></a>
+              <a href={profile.socialLinks.tiktok} target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full border border-[var(--line)] bg-white hover:bg-[var(--surface)]" aria-label="TikTok"><Music className="h-4 w-4" /></a>
             </div>
             {editable ? (
               <Button variant={editing ? "primary" : "secondary"} onClick={() => (editing ? handleSave() : setEditing(true))}>
