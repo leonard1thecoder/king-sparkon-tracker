@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   BriefcaseBusiness,
   ChevronDown,
+  ClipboardList,
   FileCheck2,
   Landmark,
   Loader2,
@@ -289,6 +290,14 @@ function ProfileDropdown({ role }: { role: string }) {
                           role="menuitem"
                         >
                           <Landmark className="h-4 w-4 text-[var(--signal)]" /> Update UIF Password
+                        </Link>
+                        <Link
+                          href="/dashboard/uif/apply"
+                          onClick={() => setOpen(false)}
+                          className="inline-flex min-h-10 items-center gap-3 rounded-[0.85rem] bg-white px-3 pl-9 text-sm font-bold text-[var(--steel)] transition hover:bg-white hover:text-[var(--signal-strong)]"
+                          role="menuitem"
+                        >
+                          <ClipboardList className="h-4 w-4 text-[var(--signal)]" /> Apply for UIF Benefit
                         </Link>
                       </div>
                     ) : null}
