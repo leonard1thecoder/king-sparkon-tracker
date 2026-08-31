@@ -16,6 +16,11 @@ const roleMap: Record<string, UserRole> = {
   admin: "Admin",
   administrator: "Admin",
   platform_admin: "Admin",
+  artist: "Artist",
+  dj: "Artist",
+  musician: "Artist",
+  mcee: "Artist",
+  mc: "Artist",
 };
 
 function roleKey(value: string) {
@@ -54,6 +59,7 @@ export function primaryDashboardForRoles(roles: UserRole[]) {
   if (roles.includes("Owner")) return "/dashboard/owner/products";
   if (roles.includes("Worker")) return "/dashboard/worker/scan";
   if (roles.includes("Affiliate")) return "/dashboard/affiliate/referrals";
+  if (roles.includes("Artist")) return "/dashboard/artist";
   if (roles.includes("User")) return "/dashboard/user/shop";
   return "/dashboard";
 }

@@ -1,4 +1,4 @@
-export type UserRole = "Owner" | "Worker" | "Affiliate" | "Admin" | "User";
+export type UserRole = "Owner" | "Worker" | "Affiliate" | "Admin" | "User" | "Artist";
 export type BusinessPlan = "FREE_TRIAL" | "PLUS" | "PRO";
 export type PaymentType = "CASH" | "SWIPE_MACHINE" | "WEBSITE_PAYMENT";
 export type TransactionType = "BUY" | "SELL";

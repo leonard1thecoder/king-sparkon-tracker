@@ -8,6 +8,7 @@ const roleRoutes = [
   ["/dashboard/owner", "Owner"],
   ["/dashboard/worker", "Worker"],
   ["/dashboard/affiliate", "Affiliate"],
+  ["/dashboard/artist", "Artist"],
   ["/dashboard/user", "User"],
 ] as const;
 

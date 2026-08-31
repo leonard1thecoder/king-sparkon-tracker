@@ -6,6 +6,7 @@ const ticketEndpointByRole: Record<UserRole, string> = {
   Owner: "GET /api/owner/tickets · GET /api/tickets · GET /api/users/me",
   Worker: "GET /api/worker/tickets · GET /api/tickets/assigned · GET /api/users/me",
   Affiliate: "GET /api/users/me",
+  Artist: "GET /api/artist/bookings · GET /api/tickets · GET /api/users/me",
   User: "GET /api/user/tickets · GET /api/tickets/me · GET /api/users/me",
 };
 
@@ -40,6 +41,14 @@ const ticketCopyByRole: Record<UserRole, { title: string; description: string; c
     cards: [
       ["Referral context", "Ticket campaign referrals can be connected here when the backend exposes affiliate ticket records."],
       ["Profile fallback", "Until affiliate ticket records exist, the workspace falls back to the signed-in affiliate profile."],
+    ],
+  },
+  Artist: {
+    title: "Artist bookings",
+    description: "Drafted events, performance requests, confirmed bookings, schedule and profile for artist operations.",
+    cards: [
+      ["Performance bookings", "Discover drafted events, request to perform and track confirmed performances on your schedule."],
+      ["Artist workspace", "Manage fee, type and performances per day from a creative, premium booking platform."],
     ],
   },
   User: {

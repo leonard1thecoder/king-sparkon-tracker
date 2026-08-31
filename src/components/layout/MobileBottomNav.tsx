@@ -15,6 +15,7 @@ function normalizedRole(roleStr: string): UserRole {
   if (value.includes("owner")) return "Owner";
   if (value.includes("worker")) return "Worker";
   if (value.includes("affiliate")) return "Affiliate";
+  if (value.includes("artist")) return "Artist";
   return "User";
 }
 

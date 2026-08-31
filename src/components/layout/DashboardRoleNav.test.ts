@@ -8,6 +8,7 @@ const roleSegments: Record<UserRole, string> = {
   Owner: "owner",
   Worker: "worker",
   Affiliate: "affiliate",
+  Artist: "artist",
   User: "user",
 };
 
@@ -65,5 +66,6 @@ describe("dashboard navigation contract", () => {
     expect(getDashboardHomeHref("WORKER TERMINAL")).toBe("/dashboard/worker");
     expect(getDashboardHomeHref("USER WORKSPACE")).toBe("/dashboard/user");
     expect(getDashboardHomeHref("AFFILIATE LEDGER")).toBe("/dashboard/affiliate");
+    expect(getDashboardHomeHref("ARTIST STUDIO")).toBe("/dashboard/artist");
   });
 });

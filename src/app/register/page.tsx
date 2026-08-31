@@ -6,13 +6,14 @@ import { ACCESS_COOKIE_NAME, dashboardPathForSession, decodeJwtPayload } from "@
 import { registrationPrivilegeOptions } from "@/lib/auth/registration";
 
 export const metadata: Metadata = {
-  title: "Register Business, User or Affiliate Account",
+  title: "Register Business, User, Affiliate or Artist Account",
   description:
-    "Create a King Sparkon Tracker account as a free user, free affiliate, or business owner for barcode inventory, QR tickets, cart checkout, job opportunities, worker tips, promotions, and reports.",
+    "Create a King Sparkon Tracker account as a free user, free affiliate, business owner or artist for barcode inventory, QR tickets, cart checkout, job opportunities, worker tips, promotions, bookings and reports.",
   keywords: [
     "King Sparkon Tracker register",
     "free user account",
     "free affiliate account",
+    "artist booking platform",
     "barcode inventory software registration",
     "QR ticket signup",
     "job opportunities platform",
@@ -21,17 +22,17 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "/register" },
   openGraph: {
-    title: "Register a Business, User or Affiliate Account",
+    title: "Register a Business, User, Affiliate or Artist Account",
     description:
-      "Register as a free user, free affiliate, or business owner for barcode inventory, tickets, jobs, tips, affiliates, cart checkout, and reporting.",
+      "Register as a free user, free affiliate, business owner or artist for barcode inventory, tickets, jobs, tips, affiliates, cart checkout, bookings and reporting.",
     type: "website",
     siteName: "King Sparkon Tracker",
     images: [{ url: "/king-sparkon-logo.png", width: 512, height: 512, alt: "King Sparkon Tracker register page" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Register Business, User or Affiliate | King Sparkon Tracker",
-    description: "Choose User, Affiliate, or Business Owner and see only the fields that role needs.",
+    title: "Register Business, User, Affiliate or Artist | King Sparkon Tracker",
+    description: "Choose User, Affiliate, Business Owner or Artist and see only the fields that role needs.",
     images: ["/king-sparkon-logo.png"],
   },
   robots: { index: false, follow: false },
@@ -55,6 +56,8 @@ const privilegeNotes: Record<string, string> = {
     "Privilege selected: User. The backend creates a free User account for tickets, jobs, cart checkout, profile, and purchase QR flows.",
   AFFILIATE:
     "Privilege selected: Affiliate. Complete the required physical address. The backend creates a free Affiliate account with referral code, promotion link, and QR code.",
+  ARTIST:
+    "Privilege selected: Artist. The backend creates an Artist account for bookings, performances, schedule and fee management. Choose DJ, Musician or MCEE.",
 };
 
 const serviceNotes: Record<string, string> = {
@@ -64,6 +67,8 @@ const serviceNotes: Record<string, string> = {
     "Service selected: Free User Access for tickets, job applications, cart checkout, profile, and purchase QR flows.",
   FREE_AFFILIATE_ACCESS:
     "Service selected: Free Affiliate Access for referral links, QR promotion assets, and commission visibility.",
+  ARTIST_ACCESS:
+    "Service selected: Artist Access for performance bookings, drafted events, schedule and fee management.",
   BARCODE_INVENTORY:
     "Service selected: Barcode Inventory for products, stock movement, scanning, branches, and audit reports.",
   QR_TICKET_EVENTS:
@@ -98,6 +103,7 @@ function defaultService(plan: string | undefined, service: string | undefined, p
   const normalizedPlan = plan?.toUpperCase();
   if (privilege === "USER" || normalizedPlan === "FREE_USER") return "FREE_USER_ACCESS";
   if (privilege === "AFFILIATE" || normalizedPlan === "FREE_AFFILIATE") return "FREE_AFFILIATE_ACCESS";
+  if (privilege === "ARTIST") return "ARTIST_ACCESS";
   return "FULL_BUSINESS_SUITE";
 }
 
@@ -124,7 +130,7 @@ export default async function RegisterPage({
     <InteractiveRegisterShell
       endpoint="/api/auth/register"
       title="Register your King Sparkon access"
-      description="Choose User, Business owner, or Affiliate. The guidance and form fields update immediately for the selected role."
+      description="Choose User, Business owner, Affiliate or Artist. The guidance and form fields update immediately for the selected role."
       roleNotes={privilegeNotes}
       initialRoleNote={selectedPlanNote}
       fields={[
@@ -132,7 +138,7 @@ export default async function RegisterPage({
           name: "serviceRegisteringFor",
           label: "Choose role",
           type: "select",
-          placeholder: "Choose User, Business owner, or Affiliate",
+          placeholder: "Choose User, Business owner, Affiliate or Artist",
           autoComplete: "off",
           defaultValue: selectedPrivilege,
           helper: "Start here. The form and privilege guidance change with this role.",
@@ -177,8 +183,40 @@ export default async function RegisterPage({
           type: "tel",
           placeholder: "Example: +27821234567",
           autoComplete: "tel",
-          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE"],
+          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
           helper: "Required. Use international format for WhatsApp and account contact.",
+        },
+        {
+          name: "artistType",
+          label: "Artist Type",
+          type: "select",
+          placeholder: "Select DJ, Musician or MCEE",
+          autoComplete: "off",
+          visibleForPrivileges: ["ARTIST"],
+          helper: "Required for Artist. Choose your performance category.",
+          options: [
+            { label: "DJ", value: "DJ" },
+            { label: "Musician", value: "MUSICIAN" },
+            { label: "MCEE", value: "MCEE" },
+          ],
+        },
+        {
+          name: "performancesPerDay",
+          label: "Performances per day",
+          type: "number",
+          placeholder: "2",
+          autoComplete: "off",
+          visibleForPrivileges: ["ARTIST"],
+          helper: "Required. How many performances you can do per day.",
+        },
+        {
+          name: "minimumBookingFee",
+          label: "Minimum booking fee",
+          type: "text",
+          placeholder: "R 2,500",
+          autoComplete: "off",
+          visibleForPrivileges: ["ARTIST"],
+          helper: "Required. South African Rand — e.g. R 2,500",
         },
         {
           name: "affiliateCode",
@@ -223,9 +261,9 @@ export default async function RegisterPage({
           type: "text",
           placeholder: "Example: 12 Main Road",
           autoComplete: "street-address",
-          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE"],
+          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
           section: "address",
-          helper: "Required for User, Business owner, and Affiliate.",
+          helper: "Required for User, Business owner, Affiliate and Artist.",
         },
         {
           name: "addressLine2",
@@ -234,7 +272,7 @@ export default async function RegisterPage({
           placeholder: "Example: Unit 4, Sparkon Heights",
           autoComplete: "address-line2",
           required: false,
-          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE"],
+          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
           section: "address",
         },
         {
@@ -243,7 +281,7 @@ export default async function RegisterPage({
           type: "text",
           placeholder: "Example: Sandton",
           autoComplete: "address-level3",
-          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE"],
+          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
           section: "address",
         },
         {
@@ -252,7 +290,7 @@ export default async function RegisterPage({
           type: "text",
           placeholder: "Example: Johannesburg",
           autoComplete: "address-level2",
-          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE"],
+          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
           section: "address",
         },
         {
@@ -261,7 +299,7 @@ export default async function RegisterPage({
           type: "text",
           placeholder: "Example: Gauteng",
           autoComplete: "address-level1",
-          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE"],
+          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
           section: "address",
         },
         {
@@ -270,7 +308,7 @@ export default async function RegisterPage({
           type: "text",
           placeholder: "Example: 2196",
           autoComplete: "postal-code",
-          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE"],
+          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
           section: "address",
         },
         {
@@ -280,7 +318,7 @@ export default async function RegisterPage({
           placeholder: "South Africa",
           autoComplete: "country-name",
           defaultValue: "South Africa",
-          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE"],
+          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
           section: "address",
         },
         {

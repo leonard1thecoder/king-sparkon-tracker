@@ -16,6 +16,8 @@ import {
   LockKeyhole,
   Mail,
   MapPin,
+  Mic2,
+  Music,
   ShieldCheck,
   Sparkles,
   UserRound,
@@ -66,6 +68,11 @@ const roleCopy: Record<string, { title: string; copy: string; tags: string[] }> 
     copy: "Referral workspace with required physical address and PayPal link for earnings setup.",
     tags: ["R0", "QR", "PayPal"],
   },
+  ARTIST: {
+    title: "Artist",
+    copy: "Artist workspace with booking fee, performance schedule and type — DJ, Musician or MCEE.",
+    tags: ["Bookings", "Per Day", "Fee"],
+  },
   ADMIN: {
     title: "Admin",
     copy: "Restricted platform account for King Sparkon control.",
@@ -81,6 +88,9 @@ function iconFor(field: RegisterField) {
   if (normalizedName.includes("password")) return <LockKeyhole className={iconClass} />;
   if (normalizedName.includes("email")) return <Mail className={iconClass} />;
   if (normalizedName.includes("paypal")) return <WalletCards className={iconClass} />;
+  if (normalizedName.includes("artisttype")) return <Mic2 className={iconClass} />;
+  if (normalizedName.includes("performances")) return <Music className={iconClass} />;
+  if (normalizedName.includes("minimumbooking")) return <WalletCards className={iconClass} />;
   if (
     normalizedName.includes("address") ||
     normalizedName.includes("city") ||
@@ -275,11 +285,13 @@ function buildPayload(formData: FormData) {
   if (parts.length) payload.physicalAddress = parts.join(", ");
   if (payload.serviceRegisteringFor === "USER") payload.serviceRegistrationType = "FREE_USER_ACCESS";
   if (payload.serviceRegisteringFor === "AFFILIATE") payload.serviceRegistrationType = "FREE_AFFILIATE_ACCESS";
+  if (payload.serviceRegisteringFor === "ARTIST") payload.serviceRegistrationType = "ARTIST_ACCESS";
   if (
     payload.serviceRegisteringFor === "BUSINESS_OWNER" &&
     (!payload.serviceRegistrationType ||
       payload.serviceRegistrationType === "FREE_USER_ACCESS" ||
-      payload.serviceRegistrationType === "FREE_AFFILIATE_ACCESS")
+      payload.serviceRegistrationType === "FREE_AFFILIATE_ACCESS" ||
+      payload.serviceRegistrationType === "ARTIST_ACCESS")
   ) {
     payload.serviceRegistrationType = "FULL_BUSINESS_SUITE";
   }
@@ -321,6 +333,8 @@ export function InteractiveRegisterShell({
   const addressFields = visibleFields.filter((field) => field.section === "address");
   const referralFields = visibleFields.filter((field) => field.section === "referral");
   const mainFields = visibleFields.filter((field) => !field.section);
+  const artistFields = mainFields.filter((f) => ["artistType", "performancesPerDay", "minimumBookingFee"].includes(f.name));
+  const coreMainFields = mainFields.filter((f) => !artistFields.includes(f));
   const selectedCopy = roleCopy[role];
   const addressRequired = addressFields.length > 0 && addressFields.some((field) => field.required !== false);
   const showReferral = role === "BUSINESS_OWNER" && referralFields.length > 0;
@@ -341,7 +355,8 @@ export function InteractiveRegisterShell({
       }
 
       const fieldsToCheck = [
-        ...mainFields,
+        ...coreMainFields,
+        ...artistFields,
         ...(addressOpen ? addressFields : []),
         ...(referralOpen ? referralFields : []),
       ];
@@ -464,7 +479,7 @@ export function InteractiveRegisterShell({
 
           <form className="mt-6 grid min-w-0 gap-5" onSubmit={handleSubmit}>
             <div className="grid min-w-0 gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-              {mainFields.map((field) => (
+              {coreMainFields.map((field) => (
                 <Field
                   key={field.name}
                   field={field}
@@ -480,11 +495,32 @@ export function InteractiveRegisterShell({
               ))}
             </div>
 
+            {artistFields.length ? (
+              <div className="animate-in fade-in slide-in-from-top-2 duration-300 overflow-hidden rounded-[1.65rem] border border-[var(--line-strong)] bg-gradient-to-br from-[var(--signal-soft)] via-white to-[var(--signal-soft)] p-[1px] shadow-[var(--shadow-soft)]">
+                <div className="rounded-[1.6rem] bg-white p-4 md:p-5">
+                  <div className="mb-4 flex items-center gap-3">
+                    <span className="grid h-9 w-9 place-items-center rounded-full bg-[var(--ink)] text-[var(--gold)]">
+                      <Music className="h-4 w-4" />
+                    </span>
+                    <div>
+                      <p className="text-sm font-black tracking-[-0.02em]">Artist details</p>
+                      <p className="text-xs font-semibold text-[var(--steel)]">DJ, Musician or MCEE — performances per day and fee</p>
+                    </div>
+                  </div>
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                    {artistFields.map((field) => (
+                      <Field key={field.name} field={field} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : null}
+
             {addressFields.length ? (
               <ToggleSection
                 id="register-address-fields"
                 title="Physical address"
-                copy="Complete the full address. It is required for User, Business Owner, and Affiliate accounts."
+                copy="Complete the full address. It is required for User, Business Owner, Affiliate and Artist accounts."
                 required={addressRequired}
                 open={addressOpen}
                 onClick={() => setAddressOpen((open) => !open)}

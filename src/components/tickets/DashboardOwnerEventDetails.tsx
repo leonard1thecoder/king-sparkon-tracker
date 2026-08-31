@@ -9,6 +9,7 @@ import { TicketStatusBadge } from "@/components/tickets/TicketStatusBadge";
 import { getTicketBannerImage } from "@/components/tickets/ticketBannerImage";
 import { getEventById, getEventTotals } from "@/services/ticketService";
 import type { TicketEvent } from "@/types/tickets";
+import { ArtistRequestsSection } from "@/components/business/ArtistRequestsSection";
 
 type DashboardOwnerEventDetailsProps = { eventId: string };
 
@@ -70,6 +71,8 @@ export function DashboardOwnerEventDetails({ eventId }: DashboardOwnerEventDetai
         </section>
 
         <section className="rounded-[2.5rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] md:p-7"><div><p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Ticket classes</p><h2 className="mt-3 text-4xl font-black tracking-[-0.05em]">Owner class-level capacity</h2></div><div className="mt-8 grid gap-5 lg:grid-cols-3">{event.ticketTypes.map((ticketType) => <TicketTypeCard key={ticketType.id} ticketType={ticketType} eventId={event.id} showBuyAction={false} />)}</div></section>
+
+        <ArtistRequestsSection eventId={event.id} eventTitle={event.name} eventDate={event.eventDate} eventTime={event.eventTime} />
       </main>
     </>
   );

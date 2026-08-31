@@ -8,6 +8,7 @@ function dashboardHomeHref(role: string) {
   if (v.includes("owner")) return "/dashboard/owner/products";
   if (v.includes("worker")) return "/dashboard/worker/scan";
   if (v.includes("affiliate")) return "/dashboard/affiliate/referrals";
+  if (v.includes("artist")) return "/dashboard/artist";
   return "/dashboard/user/shop";
 }
 

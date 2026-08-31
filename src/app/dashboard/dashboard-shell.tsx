@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import { ArrowRight, Building2, QrCode, ScanLine, ShieldCheck, UserRound } from "lucide-react";
+import { ArrowRight, Building2, Mic2, QrCode, ScanLine, ShieldCheck, UserRound } from "lucide-react";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { MetricCard } from "@/components/ui/MetricCard";
 import { StatusPill } from "@/components/ui/StatusPill";
@@ -94,9 +94,25 @@ const overview: Record<Role, Overview> = {
       { label: "Profile", href: "/dashboard/user/profile", detail: "Address, contact and session." },
     ],
   },
+  Artist: {
+    title: "Artist performance console",
+    description: "Artist UX is discovering drafted events, requesting performances, tracking bookings and managing schedule and profile. It feels like a music booking platform, not an admin table.",
+    primary: { label: "Browse drafted events", href: "/dashboard/artist/drafted", detail: "Events looking for DJ, Musician or MCEE.", tone: "signal" },
+    secondary: { label: "My schedule", href: "/dashboard/artist/schedule", detail: "Calendar of confirmed performances.", tone: "confirm" },
+    metrics: [
+      { label: "Bookings", value: "Live", detail: "Upcoming confirmed performances.", tone: "confirm" },
+      { label: "Requests", value: "Pending", detail: "Awaiting host response.", tone: "signal" },
+      { label: "Profile", value: "Ready", detail: "Fee, type and performances per day." },
+    ],
+    actions: [
+      { label: "Booked events", href: "/dashboard/artist/booked", detail: "Your confirmed performances.", tone: "signal" },
+      { label: "Profile", href: "/dashboard/artist/profile", detail: "Bio, links, fee and performances." },
+      { label: "Settings", href: "/dashboard/artist/settings", detail: "Artist preferences and account." },
+    ],
+  },
 };
 
-const roleIcons: Record<Role, LucideIcon> = { Admin: ShieldCheck, Owner: Building2, Worker: ScanLine, Affiliate: QrCode, User: UserRound };
+const roleIcons: Record<Role, LucideIcon> = { Admin: ShieldCheck, Owner: Building2, Worker: ScanLine, Affiliate: QrCode, User: UserRound, Artist: Mic2 };
 
 function ActionCard({ action }: { action: Action }) {
   return (

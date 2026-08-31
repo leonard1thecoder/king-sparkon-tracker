@@ -73,6 +73,10 @@ declare module "lucide-react" {
   export const MapPin: LucideIcon;
   export const Megaphone: LucideIcon;
   export const Menu: LucideIcon;
+  export const Mic: LucideIcon;
+  export const Mic2: LucideIcon;
+  export const Music: LucideIcon;
+  export const LayoutDashboard: LucideIcon;
   export const MessageCircle: LucideIcon;
   export const Minus: LucideIcon;
   export const MoreHorizontal: LucideIcon;
@@ -96,6 +100,9 @@ declare module "lucide-react" {
   export const Send: LucideIcon;
   export const Settings: LucideIcon;
   export const Share2: LucideIcon;
+  export const SlidersHorizontal: LucideIcon;
+  export const Instagram: LucideIcon;
+  export const Facebook: LucideIcon;
   export const ShieldAlert: LucideIcon;
   export const ShieldCheck: LucideIcon;
   export const ShoppingBag: LucideIcon;

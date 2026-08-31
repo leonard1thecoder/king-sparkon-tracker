@@ -13,6 +13,18 @@ const nextConfig: NextConfig = {
         hostname: "veizbtzugssszhxabzrv.supabase.co",
         pathname: "/storage/v1/object/public/smartbuyglasses/**",
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "i.pravatar.cc",
+      },
+      {
+        protocol: "https",
+        hostname: "picsum.photos",
+      },
     ],
   },
 };

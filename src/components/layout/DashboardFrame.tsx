@@ -10,6 +10,7 @@ export function getDashboardHomeHref(role: string): string {
   if (value.includes("owner")) return "/dashboard/owner";
   if (value.includes("worker")) return "/dashboard/worker";
   if (value.includes("affiliate")) return "/dashboard/affiliate";
+  if (value.includes("artist")) return "/dashboard/artist";
   return "/dashboard/user";
 }
 

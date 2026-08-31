@@ -1,4 +1,4 @@
-export type ServiceRegistrationFor = "USER" | "BUSINESS_OWNER" | "AFFILIATE";
+export type ServiceRegistrationFor = "USER" | "BUSINESS_OWNER" | "AFFILIATE" | "ARTIST";
 
 export type RegistrationPrivilegeOption = {
   label: string;
@@ -22,6 +22,11 @@ export const registrationPrivilegeOptions: RegistrationPrivilegeOption[] = [
     value: "BUSINESS_OWNER",
     description: "Creates an Owner privilege and a business workspace with its own QR code.",
   },
+  {
+    label: "Artist",
+    value: "ARTIST",
+    description: "Creates an Artist privilege for bookings, performances, schedule and fee management.",
+  },
 ];
 
 export function normalizeRegistrationPrivilege(value: string | null | undefined): ServiceRegistrationFor {
@@ -31,6 +36,7 @@ export function normalizeRegistrationPrivilege(value: string | null | undefined)
   if (normalized === "OWNER" || normalized === "BUSINESS" || normalized === "BUSINESS_OWNER") return "BUSINESS_OWNER";
   if (normalized === "AFFILIATE" || normalized === "AFFLIATE") return "AFFILIATE";
   if (normalized === "USER" || normalized === "CUSTOMER" || normalized === "CLIENT") return "USER";
+  if (normalized === "ARTIST") return "ARTIST";
 
   throw new Error(`Unsupported registration privilege: ${value}`);
 }
