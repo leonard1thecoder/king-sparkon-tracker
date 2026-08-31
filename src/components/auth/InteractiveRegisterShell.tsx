@@ -8,6 +8,7 @@ import {
   AlertCircle,
   ArrowDown,
   ArrowRight,
+  Building2,
   CheckCircle2,
   Eye,
   EyeOff,
@@ -335,6 +336,8 @@ export function InteractiveRegisterShell({
   const mainFields = visibleFields.filter((field) => !field.section);
   const artistFields = mainFields.filter((f) => ["artistType", "performancesPerDay", "minimumBookingFee"].includes(f.name));
   const coreMainFields = mainFields.filter((f) => !artistFields.includes(f));
+  const roleField = fields.find((f) => f.name === "serviceRegisteringFor");
+  const otherCoreFields = coreMainFields.filter((f) => f.name !== "serviceRegisteringFor");
   const selectedCopy = roleCopy[role];
   const addressRequired = addressFields.length > 0 && addressFields.some((field) => field.required !== false);
   const showReferral = role === "BUSINESS_OWNER" && referralFields.length > 0;
@@ -355,7 +358,7 @@ export function InteractiveRegisterShell({
       }
 
       const fieldsToCheck = [
-        ...coreMainFields,
+        ...otherCoreFields,
         ...artistFields,
         ...(addressOpen ? addressFields : []),
         ...(referralOpen ? referralFields : []),
@@ -478,20 +481,60 @@ export function InteractiveRegisterShell({
           </div>
 
           <form className="mt-6 grid min-w-0 gap-5" onSubmit={handleSubmit}>
+            {roleField ? (
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm font-black text-[var(--ink)]">{roleField.label}</p>
+                  <p className="mt-1 text-xs font-semibold text-[var(--steel)]">{roleField.helper}</p>
+                </div>
+                <input type="hidden" name={roleField.name} value={role} />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {(roleField.options ?? []).map((opt) => {
+                    const isSelected = role === opt.value;
+                    const copy = roleCopy[opt.value];
+                    const Icon = opt.value === "USER" ? UserRound : opt.value === "AFFILIATE" ? Gift : opt.value === "ARTIST" ? Mic2 : Building2;
+                    return (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => {
+                          setRole(opt.value);
+                          setAddressOpen(true);
+                          setReferralOpen(false);
+                          setStatus(null);
+                        }}
+                        aria-pressed={isSelected}
+                        className={`flex flex-col justify-between rounded-xl border p-4 text-left transition-all ${isSelected ? "border-[var(--signal)] bg-[var(--signal-soft)] ring-2 ring-[var(--signal)]" : "border-[var(--line)] bg-white hover:border-[var(--line-strong)] hover:bg-[var(--surface)]"}`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full border ${isSelected ? "border-[var(--signal)] bg-white text-[var(--signal-strong)]" : "border-[var(--line)] bg-[var(--surface)] text-[var(--signal)]"}`}>
+                            <Icon className="h-4 w-4" />
+                          </span>
+                          {isSelected ? <span className="rounded-full bg-[var(--signal)] px-2.5 py-1 text-[0.6rem] font-black uppercase tracking-[0.1em] text-white">Selected</span> : null}
+                        </div>
+                        <div className="mt-3">
+                          <span className={`text-sm font-black ${isSelected ? "text-[var(--signal-strong)]" : "text-[var(--ink)]"}`}>{opt.label}</span>
+                          {copy ? <p className="mt-1 text-xs leading-5 text-[var(--steel)]">{copy.copy}</p> : null}
+                          {copy ? (
+                            <div className="mt-2 flex flex-wrap gap-1.5">
+                              {copy.tags.slice(0, 3).map((tag) => (
+                                <span key={tag} className={`rounded-full px-2 py-1 text-[0.6rem] font-black uppercase tracking-[0.08em] ${isSelected ? "bg-white text-[var(--signal-strong)] border border-[var(--signal)]/20" : "bg-[var(--surface)] text-[var(--muted)] border border-[var(--line)]"}`}>
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          ) : null}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
+
             <div className="grid min-w-0 gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-              {coreMainFields.map((field) => (
-                <Field
-                  key={field.name}
-                  field={field}
-                  onRoleChange={(value) => {
-                    if (field.name === "serviceRegisteringFor") {
-                      setRole(value);
-                      setAddressOpen(true);
-                      setReferralOpen(false);
-                      setStatus(null);
-                    }
-                  }}
-                />
+              {otherCoreFields.map((field) => (
+                <Field key={field.name} field={field} />
               ))}
             </div>
 
