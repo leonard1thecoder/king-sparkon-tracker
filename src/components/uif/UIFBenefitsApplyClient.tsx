@@ -11,6 +11,7 @@ const DOCUMENTS: Array<{ type: UIFDocumentType; title: string; description: stri
   { type: "UI-19", title: "UI-19", description: "Employment termination declaration" },
   { type: "SALARY_SCHEDULE", title: "Salary Schedule", description: "Employee salary and contribution schedule" },
   { type: "UIF_2_8", title: "UIF 2.8", description: "UIF declaration form" },
+  { type: "ID_COPY", title: "I.D Copy", description: "Certified copy of identity document" },
 ];
 
 export function UIFBenefitsApplyClient() {
@@ -18,11 +19,13 @@ export function UIFBenefitsApplyClient() {
     "UI-19": null,
     SALARY_SCHEDULE: null,
     UIF_2_8: null,
+    ID_COPY: null,
   });
   const [errors, setErrors] = useState<ErrorState>({
     "UI-19": null,
     SALARY_SCHEDULE: null,
     UIF_2_8: null,
+    ID_COPY: null,
   });
 
   const uploadedCount = useMemo(() => Object.values(files).filter(Boolean).length, [files]);
@@ -48,6 +51,7 @@ export function UIFBenefitsApplyClient() {
       "UI-19": files["UI-19"]?.name,
       SALARY_SCHEDULE: files["SALARY_SCHEDULE"]?.name,
       UIF_2_8: files["UIF_2_8"]?.name,
+      ID_COPY: files["ID_COPY"]?.name,
       files,
     });
     // For demo, we could show a toast or navigate, but spec says placeholder is enough
@@ -111,7 +115,7 @@ export function UIFBenefitsApplyClient() {
       </div>
 
       <p className="mt-3 text-center text-[0.68rem] font-semibold leading-4 text-[var(--muted)] md:text-right">
-        All 3 documents are required to continue. PDF only, max 10 MB each.
+        All 4 documents are required to continue. PDF only, max 10 MB each.
       </p>
     </div>
   );

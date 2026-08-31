@@ -3,7 +3,7 @@
 import { useId, useRef, useState } from "react";
 import { AlertCircle, CheckCircle2, FileText, Upload, X } from "lucide-react";
 
-export type UIFDocumentType = "UI-19" | "SALARY_SCHEDULE" | "UIF_2_8";
+export type UIFDocumentType = "UI-19" | "SALARY_SCHEDULE" | "UIF_2_8" | "ID_COPY";
 
 type Props = {
   docType: UIFDocumentType;
