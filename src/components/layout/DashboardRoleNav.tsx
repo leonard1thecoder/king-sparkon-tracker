@@ -100,11 +100,10 @@ export const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Profile", href: "/dashboard/affiliate/profile", icon: UserRound, description: "Payout identity and session", shortLabel: "Profile" },
   ],
   User: [
-    { label: "King Sparkon Lego Mall", href: "/dashboard/user/shop", icon: ShoppingCart, description: "Browse the Tuck Shop", shortLabel: "Lego Mall" },
+    { label: "Buy Products", href: "/dashboard/user/shop", icon: ShoppingCart, description: "Browse the Tuck Shop", shortLabel: "Products" },
     { label: "Cart", href: "/dashboard/user/shop/cart", icon: ShoppingCart, description: "Review and pay", shortLabel: "Cart" },
-    { label: "King Sparkon Lego Tickets", href: "/dashboard/user/tickets/buy", icon: Ticket, description: "Browse live events", shortLabel: "Lego Tickets" },
-    { label: "King Sparkon Job posts", href: "/dashboard/user/jobs", icon: BriefcaseBusiness, description: "Browse job opportunities", shortLabel: "Job posts" },
-    { label: "King Sparkon AI", href: "/dashboard/user/ai", icon: Bot, description: "AI assistant", shortLabel: "AI" },
+    { label: "Buy Tickets", href: "/dashboard/user/tickets/buy", icon: Ticket, description: "Browse live events", shortLabel: "Tickets" },
+    { label: "Tip Worker", href: "/dashboard/user/tips", icon: WalletCards, description: "Support workers directly", shortLabel: "Tip" },
   ],
   Artist: [
     { label: "Dashboard", href: "/dashboard/artist", icon: LayoutDashboard, description: "Overview and opportunities", shortLabel: "Home" },
