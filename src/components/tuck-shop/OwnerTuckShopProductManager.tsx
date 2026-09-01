@@ -186,7 +186,6 @@ export function OwnerTuckShopProductManager() {
     setSuccess(null);
     const price = Number(form.price);
     const stockQuantity = Number(form.stockQuantity);
-    const manufacturerBarcode = form.productBarcode.trim();
     if (!Number.isFinite(price) || price <= 0) {
       setError("Enter a valid product price greater than zero.");
       setSaving(false);
@@ -197,16 +196,11 @@ export function OwnerTuckShopProductManager() {
       setSaving(false);
       return;
     }
-    if (form.barcodeMode === "BRANDED" && !manufacturerBarcode) {
-      setError("Scan or enter the manufacturer barcode for a barcoded brand.");
-      setSaving(false);
-      return;
-    }
 
     try {
       const created = await createOwnerProduct({
         name: form.name.trim(),
-        productBarcode: form.barcodeMode === "BRANDED" ? manufacturerBarcode : null,
+        productBarcode: null,
         category: form.category,
         price,
         stockQuantity,
@@ -220,7 +214,7 @@ export function OwnerTuckShopProductManager() {
       });
       await configureProductBarcodeMode(created.id, {
         barcodeMode: form.barcodeMode,
-        manufacturerBarcode: form.barcodeMode === "BRANDED" ? manufacturerBarcode : null,
+        manufacturerBarcode: null,
       });
       if (newProductImage) await uploadProductImage(created.id, newProductImage);
       setForm(emptyProductForm);
@@ -338,9 +332,8 @@ export function OwnerTuckShopProductManager() {
               <FieldLabel label="Opening stock" hint="units"><input value={form.stockQuantity} onChange={(event) => setForm((current) => ({ ...current, stockQuantity: event.target.value.replace(/\D/g, "") }))} required inputMode="numeric" placeholder="0" className={fieldClass()} /></FieldLabel>
             </div>
             <div className="grid gap-4 rounded-[1.35rem] border border-[var(--gold)]/60 bg-[var(--gold)]/10 p-4 lg:grid-cols-2">
-              <button type="button" onClick={() => setForm((current) => ({ ...current, barcodeMode: "BRANDED" }))} className={`flex items-start gap-3 rounded-[1.1rem] border p-4 text-left ${form.barcodeMode === "BRANDED" ? "border-[var(--signal)] bg-white shadow-[var(--shadow-soft)]" : "border-[var(--line)] bg-white/50"}`}><Barcode className="mt-0.5 h-5 w-5 shrink-0 text-[var(--signal)]" /><span><strong className="block text-sm font-black text-[var(--ink)]">Barcoded brand</strong><span className="mt-1 block text-xs font-semibold leading-5 text-[var(--steel)]">Workers scan the manufacturer barcode.</span></span></button>
+              <button type="button" onClick={() => setForm((current) => ({ ...current, barcodeMode: "BRANDED" }))} className={`flex items-start gap-3 rounded-[1.1rem] border p-4 text-left ${form.barcodeMode === "BRANDED" ? "border-[var(--signal)] bg-white shadow-[var(--shadow-soft)]" : "border-[var(--line)] bg-white/50"}`}><Barcode className="mt-0.5 h-5 w-5 shrink-0 text-[var(--signal)]" /><span><strong className="block text-sm font-black text-[var(--ink)]">Barcoded brand</strong><span className="mt-1 block text-xs font-semibold leading-5 text-[var(--steel)]">Workers add the manufacturer barcode at <span className="font-black text-[var(--signal)]">/dashboard/worker/products</span>.</span></span></button>
               <button type="button" onClick={() => setForm((current) => ({ ...current, barcodeMode: "AUTO_GENERATED", productBarcode: "" }))} className={`flex items-start gap-3 rounded-[1.1rem] border p-4 text-left ${form.barcodeMode === "AUTO_GENERATED" ? "border-[var(--confirm)] bg-white shadow-[var(--shadow-soft)]" : "border-[var(--line)] bg-white/50"}`}><WandSparkles className="mt-0.5 h-5 w-5 shrink-0 text-[var(--confirm)]" /><span><strong className="block text-sm font-black text-[var(--ink)]">No manufacturer barcode</strong><span className="mt-1 block text-xs font-semibold leading-5 text-[var(--steel)]">King Sparkon creates internal unit codes.</span></span></button>
-              {form.barcodeMode === "BRANDED" ? <div className="lg:col-span-2"><FieldLabel label="Manufacturer barcode" hint="required"><input value={form.productBarcode} onChange={(event) => setForm((current) => ({ ...current, productBarcode: event.target.value.replace(/\s/g, "") }))} required placeholder="Scan or enter GTIN / retail barcode" className={fieldClass()} /></FieldLabel></div> : null}
             </div>
             <div className="grid gap-4 rounded-[1.35rem] border border-[var(--line)] bg-[var(--surface)] p-4 md:grid-cols-[7rem_minmax(0,1fr)] md:items-center"><div className="grid h-28 w-28 place-items-center overflow-hidden rounded-[1.1rem] border border-dashed border-[var(--line)] bg-white">{newProductPreview ? <img src={newProductPreview} alt="Selected product preview" className="h-full w-full object-cover" /> : <ImagePlus className="h-8 w-8 text-[var(--signal)]" />}</div><FieldLabel label="Product photo" hint="optional"><input type="file" accept={acceptedImageTypes} onChange={(event) => selectNewProductImage(event.target.files?.[0] ?? null)} className={fileInputClass()} /></FieldLabel></div>
             <div className="grid gap-4 lg:grid-cols-2">
@@ -369,6 +362,8 @@ export function OwnerTuckShopProductManager() {
                 const updating = updatingProductId === product.id;
                 const promoting = promotingProductId === product.id;
                 const deleting = deletingProductId === product.id;
+                const barcodesRequired = configuration?.barcodesRequired ?? product.remainingBarcodeSlots ?? 0;
+                const barcodesAssigned = configuration?.barcodeCount ?? product.barcodeCount ?? (product.barcodes?.length ?? 0);
                 return (
                   <article key={product.id} className="overflow-hidden rounded-[1.6rem] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
                     <div className="relative aspect-[16/10] overflow-hidden bg-[var(--surface)]">
@@ -378,7 +373,13 @@ export function OwnerTuckShopProductManager() {
                     <div className="grid gap-4 p-5">
                       <div><p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.12em] text-[var(--muted)]">Product #{product.id} · {product.category}</p><h2 className="mt-1 text-2xl font-black tracking-[-0.04em] text-[var(--ink)]">{product.name}</h2><p className="money mt-2 text-2xl font-black text-[var(--signal)]">{money(product.salePrice ?? product.price)}</p>{promotion ? <p className="mt-1 text-xs font-black text-[var(--signal)]">Promoted until {date(promotion.endsAt)}</p> : null}</div>
                       <div className="grid grid-cols-2 gap-3"><div className="rounded-[1rem] bg-[var(--surface)] p-3"><p className="text-[0.62rem] font-black uppercase tracking-[0.1em] text-[var(--muted)]">Stock</p><p className="mt-1 text-xl font-black text-[var(--ink)]">{product.stockQuantity}</p></div><div className="rounded-[1rem] bg-[var(--surface)] p-3"><p className="text-[0.62rem] font-black uppercase tracking-[0.1em] text-[var(--muted)]">Barcodes required</p><p className="mt-1 text-xl font-black text-[var(--ink)]">{configuration?.barcodesRequired ?? product.remainingBarcodeSlots ?? 0}</p></div></div>
-                      <div className="grid gap-2 sm:grid-cols-[1fr_auto]"><input value={quantityDrafts[product.id] ?? String(product.stockQuantity)} onChange={(event) => setQuantityDrafts((current) => ({ ...current, [product.id]: event.target.value.replace(/\D/g, "") }))} inputMode="numeric" aria-label={`New stock quantity for ${product.name}`} className={fieldClass()} /><Button type="button" disabled={updating} onClick={() => void updateQuantity(product)}>{updating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Boxes className="h-4 w-4" />} Update quantity</Button></div>
+                      {mode === "BRANDED" ? (
+                        <div className="rounded-[1rem] border border-[var(--line)] bg-[var(--surface)] p-3 text-xs font-semibold leading-5 text-[var(--steel)]">
+                          Stock is fulfilled by barcodes. <span className="font-black text-[var(--signal)]">Required: {barcodesRequired}</span> • Assigned: {barcodesAssigned} • Workers add barcodes at <span className="font-black text-[var(--ink)]">/dashboard/worker/products</span> to make stock sellable.
+                        </div>
+                      ) : (
+                        <div className="grid gap-2 sm:grid-cols-[1fr_auto]"><input value={quantityDrafts[product.id] ?? String(product.stockQuantity)} onChange={(event) => setQuantityDrafts((current) => ({ ...current, [product.id]: event.target.value.replace(/\D/g, "") }))} inputMode="numeric" aria-label={`New stock quantity for ${product.name}`} className={fieldClass()} /><Button type="button" disabled={updating} onClick={() => void updateQuantity(product)}>{updating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Boxes className="h-4 w-4" />} Update quantity</Button></div>
+                      )}
                       <div className="grid gap-2"><input type="file" accept={acceptedImageTypes} onChange={(event) => selectExistingProductImage(product.id, event.target.files?.[0] ?? null)} className={fileInputClass()} /><Button type="button" variant="quiet" disabled={uploading || !imageFiles[product.id]} onClick={() => void saveImage(product.id)}>{uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Update photo</Button></div>
                       <Button type="button" disabled={promoting || product.stockQuantity <= 0} onClick={() => void promoteProduct(product)} className="border-[var(--gold)] bg-[var(--gold)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--gold)]">{promoting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Megaphone className="h-4 w-4" />} {promotion ? "Promote again" : "Promote product"}</Button>
                       <Button type="button" variant="quiet" disabled={deleting} onClick={() => void removeProduct(product)} className="border-[var(--danger)]/35 text-[var(--danger)] hover:bg-[var(--danger)] hover:text-white">{deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />} Delete product</Button>
