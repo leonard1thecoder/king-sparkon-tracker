@@ -79,6 +79,7 @@ function createPreviewEvent(seed: PreviewEventSeed): TicketEvent {
     ticketTypes: seed.ticketTypes.map((ticketType) => createTicketType(seed.id, ticketType.type, ticketType.price, ticketType.capacity, ticketType.sold)),
     createdAt: pastIso(seed.createdDaysAgo),
     updatedAt: nowIso(),
+    earlyBirdEnabled: false,
   };
 }
 
@@ -498,6 +499,17 @@ export async function getEventById(eventId: string) {
   }
 }
 
+function getEffectiveTicketPrice(event: TicketEvent, ticketType: EventTicketType): number {
+  const base = ticketType.price;
+  if (event.earlyBirdEnabled && event.earlyBirdPercent != null && event.earlyBirdEndsAt) {
+    const endsAt = new Date(event.earlyBirdEndsAt).getTime();
+    if (endsAt > Date.now() && event.earlyBirdPercent > 0 && event.earlyBirdPercent < 100) {
+      return Math.round(base * (1 - event.earlyBirdPercent / 100) * 100) / 100;
+    }
+  }
+  return base;
+}
+
 export async function purchaseTickets(request: TicketPurchaseRequest) {
   await delay();
   if (request.quantity <= 0) throw new Error("Select at least one ticket.");
@@ -514,7 +526,8 @@ export async function purchaseTickets(request: TicketPurchaseRequest) {
     throw new Error(`${getTicketTypeLabel(request.ticketType)} tickets are sold out.`);
   }
 
-  const quote = calculateCheckoutQuote(selectedTicketType.price, request.quantity);
+  const effectivePrice = getEffectiveTicketPrice(event, selectedTicketType);
+  const quote = calculateCheckoutQuote(effectivePrice, request.quantity);
   const createdTickets = Array.from({ length: request.quantity }, (_, index) => {
     const ticketNumber = tickets.length + index + 1;
     const ticketId = `ticket-${Date.now()}-${ticketNumber}`;
@@ -607,6 +620,9 @@ export async function createEvent(payload: CreateTicketEventPayload) {
       .map((ticketType) => createTicketType(eventId, ticketType.type, ticketType.price, ticketType.capacity, 0)),
     createdAt: nowIso(),
     updatedAt: nowIso(),
+    earlyBirdEnabled: payload.earlyBirdEnabled ?? false,
+    earlyBirdPercent: payload.earlyBirdPercent,
+    earlyBirdEndsAt: payload.earlyBirdEndsAt,
   };
 
   events = [event, ...events];
@@ -635,6 +651,9 @@ export async function updateEvent(eventId: string, payload: UpdateTicketEventPay
   if (payload.eventTime !== undefined) event.eventTime = payload.eventTime;
   if (payload.bannerUrl !== undefined) event.bannerUrl = payload.bannerUrl.trim() || undefined;
   if (payload.status !== undefined) event.status = payload.status;
+  if (payload.earlyBirdEnabled !== undefined) event.earlyBirdEnabled = payload.earlyBirdEnabled;
+  if (payload.earlyBirdPercent !== undefined) event.earlyBirdPercent = payload.earlyBirdPercent;
+  if (payload.earlyBirdEndsAt !== undefined) event.earlyBirdEndsAt = payload.earlyBirdEndsAt;
   event.updatedAt = nowIso();
   return cloneEvent(event);
 }

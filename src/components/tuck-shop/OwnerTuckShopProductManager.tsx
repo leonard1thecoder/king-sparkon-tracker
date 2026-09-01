@@ -117,6 +117,7 @@ export function OwnerTuckShopProductManager() {
   const [discountStartsAt, setDiscountStartsAt] = useState("");
   const [discountEndsAt, setDiscountEndsAt] = useState("");
   const [discountSaving, setDiscountSaving] = useState(false);
+  const [transactionProduct, setTransactionProduct] = useState<Product | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -414,6 +415,7 @@ export function OwnerTuckShopProductManager() {
                       )}
                       <div className="grid gap-2"><input type="file" accept={acceptedImageTypes} onChange={(event) => selectExistingProductImage(product.id, event.target.files?.[0] ?? null)} className={fileInputClass()} /><Button type="button" variant="quiet" disabled={uploading || !imageFiles[product.id]} onClick={() => void saveImage(product.id)}>{uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Update photo</Button></div>
                       <Button type="button" disabled={promoting || product.stockQuantity <= 0} onClick={() => openDiscountModal(product)} className="border-[var(--gold)] bg-[var(--gold)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--gold)]">{promoting ? <Loader2 className="h-4 w-4 animate-spin" /> : <BadgePercent className="h-4 w-4" />} {promotion ? "Update discount sale" : "Discount sale"}</Button>
+                      <Button type="button" variant="quiet" onClick={() => setTransactionProduct(product)} className="border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--signal)] hover:text-[var(--signal)]"><Boxes className="h-4 w-4" /> View transactions per product</Button>
                       <Button type="button" variant="quiet" disabled={deleting} onClick={() => void removeProduct(product)} className="border-[var(--danger)]/35 text-[var(--danger)] hover:bg-[var(--danger)] hover:text-white">{deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />} Delete product</Button>
                     </div>
                   </article>
@@ -449,6 +451,31 @@ export function OwnerTuckShopProductManager() {
             <Button onClick={() => void handleCreateDiscountSale()} disabled={discountSaving}>{discountSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <BadgePercent className="h-4 w-4" />} Create sale</Button>
           </div>
         </div>
+      </Modal>
+
+      <Modal open={!!transactionProduct} title={transactionProduct ? `Transactions — ${transactionProduct.name}` : "Transactions"} onClose={() => setTransactionProduct(null)}>
+        {transactionProduct ? (
+          <div className="grid gap-4">
+            <div className="grid gap-3 rounded-xl border border-[var(--line)] bg-[var(--surface)] p-4">
+              <p className="text-xs font-black uppercase tracking-[0.1em] text-[var(--muted)]">Product #{transactionProduct.id} • {transactionProduct.category}</p>
+              <p className="text-sm font-black">{transactionProduct.name} — {money(transactionProduct.price)} • Stock {transactionProduct.stockQuantity}</p>
+              {(() => {
+                const cfg = configByProduct.get(transactionProduct.id);
+                const req = cfg?.barcodesRequired ?? transactionProduct.remainingBarcodeSlots ?? 0;
+                const assigned = cfg?.barcodeCount ?? transactionProduct.barcodeCount ?? 0;
+                return <p className="text-xs font-semibold text-[var(--steel)]">Barcodes — Required: <span className="font-black text-[var(--signal)]">{req}</span> • Assigned: <span className="font-black text-[var(--confirm)]">{assigned}</span> • Remaining: <span className="font-black">{Math.max(req, 0)}</span></p>;
+              })()}
+            </div>
+            <div className="grid gap-2">
+              <p className="text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">View product by purchase type</p>
+              <a href={`/dashboard/owner/transactions?productId=${transactionProduct.id}`} onClick={() => setTransactionProduct(null)} className="inline-flex min-h-11 items-center justify-between rounded-xl border border-[var(--line)] bg-white px-4 py-3 text-sm font-bold hover:border-[var(--signal)]">Cart purchases (user dashboard) <span className="text-xs text-[var(--muted)]">/dashboard/user/shop/cart</span></a>
+              <a href={`/dashboard/worker/transactions?productId=${transactionProduct.id}`} onClick={() => setTransactionProduct(null)} className="inline-flex min-h-11 items-center justify-between rounded-xl border border-[var(--line)] bg-white px-4 py-3 text-sm font-bold hover:border-[var(--signal)]">Worker transactions (counter) <span className="text-xs text-[var(--muted)]">/dashboard/worker/transactions</span></a>
+              <a href={`/dashboard/worker/orders?productId=${transactionProduct.id}`} onClick={() => setTransactionProduct(null)} className="inline-flex min-h-11 items-center justify-between rounded-xl border border-[var(--line)] bg-white px-4 py-3 text-sm font-bold hover:border-[var(--signal)]">Online purchases (user online) <span className="text-xs text-[var(--muted)]">/dashboard/worker/orders</span></a>
+            </div>
+            <p className="text-xs leading-5 text-[var(--steel)]">When a worker adds a barcode at <span className="font-black">/dashboard/worker/products</span> it becomes stock. Cart purchases and online purchases are tracked per product.</p>
+            <div className="flex justify-end"><Button variant="quiet" onClick={() => setTransactionProduct(null)}>Close</Button></div>
+          </div>
+        ) : null}
       </Modal>
     </section>
   );

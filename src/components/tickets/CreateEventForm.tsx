@@ -22,6 +22,9 @@ type FormState = {
   location: string;
   status: EventStatus;
   ticketTypes: Record<TicketType, TicketTypeInput>;
+  earlyBirdEnabled: boolean;
+  earlyBirdPercent: string;
+  earlyBirdEndsAt: string;
 };
 
 const initialState: FormState = {
@@ -36,6 +39,9 @@ const initialState: FormState = {
     VIP: { price: "0", capacity: "50" },
     VVIP: { price: "0", capacity: "20" },
   },
+  earlyBirdEnabled: false,
+  earlyBirdPercent: "",
+  earlyBirdEndsAt: "",
 };
 
 function todayValue() {
@@ -89,6 +95,14 @@ export function CreateEventForm() {
       if (!Number.isInteger(capacity) || capacity <= 0) return `${labelFromType(type)} ticket capacity must be positive.`;
     }
 
+    if (formState.earlyBirdEnabled) {
+      const percent = Number(formState.earlyBirdPercent);
+      if (!Number.isFinite(percent) || percent < 1 || percent > 90) return "Early bird percent must be between 1 and 90.";
+      if (!formState.earlyBirdEndsAt) return "Early bird end date is required.";
+      const endsAt = new Date(formState.earlyBirdEndsAt);
+      if (endsAt <= new Date()) return "Early bird end must be in the future.";
+    }
+
     return null;
   }
 
@@ -113,6 +127,9 @@ export function CreateEventForm() {
         price: Number(formState.ticketTypes[type].price),
         capacity: Number(formState.ticketTypes[type].capacity),
       })),
+      earlyBirdEnabled: formState.earlyBirdEnabled,
+      earlyBirdPercent: formState.earlyBirdEnabled ? Number(formState.earlyBirdPercent) : undefined,
+      earlyBirdEndsAt: formState.earlyBirdEnabled ? new Date(formState.earlyBirdEndsAt).toISOString() : undefined,
     };
 
     try {
@@ -201,6 +218,27 @@ export function CreateEventForm() {
             </label>
           </fieldset>
         ))}
+      </div>
+
+      <div className="rounded-[1.8rem] border border-[var(--line)] bg-white p-4">
+        <label className="flex items-center gap-3">
+          <input type="checkbox" checked={formState.earlyBirdEnabled} onChange={(e) => setFormState((c) => ({ ...c, earlyBirdEnabled: e.target.checked }))} className="h-5 w-5 rounded border-[var(--line)] accent-[var(--signal)]" />
+          <span className="text-sm font-black">Enable Early Bird</span>
+          <span className="rounded-full bg-orange-50 px-2.5 py-1 text-xs font-black text-orange-600 border border-orange-200">Early bird starts when event is created</span>
+        </label>
+        {formState.earlyBirdEnabled ? (
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
+            <label className="grid gap-2">
+              <span className="text-sm font-black">Early bird percent (1-90)</span>
+              <input type="number" min={1} max={90} value={formState.earlyBirdPercent} onChange={(e) => setFormState((c) => ({ ...c, earlyBirdPercent: e.target.value.replace(/\D/g, "") }))} placeholder="e.g. 20" className="min-h-12 rounded-[1.25rem] border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none placeholder:text-[var(--muted)] focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]" />
+            </label>
+            <label className="grid gap-2">
+              <span className="text-sm font-black">Early bird ends at</span>
+              <input type="datetime-local" value={formState.earlyBirdEndsAt} onChange={(e) => setFormState((c) => ({ ...c, earlyBirdEndsAt: e.target.value }))} className="min-h-12 rounded-[1.25rem] border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]" />
+            </label>
+          </div>
+        ) : null}
+        <p className="mt-2 text-xs font-semibold text-[var(--muted)]">Early bird discount from original ticket price, active from creation until end, then reverts.</p>
       </div>
 
       {statusMessage ? (

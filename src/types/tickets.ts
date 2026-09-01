@@ -21,6 +21,9 @@ export interface TicketEvent {
   ticketTypes: EventTicketType[];
   createdAt: string;
   updatedAt: string;
+  earlyBirdEnabled?: boolean;
+  earlyBirdPercent?: number;
+  earlyBirdEndsAt?: string;
 }
 
 export interface EventTicketType {
@@ -109,6 +112,9 @@ export interface CreateTicketEventPayload {
   bannerUrl?: string;
   status: EventStatus;
   ticketTypes: Array<Pick<EventTicketType, "type" | "price" | "capacity">>;
+  earlyBirdEnabled?: boolean;
+  earlyBirdPercent?: number;
+  earlyBirdEndsAt?: string;
 }
 
 export type UpdateTicketEventPayload = Partial<Omit<CreateTicketEventPayload, "ticketTypes">> & {
