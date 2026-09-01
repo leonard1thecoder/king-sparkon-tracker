@@ -2,6 +2,7 @@
 
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 import {
+  BadgePercent,
   Barcode,
   Boxes,
   Crown,
@@ -28,6 +29,7 @@ import {
   type ProductBarcodeMode,
 } from "@/lib/api/tuck-shop";
 import {
+  createDiscountSale,
   listOwnerProductPromotions,
   promoteOwnerProduct,
   type ProductPromotion,
@@ -37,6 +39,7 @@ import type { Product } from "@/lib/types/backend";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { MetricCard } from "@/components/ui/MetricCard";
+import { Modal } from "@/components/ui/Modal";
 import { StatusPill } from "@/components/ui/StatusPill";
 
 const emptyProductForm = {
@@ -109,6 +112,11 @@ export function OwnerTuckShopProductManager() {
   const [updatingProductId, setUpdatingProductId] = useState<number | null>(null);
   const [promotingProductId, setPromotingProductId] = useState<number | null>(null);
   const [deletingProductId, setDeletingProductId] = useState<number | null>(null);
+  const [discountProduct, setDiscountProduct] = useState<Product | null>(null);
+  const [discountPercentDraft, setDiscountPercentDraft] = useState("");
+  const [discountStartsAt, setDiscountStartsAt] = useState("");
+  const [discountEndsAt, setDiscountEndsAt] = useState("");
+  const [discountSaving, setDiscountSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -269,23 +277,47 @@ export function OwnerTuckShopProductManager() {
     }
   }
 
-  async function promoteProduct(product: Product) {
-    const existing = activePromotionByProduct.get(product.id);
-    const message = existing
-      ? `${product.name} is already promoted until ${date(existing.endsAt)}. Promote it again and restart the seven-day placement?`
-      : `Promote ${product.name} in the customer Promoted row? The configured promotion price will be deducted from your business balance.`;
-    if (!window.confirm(message)) return;
-    setPromotingProductId(product.id);
+  function openDiscountModal(product: Product) {
+    setDiscountProduct(product);
+    setDiscountPercentDraft("");
+    const today = new Date().toISOString().slice(0, 16);
+    const nextWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16);
+    setDiscountStartsAt(today);
+    setDiscountEndsAt(nextWeek);
+    setError(null);
+    setSuccess(null);
+  }
+
+  async function handleCreateDiscountSale() {
+    if (!discountProduct) return;
+    const percent = Number(discountPercentDraft);
+    if (!Number.isFinite(percent) || percent < 1 || percent > 90) {
+      setError("Discount percent must be between 1 and 90.");
+      return;
+    }
+    if (!discountStartsAt || !discountEndsAt) {
+      setError("Select start and end dates for the sale.");
+      return;
+    }
+    const startsAt = new Date(discountStartsAt).toISOString();
+    const endsAt = new Date(discountEndsAt).toISOString();
+    if (new Date(endsAt) <= new Date(startsAt)) {
+      setError("End date must be after start date.");
+      return;
+    }
+    setDiscountSaving(true);
+    setPromotingProductId(discountProduct.id);
     setError(null);
     setSuccess(null);
     try {
-      const promotion = await promoteOwnerProduct(product.id);
-      setSuccess(`${product.name} is promoted until ${date(promotion.endsAt)}. The promotion charge was deducted from your business balance.`);
-      window.dispatchEvent(new Event("king-sparkon:owner-wallet"));
+      const promotion = await createDiscountSale(discountProduct.id, { discountPercent: percent, startsAt, endsAt });
+      setSuccess(`${discountProduct.name} is on ${percent}% sale until ${date(promotion.endsAt)}. Price will revert to original after.`);
+      setDiscountProduct(null);
       await loadProducts();
     } catch (exception) {
       setError(normalizeApiError(exception).message);
     } finally {
+      setDiscountSaving(false);
       setPromotingProductId(null);
     }
   }
@@ -311,7 +343,7 @@ export function OwnerTuckShopProductManager() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <MetricCard label="Owner products" value={loading ? "..." : String(activeProducts.length)} detail="Active customer catalogue" tone="confirm" icon={<Store className="h-5 w-5" />} />
         <MetricCard label="Tuck Shop ready" value={loading ? "..." : String(inTuckShop.length)} detail="Visible with available stock" tone="signal" icon={<Boxes className="h-5 w-5" />} />
-        <MetricCard label="Promoted" value={loading ? "..." : String(activePromotionByProduct.size)} detail="Featured customer placements" icon={<Crown className="h-5 w-5" />} />
+        <MetricCard label="Discount sales" value={loading ? "..." : String(activePromotionByProduct.size)} detail="Active percent-off sales" icon={<BadgePercent className="h-5 w-5" />} />
         <MetricCard label="Units in stock" value={loading ? "..." : String(totalStock)} detail="Total active inventory" />
         <MetricCard label="Missing photos" value={loading ? "..." : String(missingImages)} detail="Products needing customer images" />
       </div>
@@ -368,10 +400,10 @@ export function OwnerTuckShopProductManager() {
                   <article key={product.id} className="overflow-hidden rounded-[1.6rem] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
                     <div className="relative aspect-[16/10] overflow-hidden bg-[var(--surface)]">
                       <img src={imagePreviews[product.id] || productImage(product)} alt={product.name} className="h-full w-full object-cover" />
-                      <div className="absolute left-3 top-3 flex flex-wrap gap-2"><StatusPill label={mode === "BRANDED" ? "BARCODED BRAND" : "AUTO GENERATED"} tone={mode === "BRANDED" ? "signal" : "confirm"} />{promotion ? <StatusPill label="PROMOTED" tone="signal" /> : null}</div>
+                      <div className="absolute left-3 top-3 flex flex-wrap gap-2"><StatusPill label={mode === "BRANDED" ? "BARCODED BRAND" : "AUTO GENERATED"} tone={mode === "BRANDED" ? "signal" : "confirm"} />{promotion ? <StatusPill label={promotion.discountPercent ? `SALE -${Number(promotion.discountPercent).toFixed(0)}%` : "PROMOTED"} tone="signal" /> : null}{product.salePrice != null && product.salePrice < product.price ? <StatusPill label="SALE" tone="signal" /> : null}</div>
                     </div>
                     <div className="grid gap-4 p-5">
-                      <div><p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.12em] text-[var(--muted)]">Product #{product.id} · {product.category}</p><h2 className="mt-1 text-2xl font-black tracking-[-0.04em] text-[var(--ink)]">{product.name}</h2><p className="money mt-2 text-2xl font-black text-[var(--signal)]">{money(product.salePrice ?? product.price)}</p>{promotion ? <p className="mt-1 text-xs font-black text-[var(--signal)]">Promoted until {date(promotion.endsAt)}</p> : null}</div>
+                      <div><p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.12em] text-[var(--muted)]">Product #{product.id} · {product.category}</p><h2 className="mt-1 text-2xl font-black tracking-[-0.04em] text-[var(--ink)]">{product.name}</h2>{product.salePrice != null && product.salePrice < product.price ? <><p className="money mt-2 text-2xl font-black text-[var(--signal)]">{money(product.salePrice)}</p><p className="money text-sm font-bold text-[var(--muted)] line-through">{money(product.price)}</p></> : <p className="money mt-2 text-2xl font-black text-[var(--signal)]">{money(product.salePrice ?? product.price)}</p>}{promotion ? <p className="mt-1 text-xs font-black text-[var(--signal)]">{promotion.discountPercent ? `${Number(promotion.discountPercent).toFixed(0)}% off` : "Promoted"} {promotion.startsAt ? `from ${date(promotion.startsAt)}` : ""} until {date(promotion.endsAt)}</p> : null}</div>
                       <div className="grid grid-cols-2 gap-3"><div className="rounded-[1rem] bg-[var(--surface)] p-3"><p className="text-[0.62rem] font-black uppercase tracking-[0.1em] text-[var(--muted)]">Stock</p><p className="mt-1 text-xl font-black text-[var(--ink)]">{product.stockQuantity}</p></div><div className="rounded-[1rem] bg-[var(--surface)] p-3"><p className="text-[0.62rem] font-black uppercase tracking-[0.1em] text-[var(--muted)]">Barcodes required</p><p className="mt-1 text-xl font-black text-[var(--ink)]">{configuration?.barcodesRequired ?? product.remainingBarcodeSlots ?? 0}</p></div></div>
                       {mode === "BRANDED" ? (
                         <div className="rounded-[1rem] border border-[var(--line)] bg-[var(--surface)] p-3 text-xs font-semibold leading-5 text-[var(--steel)]">
@@ -381,7 +413,7 @@ export function OwnerTuckShopProductManager() {
                         <div className="grid gap-2 sm:grid-cols-[1fr_auto]"><input value={quantityDrafts[product.id] ?? String(product.stockQuantity)} onChange={(event) => setQuantityDrafts((current) => ({ ...current, [product.id]: event.target.value.replace(/\D/g, "") }))} inputMode="numeric" aria-label={`New stock quantity for ${product.name}`} className={fieldClass()} /><Button type="button" disabled={updating} onClick={() => void updateQuantity(product)}>{updating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Boxes className="h-4 w-4" />} Update quantity</Button></div>
                       )}
                       <div className="grid gap-2"><input type="file" accept={acceptedImageTypes} onChange={(event) => selectExistingProductImage(product.id, event.target.files?.[0] ?? null)} className={fileInputClass()} /><Button type="button" variant="quiet" disabled={uploading || !imageFiles[product.id]} onClick={() => void saveImage(product.id)}>{uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Update photo</Button></div>
-                      <Button type="button" disabled={promoting || product.stockQuantity <= 0} onClick={() => void promoteProduct(product)} className="border-[var(--gold)] bg-[var(--gold)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--gold)]">{promoting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Megaphone className="h-4 w-4" />} {promotion ? "Promote again" : "Promote product"}</Button>
+                      <Button type="button" disabled={promoting || product.stockQuantity <= 0} onClick={() => openDiscountModal(product)} className="border-[var(--gold)] bg-[var(--gold)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--gold)]">{promoting ? <Loader2 className="h-4 w-4 animate-spin" /> : <BadgePercent className="h-4 w-4" />} {promotion ? "Update discount sale" : "Discount sale"}</Button>
                       <Button type="button" variant="quiet" disabled={deleting} onClick={() => void removeProduct(product)} className="border-[var(--danger)]/35 text-[var(--danger)] hover:bg-[var(--danger)] hover:text-white">{deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />} Delete product</Button>
                     </div>
                   </article>
@@ -391,6 +423,33 @@ export function OwnerTuckShopProductManager() {
           )}
         </CardContent>
       </Card>
+
+      <Modal open={!!discountProduct} title={discountProduct ? `Discount sale — ${discountProduct.name}` : "Discount sale"} onClose={() => setDiscountProduct(null)}>
+        <div className="grid gap-4">
+          <p className="text-sm leading-6 text-[var(--steel)]">Set a percent discount from the original price <span className="font-black text-[var(--ink)]">{discountProduct ? money(discountProduct.price) : ""}</span>. The sale is active from start to end, then automatically reverts to the original price.</p>
+          <label className="grid gap-1.5">
+            <span className="text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">Discount percent (1–90)</span>
+            <input type="number" min={1} max={90} value={discountPercentDraft} onChange={(event) => setDiscountPercentDraft(event.target.value.replace(/\D/g, ""))} placeholder="e.g. 25" className={fieldClass()} />
+          </label>
+          <label className="grid gap-1.5">
+            <span className="text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">Starts at</span>
+            <input type="datetime-local" value={discountStartsAt} onChange={(event) => setDiscountStartsAt(event.target.value)} className={fieldClass()} />
+          </label>
+          <label className="grid gap-1.5">
+            <span className="text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">Ends at</span>
+            <input type="datetime-local" value={discountEndsAt} onChange={(event) => setDiscountEndsAt(event.target.value)} className={fieldClass()} />
+          </label>
+          {discountProduct && discountPercentDraft ? (
+            <p className="rounded-xl border border-[var(--line)] bg-[var(--surface)] p-3 text-sm font-bold text-[var(--ink)]">
+              Sale price: {money(Number(discountProduct.price) * (1 - Number(discountPercentDraft || "0") / 100))} <span className="ml-2 text-[var(--muted)] line-through">{money(discountProduct.price)}</span> <span className="ml-2 rounded-full bg-orange-50 px-2 py-1 text-xs font-black text-orange-600">-{discountPercentDraft}%</span>
+            </p>
+          ) : null}
+          <div className="flex justify-end gap-3">
+            <Button variant="quiet" onClick={() => setDiscountProduct(null)}>Cancel</Button>
+            <Button onClick={() => void handleCreateDiscountSale()} disabled={discountSaving}>{discountSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <BadgePercent className="h-4 w-4" />} Create sale</Button>
+          </div>
+        </div>
+      </Modal>
     </section>
   );
 }

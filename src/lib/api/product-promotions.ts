@@ -7,6 +7,8 @@ export type ProductPromotion = {
   businessId: number;
   businessName: string;
   promotionPrice: number;
+  discountPercent?: number | null;
+  originalPrice?: number | null;
   businessAccountEntryId?: number | null;
   startsAt: string;
   endsAt: string;
@@ -25,4 +27,8 @@ export function listOwnerProductPromotions() {
 
 export function promoteOwnerProduct(productId: number) {
   return apiPost<ProductPromotion, Record<string, never>>(`/product-promotions/${productId}`, {});
+}
+
+export function createDiscountSale(productId: number, payload: { discountPercent: number; startsAt: string; endsAt: string }) {
+  return apiPost<ProductPromotion, typeof payload>(`/product-promotions/${productId}/discount-sale`, payload);
 }
