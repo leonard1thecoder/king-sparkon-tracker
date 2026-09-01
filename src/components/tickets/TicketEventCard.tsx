@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Calendar, Clock, MapPin, ShieldCheck, Tag } from "lucide-react";
+import { ArrowRight, BadgePercent, Calendar, Clock, MapPin, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { TicketEvent } from "@/types/tickets";
 import { getEventTotals } from "@/services/ticketService";
@@ -57,7 +57,7 @@ export function TicketEventCard({ event, detailsHref, checkoutHref }: TicketEven
         <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2">
             <TicketStatusBadge status={event.status} />
-            {earlyBirdActive ? <span className="inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-500 px-2.5 py-1 text-xs font-black text-white"><Tag className="h-3 w-3" /> Early Bird -{event.earlyBirdPercent}%</span> : null}
+            {earlyBirdActive ? <span className="inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-500 px-2.5 py-1 text-xs font-black text-white"><BadgePercent className="h-3 w-3" /> Early Bird -{event.earlyBirdPercent}%</span> : null}
           </div>
           <span className="truncate rounded-full border border-white/20 bg-black/40 px-3 py-1 text-xs font-black text-white backdrop-blur">{event.name}</span>
         </div>
