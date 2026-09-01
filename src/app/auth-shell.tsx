@@ -304,7 +304,7 @@ export function AuthShell({ mode, eyebrow, title, description, fields, submitLab
           </div>
         </section>
 
-        <aside className="order-1 lg:order-2">
+        <aside className="order-1 hidden lg:order-2 lg:block">
           <div className="relative mx-auto max-w-xl [perspective:1200px]">
             <div className="absolute -inset-4 rounded-[3rem] bg-gradient-to-br from-[var(--gold)]/28 via-white to-[var(--ember)]/18 blur-2xl" />
             <div className="relative rounded-[2.75rem] border border-[var(--line)] bg-white/86 p-4 shadow-[var(--shadow-depth)] backdrop-blur [transform:rotateX(3deg)_rotateY(-6deg)] md:p-5">

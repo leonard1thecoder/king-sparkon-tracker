@@ -405,7 +405,7 @@ export function InteractiveRegisterShell({
     <main className="relative min-h-screen overflow-hidden bg-[var(--surface)] text-[var(--ink)]">
       <div className="pointer-events-none absolute inset-0 enterprise-grid opacity-70" />
       <div className="relative z-10 mx-auto grid min-h-screen max-w-7xl gap-8 px-5 py-6 md:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:py-10">
-        <section className="min-w-0 lg:sticky lg:top-10">
+        <section className="hidden min-w-0 lg:sticky lg:top-10 lg:block">
           <Link
             href="/"
             className="inline-flex items-center gap-3 rounded-full border border-[var(--line)] bg-white/82 px-3 py-2 shadow-[var(--shadow-soft)]"
