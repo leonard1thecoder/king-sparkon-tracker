@@ -56,7 +56,7 @@ type Props = {
 const roleCopy: Record<string, { title: string; copy: string; tags: string[] }> = {
   USER: {
     title: "Free user",
-    copy: "Tickets, jobs, cart checkout, profile and required delivery address.",
+    copy: "Tickets, jobs, cart checkout and profile — gender required, no physical address or reference code.",
     tags: ["R0", "Tickets", "Cart"],
   },
   BUSINESS_OWNER: {
@@ -100,6 +100,7 @@ function iconFor(field: RegisterField) {
   ) {
     return <MapPin className={iconClass} />;
   }
+  if (normalizedName.includes("gender")) return <UserRound className={iconClass} />;
   if (normalizedName.includes("affiliate")) return <Gift className={iconClass} />;
   if (normalizedName.includes("service")) return <KeyRound className={iconClass} />;
   return <UserRound className={iconClass} />;
@@ -265,6 +266,13 @@ function ToggleSection({
   );
 }
 
+function normalizeGender(value: string | undefined) {
+  if (!value) return undefined;
+  const normalized = value.trim().toUpperCase();
+  if (["MALE", "FEMALE", "OTHER", "PREFER_NOT_TO_SAY"].includes(normalized)) return normalized;
+  return value.trim();
+}
+
 function buildPayload(formData: FormData) {
   const payload: Record<string, string> = {};
   for (const [key, value] of formData.entries()) {
@@ -273,17 +281,31 @@ function buildPayload(formData: FormData) {
     if (trimmed) payload[key] = trimmed;
   }
 
-  const parts = [
-    payload.addressStreet,
-    payload.addressLine2,
-    payload.addressSuburb,
-    payload.addressCity,
-    payload.addressProvince,
-    payload.addressPostalCode,
-    payload.addressCountry,
-  ].filter(Boolean);
-
-  if (parts.length) payload.physicalAddress = parts.join(", ");
+  // Backend contract: USER should send gender, not physicalAddress or affiliateCode
+  if (payload.gender) payload.gender = normalizeGender(payload.gender) ?? payload.gender;
+  if (payload.serviceRegisteringFor === "USER") {
+    delete payload.physicalAddress;
+    delete payload.affiliateCode;
+    // Strip any address parts if user somehow submitted them
+    delete payload.addressStreet;
+    delete payload.addressLine2;
+    delete payload.addressSuburb;
+    delete payload.addressCity;
+    delete payload.addressProvince;
+    delete payload.addressPostalCode;
+    delete payload.addressCountry;
+  } else {
+    const parts = [
+      payload.addressStreet,
+      payload.addressLine2,
+      payload.addressSuburb,
+      payload.addressCity,
+      payload.addressProvince,
+      payload.addressPostalCode,
+      payload.addressCountry,
+    ].filter(Boolean);
+    if (parts.length) payload.physicalAddress = parts.join(", ");
+  }
   if (payload.serviceRegisteringFor === "USER") payload.serviceRegistrationType = "FREE_USER_ACCESS";
   if (payload.serviceRegisteringFor === "AFFILIATE") payload.serviceRegistrationType = "FREE_AFFILIATE_ACCESS";
   if (payload.serviceRegisteringFor === "ARTIST") payload.serviceRegistrationType = "ARTIST_ACCESS";
@@ -563,7 +585,7 @@ export function InteractiveRegisterShell({
               <ToggleSection
                 id="register-address-fields"
                 title="Physical address"
-                copy="Complete the full address. It is required for User, Business Owner, Affiliate and Artist accounts."
+                copy="Complete the full address. It is required for Business Owner, Affiliate and Artist accounts."
                 required={addressRequired}
                 open={addressOpen}
                 onClick={() => setAddressOpen((open) => !open)}

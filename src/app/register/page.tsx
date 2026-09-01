@@ -53,7 +53,7 @@ const privilegeNotes: Record<string, string> = {
   BUSINESS_OWNER:
     "Privilege selected: Business owner. The backend creates an Owner account, business workspace, and business QR code.",
   USER:
-    "Privilege selected: User. The backend creates a free User account for tickets, jobs, cart checkout, profile, and purchase QR flows.",
+    "Privilege selected: User. The backend creates a free User account for tickets, jobs, cart checkout, profile, and purchase QR flows. Gender is required; physical address and reference code are not needed.",
   AFFILIATE:
     "Privilege selected: Affiliate. Complete the required physical address. The backend creates a free Affiliate account with referral code, promotion link, and QR code.",
   ARTIST:
@@ -187,6 +187,21 @@ export default async function RegisterPage({
           helper: "Required. Use international format for WhatsApp and account contact.",
         },
         {
+          name: "gender",
+          label: "Gender",
+          type: "select",
+          placeholder: "Select gender",
+          autoComplete: "sex",
+          visibleForPrivileges: ["USER"],
+          helper: "Required for User. Select your gender.",
+          options: [
+            { label: "Male", value: "MALE" },
+            { label: "Female", value: "FEMALE" },
+            { label: "Other", value: "OTHER" },
+            { label: "Prefer not to say", value: "PREFER_NOT_TO_SAY" },
+          ],
+        },
+        {
           name: "artistType",
           label: "Artist Type",
           type: "select",
@@ -217,16 +232,6 @@ export default async function RegisterPage({
           autoComplete: "off",
           visibleForPrivileges: ["ARTIST"],
           helper: "Required. South African Rand — e.g. R 2,500",
-        },
-        {
-          name: "affiliateCode",
-          label: "Reference code",
-          type: "text",
-          placeholder: "Example: KING-USER-2026",
-          autoComplete: "off",
-          required: false,
-          visibleForPrivileges: ["USER"],
-          helper: "Optional. Enter the reference, referral, or promo code from the person who invited you.",
         },
         {
           name: "businessPaypalLink",
@@ -261,9 +266,9 @@ export default async function RegisterPage({
           type: "text",
           placeholder: "Example: 12 Main Road",
           autoComplete: "street-address",
-          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
+          visibleForPrivileges: ["BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
           section: "address",
-          helper: "Required for User, Business owner, Affiliate and Artist.",
+          helper: "Required for Business owner, Affiliate and Artist.",
         },
         {
           name: "addressLine2",
@@ -272,7 +277,7 @@ export default async function RegisterPage({
           placeholder: "Example: Unit 4, Sparkon Heights",
           autoComplete: "address-line2",
           required: false,
-          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
+          visibleForPrivileges: ["BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
           section: "address",
         },
         {
@@ -281,7 +286,7 @@ export default async function RegisterPage({
           type: "text",
           placeholder: "Example: Sandton",
           autoComplete: "address-level3",
-          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
+          visibleForPrivileges: ["BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
           section: "address",
         },
         {
@@ -290,7 +295,7 @@ export default async function RegisterPage({
           type: "text",
           placeholder: "Example: Johannesburg",
           autoComplete: "address-level2",
-          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
+          visibleForPrivileges: ["BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
           section: "address",
         },
         {
@@ -299,7 +304,7 @@ export default async function RegisterPage({
           type: "text",
           placeholder: "Example: Gauteng",
           autoComplete: "address-level1",
-          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
+          visibleForPrivileges: ["BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
           section: "address",
         },
         {
@@ -308,7 +313,7 @@ export default async function RegisterPage({
           type: "text",
           placeholder: "Example: 2196",
           autoComplete: "postal-code",
-          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
+          visibleForPrivileges: ["BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
           section: "address",
         },
         {
@@ -318,7 +323,7 @@ export default async function RegisterPage({
           placeholder: "South Africa",
           autoComplete: "country-name",
           defaultValue: "South Africa",
-          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
+          visibleForPrivileges: ["BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
           section: "address",
         },
         {
