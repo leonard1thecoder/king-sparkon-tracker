@@ -57,6 +57,9 @@ export type Product = {
   status?: string;
   price: number;
   salePrice?: number;
+  discountPercent?: number | null;
+  saleStartsAt?: string | null;
+  saleEndsAt?: string | null;
   localizedPrice?: MoneyResponse | null;
   localizedSalePrice?: MoneyResponse | null;
   stockQuantity: number;

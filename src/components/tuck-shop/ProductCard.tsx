@@ -1,10 +1,33 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { Eye, ShoppingCart, Package } from "lucide-react";
+import { Eye, ShoppingCart, Package, Clock } from "lucide-react";
+import { useEffect, useState } from "react";
 import type { Product } from "@/lib/types/backend";
 import { Button } from "@/components/ui/Button";
 import { money, productImage, productPrice } from "@/lib/tuck-shop/cart";
+
+function SaleCountdown({ endsAt }: { endsAt: string }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+  const end = new Date(endsAt).getTime();
+  const diff = Math.max(0, end - now);
+  const totalSeconds = Math.floor(diff / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  if (diff <= 0) return <span className="text-[0.65rem] font-black text-[var(--danger)]">Sale ended</span>;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-50 px-2 py-1 text-[0.65rem] font-black tracking-[0.06em] text-orange-700">
+      <Clock className="h-3 w-3" />
+      {pad(hours)}H:{pad(minutes)}M:{pad(seconds)}S
+    </span>
+  );
+}
 
 export type ProductCardSize = "sm" | "md";
 
@@ -105,6 +128,11 @@ export function ProductCard({
                 {money(product.price)}
               </p>
             )}
+            {hasDiscount && product.saleEndsAt ? (
+              <div className="mt-1.5">
+                <SaleCountdown endsAt={product.saleEndsAt} />
+              </div>
+            ) : null}
           </div>
 
           <div className="text-right">
