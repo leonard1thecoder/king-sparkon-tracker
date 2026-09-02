@@ -48,7 +48,6 @@ function paymentLabel(paymentType: WorkerCheckoutPaymentType) {
 export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShopBarcodeCheckoutProps) {
   const consumedScanTokenRef = useRef<string | null>(null);
   const [paymentType, setPaymentType] = useState<WorkerCheckoutPaymentType>("CASH");
-  const [paymentContact, setPaymentContact] = useState("");
   const [lines, setLines] = useState<BarcodeLine[]>(() => [emptyLine()]);
   const [purchase, setPurchase] = useState<TuckShopPurchase | null>(null);
   const [saving, setSaving] = useState(false);
@@ -160,7 +159,7 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
 
     try {
       const result = await createWorkerTuckShopBarcodePurchase({
-        paymentContact: paymentContact.trim() || undefined,
+        paymentContact: undefined,
         paymentType: paymentType === "CARD" ? "SWIPE_MACHINE" : "CASH",
         items: Array.from(grouped.entries()).map(([productId, item]) => ({
           productId,
@@ -170,7 +169,6 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
       });
       setPurchase(result);
       setLines([emptyLine()]);
-      setPaymentContact("");
       if (typeof window !== "undefined") {
         try {
           localStorage.removeItem("workerPendingCheckoutLines");
@@ -195,9 +193,8 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
         {error ? <p className="mb-4 rounded-[var(--radius-lg)] border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-4 text-sm font-bold text-[var(--danger)]">{error}</p> : null}
 
         <form className="grid gap-5" onSubmit={submit}>
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-3 md:grid-cols-1">
             <label className="grid gap-1.5 text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">Payment type<select value={paymentType} onChange={(event) => setPaymentType(event.target.value as WorkerCheckoutPaymentType)} className="min-h-11 rounded-[var(--radius-md)] border border-[var(--line)] bg-[var(--surface)] px-4 text-sm font-black text-[var(--ink)] outline-none focus:border-[var(--signal)]"><option value="CASH">Cash</option><option value="CARD">Card</option></select></label>
-            <label className="grid gap-1.5 text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">Customer contact · optional<input value={paymentContact} onChange={(event) => setPaymentContact(event.target.value)} placeholder="Email or cellphone" className="min-h-11 rounded-[var(--radius-md)] border border-[var(--line)] bg-[var(--surface)] px-4 text-sm font-semibold outline-none focus:border-[var(--signal)]" /></label>
           </div>
 
           <div className="grid gap-3">

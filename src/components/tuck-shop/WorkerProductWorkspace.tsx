@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Barcode, Boxes, CheckCircle2, CreditCard, Loader2, Plus, RefreshCw, ScanLine, Search, WandSparkles, X } from "lucide-react";
+import { Barcode, Boxes, CheckCircle2, CreditCard, Loader2, Plus, RefreshCw, ScanLine, Search, ShoppingCart, WandSparkles, X } from "lucide-react";
 import {
   addProductBarcode,
   fillAutomaticProductBarcodes,
@@ -111,6 +111,13 @@ export function WorkerProductWorkspace() {
   const [quantityProduct, setQuantityProduct] = useState<Product | null>(null);
   const [quantityValue, setQuantityValue] = useState("1");
   const [quantityError, setQuantityError] = useState<string | null>(null);
+  const [choiceOpen, setChoiceOpen] = useState(false);
+  const [lastAdded, setLastAdded] = useState<{ name: string; qty: number } | null>(null);
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    setCartCount(readPendingLines().length);
+  }, [quantityOpen, choiceOpen, scannerOpen, success]);
 
   const configurationByProduct = useMemo(
     () => new Map(configurations.map((configuration) => [configuration.productId, configuration])),
@@ -185,14 +192,34 @@ export function WorkerProductWorkspace() {
       automaticBarcode: automatic,
     };
     addPendingLine(line);
+    const remainingQty = Number(quantityProduct.stockQuantity ?? 0) - qty;
+    if (remainingQty < 0) {
+      setQuantityError(`Only ${quantityProduct.stockQuantity} in stock.`);
+      return;
+    }
+    setLastAdded({ name: quantityProduct.name, qty });
+    setCartCount(readPendingLines().length + 1);
     setQuantityOpen(false);
+    setChoiceOpen(true);
+    setSuccess(`${quantityProduct.name} × ${qty} added to cart. ${readPendingLines().length} item(s) in cash checkout.`);
+  }
+
+  function handleContinueAdding() {
+    setChoiceOpen(false);
     setQuantityProduct(null);
-    setSuccess(`${quantityProduct.name} × ${qty} added to checkout. Open Worker Tuck Shop checkout on /dashboard/worker/scan to complete payment.`);
-    // Also navigate suggestion: we keep user on same page but checkout is now populated on scan page via localStorage
-    // Optionally redirect after short delay
-    setTimeout(() => {
-      window.location.href = `/dashboard/worker/scan?productId=${quantityProduct.id}&quantity=${qty}${automatic ? "&automatic=true" : `&barcode=${encodeURIComponent(barcode)}`}`;
-    }, 400);
+    setCartCount(readPendingLines().length);
+  }
+
+  function handleGoToCheckout() {
+    setChoiceOpen(false);
+    if (!lastAdded || !quantityProduct) {
+      window.location.href = "/dashboard/worker/scan";
+      return;
+    }
+    const configuration = configurationByProduct.get(quantityProduct.id);
+    const automatic = configuration?.barcodeMode === "AUTO_GENERATED" || (!configuration && !quantityProduct.productBarcode);
+    const barcode = automatic ? "" : reusableProductBarcode(quantityProduct);
+    window.location.href = `/dashboard/worker/scan?productId=${quantityProduct.id}&quantity=${lastAdded.qty}${automatic ? "&automatic=true" : `&barcode=${encodeURIComponent(barcode)}`}`;
   }
 
   // Scanner handlers
@@ -412,7 +439,29 @@ export function WorkerProductWorkspace() {
                 <Button type="button" variant="quiet" onClick={() => setQuantityOpen(false)}>Cancel</Button>
                 <Button type="button" onClick={handleQuantityConfirm}><Plus className="h-4 w-4" /> Confirm sell</Button>
               </div>
-              <p className="text-center text-xs font-semibold text-[var(--muted)]">After confirm you will be taken to /dashboard/worker/scan where checkout is pre-filled.</p>
+              <p className="text-center text-xs font-semibold text-[var(--muted)]">All added products go to cash checkout with their quantity for simple checkout.</p>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* Continue adding vs Go to checkout */}
+      {choiceOpen && lastAdded ? (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-[1.5rem] border border-[var(--line)] bg-white p-6 shadow-2xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-mono text-xs font-black uppercase tracking-[0.14em] text-[var(--confirm)]">{lastAdded.name} added</p>
+                <h3 className="mt-1 text-xl font-black tracking-[-0.03em] text-[var(--ink)]">Added ×{lastAdded.qty} to cart</h3>
+                <p className="mt-1 text-sm font-semibold text-[var(--steel)]">All added products are in cash checkout with their quantity. Continue adding or go to cart.</p>
+                <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-[var(--signal-soft)] px-3 py-1 text-xs font-black text-[var(--signal)]"><ShoppingCart className="h-3 w-3" /> {readPendingLines().length} item(s) in cart</p>
+              </div>
+              <button type="button" onClick={handleContinueAdding} className="grid h-9 w-9 place-items-center rounded-full border border-[var(--line)] bg-[var(--surface)]"><X className="h-4 w-4" /></button>
+            </div>
+            <div className="mt-6 grid gap-3">
+              <Button type="button" variant="quiet" onClick={handleContinueAdding} className="w-full"><Plus className="h-4 w-4" /> Continue adding to cart</Button>
+              <Button type="button" onClick={handleGoToCheckout} className="w-full"><ShoppingCart className="h-4 w-4" /> Go to cart · Cash Checkout</Button>
+              <p className="text-center text-xs font-semibold text-[var(--muted)]">Cash checkout is simple: CASH only, no contact needed.</p>
             </div>
           </div>
         </div>
