@@ -18,9 +18,9 @@ export function DashboardFrame({ role, nav, children }: { role: string; nav: Rea
   const dashboardHomeHref = getDashboardHomeHref(role);
 
   return (
-    <div className="h-dvh overflow-hidden bg-white text-[var(--ink)] lg:grid lg:grid-cols-[272px_minmax(0,1fr)]">
-      {/* Mobile Sticky Header */}
-      <header className="sticky top-0 z-30 flex min-h-[4.25rem] items-center justify-between gap-3 border-b border-[var(--line)] bg-white/95 backdrop-blur-md px-4 py-3 shadow-[var(--shadow-xs)] lg:hidden">
+    <div className="flex min-h-dvh min-h-[100dvh] flex-col bg-white text-[var(--ink)] lg:grid lg:h-dvh lg:grid-cols-[272px_minmax(0,1fr)] lg:overflow-hidden">
+      {/* Mobile Sticky Header — safe-area aware, uses dvh-aware sticky */}
+      <header className="sticky top-0 z-30 flex min-h-[calc(4.25rem+env(safe-area-inset-top))] items-center justify-between gap-3 border-b border-[var(--line)] bg-white/95 px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] shadow-[var(--shadow-xs)] backdrop-blur-md supports-[backdrop-filter:blur(12px)]:bg-white/85 lg:hidden">
         <Link href={dashboardHomeHref} className="flex min-w-0 items-center gap-3">
           <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker" width={40} height={40} className="rounded-[var(--radius-md)] border border-[var(--line)] bg-white p-1 shrink-0" priority />
           <div className="min-w-0">
@@ -31,8 +31,8 @@ export function DashboardFrame({ role, nav, children }: { role: string; nav: Rea
         <UserAwareDashboardHeaderActions role={role} />
       </header>
 
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:sticky lg:top-0 lg:z-30 lg:flex lg:h-dvh lg:w-auto lg:flex-col border-r border-[var(--line)] bg-white text-[var(--ink)]">
+      {/* Desktop Sidebar — dvh-aware, safe-area for iPad notch */}
+      <aside className="hidden lg:sticky lg:top-0 lg:z-30 lg:flex lg:h-dvh lg:min-h-dvh lg:w-auto lg:flex-col border-r border-[var(--line)] bg-white pt-[env(safe-area-inset-top)] text-[var(--ink)]">
         <div className="flex h-16 shrink-0 items-center justify-between gap-4 border-b border-[var(--line)] px-5">
           <Link href={dashboardHomeHref} className="flex min-w-0 items-center gap-3">
             <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker" width={44} height={44} className="rounded-[var(--radius-md)] border border-[var(--line)] bg-white p-1" />
@@ -61,8 +61,8 @@ export function DashboardFrame({ role, nav, children }: { role: string; nav: Rea
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <div className="h-[calc(100dvh-4.25rem)] min-w-0 overflow-y-auto overflow-x-hidden bg-white lg:h-dvh pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-0">
+      {/* Main Content Area — flex-1 avoids 100vh trap, dvh-safe, safe-area bottom for bottom nav */}
+      <div className="flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden bg-white pb-[calc(5rem+env(safe-area-inset-bottom))] lg:h-dvh lg:min-h-0 lg:pb-0">
         {children}
       </div>
 
