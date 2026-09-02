@@ -250,9 +250,9 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
               return (
                 <div
                   key={line.id}
-                  className={`grid gap-6 rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--surface)] p-4 lg:items-end lg:gap-6 ${line.automaticBarcode ? "lg:grid-cols-[minmax(10rem,0.9fr)_8.5rem_6.5rem_auto]" : "lg:grid-cols-[minmax(10rem,0.85fr)_minmax(12rem,1fr)_8.5rem_6.5rem_auto]"}`}
+                  className={`grid gap-4 rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--surface)] p-4 lg:items-end lg:gap-4 ${line.automaticBarcode ? "lg:grid-cols-[minmax(10rem,1fr)_8.5rem_6.5rem_6rem]" : "lg:grid-cols-[minmax(10rem,0.75fr)_minmax(12rem,0.95fr)_8.5rem_6.5rem_6rem]"}`}
                 >
-                  <label className="grid gap-1.5 text-[0.65rem] font-black uppercase tracking-[0.08em] text-[var(--steel)]">Product<input value={line.productName} onChange={(event) => updateLine(line.id, "productName", event.target.value)} placeholder={`Product ${index + 1}`} className="min-h-11 max-w-[14rem] rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-sm font-semibold outline-none focus:border-[var(--signal)]" /></label>
+                  <label className="grid gap-1.5 text-[0.65rem] font-black uppercase tracking-[0.08em] text-[var(--steel)]">Product<input value={line.productName} onChange={(event) => updateLine(line.id, "productName", event.target.value)} placeholder={`Product ${index + 1}`} className="min-h-11 max-w-[13rem] rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-sm font-semibold outline-none focus:border-[var(--signal)]" /></label>
                   {!line.automaticBarcode ? (
                     <label className="grid gap-1.5 text-[0.65rem] font-black uppercase tracking-[0.08em] text-[var(--steel)]">Barcode scan<span className="relative block"><ScanLine className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--signal)]" /><input value={line.barcode} onChange={(event) => updateLine(line.id, "barcode", event.target.value.replace(/\s/g, ""))} required placeholder="Product or stock-unit barcode" className="min-h-11 w-full rounded-[var(--radius-md)] border border-[var(--line)] bg-white pl-10 pr-4 text-sm font-semibold outline-none focus:border-[var(--signal)]" /></span></label>
                   ) : null}
@@ -262,7 +262,7 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
                     {line.unitPrice ? <span className="text-left text-[0.6rem] font-bold text-[var(--muted)]">{money(Number(line.unitPrice))} × {line.quantity}</span> : null}
                   </div>
                   <label className="grid gap-1.5 text-[0.65rem] font-black uppercase tracking-[0.08em] text-[var(--steel)]">Quantity<input value={line.quantity} onChange={(event) => updateLine(line.id, "quantity", event.target.value.replace(/\D/g, ""))} required min={1} inputMode="numeric" className="min-h-11 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-center text-sm font-black outline-none focus:border-[var(--signal)]" /></label>
-                  <Button type="button" variant="quiet" onClick={() => removeLine(line.id)} aria-label="Remove checkout line"><Trash2 className="h-4 w-4" /> Remove</Button>
+                  <Button type="button" variant="quiet" onClick={() => removeLine(line.id)} aria-label="Remove checkout line" className="min-w-[6rem]"><Trash2 className="h-4 w-4" /> Remove</Button>
                 </div>
               );
             })}
