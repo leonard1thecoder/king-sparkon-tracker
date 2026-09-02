@@ -103,7 +103,7 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
     return () => observer.disconnect();
   }, []);
 
-  // Landing section slide: alternating right/left, 2s appear/disappear, gap closed
+  // Landing section slide: alternating right/left, 2s appear/disappear, gap closed — Safari/mobile robust
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (media.matches) return;
@@ -111,6 +111,19 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
     if (!main) return;
     const landingSections = Array.from(document.querySelectorAll("main section[id]")) as HTMLElement[];
     if (!landingSections.length) return;
+
+    // No IntersectionObserver fallback — show all
+    if (!("IntersectionObserver" in window)) {
+      landingSections.forEach((el) => {
+        el.dataset.landingMotionState = "visible";
+      });
+      (main as HTMLElement).dataset.landingMotionReady = "true";
+      return;
+    }
+
+    const isMobile = window.innerWidth < 768;
+    const viewportHeight = () => window.visualViewport?.height ?? window.innerHeight;
+    const motionDistance = isMobile ? (window.innerWidth < 640 ? "24px" : "40px") : "90px";
 
     let scrollDir: "up" | "down" = "down";
     let lastY = window.scrollY;
@@ -122,20 +135,42 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
     window.addEventListener("scroll", onScroll, { passive: true });
 
     landingSections.forEach((el, idx) => {
-      el.style.setProperty("--landing-motion-x", idx % 2 === 0 ? "90px" : "-90px");
+      const x = idx % 2 === 0 ? motionDistance : `-${motionDistance}`;
+      el.style.setProperty("--landing-motion-x", x);
       el.dataset.landingMotionState = "preparing";
     });
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         (main as HTMLElement).dataset.landingMotionReady = "true";
+        const vh = viewportHeight();
         landingSections.forEach((el) => {
           const rect = el.getBoundingClientRect();
-          const inView = rect.top < window.innerHeight * 0.88 && rect.bottom > 80;
+          const inView = rect.top < vh * 0.88 && rect.bottom > 40;
           el.dataset.landingMotionState = inView ? "visible" : "hidden";
         });
+        // Safari fallback: if observer doesn't fire quickly, reveal any that are clearly in view after 600ms
+        window.setTimeout(() => {
+          const v = viewportHeight();
+          landingSections.forEach((el) => {
+            if (el.dataset.landingMotionState === "hidden") {
+              const r = el.getBoundingClientRect();
+              if (r.top < v * 0.92 && r.bottom > 20) el.dataset.landingMotionState = "visible";
+            }
+          });
+        }, 600);
       });
     });
+
+    // Safety net: ensure sections don't stay hidden forever on Safari where observer may be throttled
+    const safetyTimer = window.setTimeout(() => {
+      landingSections.forEach((el) => {
+        if (el.dataset.landingMotionState === "hidden") {
+          const r = el.getBoundingClientRect();
+          if (r.top < viewportHeight() * 1.1) el.dataset.landingMotionState = "visible";
+        }
+      });
+    }, 1200);
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -144,27 +179,46 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
           if (entry.isIntersecting) {
             el.dataset.landingMotionState = "visible";
           } else {
-            // When scrolling down, keep already-seen sections (above) visible; only hide those still below
-            // When scrolling up, slide back to hidden (same side) as they leave viewport
             const rect = entry.boundingClientRect;
+            const v = viewportHeight();
             if (scrollDir === "down") {
-              if (rect.top > window.innerHeight - 80) {
+              if (rect.top > v - 40) {
                 el.dataset.landingMotionState = "hidden";
               }
-              // if element is above viewport while scrolling down, keep it visible (don't hide)
             } else {
-              // scrolling up: hide any that left viewport (slide back)
-              el.dataset.landingMotionState = "hidden";
+              // Only hide if fully out of view upward, with small hysteresis to avoid flicker on Safari bounce
+              if (rect.bottom < -20 || rect.top > v - 20) {
+                el.dataset.landingMotionState = "hidden";
+              }
             }
           }
         });
       },
-      { rootMargin: "0px 0px -14% 0px", threshold: 0.14 },
+      // More permissive for Safari dynamic viewport — no negative bottom margin that hides mobile sections
+      { rootMargin: isMobile ? "0px 0px 0px 0px" : "0px 0px -8% 0px", threshold: isMobile ? 0.08 : 0.14 },
     );
 
     landingSections.forEach((s) => io.observe(s));
+
+    const onResize = () => {
+      // Re-evaluate motion distance on rotate / Safari bar collapse
+      const newIsMobile = window.innerWidth < 768;
+      const newDist = newIsMobile ? (window.innerWidth < 640 ? "24px" : "40px") : "90px";
+      landingSections.forEach((el, idx) => {
+        const x = idx % 2 === 0 ? newDist : `-${newDist}`;
+        el.style.setProperty("--landing-motion-x", x);
+      });
+    };
+    window.addEventListener("resize", onResize);
+    window.visualViewport?.addEventListener("resize", onResize);
+    window.visualViewport?.addEventListener("scroll", onResize);
+
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      window.visualViewport?.removeEventListener("resize", onResize);
+      window.visualViewport?.removeEventListener("scroll", onResize);
+      window.clearTimeout(safetyTimer);
       io.disconnect();
       landingSections.forEach((el) => {
         delete el.dataset.landingMotionState;
@@ -178,7 +232,7 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
     <main className="bg-white text-[var(--ink)]">
       <section className={`relative bg-white ${hideHeader ? "" : "pt-32"}`}>
         {!hideHeader ? (
-          <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
+          <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--line)] bg-white pt-[env(safe-area-inset-top)] shadow-[var(--shadow-soft)]">
             <div className="border-b border-[var(--line)] bg-[var(--signal-soft)] px-5 py-2 text-center text-xs font-bold text-[var(--signal-strong)]">
               Barcode operations, QR tickets, jobs, transactions and role-safe dashboards in one platform.
             </div>

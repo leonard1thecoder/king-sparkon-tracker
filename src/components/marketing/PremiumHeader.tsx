@@ -40,7 +40,7 @@ export function PremiumHeader() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-50">
+    <header className="sticky top-0 z-50 pt-[env(safe-area-inset-top)]">
       {/* Top notice */}
       <div className="hidden border-b border-[rgba(186,230,253,0.5)] bg-[rgba(240,249,255,0.8)] backdrop-blur-[12px] px-4 py-1.5 text-center text-xs font-bold text-[var(--signal-strong)] md:block">
         Barcode operations, QR tickets, jobs and role-safe dashboards — one verified platform.

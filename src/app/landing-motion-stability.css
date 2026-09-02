@@ -1,13 +1,13 @@
+/* Base hidden — JS sets --landing-motion-x per section; mobile uses smaller distance via JS */
 main section[id][data-landing-motion-state="hidden"],
 main section[id][data-landing-motion-state="preparing"] {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transform: translate3d(
-    var(--landing-motion-x, 80px),
-    0,
-    0
-  );
+  transform: translate3d(var(--landing-motion-x, 80px), 0, 0);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 main section[id][data-landing-motion-state="visible"] {
@@ -15,6 +15,26 @@ main section[id][data-landing-motion-state="visible"] {
   visibility: visible;
   pointer-events: auto;
   transform: translate3d(0, 0, 0);
+  will-change: transform, opacity;
+}
+
+main section[id] {
+  /* Safari: prevent transform clipping from ancestor overflow */
+  overflow: clip;
+  overflow-x: clip;
+}
+
+/* Fallback: if JS never runs, show sections after 3s — ensures Safari where observer is throttled doesn't stay hidden */
+@keyframes landing-fallback-reveal {
+  to {
+    opacity: 1;
+    visibility: visible;
+    transform: translate3d(0, 0, 0);
+  }
+}
+main:not([data-landing-motion-ready]) section[id] {
+  animation: landing-fallback-reveal 0s forwards;
+  animation-delay: 3s;
 }
 
 main[data-landing-motion-ready="true"] section[id] {
@@ -91,6 +111,21 @@ header [aria-label="Section navigation"] a.landing-nav-active {
     border-color 220ms ease,
     color 220ms ease,
     box-shadow 220ms ease;
+}
+
+@media (max-width: 768px) {
+  /* Mobile: slide distance is set to 24px/40px via JS; ensure transform doesn't push off-screen and cause horizontal scroll */
+  main section[id][data-landing-motion-state="hidden"],
+  main section[id][data-landing-motion-state="preparing"] {
+    transform: translate3d(var(--landing-motion-x, 24px), 0, 0);
+  }
+  main[data-landing-motion-ready="true"] section[id] {
+    transition-duration: 1200ms;
+  }
+  /* Prevent horizontal overflow from translate on narrow Safari viewport */
+  main {
+    overflow-x: clip;
+  }
 }
 
 @media (max-width: 640px) {
