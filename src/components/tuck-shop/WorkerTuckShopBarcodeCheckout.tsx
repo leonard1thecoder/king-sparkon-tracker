@@ -53,13 +53,52 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
   const [purchase, setPurchase] = useState<TuckShopPurchase | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const pendingHydratedRef = useRef(false);
+
+  // Hydrate pending lines from worker products Sell product flow (quantity, barcode, Product, productId)
+  useEffect(() => {
+    if (pendingHydratedRef.current) return;
+    pendingHydratedRef.current = true;
+    if (typeof window === "undefined") return;
+    try {
+      const raw = localStorage.getItem("workerPendingCheckoutLines");
+      if (!raw) return;
+      const pending: Array<{ productId: number; productName: string; barcode: string; quantity: number; automaticBarcode: boolean }> = JSON.parse(raw);
+      if (!Array.isArray(pending) || pending.length === 0) return;
+      setLines(() =>
+        pending.map((p) => ({
+          id: lineId(),
+          productId: String(p.productId),
+          productName: p.productName,
+          barcode: p.automaticBarcode ? "" : p.barcode,
+          quantity: String(p.quantity),
+          automaticBarcode: Boolean(p.automaticBarcode),
+        })),
+      );
+    } catch {}
+  }, []);
 
   useEffect(() => {
     if (!scannedProduct || consumedScanTokenRef.current === scannedProduct.token) return;
     consumedScanTokenRef.current = scannedProduct.token;
 
+    // If lines were hydrated from pending, scannedProduct may duplicate; merge intelligently
     setLines((current) => {
-      const matchingIndex = current.findIndex((line) => Number(line.productId) === scannedProduct.productId && line.automaticBarcode === Boolean(scannedProduct.automaticBarcode));
+      // If current is single empty line, replace it
+      const isSingleEmpty = current.length === 1 && !current[0].productId && !current[0].barcode;
+      if (isSingleEmpty) {
+        return [
+          {
+            id: current[0].id,
+            productId: String(scannedProduct.productId),
+            productName: scannedProduct.productName,
+            barcode: scannedProduct.automaticBarcode ? "" : scannedProduct.barcode,
+            quantity: "1",
+            automaticBarcode: Boolean(scannedProduct.automaticBarcode),
+          },
+        ];
+      }
+      const matchingIndex = current.findIndex((line) => Number(line.productId) === scannedProduct.productId && line.automaticBarcode === Boolean(scannedProduct.automaticBarcode) && line.barcode === (scannedProduct.automaticBarcode ? "" : scannedProduct.barcode));
       if (matchingIndex >= 0) {
         return current.map((line, index) => index === matchingIndex ? { ...line, quantity: String(Math.max(Number(line.quantity || 1), 1) + 1) } : line);
       }
@@ -132,6 +171,11 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
       setPurchase(result);
       setLines([emptyLine()]);
       setPaymentContact("");
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.removeItem("workerPendingCheckoutLines");
+        } catch {}
+      }
     } catch (exception) {
       setError(normalizeApiError(exception).message);
     } finally {

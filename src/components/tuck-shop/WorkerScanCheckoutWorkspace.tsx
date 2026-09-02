@@ -2,82 +2,111 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { CheckCircle2, Loader2, ScanLine, WandSparkles } from "lucide-react";
-import { BarcodeScanner } from "@/components/scanner/BarcodeScanner";
+import { CheckCircle2, Loader2, WandSparkles } from "lucide-react";
 import { normalizeApiError } from "@/lib/api/client";
-import { getWorkerProductByBarcode, getWorkerProductById } from "@/lib/api/tuck-shop";
+import { getWorkerProductById } from "@/lib/api/tuck-shop";
 import type { Product } from "@/lib/types/backend";
 import { WorkerOnlinePurchaseCheckout } from "./WorkerOnlinePurchaseCheckout";
 import { WorkerTuckShopBarcodeCheckout, type WorkerScannedProduct } from "./WorkerTuckShopBarcodeCheckout";
 
-function productBarcode(product: Product, scannedValue: string) {
-  return product.productBarcode?.trim() || scannedValue.trim();
+function productBarcode(product: Product) {
+  return product.productBarcode?.trim() || "";
 }
+
+const STORAGE_KEY = "workerPendingCheckoutLines";
+
+type PendingLine = {
+  productId: number;
+  productName: string;
+  barcode: string;
+  quantity: number;
+  automaticBarcode: boolean;
+};
 
 export function WorkerScanCheckoutWorkspace() {
   const searchParams = useSearchParams();
   const [scannedProduct, setScannedProduct] = useState<WorkerScannedProduct | null>(null);
   const [lookupValue, setLookupValue] = useState<string | null>(null);
   const [lookupError, setLookupError] = useState<string | null>(null);
+  const [pendingCount, setPendingCount] = useState(0);
 
+  // Hydrate pending lines from localStorage + query params (quantity, barcode) for Sell product flow
   useEffect(() => {
     const productId = Number(searchParams.get("productId"));
+    const quantity = Number(searchParams.get("quantity") ?? "1");
+    const barcodeParam = searchParams.get("barcode");
     const automatic = searchParams.get("automatic") === "true";
-    if (!automatic || !Number.isInteger(productId) || productId <= 0) return;
 
-    let active = true;
-    setLookupValue(`Product #${productId}`);
-    setLookupError(null);
-    void getWorkerProductById(productId)
-      .then((product) => {
-        if (!active) return;
-        setScannedProduct({
-          token: `${Date.now()}-automatic-${product.id}`,
-          productId: product.id,
-          productName: product.name,
-          barcode: "",
-          scannedValue: "AUTO-GENERATED",
-          automaticBarcode: true,
+    if (Number.isInteger(productId) && productId > 0) {
+      let active = true;
+      setLookupValue(`Product #${productId}`);
+      setLookupError(null);
+      void getWorkerProductById(productId)
+        .then((product) => {
+          if (!active) return;
+          const qty = Number.isInteger(quantity) && quantity > 0 ? quantity : 1;
+          const barcode = automatic ? "" : (barcodeParam ?? productBarcode(product));
+          setScannedProduct({
+            token: `${Date.now()}-query-${product.id}-${qty}`,
+            productId: product.id,
+            productName: product.name,
+            barcode,
+            scannedValue: barcode || "AUTO-GENERATED",
+            automaticBarcode: automatic,
+          });
+          // also push to pending storage for Quantity persistence
+          if (typeof window !== "undefined") {
+            try {
+              const existing: PendingLine[] = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
+              const next = [...existing];
+              const idx = next.findIndex((l) => l.productId === product.id && l.automaticBarcode === automatic && l.barcode === barcode);
+              if (idx >= 0) next[idx] = { ...next[idx], quantity: next[idx].quantity + qty };
+              else next.push({ productId: product.id, productName: product.name, barcode, quantity: qty, automaticBarcode: automatic });
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+            } catch {}
+          }
+        })
+        .catch((exception) => {
+          if (active) setLookupError(normalizeApiError(exception).message);
+        })
+        .finally(() => {
+          if (active) setLookupValue(null);
         });
-      })
-      .catch((exception) => {
-        if (active) setLookupError(normalizeApiError(exception).message);
-      })
-      .finally(() => {
-        if (active) setLookupValue(null);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [searchParams]);
-
-  async function handleProductScan(value: string) {
-    const scannedValue = value.trim();
-    if (!scannedValue) return;
-
-    setLookupValue(scannedValue);
-    setLookupError(null);
-    try {
-      const product = await getWorkerProductByBarcode(scannedValue);
-      setScannedProduct({
-        token: `${Date.now()}-${scannedValue}`,
-        productId: product.id,
-        productName: product.name,
-        barcode: productBarcode(product, scannedValue),
-        scannedValue,
-        automaticBarcode: false,
-      });
-    } catch (exception) {
-      setLookupError(normalizeApiError(exception).message);
-    } finally {
-      setLookupValue(null);
+      return () => {
+        active = false;
+      };
     }
-  }
+
+    // If no query, hydrate from localStorage pending lines (first pending line as scannedProduct)
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed: PendingLine[] = JSON.parse(raw);
+          setPendingCount(parsed.length);
+          if (parsed.length > 0 && !scannedProduct) {
+            const first = parsed[0];
+            setScannedProduct({
+              token: `${Date.now()}-pending-${first.productId}`,
+              productId: first.productId,
+              productName: first.productName,
+              barcode: first.barcode,
+              scannedValue: first.barcode || "AUTO-GENERATED",
+              automaticBarcode: first.automaticBarcode,
+            });
+          }
+        }
+      } catch {}
+    }
+  }, [searchParams]);
 
   return (
     <div className="grid gap-6">
-      <BarcodeScanner onScan={(value) => void handleProductScan(value)} />
+      <div className="rounded-[1.2rem] border border-[var(--line)] bg-white p-4 text-sm font-semibold leading-6 text-[var(--steel)]">
+        <p className="font-black text-[var(--ink)]">Checkout is populated from products you sold on <span className="text-[var(--signal)]">/dashboard/worker/products</span>.</p>
+        <p className="mt-1">Use <span className="font-black">Scan product</span> or <span className="font-black">Sell product</span> on the products page — scanner appears as a popup there. After choosing quantity, you are taken here where quantity, barcode, Product and product id are already filled in Worker Tuck Shop checkout below.</p>
+        {pendingCount > 0 ? <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-[var(--signal-soft)] px-3 py-1 text-xs font-black text-[var(--signal)]">{pendingCount} pending product(s) from worker products</p> : null}
+      </div>
 
       {lookupValue ? <p className="inline-flex items-center gap-2 rounded-[1.2rem] border border-[var(--signal)]/25 bg-[var(--signal)]/10 p-4 text-sm font-black text-[var(--ink)]"><Loader2 className="h-4 w-4 animate-spin text-[var(--signal)]" /> Loading {lookupValue}</p> : null}
       {lookupError ? <p className="rounded-[1.2rem] border border-[var(--danger)]/25 bg-[var(--danger)]/10 p-4 text-sm font-black text-[var(--danger)]">{lookupError}</p> : null}
@@ -87,9 +116,7 @@ export function WorkerScanCheckoutWorkspace() {
           {scannedProduct.automaticBarcode ? <WandSparkles className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}
           {scannedProduct.productName} was added to checkout {scannedProduct.automaticBarcode ? "without a physical scan" : "after barcode verification"}.
         </p>
-      ) : (
-        <p className="inline-flex items-center gap-2 rounded-[1.2rem] border border-[var(--line)] bg-white p-4 text-sm font-bold text-[var(--steel)]"><ScanLine className="h-4 w-4 text-[var(--signal)]" /> Scan a branded product, or choose Sell without scan from an auto-generated product.</p>
-      )}
+      ) : null}
 
       <WorkerTuckShopBarcodeCheckout scannedProduct={scannedProduct} />
       <WorkerOnlinePurchaseCheckout />
