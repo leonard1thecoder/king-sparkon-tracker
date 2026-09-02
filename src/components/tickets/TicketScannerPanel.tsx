@@ -103,6 +103,16 @@ export function TicketScannerPanel() {
     setCameraActive(false);
   }
 
+  function resetForNextScan() {
+    controlsRef.current?.stop();
+    controlsRef.current = null;
+    setCameraActive(false);
+    setResult(null);
+    setScanContext(null);
+    setManualReference("");
+    setCameraError(null);
+  }
+
   const verificationPhotoUrl = result?.verificationPhotoUrl ?? result?.ticket?.verificationPhotoUrl;
 
   return (
@@ -200,6 +210,9 @@ export function TicketScannerPanel() {
           ) : (
             <p className="mt-5 text-sm font-semibold leading-7 text-[var(--steel)]">Scan a QR code or enter a ticket reference. Guests must not enter when the secure verification service is unavailable.</p>
           )}
+          {result && !result.requiresFaceConfirmation ? (
+            <button type="button" onClick={resetForNextScan} className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-white px-5 text-sm font-black text-[var(--signal)] hover:bg-[var(--signal)] hover:text-white"><QrCode className="h-4 w-4" /> Scan another ticket</button>
+          ) : null}
         </div>
       </div>
     </section>

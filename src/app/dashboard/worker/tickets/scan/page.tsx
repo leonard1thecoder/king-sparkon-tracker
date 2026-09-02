@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
-import { TicketScannerPanel } from "@/components/tickets/TicketScannerPanel";
+import { WorkerTicketGateListing } from "@/components/tickets/WorkerTicketGateListing";
 
 export const metadata: Metadata = {
   title: "Scan Ticket | Worker Dashboard",
@@ -17,7 +17,7 @@ export default function WorkerTicketScanRoute() {
           <h1 className="mt-3 text-5xl font-black tracking-[-0.06em] md:text-6xl">QR scan plus owner photo verification</h1>
           <p className="mt-4 text-sm leading-7 text-[var(--steel)]">Scanning does not use the ticket. The worker must manually compare the person at the gate with the ticket owner photo. Only a confirmed match marks the ticket USED; a mismatch must be denied entry.</p>
         </div>
-        <TicketScannerPanel />
+        <WorkerTicketGateListing />
       </main>
     </>
   );
