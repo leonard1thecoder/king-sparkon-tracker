@@ -21,6 +21,7 @@ type PendingLine = {
   barcode: string;
   quantity: number;
   automaticBarcode: boolean;
+  unitPrice: number;
 };
 
 export function WorkerScanCheckoutWorkspace() {
@@ -46,6 +47,7 @@ export function WorkerScanCheckoutWorkspace() {
           if (!active) return;
           const qty = Number.isInteger(quantity) && quantity > 0 ? quantity : 1;
           const barcode = automatic ? "" : (barcodeParam ?? productBarcode(product));
+          const unitPrice = Number(product.salePrice ?? product.price ?? 0);
           setScannedProduct({
             token: `${Date.now()}-query-${product.id}-${qty}`,
             productId: product.id,
@@ -53,6 +55,7 @@ export function WorkerScanCheckoutWorkspace() {
             barcode,
             scannedValue: barcode || "AUTO-GENERATED",
             automaticBarcode: automatic,
+            unitPrice,
           });
           // also push to pending storage for Quantity persistence
           if (typeof window !== "undefined") {
@@ -61,7 +64,7 @@ export function WorkerScanCheckoutWorkspace() {
               const next = [...existing];
               const idx = next.findIndex((l) => l.productId === product.id && l.automaticBarcode === automatic && l.barcode === barcode);
               if (idx >= 0) next[idx] = { ...next[idx], quantity: next[idx].quantity + qty };
-              else next.push({ productId: product.id, productName: product.name, barcode, quantity: qty, automaticBarcode: automatic });
+              else next.push({ productId: product.id, productName: product.name, barcode, quantity: qty, automaticBarcode: automatic, unitPrice });
               localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
             } catch {}
           }
@@ -85,7 +88,7 @@ export function WorkerScanCheckoutWorkspace() {
           const parsed: PendingLine[] = JSON.parse(raw);
           setPendingCount(parsed.length);
           if (parsed.length > 0 && !scannedProduct) {
-            const first = parsed[0];
+            const first = parsed[0] as PendingLine;
             setScannedProduct({
               token: `${Date.now()}-pending-${first.productId}`,
               productId: first.productId,
@@ -93,6 +96,7 @@ export function WorkerScanCheckoutWorkspace() {
               barcode: first.barcode,
               scannedValue: first.barcode || "AUTO-GENERATED",
               automaticBarcode: first.automaticBarcode,
+              unitPrice: (first as unknown as { unitPrice?: number }).unitPrice,
             });
           }
         }

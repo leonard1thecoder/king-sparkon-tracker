@@ -16,6 +16,7 @@ export type WorkerScannedProduct = {
   barcode: string;
   scannedValue: string;
   automaticBarcode?: boolean;
+  unitPrice?: number;
 };
 
 type BarcodeLine = {
@@ -25,6 +26,7 @@ type BarcodeLine = {
   barcode: string;
   quantity: string;
   automaticBarcode: boolean;
+  unitPrice: string;
 };
 
 type WorkerTuckShopBarcodeCheckoutProps = { scannedProduct?: WorkerScannedProduct | null };
@@ -34,7 +36,14 @@ function lineId() {
 }
 
 function emptyLine(): BarcodeLine {
-  return { id: lineId(), productId: "", productName: "", barcode: "", quantity: "1", automaticBarcode: false };
+  return { id: lineId(), productId: "", productName: "", barcode: "", quantity: "1", automaticBarcode: false, unitPrice: "" };
+}
+
+function rowTotal(line: BarcodeLine): number {
+  const qty = Number(line.quantity);
+  const price = Number(line.unitPrice);
+  if (!Number.isFinite(qty) || !Number.isFinite(price)) return 0;
+  return qty * price;
 }
 
 function money(value?: number | null) {
@@ -62,7 +71,7 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
     try {
       const raw = localStorage.getItem("workerPendingCheckoutLines");
       if (!raw) return;
-      const pending: Array<{ productId: number; productName: string; barcode: string; quantity: number; automaticBarcode: boolean }> = JSON.parse(raw);
+      const pending: Array<{ productId: number; productName: string; barcode: string; quantity: number; automaticBarcode: boolean; unitPrice?: number }> = JSON.parse(raw);
       if (!Array.isArray(pending) || pending.length === 0) return;
       setLines(() =>
         pending.map((p) => ({
@@ -72,8 +81,22 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
           barcode: p.automaticBarcode ? "" : p.barcode,
           quantity: String(p.quantity),
           automaticBarcode: Boolean(p.automaticBarcode),
+          unitPrice: p.unitPrice != null ? String(p.unitPrice) : "",
         })),
       );
+      // Fill missing unitPrice for old pending lines
+      pending.forEach((p) => {
+        if (p.unitPrice == null) {
+          void import("@/lib/api/tuck-shop").then(({ getWorkerProductById }) =>
+            getWorkerProductById(p.productId)
+              .then((product) => {
+                const price = String(Number(product.salePrice ?? product.price ?? 0));
+                setLines((cur) => cur.map((l) => (l.productId === String(p.productId) && !l.unitPrice ? { ...l, unitPrice: price } : l)));
+              })
+              .catch(() => {}),
+          );
+        }
+      });
     } catch {}
   }, []);
 
@@ -94,6 +117,7 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
             barcode: scannedProduct.automaticBarcode ? "" : scannedProduct.barcode,
             quantity: "1",
             automaticBarcode: Boolean(scannedProduct.automaticBarcode),
+            unitPrice: scannedProduct.unitPrice != null ? String(scannedProduct.unitPrice) : "",
           },
         ];
       }
@@ -110,6 +134,7 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
         barcode: scannedProduct.automaticBarcode ? "" : scannedProduct.barcode,
         quantity: "1",
         automaticBarcode: Boolean(scannedProduct.automaticBarcode),
+        unitPrice: scannedProduct.unitPrice != null ? String(scannedProduct.unitPrice) : "",
       };
       if (emptyIndex >= 0) return current.map((line, index) => index === emptyIndex ? scannedLine : line);
       return [...current, scannedLine];
@@ -118,7 +143,29 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
 
   function updateLine(id: string, field: keyof Omit<BarcodeLine, "id" | "automaticBarcode">, value: string) {
     setLines((current) => current.map((line) => line.id === id ? { ...line, [field]: value } : line));
+    if (field === "productId") {
+      const pid = Number(value.replace(/\D/g, ""));
+      if (Number.isInteger(pid) && pid > 0) {
+        void import("@/lib/api/tuck-shop").then(({ getWorkerProductById }) =>
+          getWorkerProductById(pid)
+            .then((product) => {
+              const price = Number(product.salePrice ?? product.price ?? 0);
+              const barcode = product.productBarcode?.trim() || "";
+              setLines((cur) =>
+                cur.map((l) =>
+                  l.id === id
+                    ? { ...l, productName: l.productName || product.name, unitPrice: String(price), barcode: l.barcode || barcode, automaticBarcode: !product.productBarcode }
+                    : l,
+                ),
+              );
+            })
+            .catch(() => {}),
+        );
+      }
+    }
   }
+
+  const totalPrice = lines.reduce((sum, line) => sum + rowTotal(line), 0);
 
   function addLine() {
     setLines((current) => [...current, emptyLine()]);
@@ -198,18 +245,32 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
           </div>
 
           <div className="grid gap-3">
-            {lines.map((line, index) => (
-              <div key={line.id} className="grid gap-3 rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--surface)] p-3 lg:grid-cols-[8.5rem_minmax(14rem,1.15fr)_minmax(15rem,1.4fr)_7.5rem_auto] lg:items-end">
-                <label className="grid gap-1.5 text-[0.65rem] font-black uppercase tracking-[0.08em] text-[var(--steel)]">Product ID<input value={line.productId} onChange={(event) => updateLine(line.id, "productId", event.target.value.replace(/\D/g, ""))} required placeholder="ID" inputMode="numeric" className="min-h-11 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-sm font-black outline-none focus:border-[var(--signal)]" /></label>
-                <label className="grid gap-1.5 text-[0.65rem] font-black uppercase tracking-[0.08em] text-[var(--steel)]">Product<input value={line.productName} onChange={(event) => updateLine(line.id, "productName", event.target.value)} placeholder={`Product ${index + 1}`} className="min-h-11 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-sm font-semibold outline-none focus:border-[var(--signal)]" /></label>
-                <label className="grid gap-1.5 text-[0.65rem] font-black uppercase tracking-[0.08em] text-[var(--steel)]">{line.automaticBarcode ? "Automatic stock codes" : "Barcode scan"}<span className="relative block">{line.automaticBarcode ? <WandSparkles className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--confirm)]" /> : <ScanLine className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--signal)]" />}<input value={line.automaticBarcode ? "Created automatically at checkout" : line.barcode} onChange={(event) => updateLine(line.id, "barcode", event.target.value.replace(/\s/g, ""))} required={!line.automaticBarcode} disabled={line.automaticBarcode} placeholder="Product or stock-unit barcode" className="min-h-11 w-full rounded-[var(--radius-md)] border border-[var(--line)] bg-white pl-10 pr-4 text-sm font-semibold outline-none focus:border-[var(--signal)] disabled:bg-[var(--confirm)]/8 disabled:text-[var(--confirm)]" /></span></label>
-                <label className="grid gap-1.5 text-[0.65rem] font-black uppercase tracking-[0.08em] text-[var(--steel)]">Quantity<input value={line.quantity} onChange={(event) => updateLine(line.id, "quantity", event.target.value.replace(/\D/g, ""))} required min={1} inputMode="numeric" className="min-h-11 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-sm font-black outline-none focus:border-[var(--signal)]" /></label>
-                <Button type="button" variant="quiet" onClick={() => removeLine(line.id)} aria-label="Remove checkout line"><Trash2 className="h-4 w-4" /> Remove</Button>
-              </div>
-            ))}
+            {lines.map((line, index) => {
+              const rt = rowTotal(line);
+              return (
+                <div key={line.id} className="grid gap-3 rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--surface)] p-3 lg:grid-cols-[7.5rem_minmax(12rem,1fr)_minmax(14rem,1.3fr)_5.5rem_7.5rem_auto] lg:items-end">
+                  <label className="grid gap-1.5 text-[0.65rem] font-black uppercase tracking-[0.08em] text-[var(--steel)]">Product ID<input value={line.productId} onChange={(event) => updateLine(line.id, "productId", event.target.value.replace(/\D/g, ""))} required placeholder="ID" inputMode="numeric" className="min-h-11 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-sm font-black outline-none focus:border-[var(--signal)]" /></label>
+                  <label className="grid gap-1.5 text-[0.65rem] font-black uppercase tracking-[0.08em] text-[var(--steel)]">Product<input value={line.productName} onChange={(event) => updateLine(line.id, "productName", event.target.value)} placeholder={`Product ${index + 1}`} className="min-h-11 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-sm font-semibold outline-none focus:border-[var(--signal)]" /></label>
+                  <label className="grid gap-1.5 text-[0.65rem] font-black uppercase tracking-[0.08em] text-[var(--steel)]">{line.automaticBarcode ? "Automatic stock codes" : "Barcode scan"}<span className="relative block">{line.automaticBarcode ? <WandSparkles className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--confirm)]" /> : <ScanLine className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--signal)]" />}<input value={line.automaticBarcode ? "Created automatically at checkout" : line.barcode} onChange={(event) => updateLine(line.id, "barcode", event.target.value.replace(/\s/g, ""))} required={!line.automaticBarcode} disabled={line.automaticBarcode} placeholder="Product or stock-unit barcode" className="min-h-11 w-full rounded-[var(--radius-md)] border border-[var(--line)] bg-white pl-10 pr-4 text-sm font-semibold outline-none focus:border-[var(--signal)] disabled:bg-[var(--confirm)]/8 disabled:text-[var(--confirm)]" /></span></label>
+                  <label className="grid gap-1.5 text-[0.65rem] font-black uppercase tracking-[0.08em] text-[var(--steel)]">Quantity<input value={line.quantity} onChange={(event) => updateLine(line.id, "quantity", event.target.value.replace(/\D/g, ""))} required min={1} inputMode="numeric" className="min-h-11 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-sm font-black outline-none focus:border-[var(--signal)]" /></label>
+                  <div className="grid gap-1.5">
+                    <span className="text-[0.65rem] font-black uppercase tracking-[0.08em] text-[var(--steel)]">Row total</span>
+                    <div className="flex min-h-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3 text-sm font-black text-[var(--ink)]">{money(rt)}</div>
+                    {line.unitPrice ? <span className="text-center text-[0.6rem] font-bold text-[var(--muted)]">{money(Number(line.unitPrice))} × {line.quantity}</span> : null}
+                  </div>
+                  <Button type="button" variant="quiet" onClick={() => removeLine(line.id)} aria-label="Remove checkout line"><Trash2 className="h-4 w-4" /> Remove</Button>
+                </div>
+              );
+            })}
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-between"><Button type="button" variant="quiet" onClick={addLine}><Plus className="h-4 w-4" /> Add product line</Button><Button type="submit" disabled={saving}>{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />} {saving ? "Creating checkout..." : `Create ${paymentLabel(paymentType)} checkout`}</Button></div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <Button type="button" variant="quiet" onClick={addLine}><Plus className="h-4 w-4" /> Add product line</Button>
+              <div className="rounded-full border border-[var(--line)] bg-[var(--surface)] px-4 py-2 text-sm font-black text-[var(--ink)]">Total: <span className="money text-[var(--signal)]">{money(totalPrice)}</span> <span className="ml-1 text-xs font-bold text-[var(--muted)]">to tell customer</span></div>
+            </div>
+            <Button type="submit" disabled={saving}>{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />} {saving ? "Creating checkout..." : `Create ${paymentLabel(paymentType)} checkout`}</Button>
+          </div>
         </form>
 
         {purchase ? <div className="mt-5 grid gap-4 rounded-[1.5rem] border border-[var(--confirm)]/30 bg-[var(--confirm)]/5 p-5 md:grid-cols-[1fr_auto] md:items-center"><div><p className="font-mono text-xs font-black uppercase tracking-[0.16em] text-[var(--signal)]">Transaction #{purchase.transactionId}</p><p className="money mt-2 text-3xl font-black text-[var(--ink)]">{money(purchase.productTotal)}</p><p className="mt-2 text-sm font-semibold text-[var(--steel)]">{purchase.paymentType ?? paymentType} · {purchase.paymentStatus ?? "PAID"}</p></div><CreditCard className="h-12 w-12 text-[var(--confirm)]" /></div> : null}

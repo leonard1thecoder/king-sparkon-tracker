@@ -58,6 +58,7 @@ type PendingLine = {
   barcode: string;
   quantity: number;
   automaticBarcode: boolean;
+  unitPrice: number;
 };
 
 function readPendingLines(): PendingLine[] {
@@ -85,6 +86,10 @@ function addPendingLine(line: PendingLine) {
     current.push(line);
   }
   writePendingLines(current);
+}
+
+function unitPriceOf(product: Product) {
+  return Number(product.salePrice ?? product.price ?? 0);
 }
 
 export function WorkerProductWorkspace() {
@@ -181,6 +186,11 @@ export function WorkerProductWorkspace() {
       return;
     }
     if (!quantityProduct) return;
+    const remainingQty = Number(quantityProduct.stockQuantity ?? 0) - qty;
+    if (remainingQty < 0) {
+      setQuantityError(`Only ${quantityProduct.stockQuantity} in stock.`);
+      return;
+    }
     const configuration = configurationByProduct.get(quantityProduct.id);
     const automatic = configuration?.barcodeMode === "AUTO_GENERATED" || (!configuration && !quantityProduct.productBarcode);
     const barcode = automatic ? "" : reusableProductBarcode(quantityProduct);
@@ -190,15 +200,11 @@ export function WorkerProductWorkspace() {
       barcode,
       quantity: qty,
       automaticBarcode: automatic,
+      unitPrice: unitPriceOf(quantityProduct),
     };
     addPendingLine(line);
-    const remainingQty = Number(quantityProduct.stockQuantity ?? 0) - qty;
-    if (remainingQty < 0) {
-      setQuantityError(`Only ${quantityProduct.stockQuantity} in stock.`);
-      return;
-    }
     setLastAdded({ name: quantityProduct.name, qty });
-    setCartCount(readPendingLines().length + 1);
+    setCartCount(readPendingLines().length);
     setQuantityOpen(false);
     setChoiceOpen(true);
     setSuccess(`${quantityProduct.name} × ${qty} added to cart. ${readPendingLines().length} item(s) in cash checkout.`);
