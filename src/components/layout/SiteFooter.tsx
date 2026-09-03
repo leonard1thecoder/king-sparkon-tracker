@@ -52,24 +52,24 @@ export function SiteFooter({ marketingOnly = false }: SiteFooterProps) {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-[var(--line)] bg-white text-[var(--ink)]">
+    <footer className="border-t border-[var(--line-strong)] bg-black text-[var(--ink)]">
       <div className="mx-auto max-w-7xl px-5 py-14 md:px-8 lg:py-16">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_1.4fr]">
           <div className="max-w-xl">
             <Link href="/" aria-label="King Sparkon Tracker home" className="inline-flex items-center gap-3">
-              <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker trademark barcode logo" width={56} height={56} className="rounded-[var(--radius-lg)] border border-[var(--line)] bg-white p-1.5" />
+              <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker trademark barcode logo" width={56} height={56} className="rounded-[var(--radius-lg)] border border-[var(--line-strong)] bg-[#0d0d1c] p-1.5" />
               <div><p className="text-[0.66rem] font-extrabold uppercase tracking-[0.16em] text-[var(--signal-strong)]">Trademark platform</p><p className="text-xl font-black tracking-[-0.04em]">King Sparkon Tracker</p></div>
             </Link>
             <p className="mt-6 text-sm leading-7 text-[var(--steel)] md:text-base">Barcode inventory, QR tickets, jobs, affiliate marketing, Dev Hub software delivery, QA, cloud operations and audit-ready reports in one role-safe platform.</p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link data-orange-hover="true" href="/dashboard/user/tickets/buy" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-extrabold text-white hover:bg-[var(--accent-hover)] transition-all duration-200">Buy tickets <ArrowRight className="h-4 w-4" /></Link>
-              <Link data-orange-hover="true" href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--line-strong)] bg-white px-5 text-sm font-extrabold text-[var(--ink)] hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)] hover:text-white transition-all duration-200">Create business account</Link>
+              <Link data-orange-hover="true" href="/dashboard/user/tickets/buy" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-md)] border border-transparent bg-gradient-to-r from-cyan-400 via-violet-500 to-pink-500 px-5 text-sm font-extrabold text-white transition-all duration-200 hover:from-yellow-300 hover:via-pink-500 hover:to-cyan-400 hover:text-black hover:shadow-[0_10px_28px_rgba(236,72,153,0.4)]">Buy tickets <ArrowRight className="h-4 w-4" /></Link>
+              <Link data-orange-hover="true" href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--line-strong)] bg-[#0d0d1c] px-5 text-sm font-extrabold text-[var(--ink)] transition-all duration-200 hover:border-[var(--premium-gold)] hover:text-[var(--premium-gold)] hover:shadow-[0_8px_22px_rgba(250,204,21,0.22)]">Create business account</Link>
             </div>
             <div className="mt-8"><p className="mb-3 text-[0.68rem] font-extrabold uppercase tracking-[0.12em] text-[var(--steel)]">Social profiles</p><SocialLinks variant="light" /></div>
           </div>
 
           <div className="grid gap-5 md:grid-cols-3">
-            {footerGroups.map((group) => <div key={group.title} className="border-l-2 border-[var(--line)] pl-5"><h2 className="text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-[var(--signal-strong)]">{group.title}</h2><ul className="mt-5 space-y-3">{group.links.map((link) => <li key={link.href}><Link href={link.href} className="text-sm font-semibold text-[var(--steel)] hover:text-[var(--accent-hover)] transition-colors duration-200">{link.label}</Link></li>)}</ul></div>)}
+            {footerGroups.map((group) => <div key={group.title} className="border-l-2 border-[var(--premium-violet)]/50 pl-5"><h2 className="text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-[var(--premium-gold)]">{group.title}</h2><ul className="mt-5 space-y-3">{group.links.map((link) => <li key={link.href}><Link href={link.href} className="text-sm font-semibold text-[var(--steel)] transition-colors duration-200 hover:text-[var(--premium-cyan)]">{link.label}</Link></li>)}</ul></div>)}
           </div>
         </div>
 

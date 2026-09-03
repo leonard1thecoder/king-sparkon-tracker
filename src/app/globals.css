@@ -14,8 +14,9 @@
 
 html {
   min-height: 100%;
-  background: #ffffff;
+  background: #000000;
   scroll-behavior: smooth;
+  color-scheme: dark;
 }
 
 body {
@@ -23,10 +24,34 @@ body {
   min-height: 100dvh;
   min-height: 100svh;
   overflow-x: hidden;
-  background: #ffffff;
+  background:
+    radial-gradient(900px 480px at 12% -6%, rgba(139, 92, 246, 0.14), transparent 62%),
+    radial-gradient(820px 460px at 88% 4%, rgba(34, 211, 238, 0.11), transparent 62%),
+    radial-gradient(700px 520px at 50% 110%, rgba(236, 72, 153, 0.08), transparent 64%),
+    #000000;
+  background-attachment: fixed;
   color: var(--ink);
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
   text-rendering: geometricPrecision;
+}
+
+main {
+  background: transparent;
+  color: var(--ink);
+}
+
+/* Premium black sections — every page section sits on black with subtle depth */
+main > section,
+section {
+  background-color: #050508;
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+/* Nested content surfaces get slightly lifted black for hierarchy */
+article,
+aside {
+  border-color: var(--line);
 }
 
 button,
@@ -34,7 +59,7 @@ a,
 input,
 select,
 textarea {
-  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease, opacity 160ms ease;
+  transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease, box-shadow 180ms ease, transform 180ms ease, opacity 180ms ease, filter 180ms ease;
 }
 
 button,
@@ -55,7 +80,7 @@ button:disabled {
 }
 
 ::selection {
-  background: var(--signal);
+  background: var(--premium-magenta);
   color: #ffffff;
 }
 
@@ -68,12 +93,13 @@ input,
 select,
 textarea {
   color: var(--ink);
+  color-scheme: dark;
 }
 
 .depth-panel {
   position: relative;
   border: 1px solid var(--line);
-  background: #ffffff;
+  background: linear-gradient(180deg, #0d0d1a 0%, #08080f 100%);
   color: var(--ink);
   box-shadow: var(--shadow-soft);
 }
@@ -85,6 +111,8 @@ textarea {
   z-index: -1;
   border: 0;
   border-radius: inherit;
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
+  opacity: 0.5;
 }
 
 .table-ledger {
@@ -114,7 +142,7 @@ textarea {
 }
 
 .table-ledger th {
-  background: #f8fcff;
+  background: #0e0e1c;
   color: var(--steel);
   font-family: var(--font-jetbrains-mono), monospace;
   font-size: 0.68rem;
@@ -123,17 +151,26 @@ textarea {
   text-transform: uppercase;
 }
 
+.table-ledger tbody tr {
+  background: #08080f;
+  transition: background-color 180ms ease;
+}
+
+.table-ledger tbody tr:hover {
+  background: rgba(139, 92, 246, 0.12);
+}
+
 .barcode-rule {
   background-image: repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 5px, currentColor 5px 6px, transparent 6px 10px, currentColor 10px 13px, transparent 13px 19px);
   height: 34px;
-  opacity: 0.2;
+  opacity: 0.35;
 }
 
 .enterprise-grid {
   background-image:
-    linear-gradient(rgba(29, 92, 131, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(29, 92, 131, 0.06) 1px, transparent 1px);
-  background-size: 34px 34px;
+    linear-gradient(rgba(34, 211, 238, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.07) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
 .scan-grid {
@@ -151,7 +188,7 @@ textarea {
 }
 
 .logo-reflection-wick {
-  background: linear-gradient(104deg, transparent 0%, transparent 34%, rgba(255, 255, 255, 0.36) 46%, rgba(255, 217, 102, 0.18) 52%, transparent 64%, transparent 100%);
+  background: linear-gradient(104deg, transparent 0%, transparent 34%, rgba(255, 255, 255, 0.36) 46%, rgba(250, 204, 21, 0.28) 52%, transparent 64%, transparent 100%);
   mix-blend-mode: screen;
   opacity: 0;
   transform: translateX(-135%);
@@ -379,6 +416,20 @@ textarea {
   }
 }
 
+@keyframes premium-sheen {
+  0% {
+    transform: translateX(-130%) skewX(-14deg);
+    opacity: 0;
+  }
+  22% {
+    opacity: 0.65;
+  }
+  100% {
+    transform: translateX(130%) skewX(-14deg);
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -390,12 +441,12 @@ textarea {
   }
 }
 
-/* White / sky-blue visual system ----------------------------------------- */
+/* Premium black visual system ------------------------------------------ */
 :where(main, section, article, aside, header, footer, form, dialog) {
-  --surface-focus: #f8fcff;
+  --surface-focus: #0d0d1c;
 }
 
-/* Remove legacy dark panels without breaking blue action controls. */
+/* Legacy dark panels stay dark premium (ink token is now light text, so map bg-ink back to black) */
 :where(
   [class~="bg-[var(--ink)]"],
   [class~="bg-[var(--ink-2)]"],
@@ -405,56 +456,97 @@ textarea {
   [class~="bg-[#000510]"],
   [class~="bg-[#1e2229]/72"]
 ) {
-  background: #ffffff !important;
+  background: #0a0a14 !important;
+  border-color: var(--line-strong) !important;
+  color: var(--ink) !important;
+}
+
+/* Convert legacy solid light surfaces to premium black — covers all pages at once */
+:where(
+  [class~="bg-white"],
+  [class~="bg-slate-50"],
+  [class~="bg-gray-50"],
+  [class~="bg-gray-100"],
+  [class~="bg-slate-100"],
+  [class~="bg-sky-50"],
+  [class~="bg-amber-50"],
+  [class~="bg-yellow-50"],
+  [class~="bg-emerald-50"],
+  [class~="bg-white/70"],
+  [class~="bg-white/72"],
+  [class~="bg-white/75"],
+  [class~="bg-white/76"],
+  [class~="bg-white/80"],
+  [class~="bg-white/82"],
+  [class~="bg-white/86"],
+  [class~="bg-white/88"],
+  [class~="bg-white/90"],
+  [class~="bg-white/95"],
+  [class~="bg-white/96"]
+) {
+  background-color: #0a0a14 !important;
   border-color: var(--line) !important;
   color: var(--ink) !important;
 }
 
+/* High-opacity white glass panels become dark premium glass */
 :where(
-  [class~="bg-[var(--ink)]"],
-  [class~="bg-[var(--ink-2)]"],
-  [class~="bg-[var(--ink)]/85"],
-  [class~="bg-[#8e3f68]"],
-  [class~="bg-[#8e3f68]/94"],
-  [class~="bg-[#000510]"],
-  [class~="bg-[#1e2229]/72"]
-) :where(
-  [class~="text-white"],
-  [class~="text-white/38"],
-  [class~="text-white/40"],
-  [class~="text-white/42"],
-  [class~="text-white/44"],
-  [class~="text-white/45"],
-  [class~="text-white/48"],
-  [class~="text-white/52"],
-  [class~="text-white/55"],
-  [class~="text-white/60"],
-  [class~="text-white/62"],
-  [class~="text-white/64"],
-  [class~="text-white/65"],
-  [class~="text-white/66"],
-  [class~="text-white/68"],
-  [class~="text-white/70"],
-  [class~="text-white/72"],
-  [class~="text-white/78"],
-  [class~="text-white/80"],
-  [class~="text-white/90"]
+  [class~="bg-[rgba(255,255,255,0.96)"],
+  [class~="bg-[rgba(255,255,255,0.82)"]
+) {
+  background-color: rgba(8, 8, 16, 0.92) !important;
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+}
+
+/* Hardcoded dark text is unreadable on black — lift to premium light */
+:where(
+  [class~="text-black"],
+  [class~="text-slate-900"],
+  [class~="text-slate-800"],
+  [class~="text-gray-900"],
+  [class~="text-gray-800"],
+  [class~="text-neutral-900"]
 ) {
   color: var(--ink) !important;
 }
 
-/* Legacy gold is now a restrained sky-blue support accent, never orange. */
-[class~="bg-[var(--gold)]"] {
-  background-color: #ffffff !important;
-  border-color: var(--line-strong) !important;
+:where(
+  [class~="text-slate-600"],
+  [class~="text-slate-500"],
+  [class~="text-gray-600"],
+  [class~="text-gray-500"],
+  [class~="text-neutral-600"]
+) {
+  color: var(--steel) !important;
 }
 
-.enterprise-grid,
-.scan-grid {
-  background-image:
-    linear-gradient(rgba(14, 165, 233, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(14, 165, 233, 0.035) 1px, transparent 1px);
-  background-size: 40px 40px;
+/* Light borders become premium dark borders */
+:where(
+  [class~="border-slate-200"],
+  [class~="border-gray-200"],
+  [class~="border-slate-100"],
+  [class~="border-gray-100"]
+) {
+  border-color: var(--line) !important;
+}
+
+/* Preserve intentional translucent white highlights used for dark panels */
+:where(
+  [class~="bg-white/5"],
+  [class~="bg-white/[0.05]"],
+  [class~="bg-white/[0.06]"],
+  [class~="bg-white/[0.08]"],
+  [class~="bg-white/10"]
+) {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Legacy gold solid becomes premium gold gradient text surface */
+[class~="bg-[var(--gold)]"] {
+  background: linear-gradient(135deg, #facc15, #fb923c) !important;
+  border-color: rgba(250, 204, 21, 0.55) !important;
+  color: #09090f !important;
 }
 
 button,
@@ -468,70 +560,124 @@ a {
   border-radius: var(--radius-sm);
 }
 
+/* Premium inputs — dark with colorful focus */
 input,
 select,
 textarea {
   border-color: var(--line);
-  background: #ffffff;
+  background: #0c0c18;
+  color: var(--ink);
   box-shadow: none;
+}
+
+input::placeholder,
+select::placeholder,
+textarea::placeholder {
+  color: var(--muted);
 }
 
 input:hover,
 select:hover,
 textarea:hover {
-  border-color: var(--line-strong);
-  background: #ffffff;
+  border-color: var(--premium-magenta);
+  background: #101022;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: var(--signal);
-  background: #ffffff;
+  border-color: var(--premium-cyan);
+  background: #0d0d1e;
   box-shadow: var(--focus-ring);
 }
 
-/* Orange is reserved for interactive hover feedback only. */
-button:not(:disabled):hover,
+select option {
+  background: #0c0c18;
+  color: var(--ink);
+}
+
+/* Colorful hovers for every interactive element */
+button:not(:disabled):hover {
+  border-color: var(--premium-magenta);
+  box-shadow: 0 8px 24px rgba(236, 72, 153, 0.28), 0 4px 14px rgba(34, 211, 238, 0.18);
+  filter: saturate(1.18);
+}
+
+a:hover {
+  color: var(--premium-cyan);
+}
+
 a[data-orange-hover="true"]:hover {
-  border-color: var(--accent-hover);
+  border-color: var(--premium-magenta);
+  color: #ffffff;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+nav a:hover {
+  color: var(--premium-gold) !important;
 }
 
-/* White theme text normalization. Solid action colors keep white labels. */
-:where(
-  [class~="text-white"],
-  [class~="text-white/38"],
-  [class~="text-white/40"],
-  [class~="text-white/42"],
-  [class~="text-white/44"],
-  [class~="text-white/45"],
-  [class~="text-white/48"],
-  [class~="text-white/52"],
-  [class~="text-white/55"],
-  [class~="text-white/60"],
-  [class~="text-white/62"],
-  [class~="text-white/64"],
-  [class~="text-white/65"],
-  [class~="text-white/66"],
-  [class~="text-white/68"],
-  [class~="text-white/70"],
-  [class~="text-white/72"],
-  [class~="text-white/78"],
-  [class~="text-white/80"],
-  [class~="text-white/90"]
-) {
+/* Cards / divs lift with premium gradient border + glow on hover */
+:where(div[class*="rounded"], article[class*="rounded"], section[class*="rounded"]):hover {
+  border-color: color-mix(in srgb, var(--premium-violet) 45%, var(--premium-cyan));
+}
+
+table tbody tr:hover,
+ul li a:hover {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+/* Premium gradient text + divider utilities (freestyle, opt-in) */
+.premium-text-gradient {
+  background: var(--premium-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+}
+
+.premium-divider {
+  height: 1px;
+  background: var(--premium-gradient);
+  opacity: 0.7;
+}
+
+.premium-card {
+  background: linear-gradient(180deg, rgba(20, 20, 36, 0.96), rgba(8, 8, 16, 0.98));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass);
+}
+
+.premium-card:hover {
+  border-color: var(--glass-border-strong);
+  box-shadow: var(--shadow-premium-glow);
+}
+
+.premium-input {
+  background: #0c0c18 !important;
+  border: 1px solid var(--line) !important;
   color: var(--ink) !important;
+}
+
+.premium-input:hover {
+  border-color: var(--premium-gold) !important;
+}
+
+.premium-input:focus {
+  border-color: var(--premium-cyan) !important;
+  box-shadow: var(--focus-ring) !important;
+}
+
+.premium-btn {
+  background: var(--premium-gradient) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  color: #06060c !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.premium-btn:hover {
+  background: var(--premium-gradient-hover) !important;
+  box-shadow: 0 10px 30px rgba(236, 72, 153, 0.35), 0 6px 18px rgba(34, 211, 238, 0.25) !important;
+  filter: saturate(1.25);
 }
 
 /* Keep legacy page markup visually disciplined without mass component rewrites. */
@@ -576,13 +722,14 @@ a[data-orange-hover="true"]:hover {
   color: #ffffff !important;
 }
 
-/* --- Premium Glass System --- */
+/* --- Premium Glass System (dark) --- */
 .glass-card {
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-glass);
+  color: var(--ink);
 }
 
 .glass-card-strong {
@@ -591,28 +738,54 @@ a[data-orange-hover="true"]:hover {
   -webkit-backdrop-filter: blur(var(--glass-blur-strong));
   border: 1px solid var(--glass-border-strong);
   box-shadow: var(--shadow-glass-strong);
+  color: var(--ink);
 }
 
 .glass-nav {
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(20px) saturate(1.2);
-  -webkit-backdrop-filter: blur(20px) saturate(1.2);
-  border-bottom: 1px solid rgba(186, 230, 253, 0.6);
+  background: rgba(5, 5, 10, 0.78);
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.28);
 }
 
 .hero-glow {
   position: absolute;
   border-radius: 999px;
-  filter: blur(40px);
+  filter: blur(44px);
   pointer-events: none;
 }
 
 .prose-glass {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(10, 10, 20, 0.78);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(186, 230, 253, 0.5);
+  border: 1px solid rgba(139, 92, 246, 0.28);
   border-radius: var(--radius-xl);
   padding: 1.5rem;
+  color: var(--ink);
+}
+
+/* Dark scrollbars + prose */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050508;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #22d3ee, #8b5cf6, #ec4899);
+  border-radius: 8px;
+  border: 2px solid #050508;
+}
+
+:where(h1, h2, h3) {
+  color: var(--ink);
+}
+
+:where(p, li, span, label) {
+  border-color: var(--line);
 }
 
 @media (max-width: 640px) {
@@ -629,5 +802,16 @@ a[data-orange-hover="true"]:hover {
   .glass-nav {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

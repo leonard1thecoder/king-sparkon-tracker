@@ -42,18 +42,18 @@ export function PremiumHeader() {
   return (
     <header className="sticky top-0 z-50 pt-[env(safe-area-inset-top)]">
       {/* Top notice */}
-      <div className="hidden border-b border-[rgba(186,230,253,0.5)] bg-[rgba(240,249,255,0.8)] backdrop-blur-[12px] px-4 py-1.5 text-center text-xs font-bold text-[var(--signal-strong)] md:block">
+      <div className="hidden border-b border-[rgba(139,92,246,0.3)] bg-black px-4 py-1.5 text-center text-xs font-bold text-[var(--premium-gold)] md:block">
         Barcode operations, QR tickets, jobs and role-safe dashboards — one verified platform.
       </div>
 
       {/* Glass nav shell */}
-      <div className={`border-b transition-all ${scrolled ? "border-[rgba(186,230,253,0.6)] bg-[rgba(255,255,255,0.82)] backdrop-blur-[20px] shadow-[var(--shadow-glass)]" : "border-transparent bg-white/90 backdrop-blur-[8px]"}`}>
+      <div className={`border-b transition-all ${scrolled ? "border-[rgba(139,92,246,0.35)] bg-[rgba(5,5,12,0.88)] backdrop-blur-[20px] shadow-[0_8px_32px_rgba(0,0,0,0.6)]" : "border-[var(--line)] bg-black/90 backdrop-blur-[8px]"}`}>
         <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3 md:px-8" aria-label="Primary">
           <Link href="/" className="flex min-w-0 items-center gap-3" onClick={() => setOpen(false)}>
-            <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker" width={44} height={44} className="rounded-xl border border-[var(--line)] bg-white p-1 shadow-[var(--shadow-soft)]" priority />
+            <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker" width={44} height={44} className="rounded-xl border border-[var(--line-strong)] bg-[#0d0d1c] p-1 shadow-[0_0_18px_rgba(139,92,246,0.25)]" priority />
             <div className="leading-none">
-              <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">King Sparkon</p>
-              <p className="text-[15px] font-black tracking-[-0.02em] text-[var(--ink)]">Tracker™</p>
+              <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-[var(--premium-gold)]">King Sparkon</p>
+              <p className="text-[15px] font-black tracking-[-0.02em] text-white">Tracker™</p>
             </div>
           </Link>
 
@@ -63,7 +63,7 @@ export function PremiumHeader() {
               <Link
                 key={l.href}
                 href={l.href}
-                className="rounded-full px-3 py-2 text-sm font-semibold text-[var(--steel)] hover:bg-[var(--signal-soft)] hover:text-[var(--signal-strong)]"
+                className="rounded-full px-3 py-2 text-sm font-semibold text-[var(--steel)] hover:bg-[rgba(139,92,246,0.14)] hover:text-[var(--premium-gold)]"
               >
                 {l.label}
               </Link>
@@ -73,13 +73,13 @@ export function PremiumHeader() {
           <div className="flex items-center gap-2">
             <Link
               href="/login"
-              className="inline-flex min-h-10 items-center justify-center rounded-xl border border-[var(--line)] bg-white px-3 text-sm font-extrabold text-[var(--steel)] hover:border-[var(--line-strong)] hover:text-[var(--ink)] sm:px-4"
+              className="inline-flex min-h-10 items-center justify-center rounded-xl border border-[var(--line-strong)] bg-[#0d0d1c] px-3 text-sm font-extrabold text-[var(--steel)] hover:border-[var(--premium-cyan)] hover:text-[var(--premium-cyan)] sm:px-4"
             >
               Login
             </Link>
             <Link
               href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE"
-              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-3 text-sm font-extrabold text-white shadow-[0_8px_20px_rgba(14,165,233,0.22)] hover:bg-[var(--signal-strong)] sm:px-4"
+              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-transparent bg-gradient-to-r from-cyan-400 via-violet-500 to-pink-500 px-3 text-sm font-extrabold text-white shadow-[0_8px_22px_rgba(139,92,246,0.4)] hover:from-yellow-300 hover:via-pink-500 hover:to-cyan-400 hover:text-black sm:px-4"
             >
               <span className="hidden sm:inline">Register</span>
               <span className="sm:hidden">Register</span>
@@ -91,7 +91,7 @@ export function PremiumHeader() {
               aria-label={open ? "Close menu" : "Open menu"}
               aria-expanded={open}
               onClick={() => setOpen((v) => !v)}
-              className="ml-1 grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[var(--line)] bg-white text-[var(--ink)] xl:hidden"
+              className="ml-1 grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[var(--line-strong)] bg-[#0d0d1c] text-white hover:border-[var(--premium-magenta)] hover:text-[var(--premium-gold)] xl:hidden"
             >
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
@@ -101,7 +101,7 @@ export function PremiumHeader() {
 
       {/* Mobile panel */}
       {open ? (
-        <div className="absolute inset-x-0 top-full border-b border-[var(--line)] bg-[rgba(255,255,255,0.96)] backdrop-blur-[20px] shadow-[var(--shadow-depth)] xl:hidden">
+        <div className="absolute inset-x-0 top-full border-b border-[var(--line-strong)] bg-[rgba(5,5,12,0.97)] backdrop-blur-[20px] shadow-[0_18px_50px_rgba(0,0,0,0.7)] xl:hidden">
           <div className="mx-auto max-w-7xl px-5 py-4 md:px-8">
             <div className="grid gap-1">
               {navLinks.map((l) => (
@@ -109,19 +109,19 @@ export function PremiumHeader() {
                   key={l.href}
                   href={l.href}
                   onClick={() => setOpen(false)}
-                  className="rounded-xl px-4 py-3 text-base font-bold text-[var(--ink)] hover:bg-[var(--signal-soft)]"
+                  className="rounded-xl px-4 py-3 text-base font-bold text-[var(--ink)] hover:bg-[rgba(139,92,246,0.14)] hover:text-[var(--premium-gold)]"
                 >
                   {l.label}
                 </Link>
               ))}
               <div className="mt-3 grid gap-2 border-t border-[var(--line)] pt-4">
-                <Link href="/login" onClick={() => setOpen(false)} className="rounded-xl border border-[var(--line)] bg-white px-4 py-3 text-center text-sm font-extrabold">
+                <Link href="/login" onClick={() => setOpen(false)} className="rounded-xl border border-[var(--line-strong)] bg-[#0d0d1c] px-4 py-3 text-center text-sm font-extrabold text-[var(--ink)] hover:border-[var(--premium-cyan)] hover:text-[var(--premium-cyan)]">
                   Login
                 </Link>
                 <Link
                   href="/register"
                   onClick={() => setOpen(false)}
-                  className="rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-4 py-3 text-center text-sm font-extrabold text-white"
+                  className="rounded-xl border border-transparent bg-gradient-to-r from-cyan-400 via-violet-500 to-pink-500 px-4 py-3 text-center text-sm font-extrabold text-white hover:from-yellow-300 hover:via-pink-500 hover:to-cyan-400 hover:text-black"
                 >
                   Create account
                 </Link>

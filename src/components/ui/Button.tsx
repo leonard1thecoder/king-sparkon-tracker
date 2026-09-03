@@ -9,13 +9,13 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "border-[var(--signal)] bg-[var(--signal)] text-white hover:-translate-y-0.5 hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)] hover:text-white hover:shadow-[0_8px_20px_rgba(249,115,22,0.18)]",
+    "border-transparent bg-gradient-to-r from-cyan-400 via-violet-500 to-pink-500 text-white shadow-[0_8px_24px_rgba(139,92,246,0.35)] hover:-translate-y-0.5 hover:from-yellow-300 hover:via-pink-500 hover:to-cyan-400 hover:text-black hover:shadow-[0_10px_30px_rgba(236,72,153,0.45)]",
   secondary:
-    "border-[var(--line-strong)] bg-white text-[var(--ink)] hover:-translate-y-0.5 hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)] hover:text-white hover:shadow-[0_6px_16px_rgba(249,115,22,0.12)]",
+    "border-[var(--line-strong)] bg-[#0d0d1c] text-[var(--ink)] hover:-translate-y-0.5 hover:border-[var(--premium-gold)] hover:bg-gradient-to-r hover:from-yellow-300/20 hover:via-pink-500/20 hover:to-cyan-400/20 hover:text-[var(--premium-gold)] hover:shadow-[0_8px_24px_rgba(250,204,21,0.22)]",
   quiet:
-    "border-transparent bg-white text-[var(--ink)] hover:border-[var(--line)] hover:bg-[var(--signal-soft)] hover:text-[var(--signal-strong)]",
+    "border-transparent bg-transparent text-[var(--steel)] hover:border-[var(--premium-cyan)]/40 hover:bg-[var(--signal-soft)] hover:text-[var(--premium-cyan)]",
   danger:
-    "border-[var(--danger)]/20 bg-[var(--danger)]/5 text-[var(--danger)] hover:bg-[var(--danger)] hover:text-white hover:shadow-[0_6px_16px_rgba(220,38,38,0.18)]",
+    "border-red-400/30 bg-gradient-to-r from-red-500/20 to-orange-500/20 text-red-200 hover:from-red-500 hover:to-orange-500 hover:text-white hover:shadow-[0_8px_24px_rgba(239,68,68,0.4)]",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(

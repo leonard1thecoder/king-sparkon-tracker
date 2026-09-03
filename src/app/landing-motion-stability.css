@@ -96,16 +96,21 @@ main[data-landing-motion-ready="true"] section[id][data-landing-motion-state="vi
 }
 
 header [aria-label="Section navigation"] a.landing-nav-inactive {
-  border-color: transparent !important;
-  background: white !important;
+  border-color: var(--line) !important;
+  background: #0a0a14 !important;
   color: var(--steel) !important;
 }
 
+header [aria-label="Section navigation"] a.landing-nav-inactive:hover {
+  border-color: var(--premium-gold) !important;
+  color: var(--premium-gold) !important;
+}
+
 header [aria-label="Section navigation"] a.landing-nav-active {
-  border-color: var(--signal) !important;
-  background: var(--signal-soft) !important;
-  color: var(--signal-strong) !important;
-  box-shadow: inset 0 -2px 0 var(--signal);
+  border-color: var(--premium-cyan) !important;
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.18), rgba(236, 72, 153, 0.18)) !important;
+  color: var(--premium-gold) !important;
+  box-shadow: inset 0 -2px 0 var(--premium-cyan), 0 0 16px rgba(34, 211, 238, 0.2);
   transition:
     background-color 220ms ease,
     border-color 220ms ease,

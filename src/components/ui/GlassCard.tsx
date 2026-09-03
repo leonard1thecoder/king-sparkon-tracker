@@ -5,17 +5,17 @@ type GlassVariant = "default" | "elevated" | "subtle" | "strong" | "interactive"
 
 const variantStyles: Record<GlassVariant, string> = {
   default:
-    "bg-[rgba(255,255,255,0.72)] backdrop-blur-[16px] border-[rgba(186,230,253,0.7)] shadow-[var(--shadow-glass)]",
+    "bg-[rgba(10,10,20,0.72)] backdrop-blur-[16px] border-[rgba(139,92,246,0.28)] text-[var(--ink)] shadow-[var(--shadow-glass)]",
   elevated:
-    "bg-[rgba(255,255,255,0.88)] backdrop-blur-[24px] border-[rgba(186,230,253,0.8)] shadow-[var(--shadow-glass-strong)]",
+    "bg-[rgba(16,16,30,0.9)] backdrop-blur-[24px] border-[rgba(34,211,238,0.35)] text-[var(--ink)] shadow-[var(--shadow-glass-strong)]",
   subtle:
-    "bg-[rgba(255,255,255,0.52)] backdrop-blur-[12px] border-[rgba(186,230,253,0.5)] shadow-[var(--shadow-soft)]",
+    "bg-[rgba(10,10,20,0.52)] backdrop-blur-[12px] border-[rgba(139,92,246,0.2)] text-[var(--ink)] shadow-[var(--shadow-soft)]",
   strong:
-    "bg-white/95 backdrop-blur-[24px] border-[var(--line-strong)] shadow-[var(--shadow-depth)]",
+    "bg-black/90 backdrop-blur-[24px] border-[var(--line-strong)] text-[var(--ink)] shadow-[var(--shadow-depth)]",
   interactive:
-    "bg-[rgba(255,255,255,0.72)] backdrop-blur-[16px] border-[rgba(186,230,253,0.7)] shadow-[var(--shadow-glass)] hover:bg-white/90 hover:border-[var(--line-strong)] hover:shadow-[var(--shadow-glass-strong)] hover:-translate-y-0.5 cursor-pointer",
+    "bg-[rgba(10,10,20,0.72)] backdrop-blur-[16px] border-[rgba(139,92,246,0.28)] text-[var(--ink)] shadow-[var(--shadow-glass)] hover:bg-[rgba(20,20,36,0.9)] hover:border-fuchsia-400/50 hover:shadow-[0_10px_32px_rgba(236,72,153,0.28)] hover:-translate-y-0.5 cursor-pointer",
   highlighted:
-    "bg-gradient-to-br from-white via-white to-[var(--signal-soft)] backdrop-blur-[16px] border-[var(--signal)]/20 shadow-[var(--shadow-glass-strong)]",
+    "bg-gradient-to-br from-[#12122a] via-[#0a0a14] to-[rgba(34,211,238,0.14)] backdrop-blur-[16px] border-cyan-300/25 text-[var(--ink)] shadow-[var(--shadow-glass-strong)] hover:border-yellow-300/45 hover:shadow-[0_10px_32px_rgba(250,204,21,0.22)]",
 };
 
 type GlassCardProps = HTMLAttributes<HTMLDivElement> & {
@@ -60,7 +60,7 @@ export function GlassPanel({
   return (
     <div
       className={cn(
-        "rounded-[var(--radius-xl)] border border-[rgba(186,230,253,0.6)] bg-[rgba(255,255,255,0.64)] backdrop-blur-[16px] shadow-[var(--shadow-glass)]",
+        "rounded-[var(--radius-xl)] border border-[rgba(139,92,246,0.28)] bg-[rgba(10,10,20,0.68)] text-[var(--ink)] backdrop-blur-[16px] shadow-[var(--shadow-glass)]",
         className,
       )}
       {...props}

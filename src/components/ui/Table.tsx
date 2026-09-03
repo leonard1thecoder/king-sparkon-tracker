@@ -6,5 +6,5 @@ export function Table({ className, ...props }: HTMLAttributes<HTMLTableElement>)
 }
 
 export function TableWrap({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("max-w-full overflow-x-auto overscroll-x-contain rounded-[var(--radius-xl)] border border-[var(--line)] bg-white shadow-none [scrollbar-color:var(--signal)_transparent] [scrollbar-width:thin]", className)} {...props} />;
+  return <div className={cn("max-w-full overflow-x-auto overscroll-x-contain rounded-[var(--radius-xl)] border border-[var(--line)] bg-[#08080f] text-[var(--ink)] shadow-none [scrollbar-color:var(--signal)_transparent] [scrollbar-width:thin]", className)} {...props} />;
 }
