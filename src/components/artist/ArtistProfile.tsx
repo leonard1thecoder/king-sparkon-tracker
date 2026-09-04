@@ -26,7 +26,7 @@ export function ArtistProfileView({ artistId, editable = false }: { artistId?: s
     return () => clearTimeout(t);
   }, [artistId]);
 
-  if (loading || !profile) {
+  if (loading) {
     return (
       <div className="grid gap-6 p-5 md:p-8">
         <Skeleton className="h-64" />
@@ -35,9 +35,20 @@ export function ArtistProfileView({ artistId, editable = false }: { artistId?: s
     );
   }
 
+  if (!profile) {
+    return (
+      <div className="grid gap-6 p-5 md:p-8">
+        <Card><CardContent className="p-10 text-center">
+          <h1 className="text-2xl font-black tracking-[-0.02em]">No artist profile yet</h1>
+          <p className="mt-2 text-sm font-semibold leading-6 text-[var(--steel)]">API MISSING: the backend does not expose artist profiles yet. Your profile will appear here once the endpoint exists.</p>
+        </CardContent></Card>
+      </div>
+    );
+  }
+
   const handleSave = () => {
     const next = updateArtistProfile(form as ArtistProfile);
-    setProfile(next);
+    if (next) setProfile(next);
     setEditing(false);
   };
 

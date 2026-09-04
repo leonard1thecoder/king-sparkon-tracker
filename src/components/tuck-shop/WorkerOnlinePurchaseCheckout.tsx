@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Barcode, CheckCircle2, FlaskConical, Loader2, PackageCheck, QrCode, RefreshCw, ShoppingBag, WandSparkles, X } from "lucide-react";
+import { Barcode, CheckCircle2, Loader2, PackageCheck, QrCode, RefreshCw, ShoppingBag, WandSparkles, X } from "lucide-react";
 import { BarcodeScanner } from "@/components/scanner/BarcodeScanner";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -15,12 +15,6 @@ import {
   type OnlineTuckShopPurchase,
   type ProductBarcodeConfiguration,
 } from "@/lib/api/tuck-shop";
-import {
-  assignMockWorkerOnlinePurchaseBarcode,
-  isMockWorkerOnlinePurchase,
-  MOCK_WORKER_ONLINE_PURCHASES_EVENT,
-  withMockWorkerOnlinePurchases,
-} from "@/lib/mock/worker-online-purchases";
 
 function money(value?: number | null) {
   return new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(Number(value ?? 0));
@@ -37,7 +31,7 @@ function statusTone(order: OnlineTuckShopPurchase) {
 }
 
 function orderReference(order: OnlineTuckShopPurchase) {
-  return isMockWorkerOnlinePurchase(order) ? `DEMO-${Math.abs(order.transactionId)}` : String(order.transactionId);
+  return String(order.transactionId);
 }
 
 type ActiveAssignment = { transactionId: number; productId: number; productName: string };
@@ -67,21 +61,16 @@ export function WorkerOnlinePurchaseCheckout() {
     ]);
 
     const liveOrders = orderResult.status === "fulfilled" && Array.isArray(orderResult.value) ? orderResult.value : [];
-    setOrders(withMockWorkerOnlinePurchases(liveOrders));
+    setOrders(liveOrders);
     setConfigurations(configurationResult.status === "fulfilled" ? configurationResult.value : []);
     if (orderResult.status === "rejected") {
-      setError(`Live paid carts are unavailable. Demo paid carts remain ready for testing: ${normalizeApiError(orderResult.reason).message}`);
+      setError(`Live paid carts are unavailable: ${normalizeApiError(orderResult.reason).message}`);
     }
     setLoading(false);
   }
 
   useEffect(() => {
     void loadOrders();
-    function refreshMockOrders() {
-      setOrders((current) => withMockWorkerOnlinePurchases(current.filter((order) => !isMockWorkerOnlinePurchase(order))));
-    }
-    window.addEventListener(MOCK_WORKER_ONLINE_PURCHASES_EVENT, refreshMockOrders);
-    return () => window.removeEventListener(MOCK_WORKER_ONLINE_PURCHASES_EVENT, refreshMockOrders);
   }, []);
 
   function applyUpdatedOrder(updated: OnlineTuckShopPurchase, productName: string, productId: number) {
@@ -89,7 +78,7 @@ export function WorkerOnlinePurchaseCheckout() {
     const updatedLine = updated.items.find((item) => item.productId === productId);
     const lineRemaining = Math.max(Number(updatedLine?.quantity ?? 0) - Number(updatedLine?.barcodes?.length ?? 0), 0);
     if (updated.fulfilmentStatus === "READY_FOR_COLLECTION") {
-      setSuccess(`${isMockWorkerOnlinePurchase(updated) ? "Demo cart" : "Order"} #${orderReference(updated)} is ready for collection. Verify cart is now available.`);
+      setSuccess(`Order #${orderReference(updated)} is ready for collection. Verify cart is now available.`);
       setActiveAssignment(null);
     } else {
       setSuccess(`${productName} still needs ${lineRemaining} barcode${lineRemaining === 1 ? "" : "s"}.`);
@@ -108,9 +97,7 @@ export function WorkerOnlinePurchaseCheckout() {
     setError(null);
     setSuccess(null);
     try {
-      const updated = isMockWorkerOnlinePurchase(selectedOrder)
-        ? assignMockWorkerOnlinePurchaseBarcode(activeAssignment.transactionId, activeAssignment.productId, barcode)
-        : await assignOnlinePurchaseBarcode(activeAssignment.transactionId, activeAssignment.productId, barcode);
+      const updated = await assignOnlinePurchaseBarcode(activeAssignment.transactionId, activeAssignment.productId, barcode);
       applyUpdatedOrder(updated, activeAssignment.productName, activeAssignment.productId);
     } catch (exception) {
       setError(normalizeApiError(exception).message);
@@ -125,14 +112,7 @@ export function WorkerOnlinePurchaseCheckout() {
     setError(null);
     setSuccess(null);
     try {
-      let updated = order;
-      if (isMockWorkerOnlinePurchase(order)) {
-        for (let index = 0; index < required; index++) {
-          updated = assignMockWorkerOnlinePurchaseBarcode(order.transactionId, productId, `AUTO-${index + 1}`);
-        }
-      } else {
-        updated = await prepareAutomaticOnlinePurchaseBarcodes(order.transactionId, productId);
-      }
+      const updated = await prepareAutomaticOnlinePurchaseBarcodes(order.transactionId, productId);
       applyUpdatedOrder(updated, productName, productId);
     } catch (exception) {
       setError(normalizeApiError(exception).message);
@@ -149,16 +129,14 @@ export function WorkerOnlinePurchaseCheckout() {
       </CardHeader>
 
       <CardContent className="grid gap-5">
-        <div className="flex items-start gap-3 rounded-[1.1rem] border border-[var(--gold)]/45 bg-[var(--gold)]/10 p-4 text-sm font-bold leading-6 text-[var(--ink)]"><FlaskConical className="mt-0.5 h-5 w-5 shrink-0 text-[var(--signal)]" /> Demo paid carts remain available for testing and never create real inventory transactions.</div>
         {error ? <p className="rounded-[1.1rem] border border-[var(--danger)]/25 bg-[var(--danger)]/10 p-4 text-sm font-black text-[var(--danger)]">{error}</p> : null}
         {success ? <p className="inline-flex items-center gap-2 rounded-[1.1rem] border border-[var(--confirm)]/25 bg-[var(--confirm)]/10 p-4 text-sm font-black text-[var(--confirm)]"><CheckCircle2 className="h-4 w-4" /> {success}</p> : null}
 
         {loading ? <div className="flex min-h-44 items-center justify-center gap-3 rounded-[1.5rem] border border-dashed border-[var(--line)] bg-[var(--surface)] text-sm font-black text-[var(--steel)]"><Loader2 className="h-5 w-5 animate-spin" /> Loading paid online purchases</div> : orders.length === 0 ? <div className="rounded-[1.5rem] border border-dashed border-[var(--line)] bg-[var(--surface)] p-8 text-center"><ShoppingBag className="mx-auto h-10 w-10 text-[var(--signal)]" /><p className="mt-3 text-xl font-black text-[var(--ink)]">No paid product carts need preparation.</p></div> : (
           <div className="grid gap-4">
             {orders.map((order) => {
-              const demo = isMockWorkerOnlinePurchase(order);
               return <article key={order.transactionId} className="overflow-hidden rounded-[1.5rem] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
-                <div className="flex flex-col gap-3 border-b border-[var(--line)] bg-[var(--surface)] p-4 lg:flex-row lg:items-center lg:justify-between"><div><div className="flex flex-wrap items-center gap-2"><p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.14em] text-[var(--signal)]">Paid online cart #{orderReference(order)}</p>{demo ? <StatusPill label="DEMO PAID CART" tone="neutral" /> : null}</div><h3 className="mt-1 text-xl font-black text-[var(--ink)]">{order.customerUsername ?? "Registered customer"} · {order.businessName ?? `Business #${order.businessId ?? "-"}`}</h3><p className="mt-1 text-xs font-bold text-[var(--steel)]">Quantity is paid. Complete every row before collection verification.</p></div><div className="flex flex-wrap items-center gap-3"><StatusPill label={statusLabel(order)} tone={statusTone(order)} /><p className="money text-2xl font-black text-[var(--ink)]">{money(order.productTotal)}</p></div></div>
+                <div className="flex flex-col gap-3 border-b border-[var(--line)] bg-[var(--surface)] p-4 lg:flex-row lg:items-center lg:justify-between"><div><div className="flex flex-wrap items-center gap-2"><p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.14em] text-[var(--signal)]">Paid online cart #{orderReference(order)}</p></div><h3 className="mt-1 text-xl font-black text-[var(--ink)]">{order.customerUsername ?? "Registered customer"} · {order.businessName ?? `Business #${order.businessId ?? "-"}`}</h3><p className="mt-1 text-xs font-bold text-[var(--steel)]">Quantity is paid. Complete every row before collection verification.</p></div><div className="flex flex-wrap items-center gap-3"><StatusPill label={statusLabel(order)} tone={statusTone(order)} /><p className="money text-2xl font-black text-[var(--ink)]">{money(order.productTotal)}</p></div></div>
 
                 <div className="overflow-x-auto"><table className="min-w-full border-collapse text-left text-sm"><thead className="bg-white text-[0.65rem] font-black uppercase tracking-[0.1em] text-[var(--muted)]"><tr><th className="px-4 py-3">Product</th><th className="px-4 py-3">Mode</th><th className="px-4 py-3">Quantity</th><th className="px-4 py-3">Assigned</th><th className="px-4 py-3">Required</th><th className="px-4 py-3 text-right">Action</th></tr></thead><tbody>
                   {order.items.map((item) => {

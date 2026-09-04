@@ -45,24 +45,6 @@ type TipHistoryRow = Tip & {
 };
 
 const TIP_PAGE_SIZE = 6;
-const demoWorkerIds = ["demo-worker", "worker-demo-001", "sparkon-waiter-17"];
-
-const FALLBACK_TIPS: TipHistoryRow[] = [
-  { id: 1401, workerId: 201, workerName: "Thando Mokoena", tipAmount: 85, grossAmount: 85, status: "PAID", callbackUrl: "/dashboard/user/tips", createdAt: "2026-07-10T08:42:00+02:00" },
-  { id: 1402, workerId: 207, workerName: "Lerato Dlamini", tipAmount: 50, grossAmount: 50, status: "PAID", callbackUrl: "/dashboard/user/tips", createdAt: "2026-07-10T07:18:00+02:00" },
-  { id: 1403, workerId: 212, workerName: "Sibusiso Ndlovu", tipAmount: 120, grossAmount: 120, status: "PENDING", callbackUrl: "/dashboard/user/tips", createdAt: "2026-07-09T20:06:00+02:00" },
-  { id: 1404, workerId: 204, workerName: "Naledi Khumalo", tipAmount: 40, grossAmount: 40, status: "PAID", callbackUrl: "/dashboard/user/tips", createdAt: "2026-07-09T18:34:00+02:00" },
-  { id: 1405, workerId: 219, workerName: "Ayanda Zulu", tipAmount: 75, grossAmount: 75, status: "PROCESSING", callbackUrl: "/dashboard/user/tips", createdAt: "2026-07-09T15:11:00+02:00" },
-  { id: 1406, workerId: 201, workerName: "Thando Mokoena", tipAmount: 30, grossAmount: 30, status: "PAID", callbackUrl: "/dashboard/user/tips", createdAt: "2026-07-09T12:47:00+02:00" },
-  { id: 1407, workerId: 225, workerName: "Boitumelo Molefe", tipAmount: 150, grossAmount: 150, status: "PAID", callbackUrl: "/dashboard/user/tips", createdAt: "2026-07-08T21:25:00+02:00" },
-  { id: 1408, workerId: 207, workerName: "Lerato Dlamini", tipAmount: 60, grossAmount: 60, status: "PAID", callbackUrl: "/dashboard/user/tips", createdAt: "2026-07-08T17:53:00+02:00" },
-  { id: 1409, workerId: 212, workerName: "Sibusiso Ndlovu", tipAmount: 100, grossAmount: 100, status: "FAILED", callbackUrl: "/dashboard/user/tips", createdAt: "2026-07-08T14:09:00+02:00" },
-  { id: 1410, workerId: 204, workerName: "Naledi Khumalo", tipAmount: 45, grossAmount: 45, status: "PAID", callbackUrl: "/dashboard/user/tips", createdAt: "2026-07-08T10:36:00+02:00" },
-  { id: 1411, workerId: 219, workerName: "Ayanda Zulu", tipAmount: 90, grossAmount: 90, status: "PENDING", callbackUrl: "/dashboard/user/tips", createdAt: "2026-07-07T19:22:00+02:00" },
-  { id: 1412, workerId: 225, workerName: "Boitumelo Molefe", tipAmount: 55, grossAmount: 55, status: "PAID", callbackUrl: "/dashboard/user/tips", createdAt: "2026-07-07T16:02:00+02:00" },
-  { id: 1413, workerId: 201, workerName: "Thando Mokoena", tipAmount: 200, grossAmount: 200, status: "PAID", callbackUrl: "/dashboard/user/tips", createdAt: "2026-07-07T12:14:00+02:00" },
-  { id: 1414, workerId: 207, workerName: "Lerato Dlamini", tipAmount: 35, grossAmount: 35, status: "PAID", callbackUrl: "/dashboard/user/tips", createdAt: "2026-07-06T18:48:00+02:00" },
-];
 
 function safeDecode(value: string) {
   try {
@@ -193,7 +175,6 @@ export function WorkerTipQrScanner() {
   const [tipTotalElements, setTipTotalElements] = useState(0);
   const [tipsLoading, setTipsLoading] = useState(true);
   const [tipsError, setTipsError] = useState<string | null>(null);
-  const [usingPreviewTips, setUsingPreviewTips] = useState(false);
 
   const tipHref = useMemo(() => {
     if (!result) return null;
@@ -210,18 +191,15 @@ export function WorkerTipQrScanner() {
       setTips(normalized.rows);
       setTipTotalPages(normalized.totalPages);
       setTipTotalElements(normalized.totalElements);
-      setUsingPreviewTips(false);
 
       if (page >= normalized.totalPages && page > 0) {
         setTipPage(normalized.totalPages - 1);
       }
     } catch (exception) {
-      const start = page * TIP_PAGE_SIZE;
-      setTips(FALLBACK_TIPS.slice(start, start + TIP_PAGE_SIZE));
-      setTipTotalPages(Math.max(1, Math.ceil(FALLBACK_TIPS.length / TIP_PAGE_SIZE)));
-      setTipTotalElements(FALLBACK_TIPS.length);
-      setUsingPreviewTips(true);
-      setTipsError(`${normalizeApiError(exception).message} Showing labelled preview tip data until the service responds.`);
+      setTips([]);
+      setTipTotalPages(1);
+      setTipTotalElements(0);
+      setTipsError(normalizeApiError(exception).message);
     } finally {
       setTipsLoading(false);
     }
@@ -288,19 +266,6 @@ export function WorkerTipQrScanner() {
                 />
                 <Button type="submit" variant="secondary">Find worker</Button>
               </form>
-
-              <div className="mt-3 flex flex-wrap gap-2">
-                {demoWorkerIds.map((workerId) => (
-                  <button
-                    key={workerId}
-                    type="button"
-                    onClick={() => handleScan(workerId)}
-                    className="rounded-full border border-[var(--line)] bg-white px-3 py-1.5 text-xs font-black text-[var(--ink)] hover:border-[var(--gold)] hover:bg-[var(--gold)]/20"
-                  >
-                    {workerId}
-                  </button>
-                ))}
-              </div>
             </section>
 
             <section className="rounded-[1.5rem] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)] md:p-5">
@@ -378,9 +343,8 @@ export function WorkerTipQrScanner() {
 
         <CardContent className="p-0">
           {tipsError ? (
-            <div className="m-5 rounded-[1.25rem] border border-[var(--gold)]/45 bg-[var(--gold)]/15 p-4 text-sm font-bold leading-6 text-[var(--steel)]">
+            <div className="m-5 rounded-[1.25rem] border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-4 text-sm font-bold leading-6 text-[var(--danger)]">
               {tipsError}
-              {usingPreviewTips ? <span className="ml-2 rounded-full bg-[var(--ink)] px-2 py-1 text-[0.62rem] font-black uppercase tracking-[0.1em] text-white">Preview data</span> : null}
             </div>
           ) : null}
 

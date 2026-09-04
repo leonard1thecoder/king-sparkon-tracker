@@ -12,7 +12,6 @@ import {
   SOFTWARE_DEVELOPMENT_STAGE_FLOW,
   SOFTWARE_DEVELOPMENT_STAGE_LABELS,
   SOFTWARE_DEVELOPMENT_STATUS_LABELS,
-  developerHubPreviewRequests,
   nextSoftwareDevelopmentStage,
   statusForStage,
   type DeveloperHubScope,
@@ -81,13 +80,8 @@ function fieldValue(formData: FormData, name: string) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function previewRequestsForScope(scope: DeveloperHubScope) {
-  if (scope === "admin") return developerHubPreviewRequests;
-  return developerHubPreviewRequests.slice(0, 1);
-}
-
 export function DeveloperHubWorkspace({ scope }: { scope: DeveloperHubScope }) {
-  const [requests, setRequests] = useState<SoftwareDevelopmentRequest[]>(() => previewRequestsForScope(scope));
+  const [requests, setRequests] = useState<SoftwareDevelopmentRequest[]>([]);
   const [message, setMessage] = useState<WorkspaceMessage | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -109,17 +103,17 @@ export function DeveloperHubWorkspace({ scope }: { scope: DeveloperHubScope }) {
       const body = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        setRequests(previewRequestsForScope(scope));
-        setMessage({ tone: "warning", text: "Developer Hub live records are not available yet. Showing preview rows while the workflow stays usable." });
+        setRequests([]);
+        setMessage({ tone: "error", text: "Developer Hub live records are not available yet. No records to show." });
         return;
       }
 
       const nextRequests = normalizeRequests(body);
-      setRequests(nextRequests.length ? nextRequests : previewRequestsForScope(scope));
-      setMessage(nextRequests.length ? null : { tone: "warning", text: "No backend records returned yet. Showing preview rows so the table layout remains testable." });
+      setRequests(nextRequests);
+      setMessage(nextRequests.length ? null : { tone: "warning", text: "No backend records returned yet." });
     } catch {
-      setRequests(previewRequestsForScope(scope));
-      setMessage({ tone: "warning", text: "Backend Developer Hub API is unavailable. Showing preview rows and preserving the request workflow UI." });
+      setRequests([]);
+      setMessage({ tone: "error", text: "Backend Developer Hub API is unavailable. No records to show." });
     } finally {
       setIsLoading(false);
     }

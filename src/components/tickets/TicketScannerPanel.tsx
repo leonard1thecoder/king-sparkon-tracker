@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AlertCircle, Camera, CheckCircle2, ImageOff, Keyboard, QrCode, ShieldCheck, UserCheck, UserX } from "lucide-react";
 import type { FaceVerificationDecision, TicketVerificationResult } from "@/types/tickets";
 import { getTicketTypeLabel } from "@/services/ticketService";
@@ -36,14 +36,36 @@ export function TicketScannerPanel() {
   const [cameraActive, setCameraActive] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [workerId, setWorkerId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    fetch("/api/auth/session", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((session: { userId?: string | number } | null) => {
+        if (!mounted) return;
+        const id = session?.userId;
+        setWorkerId(id === undefined || id === null || String(id).trim() === "" ? null : String(id));
+      })
+      .catch(() => {
+        if (mounted) setWorkerId(null);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   async function runVerification(context: ScanContext, faceDecision: FaceVerificationDecision = "PENDING") {
+    if (!workerId) {
+      setResult({ valid: false, message: "Sign in as a worker to verify tickets." });
+      return;
+    }
     setIsVerifying(true);
     setCameraError(null);
     try {
       const nextResult = context.mode === "QR"
-        ? await verifyWorkerTicketByQr(context.value, faceDecision)
-        : await verifyWorkerTicketByReference(context.value, faceDecision);
+        ? await verifyWorkerTicketByQr(context.value, faceDecision, workerId)
+        : await verifyWorkerTicketByReference(context.value, faceDecision, workerId);
       setResult(nextResult);
       setScanContext(nextResult.requiresFaceConfirmation ? context : null);
     } finally {
@@ -164,7 +186,7 @@ export function TicketScannerPanel() {
           </div>
           <label className="mt-5 grid gap-2">
             <span className="text-sm font-black text-[var(--ink)]">Ticket reference</span>
-            <input value={manualReference} onChange={(event) => setManualReference(event.target.value)} placeholder="Example: KST-EVENT-DEMO-001" className="min-h-13 rounded-[1.35rem] border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none placeholder:text-[var(--muted)] focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]" />
+            <input value={manualReference} onChange={(event) => setManualReference(event.target.value)} placeholder="Example: KST-00001" className="min-h-13 rounded-[1.35rem] border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none placeholder:text-[var(--muted)] focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]" />
           </label>
           <button type="button" onClick={verifyReference} disabled={isVerifying} className="mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] disabled:opacity-50">
             <ShieldCheck className="h-4 w-4" /> {isVerifying ? "Checking..." : "Load ticket for face check"}

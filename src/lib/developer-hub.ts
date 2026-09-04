@@ -97,39 +97,6 @@ export const DEVELOPER_HUB_BACKEND_CONTRACT = [
   "BACKEND: only ADMIN can view all requests and change stages; BUSINESS_OWNER can only create and read their own requests.",
 ] as const;
 
-export const developerHubPreviewRequests: SoftwareDevelopmentRequest[] = [
-  {
-    id: "KSDH-1001",
-    businessName: "King Sparkon Demo Owner",
-    ownerName: "Business Owner",
-    ownerEmail: "owner@sparkonstore.co.za",
-    softwareName: "Event ticket capacity dashboard",
-    softwareDescription: "A dashboard that sells QR tickets, shows sold capacity, scans entry, and reports revenue by event class.",
-    requiresCloudMaintenance: true,
-    requiresQualityAssuranceRegression: true,
-    stage: "DISCOVERY",
-    status: "IN_PROGRESS",
-    requestedAt: "2026-07-03T07:00:00Z",
-    updatedAt: "2026-07-03T07:30:00Z",
-    startedAt: "2026-07-03T07:30:00Z",
-    adminNote: "Discovery started. Need event rules, roles, and payout flow.",
-  },
-  {
-    id: "KSDH-1002",
-    businessName: "Barcode Retail Trial",
-    ownerName: "Retail Owner",
-    ownerEmail: "retail@sparkonstore.co.za",
-    softwareName: "Barcode inventory and worker checkout",
-    softwareDescription: "Workers scan product barcodes, customers checkout from cart, and owners see stock movement by branch.",
-    requiresCloudMaintenance: true,
-    requiresQualityAssuranceRegression: false,
-    stage: "REQUESTED",
-    status: "REQUESTED",
-    requestedAt: "2026-07-02T16:30:00Z",
-    updatedAt: "2026-07-02T16:30:00Z",
-  },
-];
-
 export function nextSoftwareDevelopmentStage(stage: SoftwareDevelopmentStage) {
   const index = SOFTWARE_DEVELOPMENT_STAGE_FLOW.indexOf(stage);
   return SOFTWARE_DEVELOPMENT_STAGE_FLOW[Math.min(index + 1, SOFTWARE_DEVELOPMENT_STAGE_FLOW.length - 1)];

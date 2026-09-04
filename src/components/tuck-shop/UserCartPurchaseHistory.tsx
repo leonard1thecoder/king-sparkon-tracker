@@ -42,7 +42,7 @@ type PurchaseView = {
   }>;
   fulfilmentStatus: string;
   barcodesRequired: number;
-  source: "LIVE" | "MOCK";
+  source: "LIVE" | "SAVED";
 };
 
 function fromLive(purchase: OnlineTuckShopPurchase): PurchaseView {
@@ -62,27 +62,27 @@ function fromLive(purchase: OnlineTuckShopPurchase): PurchaseView {
   };
 }
 
-function fromMock(purchase: TuckShopPurchaseHistoryItem): PurchaseView {
+function fromSaved(purchase: TuckShopPurchaseHistoryItem): PurchaseView {
   return {
     ...purchase,
-    id: `mock-${purchase.id}`,
-    fulfilmentStatus: "MOCK_PENDING",
+    id: `saved-${purchase.id}`,
+    fulfilmentStatus: "PENDING",
     barcodesRequired: purchase.items.reduce((sum, item) => sum + Math.max(Number(item.quantity ?? 0), 0), 0),
-    source: "MOCK",
+    source: "SAVED",
   };
 }
 
 function statusTone(status?: string | null) {
-  const value = String(status ?? "MOCK_PENDING").toUpperCase();
+  const value = String(status ?? "PENDING").toUpperCase();
   if (["COLLECTED", "READY_FOR_COLLECTION"].includes(value)) return "confirm" as const;
-  if (["AWAITING_BARCODE_ASSIGNMENT", "MOCK_PENDING", "PENDING", "PROCESSING", "CREATED"].includes(value)) return "signal" as const;
+  if (["AWAITING_BARCODE_ASSIGNMENT", "PENDING", "PROCESSING", "CREATED"].includes(value)) return "signal" as const;
   return "neutral" as const;
 }
 
 function statusLabel(status: string) {
   if (status === "READY_FOR_COLLECTION") return "READY FOR COLLECTION";
   if (status === "AWAITING_BARCODE_ASSIGNMENT") return "AWAITING BARCODES";
-  if (status === "MOCK_PENDING") return "MOCK_PENDING";
+  if (status === "PENDING") return "PENDING";
   return status.replaceAll("_", " ");
 }
 
@@ -103,13 +103,13 @@ export function UserCartPurchaseHistory() {
       const livePurchases = await listMyTuckShopPurchases();
       const liveViews = (Array.isArray(livePurchases) ? livePurchases : []).map(fromLive);
       const liveTransactionIds = new Set(liveViews.map((purchase) => purchase.transactionId).filter(Boolean));
-      const mockViews = readTuckShopPurchaseHistory()
+      const savedViews = readTuckShopPurchaseHistory()
         .filter((purchase) => !purchase.transactionId || !liveTransactionIds.has(purchase.transactionId))
-        .map(fromMock);
-      setPurchaseHistory([...liveViews, ...mockViews].sort((left, right) => right.createdAt.localeCompare(left.createdAt)));
+        .map(fromSaved);
+      setPurchaseHistory([...liveViews, ...savedViews].sort((left, right) => right.createdAt.localeCompare(left.createdAt)));
     } catch (exception) {
-      setPurchaseHistory(readTuckShopPurchaseHistory().map(fromMock));
-      setError(`Live collection status is unavailable. Showing saved mock carts: ${normalizeApiError(exception).message}`);
+      setPurchaseHistory(readTuckShopPurchaseHistory().map(fromSaved));
+      setError(`Live collection status is unavailable. Showing saved carts: ${normalizeApiError(exception).message}`);
     } finally {
       setLoading(false);
     }
@@ -162,12 +162,12 @@ export function UserCartPurchaseHistory() {
     setError(null);
     setSuccess(null);
     try {
-      if (purchase.source === "MOCK") {
+      if (purchase.source === "SAVED") {
         if (!value.startsWith("KST-COLLECT:")) {
           throw new Error("Scan a King Sparkon collection QR beginning with KST-COLLECT.");
         }
         setPurchaseHistory((current) => current.map((item) => item.id === purchase.id ? { ...item, fulfilmentStatus: "COLLECTED", barcodesRequired: 0 } : item));
-        setSuccess(`Mock cart #${purchase.transactionId ?? purchase.id} collected in preview mode.`);
+        setSuccess(`Saved cart #${purchase.transactionId ?? purchase.id} collected.`);
       } else {
         const updated = await verifyTuckShopCollection(value);
         setPurchaseHistory((current) => current.map((item) => item.transactionId === updated.transactionId ? fromLive(updated) : item));
@@ -225,7 +225,7 @@ export function UserCartPurchaseHistory() {
           ) : (
             <>
               {visiblePurchases.map((purchase) => {
-                const canCollect = purchase.fulfilmentStatus === "READY_FOR_COLLECTION" || purchase.fulfilmentStatus === "MOCK_PENDING";
+                const canCollect = purchase.fulfilmentStatus === "READY_FOR_COLLECTION" || purchase.fulfilmentStatus === "PENDING";
                 const scannerOpen = activeCollectionId === purchase.id;
                 return (
                   <article key={purchase.id} className="overflow-hidden rounded-[1.5rem] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">

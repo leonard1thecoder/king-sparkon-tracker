@@ -10,7 +10,7 @@ import { Modal } from "@/components/ui/Modal";
 import { Toast } from "@/components/ui/Toast";
 import { ArtistStatusBadge } from "./ArtistStatusBadge";
 import type { ArtistBookingStatus, DraftedEvent } from "@/types/artist";
-import { formatZAR, getDraftedEventById, getRequestStatus, requestToPerform } from "@/services/artistService";
+import { formatZAR, getArtistProfile, getDraftedEventById, getRequestStatus, requestToPerform } from "@/services/artistService";
 
 function formatDateLong(dateStr: string) {
   const d = new Date(dateStr + "T12:00:00");
@@ -44,9 +44,17 @@ export function ArtistEventDetails({ eventId }: { eventId: string }) {
   }
 
   const handleSendRequest = () => {
+    const profile = getArtistProfile();
+    if (!profile) {
+      setToast("API MISSING: no artist profile yet, so requests cannot be sent.");
+      setTimeout(() => setToast(""), 3500);
+      setSubmitting(false);
+      setDialogOpen(false);
+      return;
+    }
     setSubmitting(true);
     setTimeout(() => {
-      requestToPerform(event.id);
+      requestToPerform(event.id, profile.id);
       setStatus("PENDING");
       setDialogOpen(false);
       setSubmitting(false);

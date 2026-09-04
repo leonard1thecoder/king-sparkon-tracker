@@ -11,25 +11,14 @@ import {
   shareTicketByUsername,
   uploadTicketVerificationPhoto,
 } from "@/lib/api/tickets";
-import { mockUserTickets } from "@/data/mockUserTickets";
 import type { TicketEvent, UserTicket } from "@/types/tickets";
 
 type TicketWithEvent = {
   ticket: UserTicket;
   event: TicketEvent | null;
-  isMock: boolean;
 };
 
 const TICKETS_PER_PAGE = 6;
-
-function fileToDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result ?? ""));
-    reader.onerror = () => reject(new Error("The selected verification photo could not be read."));
-    reader.readAsDataURL(file);
-  });
-}
 
 export function DashboardMyTickets() {
   const [items, setItems] = useState<TicketWithEvent[]>([]);
@@ -47,22 +36,21 @@ export function DashboardMyTickets() {
           nextTickets.map(async (ticket) => ({
             ticket,
             event: await getLiveEventById(ticket.eventId),
-            isMock: false,
           })),
         );
 
         if (!mounted) return;
-        setItems([...liveTicketsWithEvents, ...mockUserTickets]);
+        setItems(liveTicketsWithEvents);
         setPage(0);
         setError(null);
       } catch (loadError) {
         if (!mounted) return;
-        setItems(mockUserTickets);
+        setItems([]);
         setPage(0);
         setError(
           loadError instanceof Error
-            ? `Live tickets could not be loaded: ${loadError.message}. Demo tickets remain available below.`
-            : "Live tickets could not be loaded. Demo tickets remain available below.",
+            ? `Live tickets could not be loaded: ${loadError.message}.`
+            : "Live tickets could not be loaded.",
         );
       } finally {
         if (mounted) setIsLoading(false);
@@ -80,8 +68,6 @@ export function DashboardMyTickets() {
     () => items.slice(page * TICKETS_PER_PAGE, page * TICKETS_PER_PAGE + TICKETS_PER_PAGE),
     [items, page],
   );
-  const liveTicketCount = useMemo(() => items.filter((item) => !item.isMock).length, [items]);
-  const mockTicketCount = useMemo(() => items.filter((item) => item.isMock).length, [items]);
   const photoReadyCount = useMemo(() => items.filter((item) => Boolean(item.ticket.verificationPhotoUrl)).length, [items]);
 
   useEffect(() => {
@@ -93,20 +79,6 @@ export function DashboardMyTickets() {
       throw new Error("A used, cancelled or expired ticket cannot change its verification photo.");
     }
 
-    if (item.isMock) {
-      const verificationPhotoUrl = await fileToDataUrl(file);
-      const updatedTicket: UserTicket = {
-        ...item.ticket,
-        verificationPhotoUrl,
-        verificationPhotoCapturedAt: new Date().toISOString(),
-        verificationRequired: false,
-        canChangeVerificationPhoto: true,
-        canShare: true,
-      };
-      setItems((current) => current.map((candidate) => candidate.ticket.id === item.ticket.id ? { ...candidate, ticket: updatedTicket } : candidate));
-      return;
-    }
-
     const updatedTicket = await uploadTicketVerificationPhoto(item.ticket.id, file);
     setItems((current) => current.map((candidate) => candidate.ticket.id === item.ticket.id ? { ...candidate, ticket: updatedTicket } : candidate));
   }
@@ -114,11 +86,6 @@ export function DashboardMyTickets() {
   async function shareTicket(item: TicketWithEvent, username: string) {
     if (item.ticket.status !== "ACTIVE") {
       throw new Error("A used, cancelled or expired ticket cannot be shared.");
-    }
-
-    if (item.isMock) {
-      setItems((current) => current.filter((candidate) => candidate.ticket.id !== item.ticket.id));
-      return;
     }
 
     await shareTicketByUsername(item.ticket.id, username);
@@ -149,10 +116,9 @@ export function DashboardMyTickets() {
           </Link>
         </div>
 
-        <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           <div className="rounded-[1.4rem] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)]"><p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--muted)]">Wallet total</p><p className="mt-2 text-3xl font-black text-[var(--ink)]">{items.length}</p></div>
-          <div className="rounded-[1.4rem] border border-[var(--signal)]/25 bg-[var(--signal)]/10 p-4 shadow-[var(--shadow-soft)]"><p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--signal)]">Live tickets</p><p className="mt-2 text-3xl font-black text-[var(--ink)]">{liveTicketCount}</p></div>
-          <div className="rounded-[1.4rem] border border-[var(--gold)] bg-[var(--gold)]/20 p-4 shadow-[var(--shadow-soft)]"><p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--ink)]">Demo tickets</p><p className="mt-2 text-3xl font-black text-[var(--ink)]">{mockTicketCount}</p></div>
+          <div className="rounded-[1.4rem] border border-[var(--signal)]/25 bg-[var(--signal)]/10 p-4 shadow-[var(--shadow-soft)]"><p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--signal)]">Live tickets</p><p className="mt-2 text-3xl font-black text-[var(--ink)]">{items.length}</p></div>
           <div className="rounded-[1.4rem] border border-[var(--confirm)]/30 bg-[var(--confirm)]/10 p-4 shadow-[var(--shadow-soft)]"><p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--confirm)]">Photo ready</p><p className="mt-2 text-3xl font-black text-[var(--ink)]">{photoReadyCount}</p></div>
         </div>
 
@@ -190,7 +156,6 @@ export function DashboardMyTickets() {
                 eventName={item.event.name}
                 eventDate={item.event.eventDate}
                 eventLocation={item.event.location}
-                isMock={item.isMock}
                 onCapturePhoto={(file) => captureVerificationPhoto(item, file)}
                 onShare={(username) => shareTicket(item, username)}
               />

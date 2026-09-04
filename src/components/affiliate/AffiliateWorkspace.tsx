@@ -38,19 +38,16 @@ import {
   type AffiliateWithdrawalEligibility,
 } from "@/lib/api/affiliate";
 import { normalizeApiError } from "@/lib/api/client";
-import {
-  affiliateMockAssets,
-  affiliateMockProfile,
-  affiliateMockReferrals,
-  type AffiliateAssetRow,
-  type AffiliateCommissionRow,
-  type AffiliatePayoutRow,
-  type AffiliateProfileView,
-  type AffiliateReferralRow,
-} from "@/lib/mock/affiliate";
+import type {
+  AffiliateAssetRow,
+  AffiliateCommissionRow,
+  AffiliatePayoutRow,
+  AffiliateProfileView,
+  AffiliateReferralRow,
+} from "@/lib/types/affiliate";
 
 type AffiliateSection = "overview" | "referrals" | "assets" | "commissions" | "payouts";
-type SourceState = "backend" | "preview" | "mixed";
+type SourceState = "backend" | "empty";
 type UnknownRecord = Record<string, unknown>;
 
 const PAGE_SIZE = 5;
@@ -244,9 +241,9 @@ function normalizePayouts(payload: unknown): AffiliatePayoutRow[] {
 function SourceBadge({ source }: { source: SourceState }) {
   const backend = source === "backend";
   return (
-    <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-black uppercase tracking-[0.1em] ${backend ? "border-[var(--confirm)]/30 bg-[var(--confirm)]/10 text-[var(--confirm)]" : "border-[var(--gold)]/55 bg-[var(--gold)]/15 text-[var(--ink)]"}`}>
+    <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-black uppercase tracking-[0.1em] ${backend ? "border-[var(--confirm)]/30 bg-[var(--confirm)]/10 text-[var(--confirm)]" : "border-[var(--line)] bg-[var(--surface)] text-[var(--steel)]"}`}>
       {backend ? <Database className="h-3.5 w-3.5" /> : <Sparkles className="h-3.5 w-3.5" />}
-      {backend ? "Backend verified" : source === "mixed" ? "Backend + preview" : "Preview data"}
+      {backend ? "Backend verified" : "No backend data"}
     </span>
   );
 }
@@ -297,13 +294,13 @@ function CashoutPanel({
 
 export function AffiliateWorkspace({ section }: { section: AffiliateSection }) {
   const copy = sectionCopy[section];
-  const [profile, setProfile] = useState<AffiliateProfileView>(affiliateMockProfile);
-  const [referrals, setReferrals] = useState<AffiliateReferralRow[]>(affiliateMockReferrals);
-  const [assets, setAssets] = useState<AffiliateAssetRow[]>(affiliateMockAssets);
+  const [profile, setProfile] = useState<AffiliateProfileView | null>(null);
+  const [referrals, setReferrals] = useState<AffiliateReferralRow[]>([]);
+  const [assets, setAssets] = useState<AffiliateAssetRow[]>([]);
   const [commissions, setCommissions] = useState<AffiliateCommissionRow[]>([]);
   const [payouts, setPayouts] = useState<AffiliatePayoutRow[]>([]);
   const [eligibility, setEligibility] = useState<AffiliateWithdrawalEligibility>(emptyEligibility);
-  const [source, setSource] = useState<SourceState>("preview");
+  const [source, setSource] = useState<SourceState>("empty");
   const [loading, setLoading] = useState(true);
   const [cashingOut, setCashingOut] = useState(false);
   const [warning, setWarning] = useState<string | null>(null);
@@ -316,7 +313,6 @@ export function AffiliateWorkspace({ section }: { section: AffiliateSection }) {
     setWarning(null);
     const failures: string[] = [];
     let backendCount = 0;
-    let previewCount = 0;
 
     const loadOne = async <T,>(
       label: string,
@@ -334,19 +330,17 @@ export function AffiliateWorkspace({ section }: { section: AffiliateSection }) {
           backendCount += 1;
         } else {
           apply(fallback);
-          previewCount += 1;
           failures.push(`${label} returned no usable records`);
         }
       } catch (error) {
         apply(fallback);
-        previewCount += 1;
         failures.push(`${label}: ${normalizeApiError(error).message}`);
       }
     };
 
-    await loadOne("profile", getAffiliateProfile, normalizeProfile, affiliateMockProfile, setProfile);
-    if (section === "overview" || section === "referrals") await loadOne("referrals", getAffiliateReferrals, normalizeReferrals, affiliateMockReferrals, setReferrals);
-    if (section === "overview" || section === "assets") await loadOne("campaign assets", getAffiliateAssets, normalizeAssets, affiliateMockAssets, setAssets);
+    await loadOne("profile", getAffiliateProfile, normalizeProfile, null, setProfile);
+    if (section === "overview" || section === "referrals") await loadOne("referrals", getAffiliateReferrals, normalizeReferrals, [], setReferrals);
+    if (section === "overview" || section === "assets") await loadOne("campaign assets", getAffiliateAssets, normalizeAssets, [], setAssets);
     if (["overview", "commissions", "payouts"].includes(section)) await loadOne("commissions", getAffiliateCommissions, normalizeCommissions, [], setCommissions, true);
     if (["overview", "payouts"].includes(section)) await loadOne("payouts", getAffiliatePayouts, normalizePayouts, [], setPayouts, true);
 
@@ -360,8 +354,8 @@ export function AffiliateWorkspace({ section }: { section: AffiliateSection }) {
       }
     }
 
-    setSource(backendCount > 0 && previewCount > 0 ? "mixed" : backendCount > 0 ? "backend" : "preview");
-    setWarning(failures.length ? `${failures.join(" · ")}. Financial records never use preview payouts or commissions.` : null);
+    setSource(backendCount > 0 ? "backend" : "empty");
+    setWarning(failures.length ? failures.join(" · ") : null);
     setLoading(false);
   }, [section]);
 
@@ -426,10 +420,10 @@ export function AffiliateWorkspace({ section }: { section: AffiliateSection }) {
             <section className="grid gap-5 rounded-[2.25rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] xl:grid-cols-[1.1fr_0.9fr]">
               <div className="rounded-[1.8rem] bg-[var(--ink)] p-6 text-white enterprise-grid">
                 <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--gold)]">Affiliate identity</p>
-                <h2 className="mt-4 text-3xl font-black tracking-[-0.05em]">{profile.name}</h2>
-                <p className="mt-2 text-sm text-white/60">{profile.email}</p>
-                <div className="mt-6 rounded-[1.35rem] border border-white/10 bg-white/[0.07] p-4"><p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.14em] text-[var(--gold)]">Referral code</p><p className="code mt-2 break-all text-2xl font-black">{profile.code}</p></div>
-                <button type="button" onClick={() => void copyValue("overview-link", profile.referralUrl)} className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[var(--gold)] px-5 text-sm font-black text-[var(--ink)]">{copied === "overview-link" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />} {copied === "overview-link" ? "Copied" : "Copy tracked link"}</button>
+                <h2 className="mt-4 text-3xl font-black tracking-[-0.05em]">{profile?.name ?? "No affiliate profile"}</h2>
+                <p className="mt-2 text-sm text-white/60">{profile?.email ?? "Backend has no affiliate record for this account yet."}</p>
+                <div className="mt-6 rounded-[1.35rem] border border-white/10 bg-white/[0.07] p-4"><p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.14em] text-[var(--gold)]">Referral code</p><p className="code mt-2 break-all text-2xl font-black">{profile?.code ?? "—"}</p></div>
+                <button type="button" disabled={!profile?.referralUrl} onClick={() => void copyValue("overview-link", profile?.referralUrl ?? "")} className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[var(--gold)] px-5 text-sm font-black text-[var(--ink)] disabled:opacity-40">{copied === "overview-link" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />} {copied === "overview-link" ? "Copied" : "Copy tracked link"}</button>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <MetricCard label="Tracked clicks" value={String(totals.clicks)} detail="Interest created by shared links" tone="signal" icon={<Share2 className="h-5 w-5" />} />
@@ -446,14 +440,14 @@ export function AffiliateWorkspace({ section }: { section: AffiliateSection }) {
         {!loading && section === "referrals" ? (
           <>
             <section className="grid gap-5 rounded-[2rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] lg:grid-cols-[1fr_auto] lg:items-center">
-              <div><p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">Primary tracked link</p><p className="code mt-3 break-all text-xl font-black text-[var(--ink)]">{profile.referralUrl}</p><p className="mt-2 text-sm text-[var(--steel)]">Code: <strong>{profile.code}</strong></p></div>
-              <div className="flex flex-wrap gap-2"><Button type="button" onClick={() => void copyValue("referral-link", profile.referralUrl)}>{copied === "referral-link" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />} {copied === "referral-link" ? "Copied" : "Copy link"}</Button><a href={profile.referralUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)]">Open <ExternalLink className="h-4 w-4" /></a></div>
+              <div><p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">Primary tracked link</p><p className="code mt-3 break-all text-xl font-black text-[var(--ink)]">{profile?.referralUrl ?? "No tracked link — backend has no affiliate record yet."}</p><p className="mt-2 text-sm text-[var(--steel)]">Code: <strong>{profile?.code ?? "—"}</strong></p></div>
+              <div className="flex flex-wrap gap-2"><Button type="button" disabled={!profile?.referralUrl} onClick={() => void copyValue("referral-link", profile?.referralUrl ?? "")}>{copied === "referral-link" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />} {copied === "referral-link" ? "Copied" : "Copy link"}</Button>{profile?.referralUrl ? <a href={profile.referralUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)]">Open <ExternalLink className="h-4 w-4" /></a> : null}</div>
             </section>
             <Card><CardHeader><CardTitle>Referred business funnel</CardTitle></CardHeader><CardContent className="p-0"><div className="overflow-x-auto"><table className="min-w-[900px] w-full text-left"><thead className="bg-[var(--surface)] text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]"><tr><th className="px-5 py-4">Business</th><th className="px-5 py-4">Source</th><th className="px-5 py-4">Clicks</th><th className="px-5 py-4">Signups</th><th className="px-5 py-4">Value</th><th className="px-5 py-4">Status</th><th className="px-5 py-4">When</th></tr></thead><tbody>{paged(referrals).map((row) => <tr key={row.id} className="border-t border-[var(--line)] bg-white hover:bg-[var(--gold)]/10"><td className="px-5 py-4"><p className="font-black text-[var(--ink)]">{row.businessName}</p><p className="mt-1 text-xs text-[var(--muted)]">{row.contactName}</p></td><td className="px-5 py-4 font-semibold">{row.source}</td><td className="px-5 py-4 font-black">{row.clicks}</td><td className="px-5 py-4 font-black">{row.signups}</td><td className="money px-5 py-4 font-black">{money(row.estimatedValue)}</td><td className="px-5 py-4"><StatusPill label={row.status} tone={statusTone(row.status)} /></td><td className="px-5 py-4 text-sm text-[var(--steel)]">{dateTime(row.createdAt)}</td></tr>)}</tbody></table></div><Pagination page={page} total={totalPages} setPage={setPage} /></CardContent></Card>
           </>
         ) : null}
 
-        {!loading && section === "assets" ? <section className="grid gap-5 lg:grid-cols-2">{assets.map((asset) => <article key={asset.id} className="flex flex-col rounded-[1.75rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)]"><div className="flex items-start justify-between gap-3"><div><p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.14em] text-[var(--signal)]">{asset.channel} · {asset.format}</p><h2 className="mt-2 text-xl font-black tracking-[-0.035em] text-[var(--ink)]">{asset.title}</h2></div><StatusPill label={asset.status} tone={statusTone(asset.status)} /></div><div className="mt-5 rounded-[1.25rem] border border-[var(--line)] bg-[var(--surface)] p-4 text-sm font-semibold leading-7 text-[var(--steel)]">{asset.copy}<p className="mt-3 font-black text-[var(--ink)]">{asset.callToAction}</p><p className="mt-2 break-all text-xs text-[var(--signal)]">{profile.referralUrl}</p></div><div className="mt-auto flex flex-wrap gap-2 pt-5"><Button type="button" onClick={() => void copyValue(`asset-${asset.id}`, `${asset.copy}\n\n${asset.callToAction}\n${profile.referralUrl}`)}>{copied === `asset-${asset.id}` ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />} {copied === `asset-${asset.id}` ? "Copied" : "Copy campaign"}</Button><span className="inline-flex items-center text-xs font-bold text-[var(--muted)]">Updated {dateTime(asset.updatedAt)}</span></div></article>)}</section> : null}
+        {!loading && section === "assets" ? <section className="grid gap-5 lg:grid-cols-2">{assets.map((asset) => <article key={asset.id} className="flex flex-col rounded-[1.75rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)]"><div className="flex items-start justify-between gap-3"><div><p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.14em] text-[var(--signal)]">{asset.channel} · {asset.format}</p><h2 className="mt-2 text-xl font-black tracking-[-0.035em] text-[var(--ink)]">{asset.title}</h2></div><StatusPill label={asset.status} tone={statusTone(asset.status)} /></div><div className="mt-5 rounded-[1.25rem] border border-[var(--line)] bg-[var(--surface)] p-4 text-sm font-semibold leading-7 text-[var(--steel)]">{asset.copy}<p className="mt-3 font-black text-[var(--ink)]">{asset.callToAction}</p><p className="mt-2 break-all text-xs text-[var(--signal)]">{profile?.referralUrl ?? ""}</p></div><div className="mt-auto flex flex-wrap gap-2 pt-5"><Button type="button" disabled={!profile?.referralUrl} onClick={() => void copyValue(`asset-${asset.id}`, `${asset.copy}\n\n${asset.callToAction}\n${profile?.referralUrl ?? ""}`)}>{copied === `asset-${asset.id}` ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />} {copied === `asset-${asset.id}` ? "Copied" : "Copy campaign"}</Button><span className="inline-flex items-center text-xs font-bold text-[var(--muted)]">Updated {dateTime(asset.updatedAt)}</span></div></article>)}</section> : null}
 
         {!loading && section === "commissions" ? (
           <>

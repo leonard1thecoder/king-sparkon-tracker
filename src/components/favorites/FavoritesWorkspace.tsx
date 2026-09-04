@@ -97,8 +97,8 @@ export function FavoritesWorkspace() {
   }, [jobs, favoriteKeys]);
 
   const favoriteEvents = useMemo(() => {
-    // Events currently have no business linkage; show all as placeholder until backend links them.
-    // TODO backend: filter events by favorite business ownerId/businessId
+    // API MISSING: events currently have no business linkage, so favorites cannot
+    // filter them. Showing live events until the backend links tickets to businesses.
     if (favoriteKeys.size === 0) return [];
     return events.slice(0, 6);
   }, [events, favoriteKeys]);

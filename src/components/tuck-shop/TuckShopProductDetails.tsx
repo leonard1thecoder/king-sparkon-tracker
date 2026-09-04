@@ -19,7 +19,6 @@ import { listTuckShopProducts } from "@/lib/api/tuck-shop";
 import type { Product } from "@/lib/types/backend";
 import { normalizeApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/Button";
-import { APPLICATION_MOCK_PRODUCTS } from "@/lib/mock/application-products";
 import {
   addTuckShopProductToCart,
   money,
@@ -142,18 +141,7 @@ export function TuckShopProductDetails({ productId }: { productId: string }) {
   const ctaRef = useRef<HTMLDivElement | null>(null);
   const [stickyVisible, setStickyVisible] = useState(false);
 
-  const mockMatch = useMemo(() => {
-    const cleanId = String(productId ?? "").trim();
-    return (
-      APPLICATION_MOCK_PRODUCTS.find(
-        (item) =>
-          String(item.id) === cleanId ||
-          item.name.toLowerCase().includes(cleanId.toLowerCase()),
-      ) ?? APPLICATION_MOCK_PRODUCTS[0]
-    );
-  }, [productId]);
-
-  const [product, setProduct] = useState<Product | null>(mockMatch);
+  const [product, setProduct] = useState<Product | null>(null);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -199,12 +187,13 @@ export function TuckShopProductDetails({ productId }: { productId: string }) {
 
         if (foundProduct) {
           setProduct(foundProduct);
-        } else if (!mockMatch) {
+        } else {
           setProduct(null);
           setError("Product not found.");
         }
       } catch (requestError) {
         if (!active) return;
+        setProduct(null);
         setError(normalizeApiError(requestError).message);
       } finally {
         if (active) setLoading(false);
@@ -213,7 +202,7 @@ export function TuckShopProductDetails({ productId }: { productId: string }) {
 
     void loadProduct();
     return () => { active = false; };
-  }, [mockMatch, productId]);
+  }, [productId]);
 
   const maxQuantity = Math.max(product?.stockQuantity ?? 1, 1);
 

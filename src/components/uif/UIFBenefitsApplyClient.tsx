@@ -54,7 +54,7 @@ export function UIFBenefitsApplyClient() {
       ID_COPY: files["ID_COPY"]?.name,
       files,
     });
-    // For demo, we could show a toast or navigate, but spec says placeholder is enough
+    // UI-only action: documents are validated locally; submission happens in the next step.
     // We keep it UI-only without API call
   };
 

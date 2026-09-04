@@ -11,7 +11,6 @@ type TicketQrCardProps = {
   eventName: string;
   eventDate: string;
   eventLocation: string;
-  isMock?: boolean;
   onCapturePhoto?: (file: File) => Promise<void>;
   onShare?: (username: string) => Promise<void>;
 };
@@ -29,7 +28,6 @@ export function TicketQrCard({
   eventName,
   eventDate,
   eventLocation,
-  isMock = false,
   onCapturePhoto,
   onShare,
 }: TicketQrCardProps) {
@@ -206,7 +204,6 @@ export function TicketQrCard({
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <p className="font-mono text-[0.68rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">{getTicketTypeLabel(ticket.ticketType)} Ticket</p>
-                {isMock ? <span className="rounded-full border border-[var(--gold)] bg-[var(--gold)]/20 px-2.5 py-1 text-[0.6rem] font-black uppercase tracking-[0.1em] text-[var(--ink)]">Demo</span> : null}
                 {hasPhoto ? <span className="inline-flex items-center gap-1 rounded-full border border-[var(--confirm)]/30 bg-[var(--confirm)]/10 px-2.5 py-1 text-[0.6rem] font-black uppercase tracking-[0.1em] text-[var(--confirm)]"><UserCheck className="h-3 w-3" /> Photo ready</span> : null}
               </div>
               <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-[var(--ink)]">{eventName}</h2>

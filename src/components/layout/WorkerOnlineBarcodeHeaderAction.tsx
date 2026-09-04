@@ -3,15 +3,21 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Loader2, PackageSearch } from "lucide-react";
-import { listWorkerOnlinePurchases } from "@/lib/api/tuck-shop";
-import {
-  MOCK_WORKER_ONLINE_PURCHASES_EVENT,
-  onlinePurchasedBarcodesRequired,
-  withMockWorkerOnlinePurchases,
-} from "@/lib/mock/worker-online-purchases";
+import { listWorkerOnlinePurchases, type OnlineTuckShopPurchase } from "@/lib/api/tuck-shop";
 
 function countLabel(count: number) {
   return count > 99 ? "99+" : String(count);
+}
+
+function onlinePurchasedBarcodesRequired(orders: OnlineTuckShopPurchase[]) {
+  return orders.reduce((total, order) => {
+    if (order.fulfilmentStatus === "COLLECTED") return total;
+    const calculated = order.items.reduce(
+      (sum, item) => sum + Math.max(Number(item.quantity ?? 0) - Number(item.barcodes?.length ?? 0), 0),
+      0,
+    );
+    return total + Math.max(Number(order.barcodesRequired ?? calculated), calculated, 0);
+  }, 0);
 }
 
 export function WorkerOnlineBarcodeHeaderAction() {
@@ -24,10 +30,9 @@ export function WorkerOnlineBarcodeHeaderAction() {
     async function refreshRequiredCount() {
       try {
         const liveOrders = await listWorkerOnlinePurchases();
-        const allOrders = withMockWorkerOnlinePurchases(Array.isArray(liveOrders) ? liveOrders : []);
-        if (active) setRequired(onlinePurchasedBarcodesRequired(allOrders));
+        if (active) setRequired(onlinePurchasedBarcodesRequired(Array.isArray(liveOrders) ? liveOrders : []));
       } catch {
-        if (active) setRequired(onlinePurchasedBarcodesRequired(withMockWorkerOnlinePurchases([])));
+        if (active) setRequired(0);
       } finally {
         if (active) setLoading(false);
       }
@@ -41,14 +46,12 @@ export function WorkerOnlineBarcodeHeaderAction() {
     const intervalId = window.setInterval(refreshFromWorkerActivity, 30_000);
     window.addEventListener("focus", refreshFromWorkerActivity);
     window.addEventListener("storage", refreshFromWorkerActivity);
-    window.addEventListener(MOCK_WORKER_ONLINE_PURCHASES_EVENT, refreshFromWorkerActivity);
 
     return () => {
       active = false;
       window.clearInterval(intervalId);
       window.removeEventListener("focus", refreshFromWorkerActivity);
       window.removeEventListener("storage", refreshFromWorkerActivity);
-      window.removeEventListener(MOCK_WORKER_ONLINE_PURCHASES_EVENT, refreshFromWorkerActivity);
     };
   }, []);
 

@@ -69,7 +69,7 @@ export function DashboardOwnerTickets() {
   const stats = dashboard ? [
     { title: "Total events", value: dashboard.totalEvents, caption: "All draft, published, cancelled, and completed events.", icon: Calendar },
     { title: "Tickets sold", value: dashboard.ticketsSold, caption: "Sold capacity across all ticket classes.", icon: Ticket },
-    { title: "Revenue", value: formatCurrency(dashboard.revenue), caption: "Mock gross revenue from sold ticket classes.", icon: WalletCards },
+    { title: "Revenue", value: formatCurrency(dashboard.revenue), caption: "Gross revenue from sold ticket classes.", icon: WalletCards },
     { title: "Upcoming events", value: dashboard.upcomingEvents, caption: "Published future events ready for buyers.", icon: BarChart3 },
     { title: "Regular sold", value: dashboard.regularSold, caption: "Regular class ticket sales.", icon: UsersRound },
     { title: "VIP sold", value: dashboard.vipSold, caption: "VIP class ticket sales.", icon: Crown },

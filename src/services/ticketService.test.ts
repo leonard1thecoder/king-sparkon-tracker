@@ -1,61 +1,47 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
-  __resetTicketMockDataForTests,
-  __setTicketTypeInventoryForTests,
+  calculateCheckoutQuote,
   calculateTicketAvailability,
-  getEventById,
-  purchaseTickets,
-  verifyTicketByReference,
+  getEventStatusLabel,
+  getEventTotals,
+  getTicketTypeLabel,
 } from "./ticketService";
 
-const PREVIEW_EVENT_ID = "event-sparkon-summit-bulk";
-const ACTIVE_PREVIEW_TICKET = "KST-BULK-VIP-00001";
-
-describe("ticketService business rules", () => {
-  beforeEach(() => {
-    __resetTicketMockDataForTests();
-  });
-
-  it("does not allow buying a sold out ticket type", async () => {
-    __setTicketTypeInventoryForTests(PREVIEW_EVENT_ID, "REGULAR", 2, 2);
-
-    await expect(
-      purchaseTickets({
-        eventId: PREVIEW_EVENT_ID,
-        ticketType: "REGULAR",
-        quantity: 1,
-        buyerName: "Test Buyer",
-        buyerEmail: "buyer@example.com",
-      }),
-    ).rejects.toThrow("sold out");
-  });
-
-  it("marks an active ticket as used after verification", async () => {
-    const result = await verifyTicketByReference(ACTIVE_PREVIEW_TICKET);
-
-    expect(result.valid).toBe(true);
-    expect(result.message).toContain("Entry approved");
-    expect(result.ticket?.status).toBe("USED");
-    expect(result.ticket?.usedAt).toBeDefined();
-  });
-
-  it("does not allow a used ticket to be reused", async () => {
-    await verifyTicketByReference(ACTIVE_PREVIEW_TICKET);
-
-    const secondScan = await verifyTicketByReference(ACTIVE_PREVIEW_TICKET);
-
-    expect(secondScan.valid).toBe(false);
-    expect(secondScan.message).toBe("Ticket already used.");
-  });
-
-  it("calculates available tickets from capacity minus sold", async () => {
+describe("ticketService pure helpers", () => {
+  it("calculates available tickets from capacity minus sold", () => {
     expect(calculateTicketAvailability(10, 3)).toBe(7);
     expect(calculateTicketAvailability(5, 8)).toBe(0);
+  });
 
-    __setTicketTypeInventoryForTests(PREVIEW_EVENT_ID, "VIP", 10, 7);
-    const event = await getEventById(PREVIEW_EVENT_ID);
-    const vip = event?.ticketTypes.find((ticketType) => ticketType.type === "VIP");
+  it("labels ticket types and statuses", () => {
+    expect(getTicketTypeLabel("REGULAR")).toBe("Regular");
+    expect(getTicketTypeLabel("VIP")).toBe("VIP");
+    expect(getTicketTypeLabel("VVIP")).toBe("VVIP");
+    expect(getEventStatusLabel("PUBLISHED")).toBe("Published");
+    expect(getEventStatusLabel("CANCELLED")).toBe("Cancelled");
+  });
 
-    expect(vip?.available).toBe(3);
+  it("totals event capacity, sold and availability", () => {
+    const totals = getEventTotals({
+      id: "event-1",
+      ownerId: "owner-1",
+      name: "Event",
+      description: "Description",
+      location: "Location",
+      eventDate: "2026-10-01",
+      eventTime: "18:00",
+      status: "PUBLISHED",
+      ticketTypes: [
+        { id: "event-1-regular", eventId: "event-1", type: "REGULAR", price: 100, capacity: 10, sold: 7, available: 3 },
+        { id: "event-1-vip", eventId: "event-1", type: "VIP", price: 200, capacity: 5, sold: 5, available: 0 },
+      ],
+      createdAt: "2026-01-01T00:00:00.000Z",
+      updatedAt: "2026-01-01T00:00:00.000Z",
+    });
+    expect(totals).toEqual({ totalCapacity: 15, totalSold: 12, totalAvailable: 3 });
+  });
+
+  it("quotes checkout totals with the platform fee", () => {
+    expect(calculateCheckoutQuote(100, 2)).toEqual({ subtotal: 200, serviceFee: 8, total: 208 });
   });
 });

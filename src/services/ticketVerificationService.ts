@@ -1,8 +1,6 @@
 import { apiClient, normalizeApiError } from "@/lib/api/client";
 import type { FaceVerificationDecision, TicketVerificationResult } from "@/types/tickets";
 
-const DEFAULT_WORKER_ID = "worker-demo-001";
-
 type VerifyTicketPayload = {
   value: string;
   workerId: string;
@@ -28,7 +26,7 @@ async function postVerification(
   path: string,
   value: string,
   faceDecision: FaceVerificationDecision,
-  workerId = DEFAULT_WORKER_ID,
+  workerId: string,
 ) {
   const payload: VerifyTicketPayload = { value: value.trim(), workerId, faceDecision };
   const { data } = await apiClient.post<TicketVerificationResult>(path, payload);
@@ -59,7 +57,7 @@ async function verify(
 export async function verifyWorkerTicketByQr(
   qrValue: string,
   faceDecision: FaceVerificationDecision = "PENDING",
-  workerId = DEFAULT_WORKER_ID,
+  workerId: string,
 ): Promise<TicketVerificationResult> {
   return verify("/v1/tickets/verify/qr", qrValue, "Scan a ticket QR code first.", faceDecision, workerId);
 }
@@ -67,7 +65,7 @@ export async function verifyWorkerTicketByQr(
 export async function verifyWorkerTicketByReference(
   reference: string,
   faceDecision: FaceVerificationDecision = "PENDING",
-  workerId = DEFAULT_WORKER_ID,
+  workerId: string,
 ): Promise<TicketVerificationResult> {
   return verify("/v1/tickets/verify/reference", reference, "Enter a ticket reference first.", faceDecision, workerId);
 }

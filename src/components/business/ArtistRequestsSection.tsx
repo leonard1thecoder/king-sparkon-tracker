@@ -19,51 +19,7 @@ export function ArtistRequestsSection({ eventId, eventTitle, eventDate, eventTim
   const [toast, setToast] = useState("");
 
   const load = () => {
-    const existing = getBookingsForEvent(eventId);
-    if (existing.length === 0) {
-      // Fallback demo for Business Owner view — show 3 polished requests per spec when no real data yet (e.g., ticket events)
-      const demo: ArtistBooking[] = [
-        {
-          id: `demo-${eventId}-1`,
-          eventId,
-          artistId: "artist-current",
-          artistName: "DJ Spark",
-          artistType: "DJ",
-          artistAvatarUrl: "https://i.pravatar.cc/300?img=68",
-          status: "PENDING",
-          requestedAt: new Date().toISOString(),
-          bookingFee: 2000,
-          performancesPerDay: 3,
-        },
-        {
-          id: `demo-${eventId}-2`,
-          eventId,
-          artistId: "artist-2",
-          artistName: "MCEE Rhyme",
-          artistType: "MCEE",
-          artistAvatarUrl: "https://i.pravatar.cc/300?img=12",
-          status: "PENDING",
-          requestedAt: new Date().toISOString(),
-          bookingFee: 2000,
-          performancesPerDay: 2,
-        },
-        {
-          id: `demo-${eventId}-3`,
-          eventId,
-          artistId: "artist-3",
-          artistName: "Thandi Keys",
-          artistType: "MUSICIAN",
-          artistAvatarUrl: "https://i.pravatar.cc/300?img=32",
-          status: "PENDING",
-          requestedAt: new Date().toISOString(),
-          bookingFee: 3200,
-          performancesPerDay: 1,
-        },
-      ];
-      setBookings(demo);
-    } else {
-      setBookings(existing);
-    }
+    setBookings(getBookingsForEvent(eventId));
   };
   useEffect(() => {
     load();
@@ -74,23 +30,15 @@ export function ArtistRequestsSection({ eventId, eventTitle, eventDate, eventTim
 
   const handleAccept = (id: string) => {
     const b = bookings.find((x) => x.id === id);
-    if (id.startsWith("demo-")) {
-      setBookings((prev) => prev.map((x) => (x.id === id ? { ...x, status: "ACCEPTED" as const } : x)));
-    } else {
-      respondToBooking(id, "ACCEPTED");
-      load();
-    }
+    respondToBooking(id, "ACCEPTED");
+    load();
     setAcceptId(null);
     setToast(`${b?.artistName ?? "Artist"} has been accepted for this event.`);
     setTimeout(() => setToast(""), 3000);
   };
   const handleReject = (id: string) => {
-    if (id.startsWith("demo-")) {
-      setBookings((prev) => prev.map((x) => (x.id === id ? { ...x, status: "REJECTED" as const } : x)));
-    } else {
-      respondToBooking(id, "REJECTED");
-      load();
-    }
+    respondToBooking(id, "REJECTED");
+    load();
     setRejectId(null);
     setToast("Request rejected.");
     setTimeout(() => setToast(""), 3000);
@@ -110,10 +58,11 @@ export function ArtistRequestsSection({ eventId, eventTitle, eventDate, eventTim
         ) : (
           bookings.map((b) => {
             const profile = getArtistById(b.artistId);
+            const avatarUrl = b.artistAvatarUrl ?? profile?.avatarUrl;
             return (
               <div key={b.id} className="flex flex-col gap-4 rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)] md:flex-row md:items-center md:justify-between">
                 <div className="flex min-w-0 items-center gap-4">
-                  <Image src={b.artistAvatarUrl ?? profile?.avatarUrl ?? "https://i.pravatar.cc/100"} alt={b.artistName} width={56} height={56} className="h-14 w-14 rounded-full border object-cover" />
+                  {avatarUrl ? <Image src={avatarUrl} alt={b.artistName} width={56} height={56} className="h-14 w-14 rounded-full border object-cover" /> : <span aria-label={b.artistName} className="grid h-14 w-14 shrink-0 place-items-center rounded-full border bg-[var(--surface)] text-xl font-black text-[var(--signal)]">{b.artistName.charAt(0).toUpperCase()}</span>}
                   <div className="min-w-0">
                     <p className="font-black leading-5">{b.artistName}</p>
                     <p className="text-xs font-black uppercase tracking-[0.1em] text-[var(--muted)]">{b.artistType}</p>

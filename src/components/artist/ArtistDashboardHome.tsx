@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/Card";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EventCard, EventCardSkeleton } from "./EventCard";
 import { ArtistStatusBadge } from "./ArtistStatusBadge";
-import type { DraftedEvent } from "@/types/artist";
+import type { ArtistProfile, DraftedEvent } from "@/types/artist";
 import { formatZAR, getArtistDashboardStats, getArtistProfile, getDraftedEvents, getUpcomingPerformances } from "@/services/artistService";
 
 function Greeting() {
@@ -19,7 +19,7 @@ function Greeting() {
 
 export function ArtistDashboardHome() {
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState(() => getArtistProfile());
+  const [profile, setProfile] = useState<ArtistProfile | null>(() => getArtistProfile());
   const [stats, setStats] = useState(() => getArtistDashboardStats());
   const [upcoming, setUpcoming] = useState<Array<DraftedEvent & { booking: import("@/types/artist").ArtistBooking }>>([]);
   const [opportunities, setOpportunities] = useState<DraftedEvent[]>([]);
@@ -59,9 +59,10 @@ export function ArtistDashboardHome() {
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-3xl font-black tracking-[-0.04em] md:text-4xl">
-            {Greeting()}, {profile.displayName} 👋
+            {Greeting()}, {profile?.displayName ?? "Artist"} 👋
           </h1>
           <p className="mt-2 text-sm leading-6 text-[var(--steel)] md:text-base">Manage your performances and discover new opportunities.</p>
+          {!profile ? <p className="mt-2 text-sm font-bold text-[var(--danger)]">API MISSING: no artist profile endpoint yet — create your profile to get started.</p> : null}
         </div>
         <Link
           href="/dashboard/artist/drafted"
