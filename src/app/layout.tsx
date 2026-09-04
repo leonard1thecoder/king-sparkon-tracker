@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     telephone: false,
   },
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ?? "Rl_zs6neR57YMAtOtNOdPs6tfkc6wd7f_8_ex4Mstr0",
   },
   icons: {
     icon: "/king-sparkon-logo.png",
@@ -149,6 +149,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable} h-full antialiased`}>
       <head>
+        <meta name="google-site-verification" content="Rl_zs6neR57YMAtOtNOdPs6tfkc6wd7f_8_ex4Mstr0" />
         <meta name="google-adsense-account" content={adsensePublisherId} />
         <script
           id="king-sparkon-adsense"
