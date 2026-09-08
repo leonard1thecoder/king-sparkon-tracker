@@ -41,7 +41,7 @@ const socialIcons: Record<SocialPlatform, ReactNode> = {
   X: (
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" className={iconClassName}>
       <path
-        fill="#000000"
+        fill="#ffffff"
         d="M18.9 2.5h3.07l-6.7 7.66 7.88 10.42h-6.17l-4.83-6.31-5.53 6.31H3.55l7.17-8.2L3.16 2.5h6.33l4.36 5.77 5.05-5.77Zm-1.08 16.25h1.7L8.56 4.23H6.73l11.09 14.52Z"
       />
     </svg>
@@ -57,7 +57,7 @@ const socialIcons: Record<SocialPlatform, ReactNode> = {
   GitHub: (
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" className={iconClassName}>
       <path
-        fill="#181717"
+        fill="#ffffff"
         d="M12 .5A12 12 0 0 0 8.2 23.9c.6.11.82-.26.82-.58v-2.04c-3.34.73-4.04-1.41-4.04-1.41-.55-1.4-1.34-1.77-1.34-1.77-1.09-.75.08-.74.08-.74 1.2.09 1.84 1.24 1.84 1.24 1.08 1.84 2.82 1.31 3.51 1 .11-.78.42-1.31.76-1.61-2.67-.31-5.47-1.34-5.47-5.95 0-1.31.47-2.38 1.24-3.22-.12-.31-.54-1.56.12-3.18 0 0 1.01-.32 3.3 1.23a11.35 11.35 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.62.24 2.87.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.63-2.81 5.64-5.49 5.94.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .5Z"
       />
     </svg>
@@ -65,9 +65,9 @@ const socialIcons: Record<SocialPlatform, ReactNode> = {
 };
 
 const variantClassNames: Record<SocialLinksVariant, string> = {
-  dark: "border-[var(--line)] bg-white text-[var(--steel)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]",
-  light: "border-[var(--line)] bg-white text-[var(--steel)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]",
-  compact: "border-[var(--line)] bg-white text-[var(--steel)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]",
+  dark: "border-[var(--line-strong)] bg-[#0d0d1c] text-[var(--ink)] hover:border-[var(--premium-cyan)] hover:text-[var(--premium-cyan)] hover:shadow-[0_0_16px_rgba(34,211,238,0.25)]",
+  light: "border-[var(--line-strong)] bg-[#0d0d1c] text-[var(--ink)] hover:border-[var(--premium-gold)] hover:text-[var(--premium-gold)] hover:shadow-[0_0_16px_rgba(250,204,21,0.25)]",
+  compact: "border-[var(--line-strong)] bg-[#0d0d1c] text-[var(--ink)] hover:border-[var(--premium-magenta)] hover:text-[var(--premium-magenta)] hover:shadow-[0_0_16px_rgba(236,72,153,0.25)]",
 };
 
 export function SocialLinks({ variant = "dark", showLabels = false, className = "" }: SocialLinksProps) {

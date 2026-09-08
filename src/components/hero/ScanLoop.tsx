@@ -120,7 +120,7 @@ export function ScanLoop() {
       <div
         ref={sceneRef}
         data-hero-motion="paused"
-        className="hero-3d-scene relative min-h-[42rem] overflow-hidden rounded-[2.65rem] border border-[var(--line)] bg-white shadow-[0_28px_80px_rgba(7,19,31,0.18)] [perspective:1600px] sm:min-h-[43rem]"
+        className="hero-3d-scene relative min-h-[42rem] overflow-hidden rounded-[2.65rem] border border-[var(--line-strong)] bg-black shadow-[0_28px_80px_rgba(0,0,0,0.65),0_0_36px_rgba(34,211,238,0.12)] [perspective:1600px] sm:min-h-[43rem]"
         onPointerMove={updateSceneTilt}
         onPointerLeave={resetSceneTilt}
       >
@@ -135,10 +135,10 @@ export function ScanLoop() {
         </div>
 
         <div className="absolute inset-x-4 top-4 z-30 flex items-center justify-between gap-3 sm:inset-x-6 sm:top-6">
-          <span className="rounded-full border border-[var(--line)] bg-white/95 px-3 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--signal)] shadow-[var(--shadow-soft)]">
+          <span className="rounded-full border border-[var(--line-strong)] bg-black/80 px-3 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--signal)] shadow-[var(--shadow-soft)]">
             Circle-based hero
           </span>
-          <span className="rounded-full border border-[var(--confirm)]/30 bg-white/95 px-3 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--confirm)] shadow-[var(--shadow-soft)]">
+          <span className="rounded-full border border-[var(--confirm)]/30 bg-black/80 px-3 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--confirm)] shadow-[var(--shadow-soft)]">
             Smooth scan loop
           </span>
         </div>
@@ -149,8 +149,8 @@ export function ScanLoop() {
               key={card.title}
               className={`hero-scan-card hero-scan-card--${index + 1} absolute inset-0 transform-gpu`}
             >
-              <div className="hero-scan-card__shell relative h-full overflow-hidden rounded-[2.2rem] border border-white/80 bg-white p-3 shadow-[0_30px_82px_rgba(7,19,31,0.2)]">
-                <div className="relative flex h-full flex-col overflow-hidden rounded-[1.85rem] border border-[var(--line)] bg-white">
+              <div className="hero-scan-card__shell relative h-full overflow-hidden rounded-[2.2rem] border border-[var(--line-strong)] bg-[#0a0a14] p-3 shadow-[0_30px_82px_rgba(0,0,0,0.65),0_0_28px_rgba(139,92,246,0.18)]">
+                <div className="relative flex h-full flex-col overflow-hidden rounded-[1.85rem] border border-[var(--line)] bg-[#0a0a14]">
                   <div className="grid gap-3 border-b border-[var(--line)] p-4 sm:grid-cols-3">
                     {terminalMetrics.map(([label, value]) => (
                       <div key={label} className="rounded-[1.15rem] border border-[var(--line)] bg-[var(--surface)] p-3">
@@ -160,7 +160,7 @@ export function ScanLoop() {
                     ))}
                   </div>
 
-                  <div className="relative min-h-0 flex-1 overflow-hidden bg-[radial-gradient(circle_at_50%_38%,rgba(224,242,254,0.95),rgba(255,255,255,0.98)_68%)]">
+                  <div className="relative min-h-0 flex-1 overflow-hidden bg-[radial-gradient(circle_at_50%_38%,rgba(34,211,238,0.14),rgba(0,0,0,0.92)_68%)]">
                     <div className="hero-image-aura pointer-events-none absolute left-1/2 top-1/2 h-[66%] w-[66%] -translate-x-1/2 -translate-y-1/2 rounded-full" />
                     <Image
                       src={card.imageSrc}
@@ -178,7 +178,7 @@ export function ScanLoop() {
                     <span className="hero-corner hero-corner--bl" />
                     <span className="hero-corner hero-corner--br" />
 
-                    <div className="absolute inset-x-0 bottom-0 z-40 bg-gradient-to-t from-white via-white/88 to-transparent px-5 pb-5 pt-16">
+                    <div className="absolute inset-x-0 bottom-0 z-40 bg-gradient-to-t from-black via-black/85 to-transparent px-5 pb-5 pt-16">
                       <p className="font-mono text-[0.6rem] font-black uppercase tracking-[0.18em] text-[var(--signal)]">{card.eyebrow}</p>
                       <p className="mt-2 text-xl font-black tracking-[-0.04em] text-[var(--ink)]">{card.title}</p>
                     </div>
@@ -192,10 +192,10 @@ export function ScanLoop() {
         <div className="hero-floor pointer-events-none absolute bottom-[4.4rem] left-1/2 h-8 w-[58%] -translate-x-1/2 rounded-[50%] bg-sky-400/14 shadow-[0_0_34px_rgba(14,165,233,0.2)]" />
       </div>
 
-      <div className="relative z-20 mt-5 rounded-[1.65rem] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)]">
+      <div className="relative z-20 mt-5 rounded-[1.65rem] border border-[var(--line)] bg-[#0a0a14] p-4 shadow-[var(--shadow-soft)]">
         <div className="mb-3 flex items-center justify-between gap-3">
           <p className="font-mono text-[0.68rem] font-black uppercase tracking-[0.16em] text-[var(--muted)]">Official profiles</p>
-          <span className="rounded-full border border-[var(--signal)]/25 bg-sky-50 px-3 py-1 font-mono text-[0.56rem] font-black uppercase tracking-[0.14em] text-[var(--signal)]">Move pointer to tilt</span>
+          <span className="rounded-full border border-[var(--signal)]/25 bg-[var(--signal-soft)] px-3 py-1 font-mono text-[0.56rem] font-black uppercase tracking-[0.14em] text-[var(--signal)]">Move pointer to tilt</span>
         </div>
         <SocialLinks variant="light" />
       </div>
@@ -214,7 +214,7 @@ export function ScanLoop() {
         .hero-3d-scene[data-hero-motion="paused"] *::after { animation-play-state: paused !important; }
         .hero-scan-stage, .hero-scan-card, .hero-scan-card__shell { transform-style: preserve-3d; }
         .hero-scene-halo {
-          background: radial-gradient(circle at var(--hero-glow-x) var(--hero-glow-y), rgb(56 189 248 / 0.22), rgb(240 249 255 / 0.78) 44%, transparent 73%);
+          background: radial-gradient(circle at var(--hero-glow-x) var(--hero-glow-y), rgb(139 92 246 / 0.26), rgb(0 0 0 / 0.6) 44%, transparent 73%);
           animation: heroHaloPulse 18s ease-in-out infinite;
         }
         .hero-scene-ring {
@@ -247,7 +247,7 @@ export function ScanLoop() {
         .hero-scan-card--1 { animation: heroShowFirst 56s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
         .hero-scan-card--2 { animation: heroShowSecond 56s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
         .hero-3d-image { animation: heroImageFloat 18s ease-in-out infinite; }
-        .hero-image-aura { background: radial-gradient(circle, rgb(186 230 253 / 0.72), transparent 68%); }
+        .hero-image-aura { background: radial-gradient(circle, rgb(139 92 246 / 0.2), transparent 68%); }
         .hero-orbit {
           width: 68%;
           aspect-ratio: 1;
