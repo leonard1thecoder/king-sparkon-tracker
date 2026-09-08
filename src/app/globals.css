@@ -603,6 +603,17 @@ button:not(:disabled):hover {
   filter: saturate(1.18);
 }
 
+/* Legacy hover:bg ink was designed for a light theme (dark hover, white text).
+   On premium black, ink is near-white, so force a colorful gradient hover
+   with dark text to keep labels readable on every page. */
+:where([class~="hover:bg-[var(--ink)]"]):hover {
+  background: linear-gradient(135deg, #facc15 0%, #fb923c 22%, #ec4899 48%, #8b5cf6 74%, #22d3ee 100%) !important;
+  border-color: transparent !important;
+  color: #06060c !important;
+  box-shadow: 0 10px 30px rgba(236, 72, 153, 0.35), 0 6px 18px rgba(34, 211, 238, 0.25) !important;
+  filter: saturate(1.25);
+}
+
 a:hover {
   color: var(--premium-cyan);
 }

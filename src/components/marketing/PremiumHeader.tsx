@@ -73,13 +73,13 @@ export function PremiumHeader() {
           <div className="flex items-center gap-2">
             <Link
               href="/login"
-              className="inline-flex min-h-10 items-center justify-center rounded-xl border border-[var(--line-strong)] bg-[#0d0d1c] px-3 text-sm font-extrabold text-[var(--steel)] hover:border-[var(--premium-cyan)] hover:text-[var(--premium-cyan)] sm:px-4"
+              className="inline-flex min-h-9 items-center justify-center rounded-xl border border-[var(--line-strong)] bg-[#0d0d1c] px-2.5 text-xs font-extrabold text-[var(--steel)] hover:border-[var(--premium-cyan)] hover:text-[var(--premium-cyan)] sm:min-h-10 sm:px-4 sm:text-sm"
             >
               Login
             </Link>
             <Link
               href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE"
-              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-transparent bg-gradient-to-r from-cyan-400 via-violet-500 to-pink-500 px-3 text-sm font-extrabold text-white shadow-[0_8px_22px_rgba(139,92,246,0.4)] hover:from-yellow-300 hover:via-pink-500 hover:to-cyan-400 hover:text-black sm:px-4"
+              className="inline-flex min-h-9 items-center justify-center gap-2 rounded-xl border border-transparent bg-gradient-to-r from-cyan-400 via-violet-500 to-pink-500 px-2.5 text-xs font-extrabold text-white shadow-[0_8px_22px_rgba(139,92,246,0.4)] hover:from-yellow-300 hover:via-pink-500 hover:to-cyan-400 hover:text-black sm:min-h-10 sm:px-4 sm:text-sm"
             >
               <span className="hidden sm:inline">Register</span>
               <span className="sm:hidden">Register</span>
@@ -109,19 +109,19 @@ export function PremiumHeader() {
                   key={l.href}
                   href={l.href}
                   onClick={() => setOpen(false)}
-                  className="rounded-xl px-4 py-3 text-base font-bold text-[var(--ink)] hover:bg-[rgba(139,92,246,0.14)] hover:text-[var(--premium-gold)]"
+                  className="rounded-xl px-3 py-2.5 text-sm font-bold text-[var(--ink)] hover:bg-[rgba(139,92,246,0.14)] hover:text-[var(--premium-gold)]"
                 >
                   {l.label}
                 </Link>
               ))}
               <div className="mt-3 grid gap-2 border-t border-[var(--line)] pt-4">
-                <Link href="/login" onClick={() => setOpen(false)} className="rounded-xl border border-[var(--line-strong)] bg-[#0d0d1c] px-4 py-3 text-center text-sm font-extrabold text-[var(--ink)] hover:border-[var(--premium-cyan)] hover:text-[var(--premium-cyan)]">
+                <Link href="/login" onClick={() => setOpen(false)} className="rounded-xl border border-[var(--line-strong)] bg-[#0d0d1c] px-3 py-2.5 text-center text-xs font-extrabold text-[var(--ink)] hover:border-[var(--premium-cyan)] hover:text-[var(--premium-cyan)]">
                   Login
                 </Link>
                 <Link
                   href="/register"
                   onClick={() => setOpen(false)}
-                  className="rounded-xl border border-transparent bg-gradient-to-r from-cyan-400 via-violet-500 to-pink-500 px-4 py-3 text-center text-sm font-extrabold text-white hover:from-yellow-300 hover:via-pink-500 hover:to-cyan-400 hover:text-black"
+                  className="rounded-xl border border-transparent bg-gradient-to-r from-cyan-400 via-violet-500 to-pink-500 px-3 py-2.5 text-center text-xs font-extrabold text-white hover:from-yellow-300 hover:via-pink-500 hover:to-cyan-400 hover:text-black"
                 >
                   Create account
                 </Link>
