@@ -53,7 +53,7 @@ export function DashboardTicketMarketplace() {
 
   return (
     <>
-      <DashboardHeader role="USER WORKSPACE" title="Buy event tickets" description="Browse live backend ticket events, inspect capacity, and add QR tickets to the verified Stripe cart." />
+      <DashboardHeader role="USER WORKSPACE" title="Buy event tickets" description="Browse live backend ticket events, inspect capacity, and add QR tickets to the verified PayFast cart." />
       <main className="grid gap-7 bg-[var(--surface)] p-5 md:p-8">
         <div className="-mx-5 -mt-5 overflow-hidden border-b border-[var(--line)] bg-white md:-mx-8 md:-mt-8">
           <Image

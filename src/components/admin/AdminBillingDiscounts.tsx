@@ -130,7 +130,7 @@ export function AdminBillingDiscounts() {
         endsAt: isoOrNull(form.endsAt),
       };
       const saved = await saveBillingDiscount(plan, payload);
-      setNotice(`${plan === "PLUS" ? "Plus" : "Pro"} discount saved. Effective Stripe checkout pricing is now ${saved.effective ? "active" : "scheduled or disabled"}.`);
+      setNotice(`${plan === "PLUS" ? "Plus" : "Pro"} discount saved. Effective checkout pricing is now ${saved.effective ? "active" : "scheduled or disabled"}.`);
       await load();
     } catch (exception) {
       setError(normalizeApiError(exception).message);
@@ -143,7 +143,7 @@ export function AdminBillingDiscounts() {
     <section className="grid gap-6">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Discountable services" value="2" detail="Plus and Pro only" tone="confirm" icon={<BadgePercent className="h-5 w-5" />} />
-        <MetricCard label="Effective now" value={loading ? "..." : String(effectiveCount)} detail="Currently applied at Stripe checkout" tone="signal" icon={<CheckCircle2 className="h-5 w-5" />} />
+        <MetricCard label="Effective now" value={loading ? "..." : String(effectiveCount)} detail="Currently applied at checkout" tone="signal" icon={<CheckCircle2 className="h-5 w-5" />} />
         <MetricCard label="Largest discount" value={loading ? "..." : `${maximumDiscount}%`} detail="Across paid services" icon={<Sparkles className="h-5 w-5" />} />
         <MetricCard label="Pricing source" value="Admin" detail="One policy for cards and checkout" icon={<Clock3 className="h-5 w-5" />} />
       </div>
@@ -155,7 +155,7 @@ export function AdminBillingDiscounts() {
         <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <CardTitle>Plus and Pro service discounts</CardTitle>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--steel)]">Create a discount percentage, campaign label and optional start/end window. Active discounts change both the rendered service price and the Stripe subscription amount.</p>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--steel)]">Create a discount percentage, campaign label and optional start/end window. Active discounts change both the rendered service price and the subscription amount.</p>
           </div>
           <Button type="button" variant="quiet" disabled={loading} onClick={() => void load()}><RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} /> Refresh</Button>
         </CardHeader>

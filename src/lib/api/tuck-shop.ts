@@ -15,10 +15,11 @@ import type {
   CreateEmbeddedCartPaymentPayload,
   CreateProductPayload,
   CreateTuckShopPurchasePayload,
-  EmbeddedCartPaymentIntent,
-  EmbeddedCartPaymentStatus,
   EmbeddedCartTicketItem,
   PageResponse,
+  PayFastCartPayment,
+  PayFastCartPaymentStatus,
+  PayFastFormResponse,
   Product,
   ProductImageUpdatePayload,
   TuckShopPurchase,
@@ -158,17 +159,21 @@ export async function createTuckShopPurchase(
   );
 }
 
-export async function createEmbeddedCartPaymentIntent(payload: CreateEmbeddedCartPaymentPayload) {
+export async function createPayFastCartPayment(payload: CreateEmbeddedCartPaymentPayload) {
   const tickets = await validateLiveTicketItems(payload.tickets ?? []);
-  return apiPostIdempotent<EmbeddedCartPaymentIntent, CreateEmbeddedCartPaymentPayload>(
-    apiContract.tuckShop.paymentIntents,
+  return apiPostIdempotent<PayFastCartPayment, CreateEmbeddedCartPaymentPayload>(
+    apiContract.tuckShop.payfastPayments,
     { ...payload, tickets },
     payload.idempotencyKey,
   );
 }
 
-export function getEmbeddedCartPaymentStatus(paymentIntentId: string) {
-  return apiGet<EmbeddedCartPaymentStatus>(apiContract.tuckShop.paymentIntent(paymentIntentId));
+export function getPayFastCartPaymentStatus(merchantPaymentId: string) {
+  return apiGet<PayFastCartPaymentStatus>(apiContract.tuckShop.payfastPaymentStatus(merchantPaymentId));
+}
+
+export function getPayFastFormFields(merchantPaymentId: string) {
+  return apiGet<PayFastFormResponse>(apiContract.tuckShop.payfastPaymentForm(merchantPaymentId));
 }
 
 export function createWorkerTuckShopBarcodePurchase(

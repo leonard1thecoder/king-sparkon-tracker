@@ -45,7 +45,7 @@ export function HowItWorksRoleSlider() {
               <p className="mt-4 max-w-3xl text-sm leading-7 text-[var(--steel)]">User dashboard is built for buying, not managing stock. Four focused workspaces keep the experience light and distinct from the owner console.</p>
               <div className="mt-6 grid gap-4 md:grid-cols-2">
                 {[
-                  { n: "01", title: "Browse King Sparkon Lego Mall", copy: "Explore four businesses per page, scroll horizontally per business, search by product or business ID, add to cart and checkout via Stripe.", icon: ShoppingCart },
+                  { n: "01", title: "Browse King Sparkon Lego Mall", copy: "Explore four businesses per page, scroll horizontally per business, search by product or business ID, add to cart and checkout via PayFast.", icon: ShoppingCart },
                   { n: "02", title: "King Sparkon Lego Ticket", copy: "Buy ticket created by businesses registered, and use the purchased ticket to attend event through verification processes", icon: QrCode },
                   { n: "03", title: "Track job applications", copy: "Browse job posts, apply, and track application status from applied to shortlisted. All inside the user workspace.", icon: BriefcaseBusiness },
                   { n: "04", title: "Check UIF status & update password safely", copy: "Access the UIF Online System at /dashboard/user/uif/status to check benefit history with your 13-digit SA ID, or /dashboard/user/uif/password to update passwords under strict POPIA privacy protection.", icon: UsersRound },

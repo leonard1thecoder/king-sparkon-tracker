@@ -5,6 +5,8 @@ import { CheckCircle2, CreditCard, Loader2, LockKeyhole, WalletCards } from "luc
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { createTip } from "@/lib/api/tips";
+import { getPayFastFormFields } from "@/lib/api/tuck-shop";
+import { submitPayFastForm } from "@/lib/payfast";
 import { normalizeApiError } from "@/lib/api/client";
 
 const tipOptions = [
@@ -27,25 +29,9 @@ function numericWorkerId(value: string) {
   return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : null;
 }
 
-function validExpiry(value: string) {
-  const match = value.match(/^(0[1-9]|1[0-2])\/(\d{2})$/);
-  if (!match) return false;
-
-  const expiryMonth = Number(match[1]);
-  const expiryYear = 2000 + Number(match[2]);
-  const now = new Date();
-  const currentMonth = now.getMonth() + 1;
-  const currentYear = now.getFullYear();
-
-  return expiryYear > currentYear || (expiryYear === currentYear && expiryMonth >= currentMonth);
-}
-
 export function WorkerTipCheckout({ workerId }: { workerId: string }) {
   const [selectedOption, setSelectedOption] = useState<TipOptionId | null>(null);
   const [customAmount, setCustomAmount] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [cvc, setCvc] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -79,22 +65,6 @@ export function WorkerTipCheckout({ workerId }: { workerId: string }) {
       return;
     }
 
-    const cardDigits = cardNumber.replace(/\D/g, "");
-    if (cardDigits.length < 13 || cardDigits.length > 19) {
-      setNotice("Enter a valid card number.");
-      return;
-    }
-
-    if (!validExpiry(expiry)) {
-      setNotice("Enter a valid future expiry date using MM/YY.");
-      return;
-    }
-
-    if (!/^\d{3,4}$/.test(cvc)) {
-      setNotice("Enter a valid 3 or 4 digit CVC.");
-      return;
-    }
-
     const backendWorkerId = numericWorkerId(workerId);
     if (!backendWorkerId) {
       setNotice("This worker QR does not contain the numeric worker ID required by the payment backend.");
@@ -110,15 +80,24 @@ export function WorkerTipCheckout({ workerId }: { workerId: string }) {
         callbackUrl: typeof window === "undefined" ? "/dashboard/user/tips/scan" : window.location.href,
       });
 
-      if (tip.paymentUrl && typeof window !== "undefined") {
-        window.location.assign(tip.paymentUrl);
-        return;
-      }
+      setSuccess(
+        `Your ${new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(selectedAmount)} tip for worker ${workerId} was created. Redirecting to PayFast...`,
+      );
 
-      setSuccess(`Your ${new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(selectedAmount)} tip for worker ${workerId} was created.`);
-      setCardNumber("");
-      setExpiry("");
-      setCvc("");
+      try {
+        if (!tip.paymentReference) {
+          throw new Error("Tip payment reference is missing.");
+        }
+        const form = await getPayFastFormFields(tip.paymentReference);
+        submitPayFastForm(form.processUrl, form.fields);
+        return;
+      } catch (formError) {
+        if (tip.paymentUrl && typeof window !== "undefined") {
+          window.location.assign(tip.paymentUrl);
+          return;
+        }
+        throw formError instanceof Error ? formError : new Error("PayFast payment could not start.");
+      }
     } catch (error) {
       setNotice(normalizeApiError(error).message);
     } finally {
@@ -130,10 +109,10 @@ export function WorkerTipCheckout({ workerId }: { workerId: string }) {
     <Card className="overflow-hidden">
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <CardTitle>Choose a tip amount</CardTitle>
-          <p className="mt-2 text-sm leading-6 text-[var(--steel)]">
-            Select an amount to reveal the secure card payment form for worker {workerId}.
-          </p>
+            <CardTitle>Choose a tip amount</CardTitle>
+            <p className="mt-2 text-sm leading-6 text-[var(--steel)]">
+              Select an amount to reveal the secure PayFast checkout for worker {workerId}.
+            </p>
         </div>
         <div className="grid h-12 w-12 place-items-center rounded-[1.2rem] bg-[var(--ink)] text-[var(--gold)]">
           <WalletCards className="h-6 w-6" />
@@ -201,58 +180,14 @@ export function WorkerTipCheckout({ workerId }: { workerId: string }) {
                   <CreditCard className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-black text-[var(--ink)]">Card payment details</h3>
-                  <p className="mt-1 text-xs text-[var(--steel)]">Card values stay in this form and are never included in the King Sparkon tip API request.</p>
+                  <h3 className="font-black text-[var(--ink)]">PayFast secure checkout</h3>
+                  <p className="mt-1 text-xs text-[var(--steel)]">You complete the tip on PayFast. Card details never touch this form.</p>
                 </div>
-              </div>
-
-              <label className="grid gap-2 text-sm font-bold text-[var(--steel)]">
-                Card number
-                <input
-                  value={cardNumber}
-                  onChange={(event) => setCardNumber(event.target.value.replace(/[^\d ]/g, "").slice(0, 23))}
-                  name="cardNumber"
-                  autoComplete="cc-number"
-                  inputMode="numeric"
-                  placeholder="1234 5678 9012 3456"
-                  required
-                  className="h-12 rounded-[1rem] border border-[var(--line)] bg-[var(--surface)] px-4 font-mono text-base font-black text-[var(--ink)] outline-none focus:border-[var(--signal)]"
-                />
-              </label>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="grid gap-2 text-sm font-bold text-[var(--steel)]">
-                  Expiry date
-                  <input
-                    value={expiry}
-                    onChange={(event) => setExpiry(event.target.value.replace(/[^\d/]/g, "").slice(0, 5))}
-                    name="expiry"
-                    autoComplete="cc-exp"
-                    inputMode="numeric"
-                    placeholder="MM/YY"
-                    required
-                    className="h-12 rounded-[1rem] border border-[var(--line)] bg-[var(--surface)] px-4 font-mono text-base font-black text-[var(--ink)] outline-none focus:border-[var(--signal)]"
-                  />
-                </label>
-
-                <label className="grid gap-2 text-sm font-bold text-[var(--steel)]">
-                  CVC
-                  <input
-                    value={cvc}
-                    onChange={(event) => setCvc(event.target.value.replace(/\D/g, "").slice(0, 4))}
-                    name="cvc"
-                    autoComplete="cc-csc"
-                    inputMode="numeric"
-                    placeholder="123"
-                    required
-                    className="h-12 rounded-[1rem] border border-[var(--line)] bg-[var(--surface)] px-4 font-mono text-base font-black text-[var(--ink)] outline-none focus:border-[var(--signal)]"
-                  />
-                </label>
               </div>
 
               <div className="flex items-start gap-2 rounded-[1rem] bg-[var(--surface)] p-3 text-xs font-semibold leading-5 text-[var(--steel)]">
                 <LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-[var(--confirm)]" />
-                The backend receives only the worker ID and tip amount. A configured payment provider completes the secure card charge.
+                The backend receives only the worker ID and tip amount. PayFast completes the secure charge and confirms it back to King Sparkon Tracker.
               </div>
 
               {notice ? <p className="rounded-[1rem] border border-[var(--danger)]/25 bg-[var(--danger)]/10 p-3 text-sm font-bold text-[var(--danger)]">{notice}</p> : null}

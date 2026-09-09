@@ -89,7 +89,7 @@ export function DashboardTicketCheckout({ eventId }: DashboardTicketCheckoutProp
 
   return (
     <>
-      <DashboardHeader role="USER WORKSPACE" title="Ticket checkout" description="Select a live ticket class and quantity, then add it to the shared Stripe-verified user cart." />
+      <DashboardHeader role="USER WORKSPACE" title="Ticket checkout" description="Select a live ticket class and quantity, then add it to the shared PayFast-verified user cart." />
       <main className="bg-[var(--surface)] p-5 md:p-8">
         {isLoading ? <div className="h-[34rem] animate-pulse rounded-[2.4rem] border border-[var(--line)] bg-white" /> : null}
         {!isLoading && !event ? (
@@ -106,7 +106,7 @@ export function DashboardTicketCheckout({ eventId }: DashboardTicketCheckoutProp
                 <div>
                   <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Live dashboard ticket checkout</p>
                   <h1 className="mt-3 text-4xl font-black tracking-[-0.05em] md:text-5xl">Buy tickets for {event.name}</h1>
-                  <p className="mt-3 text-sm leading-7 text-[var(--steel)]">Choose the ticket class and quantity. The backend checks price and capacity again before Stripe creates the PaymentIntent.</p>
+                  <p className="mt-3 text-sm leading-7 text-[var(--steel)]">Choose the ticket class and quantity. The backend checks price and capacity again before PayFast creates the payment.</p>
                 </div>
                 <TicketStatusBadge status={event.status} />
               </div>
@@ -128,7 +128,7 @@ export function DashboardTicketCheckout({ eventId }: DashboardTicketCheckoutProp
                 </div>
                 <div className="rounded-[1.4rem] border border-[var(--line)] bg-[var(--surface)] p-4">
                   <p className="text-sm font-black text-[var(--ink)]">Registered user details</p>
-                  <p className="mt-2 text-sm leading-6 text-[var(--steel)]">The final cart uses the signed-in user name and email. Tickets are issued only after Stripe confirms payment and the webhook fulfils the order.</p>
+                  <p className="mt-2 text-sm leading-6 text-[var(--steel)]">The final cart uses the signed-in user name and email. Tickets are issued only after PayFast confirms payment and the ITN fulfils the order.</p>
                 </div>
               </div>
               {error ? <div className="mt-5 flex gap-3 rounded-[1.4rem] border border-[var(--danger)]/25 bg-[var(--danger)]/10 px-4 py-3 text-sm font-bold text-[var(--danger)]"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />{error}</div> : null}

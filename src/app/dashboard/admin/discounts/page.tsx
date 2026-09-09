@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function AdminDiscountsPage() {
   return (
     <DashboardFrame role="Admin" nav={<DashboardRoleNav role="Admin" />}>
-      <DashboardHeader role="ADMIN WORKSPACE" title="Service discounts" description="Create and schedule Plus and Pro discounts that render in plan cards and change Stripe checkout pricing." />
+      <DashboardHeader role="ADMIN WORKSPACE" title="Service discounts" description="Create and schedule Plus and Pro discounts that render in plan cards and change checkout pricing." />
       <main className="grid gap-6 bg-[var(--surface)] p-5 md:p-8">
         <AdminBillingDiscounts />
       </main>

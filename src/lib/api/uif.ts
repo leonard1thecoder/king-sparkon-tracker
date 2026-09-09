@@ -82,8 +82,7 @@ export type UifResetPasswordRequest = { idNumber: string; password: string; conf
 
 export type UifResetCartResponse = {
   orderId: number;
-  paymentIntentId: string;
-  clientSecret: string;
+  merchantPaymentId: string;
   amount: number | string;
   currency: string;
   status: string;
@@ -97,6 +96,6 @@ export async function createUifResetCart(payload: UifResetPasswordRequest) {
   return apiPost<UifResetCartResponse, UifResetPasswordRequest>(`/uif/reset-password`, payload);
 }
 
-export async function getUifResetCartStatus(paymentIntentId: string) {
-  return apiGet<UifResetCartResponse>(`/uif/reset-password/status/${encodeURIComponent(paymentIntentId)}`);
+export async function getUifResetCartStatus(merchantPaymentId: string) {
+  return apiGet<UifResetCartResponse>(`/uif/reset-password/status/${encodeURIComponent(merchantPaymentId)}`);
 }

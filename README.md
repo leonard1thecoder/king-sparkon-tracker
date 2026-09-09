@@ -71,7 +71,6 @@ Create `.env.local` from `.env.example`:
 ```bash
 BACKEND_URL=http://localhost:8080
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_replace_me
 ```
 
 `BACKEND_URL` is used only by Next.js route handlers. Browser-side code calls local Next routes such as `/api/backend/...` and never needs backend secrets.
@@ -121,7 +120,8 @@ Each role has its own layout and nav component: `AdminNav`, `OwnerNav`, `WorkerN
 - Transactions: `GET/POST /api/transactions`, `POST /api/transactions/withdrawals`.
 - Tips: `GET/POST /api/tips`, `PATCH /api/tips/{id}/paid`, `POST /api/tips/withdrawals`.
 - Promotions: `GET /api/promotions/quote`, `GET/POST /api/promotions`, `POST /api/admin/promotions/registered-subscribers`.
-- Billing: `GET /api/billing/plans`, `GET /api/billing/me`, `GET /api/billing/dashboard`, `POST /api/billing/stripe/checkout-sessions`, `POST /api/billing/subscriptions/{subscriptionId}/activate`.
+- Billing: `GET /api/billing/plans`, `GET /api/billing/me`, `GET /api/billing/dashboard`, `POST /api/billing/subscriptions/{subscriptionId}/activate`.
+- Payments (PayFast redirect + ITN): `POST /api/payments/payfast` (cart), `POST /api/payments/payfast/itn` (PayFast server notification), `GET /api/payments/status/{merchantPaymentId}`, `GET /api/payments/payfast/form/{merchantPaymentId}` (public form for emailed/QR payments).
 - Reports/audit: `GET /api/reports/inventory-summary`, `GET /api/reports/alcohol`, `GET /api/reports/product-movement`, `GET /api/audit-logs`.
 - Affiliate: `GET /api/affiliate/referrals`, `GET /api/affiliate/commissions`, `GET /api/affiliate/payouts`, `POST /api/affiliate/onboarding`.
 
@@ -172,7 +172,6 @@ Required Vercel env vars:
 ```bash
 BACKEND_URL=https://your-production-backend-url.com
 NEXT_PUBLIC_APP_URL=https://your-vercel-domain.vercel.app
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_xxx
 ```
 
 ## Known backend assumptions and TODOs

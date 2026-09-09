@@ -9,8 +9,9 @@ export const openApiClientPathTemplates = [
   "/tips/{tipId}/status",
   "/tips/owner",
   "/tips/withdrawals",
-  "/v1/tuck-shop/cart-payments/payment-intents",
-  "/v1/tuck-shop/cart-payments/payment-intents/{paymentIntentId}",
+  "/payments/payfast",
+  "/payments/status/{merchantPaymentId}",
+  "/payments/payfast/form/{merchantPaymentId}",
   "/v1/tuck-shop/products",
   "/v1/tuck-shop/purchases",
 ] as const;

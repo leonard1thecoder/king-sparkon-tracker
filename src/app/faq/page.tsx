@@ -43,7 +43,7 @@ const faqs = [
   {
     question: "What do the plans mean for workers?",
     answer:
-      "FREE_TRIAL allows up to 2 workers, PLUS up to 5, PRO is unlimited. Pro unlocks WORKER_TIPS_PLATFORM, BUSINESS_ANALYSIS_AI and WORKER_CLOCKER. The UI respects backend feature locks and shows a coherent upsell rather than a dead button. Billing is managed via /dashboard/owner/billing and Stripe checkout sessions.",
+      "FREE_TRIAL allows up to 2 workers, PLUS up to 5, PRO is unlimited. Pro unlocks WORKER_TIPS_PLATFORM, BUSINESS_ANALYSIS_AI and WORKER_CLOCKER. The UI respects backend feature locks and shows a coherent upsell rather than a dead button. Billing plans are viewed via /dashboard/owner/billing.",
   },
   {
     question: "Which dashboards do I get?",

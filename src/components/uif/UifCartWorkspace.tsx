@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Loader2, ShoppingCart, CreditCard, CheckCircle2, AlertTriangle } from "lucide-react";
 import { getUifResetCartStatus } from "@/lib/api/uif";
+import { getPayFastFormFields } from "@/lib/api/tuck-shop";
+import { submitPayFastForm } from "@/lib/payfast";
+import { normalizeApiError } from "@/lib/api/client";
 
 type StoredCart = {
   orderId: number;
-  paymentIntentId: string;
-  clientSecret?: string;
+  merchantPaymentId: string;
   amount: number | string;
   currency: string;
   status: string;
@@ -27,22 +29,22 @@ export function UifCartWorkspace() {
     } catch {}
     // also check query params
     const params = new URLSearchParams(window.location.search);
-    const pid = params.get("paymentIntentId");
+    const pid = params.get("merchantPaymentId");
     const oid = params.get("uifOrderId");
     if (pid && !cart) {
       // try to load from storage or set minimal
       const stored = window.localStorage.getItem("uif-reset-cart");
       if (!stored) {
-        setCart({ orderId: Number(oid) || 0, paymentIntentId: pid, amount: "14.28", currency: "ZAR", status: "PENDING_PAYMENT" });
+        setCart({ orderId: Number(oid) || 0, merchantPaymentId: pid, amount: "14.28", currency: "ZAR", status: "PENDING_PAYMENT" });
       }
     }
   }, []);
 
   async function refreshStatus() {
-    if (!cart?.paymentIntentId) return;
+    if (!cart?.merchantPaymentId) return;
     setLoading(true);
     try {
-      const fresh = await getUifResetCartStatus(cart.paymentIntentId);
+      const fresh = await getUifResetCartStatus(cart.merchantPaymentId);
       setStatus(`Status: ${fresh.status} — ${fresh.message || ""}`);
       // update stored
       const updated = { ...cart, status: fresh.status, amount: fresh.amount, currency: fresh.currency };
@@ -50,6 +52,20 @@ export function UifCartWorkspace() {
       window.localStorage.setItem("uif-reset-cart", JSON.stringify(updated));
     } catch (e) {
       setStatus(e instanceof Error ? e.message : "Failed to fetch status");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function payNow() {
+    if (!cart?.merchantPaymentId) return;
+    setLoading(true);
+    setStatus(null);
+    try {
+      const form = await getPayFastFormFields(cart.merchantPaymentId);
+      submitPayFastForm(form.processUrl, form.fields);
+    } catch (e) {
+      setStatus(normalizeApiError(e).message);
     } finally {
       setLoading(false);
     }
@@ -72,7 +88,7 @@ export function UifCartWorkspace() {
         <p className="text-xs font-black uppercase tracking-[0.1em] text-[var(--muted)]">UIF Password Reset Order</p>
         <p className="mt-2 text-sm"><span className="font-bold">Order ID:</span> <span className="font-mono">{cart.orderId}</span></p>
         <p className="text-sm"><span className="font-bold">Target ID:</span> <span className="font-mono">{cart.targetIdNumber || "-"}</span></p>
-        <p className="text-sm"><span className="font-bold">PaymentIntent:</span> <span className="font-mono text-xs break-all">{cart.paymentIntentId}</span></p>
+        <p className="text-sm"><span className="font-bold">PayFast payment:</span> <span className="font-mono text-xs break-all">{cart.merchantPaymentId}</span></p>
         <p className="mt-2 text-lg font-black">R{Number(cart.amount).toFixed(2)} {cart.currency}</p>
         <p className="text-xs font-bold text-[var(--steel)]">Status: {cart.status}</p>
       </div>
@@ -80,6 +96,9 @@ export function UifCartWorkspace() {
       <div className="flex flex-wrap gap-3">
         <button type="button" onClick={refreshStatus} disabled={loading} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--line)] bg-white px-5 text-sm font-black hover:border-[var(--signal)] disabled:opacity-60">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />} Refresh Status
+        </button>
+        <button type="button" onClick={payNow} disabled={loading} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white hover:bg-[var(--signal-strong)] disabled:opacity-60">
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />} Pay with PayFast
         </button>
         <Link href="/dashboard/user/shop/cart" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white hover:bg-[var(--signal-strong)]">
           <ShoppingCart className="h-4 w-4" /> View Shop Cart
@@ -90,8 +109,7 @@ export function UifCartWorkspace() {
 
       <div className="rounded-xl border border-[var(--signal)]/30 bg-[var(--signal-soft)] p-4">
         <p className="flex items-center gap-2 text-sm font-black"><CheckCircle2 className="h-4 w-4 text-[var(--signal)]" /> Pay R14.28 to trigger UIF update</p>
-        <p className="mt-1 text-xs leading-5 text-[var(--steel)]">Pay via Stripe (test mode). Webhook will POST to https://uifonline.labour.gov.za/uifOnline/resetNewPassword with your new password. Check status after payment.</p>
-        {cart.clientSecret ? <p className="mt-2 font-mono text-xs break-all text-[var(--muted)]">clientSecret: {cart.clientSecret.slice(0, 24)}... (use Stripe Elements to confirm)</p> : null}
+        <p className="mt-1 text-xs leading-5 text-[var(--steel)]">Pay on PayFast. The verified backend ITN triggers the password update with your new password. Check status after payment.</p>
       </div>
 
       <div className="flex items-center gap-2 text-xs font-semibold text-[var(--muted)]">

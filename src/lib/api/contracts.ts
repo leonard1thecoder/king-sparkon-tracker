@@ -26,10 +26,14 @@ export const apiContract = {
   tuckShop: {
     products: contractPath("/v1/tuck-shop/products"),
     purchases: contractPath("/v1/tuck-shop/purchases"),
-    paymentIntents: contractPath("/v1/tuck-shop/cart-payments/payment-intents"),
-    paymentIntent: (paymentIntentId: string) =>
-      bindPath(contractPath("/v1/tuck-shop/cart-payments/payment-intents/{paymentIntentId}"), {
-        paymentIntentId,
+    payfastPayments: contractPath("/payments/payfast"),
+    payfastPaymentStatus: (merchantPaymentId: string) =>
+      bindPath(contractPath("/payments/status/{merchantPaymentId}"), {
+        merchantPaymentId,
+      }),
+    payfastPaymentForm: (merchantPaymentId: string) =>
+      bindPath(contractPath("/payments/payfast/form/{merchantPaymentId}"), {
+        merchantPaymentId,
       }),
   },
 } as const;

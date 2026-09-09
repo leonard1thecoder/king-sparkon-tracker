@@ -250,15 +250,6 @@ export interface BusinessBillingResponse {
   currency?: string | null;
   paymentStatus?: SubscriptionPaymentStatus | null;
   paypalApprovalUrl?: string | null;
-  stripeCheckoutUrl?: string | null;
-  stripeSubscriptionId?: string | null;
-}
-
-export interface StripeCheckoutSessionResponse {
-  subscriptionId?: number | null;
-  checkoutSessionId: string;
-  checkoutUrl: string;
-  paymentStatus?: SubscriptionPaymentStatus | null;
 }
 
 export interface BillingDashboardResponse {

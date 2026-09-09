@@ -127,13 +127,6 @@ export interface TicketCheckoutQuote {
   total: number;
 }
 
-export interface StripeCheckoutResponse {
-  paymentId: string;
-  checkoutSessionId: string;
-  checkoutUrl: string;
-  publishableKey?: string;
-}
-
 export interface TicketEventComment {
   id: string;
   eventId: string;
