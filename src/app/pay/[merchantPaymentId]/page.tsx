@@ -101,7 +101,7 @@ export default function PayPage() {
 
               {validationProblem ? (
                 <p className="flex items-start gap-2 rounded-[1rem] border border-[var(--gold)]/45 bg-[var(--gold)]/10 p-3 text-xs font-semibold leading-5 text-[var(--steel)]">
-                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--gold)] /> {validationProblem}
+                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--gold)]" /> {validationProblem}
                 </p>
               ) : null}
 
