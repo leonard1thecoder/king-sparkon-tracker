@@ -3,20 +3,14 @@
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 import {
   AlertCircle,
-  ArrowRight,
   Banknote,
   CheckCircle2,
   Clock,
   CreditCard,
-  DollarSign,
-  HelpCircle,
-  Info,
   Landmark,
   Loader2,
   RefreshCw,
-  Send,
   ShieldCheck,
-  Sparkles,
   Ticket,
   WalletCards,
   Zap,
@@ -40,11 +34,8 @@ const emptyForm = {
   notes: "",
 };
 
-function money(value?: number | null, currency = "ZAR") {
+function money(value?: number | null) {
   const num = Number(value ?? 0);
-  if (currency === "USD") {
-    return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(num);
-  }
   return new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(num);
 }
 
@@ -66,8 +57,8 @@ function payoutTone(status?: string | null) {
   return "signal" as const;
 }
 
-function validEmail(value: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+function validBankDetails(value: string) {
+  return value.trim().length >= 6;
 }
 
 export function OwnerWithdrawalsWorkspace() {
@@ -106,11 +97,9 @@ export function OwnerWithdrawalsWorkspace() {
   const withdrawalFeePercent = Number(wallet?.withdrawalFeePercent ?? 7.35);
   const withdrawalFee = Number.isFinite(amount) ? amount * (withdrawalFeePercent / 100) : 0;
   const netPayoutZar = Math.max(amount - withdrawalFee, 0);
-  const zarPerPayoutUnit = Number(wallet?.zarPerPayoutUnit ?? 0);
-  const estimatedPayoutUsd = zarPerPayoutUnit > 0 ? netPayoutZar / zarPerPayoutUnit : 0;
   const payoutConfigured = Boolean(wallet?.payoutConfigured ?? true);
   const validAmount = Number.isFinite(amount) && amount >= minimum && amount <= available;
-  const validForm = validAmount && validEmail(form.payoutDestination) && payoutConfigured;
+  const validForm = validAmount && validBankDetails(form.payoutDestination) && payoutConfigured;
 
   const totalRequested = useMemo(
     () => withdrawals.reduce((sum, item) => sum + Number(item.grossAmount ?? 0), 0),
@@ -124,7 +113,7 @@ export function OwnerWithdrawalsWorkspace() {
     setNotice(null);
 
     if (!payoutConfigured) {
-      setError("PayPal Instant Payouts are not configured on the backend yet.");
+      setError("Bank payouts are not configured on the backend yet.");
       setSaving(false);
       return;
     }
@@ -133,8 +122,8 @@ export function OwnerWithdrawalsWorkspace() {
       setSaving(false);
       return;
     }
-    if (!validEmail(form.payoutDestination)) {
-      setError("Please enter a valid PayPal account email address.");
+    if (!validBankDetails(form.payoutDestination)) {
+      setError("Please enter your bank payout details (bank, account number, branch code and account holder).");
       setSaving(false);
       return;
     }
@@ -142,15 +131,13 @@ export function OwnerWithdrawalsWorkspace() {
     try {
       const withdrawal = await requestOwnerWithdrawal({
         amount,
-        payoutMethod: "PAYPAL",
+        payoutMethod: "BANK",
         payoutDestination: form.payoutDestination.trim(),
         notes: form.notes.trim() || null,
       });
       setForm(emptyForm);
       setNotice(
-        withdrawal.providerBatchId
-          ? `Instant PayPal payout initiated! Batch ID #${withdrawal.providerBatchId}. ${money(withdrawal.feeAmount)} was deducted as the ${withdrawalFeePercent.toFixed(2)}% fee.`
-          : "Your PayPal instant payout request has been successfully submitted and is processing.",
+        `Bank payout request ${withdrawal.providerBatchId ? `#${withdrawal.providerBatchId}` : `#${withdrawal.id}`} submitted for ${money(withdrawal.netAmount ?? netPayoutZar)}. ${money(withdrawal.feeAmount ?? withdrawalFee)} was deducted as the ${withdrawalFeePercent.toFixed(2)}% fee. The payout is settled via EFT.`,
       );
       window.dispatchEvent(new Event("king-sparkon:owner-wallet"));
       await load();
@@ -230,7 +217,7 @@ export function OwnerWithdrawalsWorkspace() {
       ) : null}
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        {/* Instant PayPal Payout Form */}
+        {/* Bank Payout Form */}
         <Card className="relative overflow-hidden border-[var(--line-strong)] bg-white shadow-[var(--shadow-soft)]">
           <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
             <Zap className="h-48 w-48 text-[var(--signal)]" />
@@ -244,13 +231,13 @@ export function OwnerWithdrawalsWorkspace() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <CardTitle className="text-xl">PayPal Instant Payout</CardTitle>
-                    <span className="inline-flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-[0.65rem] font-black uppercase tracking-[0.1em] text-sky-700">
-                      <Zap className="h-3 w-3 fill-sky-600 text-sky-600" /> Instant API
+                    <CardTitle className="text-xl">Bank Payout</CardTitle>
+                    <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[0.65rem] font-black uppercase tracking-[0.1em] text-emerald-700">
+                      <Zap className="h-3 w-3 fill-emerald-600 text-emerald-600" /> EFT
                     </span>
                   </div>
                   <p className="mt-1 text-xs font-semibold text-[var(--steel)]">
-                    Fast automated transfer directly into your PayPal account.
+                    Fast, transparent payout directly to your South African bank account.
                   </p>
                 </div>
               </div>
@@ -261,7 +248,7 @@ export function OwnerWithdrawalsWorkspace() {
             <form onSubmit={submit} className="grid gap-5">
               {!loading && !payoutConfigured ? (
                 <div className="rounded-[var(--radius-lg)] border border-[var(--warning)]/40 bg-[var(--warning)]/10 p-4 text-xs font-bold leading-6 text-[var(--ink)]">
-                  PayPal Payout API configuration is currently offline or incomplete.
+                  Bank payout configuration is currently offline or incomplete.
                 </div>
               ) : null}
 
@@ -320,24 +307,23 @@ export function OwnerWithdrawalsWorkspace() {
                 </div>
               </div>
 
-              {/* PayPal Email */}
+              {/* Bank Details */}
               <div className="grid gap-2">
                 <label className="text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">
-                  PayPal Account Email
+                  Bank Payout Details
                 </label>
                 <div className="relative flex items-center">
                   <input
-                    type="email"
                     value={form.payoutDestination}
                     onChange={(event) => setForm((current) => ({ ...current, payoutDestination: event.target.value }))}
                     required
-                    autoComplete="email"
-                    placeholder="your-paypal-email@example.com"
+                    autoComplete="off"
+                    placeholder="FNB · 63012345678 · 221426 · T Mokoena"
                     className="min-h-12 w-full rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface)] px-4 text-sm font-bold text-[var(--ink)] outline-none transition focus:border-[var(--signal)] focus:bg-white"
                   />
                 </div>
                 <p className="text-[0.7rem] font-semibold text-[var(--muted)]">
-                  Ensure this email is registered with PayPal to receive instant funds.
+                  Bank name, account number, branch code and account holder. Payouts settle in ZAR via EFT.
                 </p>
               </div>
 
@@ -369,15 +355,6 @@ export function OwnerWithdrawalsWorkspace() {
                   <span>Net Payout (ZAR)</span>
                   <span className="money font-black text-[var(--confirm)]">{money(netPayoutZar)}</span>
                 </div>
-                <div className="flex justify-between items-center pt-1">
-                  <span className="flex items-center gap-1">
-                    Est. PayPal Payout (USD)
-                    <Info className="h-3.5 w-3.5 text-[var(--muted)]" />
-                  </span>
-                  <span className="money text-base font-black text-[var(--ink)]">
-                    {zarPerPayoutUnit > 0 ? money(estimatedPayoutUsd, "USD") : "Rate unavailable"}
-                  </span>
-                </div>
               </div>
 
               <Button
@@ -388,59 +365,59 @@ export function OwnerWithdrawalsWorkspace() {
                 {saving ? (
                   <>
                     <Loader2 className="h-5 w-5 animate-spin" />
-                    Executing Instant Payout...
+                    Submitting payout request...
                   </>
                 ) : (
                   <>
                     <Zap className="h-5 w-5 fill-white text-white" />
-                    Request Instant PayPal Payout
+                    Request Bank Payout
                   </>
                 )}
               </Button>
 
               <div className="flex items-center justify-center gap-2 text-[0.7rem] font-semibold text-[var(--muted)]">
                 <ShieldCheck className="h-4 w-4 text-[var(--confirm)]" />
-                <span>Protected by PayPal Developer Instant Payout API & SSL</span>
+                <span>Settled via bank EFT in ZAR · Protected by SSL</span>
               </div>
             </form>
           </CardContent>
         </Card>
 
-        {/* PayPal API Info & How it works */}
+        {/* Bank Payout Info & How it works */}
         <div className="grid gap-6">
           <Card className="border-[var(--line)] bg-gradient-to-br from-slate-900 to-slate-800 text-white">
             <CardContent className="p-6 grid gap-4">
               <div className="flex items-center gap-3">
-                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-sky-500/20 text-sky-400">
-                  <Zap className="h-5 w-5 fill-sky-400" />
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-500/20 text-emerald-400">
+                  <Zap className="h-5 w-5 fill-emerald-400" />
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-white">Instant Payout Integration</h3>
-                  <p className="text-xs text-slate-300">Powered by PayPal REST Payouts API</p>
+                  <h3 className="text-base font-black text-white">Bank Payouts in ZAR</h3>
+                  <p className="text-xs text-slate-300">No conversion fees, no foreign accounts</p>
                 </div>
               </div>
 
               <p className="text-xs leading-5 text-slate-300">
-                King Sparkon uses PayPal&apos;s automated Payout API to process withdrawal requests instantly. Funds are dispatched directly from the platform wallet straight to your linked PayPal email address.
+                King Sparkon settles owner withdrawals straight to your South African bank account. Submit the request with your banking details and track every payout below with full gross, fee and net transparency.
               </p>
 
               <div className="grid gap-3 pt-2">
                 <div className="flex items-start gap-3 rounded-xl bg-white/5 p-3">
-                  <Clock className="h-5 w-5 shrink-0 text-sky-400 mt-0.5" />
+                  <Clock className="h-5 w-5 shrink-0 text-emerald-400 mt-0.5" />
                   <div>
-                    <p className="text-xs font-black text-white">Instant Processing</p>
+                    <p className="text-xs font-black text-white">Tracked Requests</p>
                     <p className="text-[0.7rem] text-slate-300">
-                      Approved requests process in seconds without manual intervention.
+                      Every request is recorded instantly with status tracking from request to settlement.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3 rounded-xl bg-white/5 p-3">
-                  <DollarSign className="h-5 w-5 shrink-0 text-emerald-400 mt-0.5" />
+                  <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400 mt-0.5" />
                   <div>
-                    <p className="text-xs font-black text-white">Auto FX Conversion</p>
+                    <p className="text-xs font-black text-white">ZAR, No Conversion</p>
                     <p className="text-[0.7rem] text-slate-300">
-                      ZAR balance converts transparently to payout currency USD based on live backend rates.
+                      What you request in rand is what gets paid out. No USD conversion or forex spread.
                     </p>
                   </div>
                 </div>
@@ -474,13 +451,11 @@ export function OwnerWithdrawalsWorkspace() {
               </div>
               <div className="flex justify-between border-b border-[var(--line)] pb-2">
                 <span className="font-semibold text-[var(--steel)]">Configured Payout Method</span>
-                <span className="font-black text-[var(--signal)]">PayPal Instant Payouts</span>
+                <span className="font-black text-[var(--signal)]">Bank Payouts</span>
               </div>
               <div className="flex justify-between">
-                <span className="font-semibold text-[var(--steel)]">Base Exchange Rate</span>
-                <span className="money font-black text-[var(--ink)]">
-                  {zarPerPayoutUnit > 0 ? `${money(zarPerPayoutUnit)} / USD` : "Not set"}
-                </span>
+                <span className="font-semibold text-[var(--steel)]">Payout Currency</span>
+                <span className="money font-black text-[var(--ink)]">ZAR · no conversion</span>
               </div>
             </CardContent>
           </Card>
@@ -491,9 +466,9 @@ export function OwnerWithdrawalsWorkspace() {
       <Card className="border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
         <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <CardTitle>PayPal Payout History</CardTitle>
+            <CardTitle>Bank Payout History</CardTitle>
             <p className="mt-1 text-xs font-semibold text-[var(--steel)]">
-              Complete log of all instant PayPal payouts and unified balance withdrawals.
+              Complete log of all bank payouts and unified balance withdrawals.
             </p>
           </div>
           <Button type="button" variant="quiet" disabled={loading} onClick={() => void load()}>
@@ -507,7 +482,7 @@ export function OwnerWithdrawalsWorkspace() {
             </div>
           ) : withdrawals.length === 0 ? (
             <div className="rounded-[var(--radius-xl)] border border-dashed border-[var(--line)] bg-[var(--surface)] p-8 text-center text-sm font-bold text-[var(--steel)]">
-              No PayPal payouts have been requested yet.
+              No bank payouts have been requested yet.
             </div>
           ) : (
             <div className="grid gap-3">
@@ -525,10 +500,10 @@ export function OwnerWithdrawalsWorkspace() {
                       />
                     </div>
                     <p className="font-mono text-xs font-black text-[var(--ink)]">
-                      Batch ID: {withdrawal.providerBatchId ?? withdrawal.id}
+                      Reference: {withdrawal.providerBatchId ?? withdrawal.id}
                     </p>
                     <p className="text-xs font-semibold text-[var(--steel)]">
-                      Requested {date(withdrawal.requestedAt)} · {withdrawal.provider ?? withdrawal.payoutMethod ?? "PayPal"}
+                      Requested {date(withdrawal.requestedAt)} · {withdrawal.provider ?? withdrawal.payoutMethod ?? "Bank"}
                     </p>
                     {withdrawal.payoutDestination && (
                       <p className="text-xs font-bold text-[var(--signal)]">
@@ -538,9 +513,9 @@ export function OwnerWithdrawalsWorkspace() {
                   </div>
                   <div className="text-left md:text-right">
                     <p className="text-xl font-black text-[var(--ink)]">
-                      {withdrawal.payoutAmount != null && withdrawal.payoutCurrency
-                        ? money(withdrawal.payoutAmount, withdrawal.payoutCurrency)
-                        : money(withdrawal.netAmount, withdrawal.currency || "ZAR")}
+                      {withdrawal.payoutAmount != null
+                        ? money(withdrawal.payoutAmount)
+                        : money(withdrawal.netAmount)}
                     </p>
                     <p className="mt-0.5 text-xs font-bold text-[var(--steel)]">
                       Gross: {money(withdrawal.grossAmount)} · Fee: {money(withdrawal.feeAmount)} · Net: {money(withdrawal.netAmount)}
@@ -558,7 +533,7 @@ export function OwnerWithdrawalsWorkspace() {
         <CardHeader>
           <CardTitle>Unified Balance Ledger</CardTitle>
           <p className="mt-1 text-xs font-semibold text-[var(--steel)]">
-            Detailed ledger entries including sales credits, PayPal withdrawal debits, and fee reversals.
+            Detailed ledger entries including sales credits, bank withdrawal debits, and fee reversals.
           </p>
         </CardHeader>
         <CardContent>
