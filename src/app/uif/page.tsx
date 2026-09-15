@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Calculator, Landmark, ShieldCheck, UserCheck } from "lucide-react";
+import { Landmark, ShieldCheck, UserCheck } from "lucide-react";
 import { Breadcrumbs } from "@/components/content/Breadcrumbs";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { PremiumHeader } from "@/components/marketing/PremiumHeader";
@@ -36,17 +36,6 @@ export default function UifPortalPage() {
             <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--steel)]">
               King Sparkon Tracker provides South African citizens with direct access to Department of Employment and Labour UIF Online services under strict Protection of Personal Information Act (POPIA) safeguards.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/uif#uif-status" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-extrabold text-white hover:bg-[var(--signal-strong)]">
-                Check UIF Status <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link href="/uif#uif-password" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--line-strong)] bg-white px-5 text-sm font-extrabold hover:border-[var(--signal)]">
-                Update UIF Password
-              </Link>
-              <Link href="/uif#uif-calculator" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--line-strong)] bg-white px-5 text-sm font-extrabold hover:border-[var(--signal)]">
-                <Calculator className="h-4 w-4" /> UIF Calculator
-              </Link>
-            </div>
           </div>
         </section>
 
