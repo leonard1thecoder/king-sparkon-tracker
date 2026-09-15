@@ -70,7 +70,7 @@ export function UifServiceSlider() {
 
   return (
     <div id="uif-services" className="scroll-mt-28">
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap justify-center gap-3">
         {SLIDES.map((s) => (
           <button
             key={s.key}

@@ -34,8 +34,8 @@ export function HowItWorksRoleSlider() {
   }, [active]);
 
   return (
-    <div className="mx-auto max-w-7xl px-5 md:px-8">
-      <div className="flex flex-wrap gap-3">
+    <div className="mx-auto max-w-7xl px-5 pt-10 md:px-8 md:pt-14">
+      <div className="flex flex-wrap justify-center gap-3">
         {[
           { key: "users" as SlideKey, label: "Users" },
           { key: "businesses" as SlideKey, label: "Businesses" },
