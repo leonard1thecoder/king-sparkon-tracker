@@ -106,13 +106,13 @@ export function UifServiceSlider() {
                 </div>
               </div>
               <p className="mt-4 max-w-3xl text-sm leading-7 text-[var(--steel)]">
-                Verify benefit application status, claim numbers, and application dates directly using your 13-digit SA ID number. Personal identifiers are processed strictly on-demand under POPIA safeguards.
+                You must be registered and logged in — <Link href="/register" className="font-bold text-[var(--signal-strong)] hover:underline">create a free account</Link> or <Link href="/login" className="font-bold text-[var(--signal-strong)] hover:underline">sign in</Link> — then click <span className="font-black text-[var(--ink)]">Profile</span> in the dashboard header and open <span className="font-black text-[var(--ink)]">UIF</span>. Verify benefit application status, claim numbers, and application dates using your 13-digit SA ID number, processed strictly on-demand under POPIA safeguards.
               </p>
               <div className="mt-6 grid gap-4 md:grid-cols-3">
                 {[
-                  { n: "01", title: "Enter 13-digit ID", copy: "Digits only, validated inline before anything is sent." },
-                  { n: "02", title: "Fetch benefit history", copy: "Rows come straight from UIF Online — type, number, date, claim status." },
-                  { n: "03", title: "Nothing stored", copy: "No caching, no selling, no third-party sharing of your ID." },
+                  { n: "01", title: "Register", copy: "Create a free King Sparkon user account if you don't have one yet." },
+                  { n: "02", title: "Login", copy: "Sign in to open your user dashboard." },
+                  { n: "03", title: "Click Profile → UIF", copy: "Tap the Profile icon in the dashboard header, open UIF, then choose Check UIF Status." },
                 ].map((s) => (
                   <div key={s.n} className="rounded-xl border border-[var(--line)] bg-white p-5">
                     <div className="flex items-center gap-3">
@@ -143,13 +143,13 @@ export function UifServiceSlider() {
                 </div>
               </div>
               <p className="mt-4 max-w-3xl text-sm leading-7 text-[var(--steel)]">
-                Reset or update your UIF Online portal password securely with standard 8-12 character rules (1 uppercase, 1 number, 1 special). A R14.28 service fee is added to cart before payment.
+                You must be registered and logged in — <Link href="/register" className="font-bold text-[var(--signal-strong)] hover:underline">create a free account</Link> or <Link href="/login" className="font-bold text-[var(--signal-strong)] hover:underline">sign in</Link> — then click <span className="font-black text-[var(--ink)]">Profile</span> in the dashboard header and open <span className="font-black text-[var(--ink)]">UIF</span>. Reset your UIF Online portal password with standard 8-12 character rules (1 uppercase, 1 number, 1 special). A R14.28 service fee is added to cart before payment.
               </p>
               <div className="mt-6 grid gap-4 md:grid-cols-3">
                 {[
-                  { n: "01", title: "Confirm 13-digit ID", copy: "We verify the ID first, then reveal the password step." },
-                  { n: "02", title: "Choose strong password", copy: "8-12 chars with live strength and match checks." },
-                  { n: "03", title: "Add R14.28 to cart", copy: "Pay via the existing shop cart — then the reset is queued." },
+                  { n: "01", title: "Register", copy: "Create a free King Sparkon user account if you don't have one yet." },
+                  { n: "02", title: "Login", copy: "Sign in to open your user dashboard." },
+                  { n: "03", title: "Click Profile → UIF", copy: "Tap the Profile icon in the dashboard header, open UIF, then choose Update UIF Password." },
                 ].map((s) => (
                   <div key={s.n} className="rounded-xl border border-[var(--line)] bg-white p-5">
                     <div className="flex items-center gap-3">
