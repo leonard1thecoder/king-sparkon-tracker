@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Calculator, Landmark, ShieldCheck, UserCheck } from "lucide-react";
 import { UIFCalculator } from "@/components/uif/UIFCalculator";
@@ -23,6 +23,8 @@ function slideFromHash(hash: string): SlideKey | null {
 export function UifServiceSlider() {
   const [active, setActive] = useState<SlideKey>("status");
   const activeIndex = active === "status" ? 0 : active === "password" ? 1 : 2;
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const [viewportHeight, setViewportHeight] = useState<number | null>(null);
 
   // Deep-link support: /uif#uif-calculator opens the calculator slide.
   // Uses native history API so it stays in sync with Next.js router.
@@ -36,6 +38,27 @@ export function UifServiceSlider() {
     window.addEventListener("hashchange", onHashChange);
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
+
+  // Collapse the viewport to the active slide's height so shorter slides don't
+  // leave empty space below their content (the flex track otherwise stays as
+  // tall as the tallest slide — e.g. the calculator — pushing dots/footer down).
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const updateHeight = () => {
+      const slide = viewport.querySelector<HTMLElement>(`[data-slide="${active}"]`);
+      if (slide) setViewportHeight(slide.offsetHeight);
+    };
+    updateHeight();
+    const slides = Array.from(viewport.querySelectorAll<HTMLElement>("[data-slide]"));
+    const observer = new ResizeObserver(updateHeight);
+    slides.forEach((slide) => observer.observe(slide));
+    window.addEventListener("resize", updateHeight);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", updateHeight);
+    };
+  }, [active]);
 
   const select = useCallback((key: SlideKey) => {
     setActive(key);
@@ -66,13 +89,13 @@ export function UifServiceSlider() {
       </div>
 
       <div className="mt-8 scroll-mt-28 overflow-hidden rounded-2xl border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
-        <div className="relative overflow-hidden">
+        <div ref={viewportRef} className="relative overflow-hidden transition-[height] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" style={{ height: viewportHeight ?? undefined }}>
           <div
-            className="flex transition-transform duration-[2000ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+            className="flex items-start transition-transform duration-[2000ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
             style={{ transform: `translateX(-${activeIndex * 100}%)` }}
           >
             {/* Status Slide */}
-            <div id="uif-status" className="w-full shrink-0 scroll-mt-28 p-6 md:p-8">
+            <div id="uif-status" data-slide="status" className="w-full shrink-0 scroll-mt-28 p-6 md:p-8">
               <div className="flex items-start gap-4">
                 <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-[var(--line)] bg-[var(--signal-soft)] text-[var(--signal)]">
                   <UserCheck className="h-6 w-6" />
@@ -109,7 +132,7 @@ export function UifServiceSlider() {
             </div>
 
             {/* Password Slide */}
-            <div id="uif-password" className="w-full shrink-0 scroll-mt-28 p-6 md:p-8">
+            <div id="uif-password" data-slide="password" className="w-full shrink-0 scroll-mt-28 p-6 md:p-8">
               <div className="flex items-start gap-4">
                 <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-[var(--line)] bg-[var(--signal-soft)] text-[var(--signal)]">
                   <Landmark className="h-6 w-6" />
@@ -146,7 +169,7 @@ export function UifServiceSlider() {
             </div>
 
             {/* Calculator Slide */}
-            <div id="uif-calculator" className="w-full shrink-0 scroll-mt-28 p-6 md:p-8">
+            <div id="uif-calculator" data-slide="calculator" className="w-full shrink-0 scroll-mt-28 p-6 md:p-8">
               <div className="flex items-start gap-4">
                 <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-[var(--line)] bg-[var(--signal-soft)] text-[var(--signal)]">
                   <Calculator className="h-6 w-6" />

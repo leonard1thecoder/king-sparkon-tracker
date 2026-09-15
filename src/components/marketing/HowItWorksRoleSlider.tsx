@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, ShoppingCart, Building2, Handshake, Ticket, BriefcaseBusiness, WalletCards, Barcode, QrCode, ScanLine, UsersRound, CheckCircle2 } from "lucide-react";
 
@@ -9,6 +9,29 @@ type SlideKey = "users" | "businesses" | "affiliates";
 export function HowItWorksRoleSlider() {
   const [active, setActive] = useState<SlideKey>("users");
   const activeIndex = active === "users" ? 0 : active === "businesses" ? 1 : 2;
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const [viewportHeight, setViewportHeight] = useState<number | null>(null);
+
+  // Collapse the viewport to the active slide's height so shorter slides don't
+  // leave empty space below their content (the flex track otherwise stays as
+  // tall as the tallest slide, pushing the dots/footer far down).
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const updateHeight = () => {
+      const slide = viewport.querySelector<HTMLElement>(`[data-slide="${active}"]`);
+      if (slide) setViewportHeight(slide.offsetHeight);
+    };
+    updateHeight();
+    const slides = Array.from(viewport.querySelectorAll<HTMLElement>("[data-slide]"));
+    const observer = new ResizeObserver(updateHeight);
+    slides.forEach((slide) => observer.observe(slide));
+    window.addEventListener("resize", updateHeight);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", updateHeight);
+    };
+  }, [active]);
 
   return (
     <div className="mx-auto max-w-7xl px-5 md:px-8">
@@ -33,10 +56,10 @@ export function HowItWorksRoleSlider() {
       </div>
 
       <div id="role-slider" className="mt-8 scroll-mt-28 overflow-hidden rounded-2xl border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
-        <div className="relative overflow-hidden">
-          <div className="flex transition-transform duration-[2000ms] ease-[cubic-bezier(0.22,1,0.36,1)]" style={{ transform: `translateX(-${activeIndex * 100}%)` }}>
+        <div ref={viewportRef} className="relative overflow-hidden transition-[height] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" style={{ height: viewportHeight ?? undefined }}>
+          <div className="flex items-start transition-transform duration-[2000ms] ease-[cubic-bezier(0.22,1,0.36,1)]" style={{ transform: `translateX(-${activeIndex * 100}%)` }}>
             {/* Users Slide */}
-            <div className="w-full shrink-0 p-6 md:p-8">
+            <div data-slide="users" className="w-full shrink-0 p-6 md:p-8">
               <div className="flex items-start gap-4">
                 <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-[var(--line)] bg-[var(--signal-soft)] text-[var(--signal)]"><ShoppingCart className="h-6 w-6" /></div>
                 <div><p className="text-xs font-black uppercase tracking-[0.14em] text-[var(--signal-strong)]">Users</p><h3 className="mt-1 text-2xl font-black tracking-[-0.04em] md:text-3xl">Users — Browse Lego Mall, tickets, jobs</h3></div>
@@ -63,7 +86,7 @@ export function HowItWorksRoleSlider() {
             </div>
 
             {/* Businesses Slide - detailed from request */}
-            <div className="w-full shrink-0 p-6 md:p-8">
+            <div data-slide="businesses" className="w-full shrink-0 p-6 md:p-8">
               <div className="flex items-start gap-4">
                 <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-[var(--line)] bg-[var(--signal-soft)] text-[var(--signal)]"><Building2 className="h-6 w-6" /></div>
                 <div><p className="text-xs font-black uppercase tracking-[0.14em] text-[var(--signal-strong)]">Businesses</p><h3 className="mt-1 text-2xl font-black tracking-[-0.04em] md:text-3xl">Businesses — Full operations console</h3></div>
@@ -95,7 +118,7 @@ export function HowItWorksRoleSlider() {
             </div>
 
             {/* Affiliates Slide */}
-            <div className="w-full shrink-0 p-6 md:p-8">
+            <div data-slide="affiliates" className="w-full shrink-0 p-6 md:p-8">
               <div className="flex items-start gap-4">
                 <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-[var(--line)] bg-[var(--signal-soft)] text-[var(--signal)]"><Handshake className="h-6 w-6" /></div>
                 <div><p className="text-xs font-black uppercase tracking-[0.14em] text-[var(--signal-strong)]">Affiliates</p><h3 className="mt-1 text-2xl font-black tracking-[-0.04em] md:text-3xl">Affiliates — Refer, share, earn</h3></div>
