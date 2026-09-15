@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Barcode, BriefcaseBusiness, Megaphone, QrCode, ScanLine, ShoppingCart, WalletCards } from "lucide-react";
+import { BadgeCheck, Barcode } from "lucide-react";
 import { Breadcrumbs } from "@/components/content/Breadcrumbs";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { PremiumHeader } from "@/components/marketing/PremiumHeader";
+import { FeaturesRoleSlider } from "@/components/marketing/FeaturesRoleSlider";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -12,55 +13,6 @@ export const metadata: Metadata = pageMetadata({
     "Explore King Sparkon Tracker features: barcode inventory with unit-level tracking, QR ticket capacity and verification, cart checkout, job opportunities, worker tips, affiliate referrals, promotions, billing and audit-ready reports.",
   path: "/features",
 });
-
-const features = [
-  {
-    icon: ScanLine,
-    title: "Barcode inventory",
-    who: "Owner • Worker",
-    copy: "Products carry individual barcodes. Stock quantity, barcode count and remaining slots are visible. PATCH /api/products/{id}/quantity and POST /api/products/{id}/barcodes keep history clean.",
-    bullets: ["Unit codes", "Remaining slots", "Night-shift pricing"],
-    guide: "/guides/barcode-inventory-guide",
-  },
-  {
-    icon: QrCode,
-    title: "QR tickets & gate scan",
-    copy: "Events have ticket classes, sold quantity and checked-in totals. Buyers keep QR tickets in My Tickets. Workers verify via scan at the gate — the ledger never double-counts capacity.",
-    who: "Owner • Worker • User",
-    bullets: ["Capacity totals", "Gate verification", "Buyer ticket archive"],
-    guide: "/guides/qr-ticket-operations",
-  },
-  {
-    icon: ShoppingCart,
-    title: "Cart, checkout & collection",
-    copy: "Tuck-shop exposure, cart, purchase and collection QR. Transactions support SELL (barcodes required) vs BUY (no barcodes) and CASH/SWIPE_MACHINE/WEBSITE_PAYMENT with paymentUrl and referenceEmail.",
-    who: "User • Worker • Owner",
-    bullets: ["Idempotent checkout", "Collection QR", "Payment status"],
-  },
-  {
-    icon: BriefcaseBusiness,
-    title: "Job opportunities",
-    copy: "Businesses publish roles with workplace, employment and experience levels. Users apply with CV URL, owners review status SUBMITTED → REVIEWING → SHORTLISTED → ACCEPTED.",
-    who: "Owner • User • Admin",
-    bullets: ["Publish & close", "Applications", "Status timeline"],
-  },
-  {
-    icon: WalletCards,
-    title: "Worker tips & payouts",
-    copy: "Workers expose tip QR, buyers tip via tipAmount + callbackUrl. Owners review gross/fee/net. Withdrawals for transactions or tips show status and audit timestamps.",
-    who: "Worker • Owner • User",
-    bullets: ["QR tip flows", "Fee transparency", "Withdrawal ledger"],
-    guide: "/guides/worker-tips-payouts",
-  },
-  {
-    icon: Megaphone,
-    title: "Affiliate referrals & promotions",
-    copy: "Affiliates get referral code, promotion link and QR. Promotions target audience + channel with quote (targetCount, bulkPrice) before sending. Referrals and commissions stay visible.",
-    who: "Affiliate • Owner • Admin",
-    bullets: ["Referral assets", "Quote before send", "Commission view"],
-    guide: "/guides/affiliate-referrals",
-  },
-];
 
 export default function FeaturesPage() {
   return (
@@ -79,26 +31,7 @@ export default function FeaturesPage() {
         </section>
 
         <section className="mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-12">
-          <div className="grid gap-6 md:grid-cols-2">
-            {features.map((f) => (
-              <GlassCard key={f.title} variant="default" className="flex flex-col">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="grid h-11 w-11 place-items-center rounded-xl border border-[var(--line)] bg-white text-[var(--signal)]"><f.icon className="h-5 w-5" /></div>
-                  <span className="rounded-full border border-[var(--line)] bg-[var(--signal-soft)] px-3 py-1 text-xs font-extrabold text-[var(--signal-strong)]">{f.who}</span>
-                </div>
-                <h2 className="mt-5 text-xl font-black">{f.title}</h2>
-                <p className="mt-3 text-sm leading-6 text-[var(--steel)]">{f.copy}</p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {f.bullets.map((b) => (
-                    <span key={b} className="rounded-full border border-[var(--line)] bg-white px-2.5 py-1 text-xs font-bold text-[var(--steel)]">{b}</span>
-                  ))}
-                </div>
-                <div className="mt-6 flex gap-3">
-                  {f.guide ? <Link href={f.guide} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-[var(--line)] bg-white px-4 text-sm font-extrabold hover:border-[var(--signal)] hover:text-[var(--signal-strong)]">Guide <ArrowRight className="h-4 w-4" /></Link> : null}
-                </div>
-              </GlassCard>
-            ))}
-          </div>
+          <FeaturesRoleSlider />
 
           {/* Dedicated UIF System Feature Card */}
           <GlassCard variant="highlighted" className="mt-8 grid gap-6 md:grid-cols-2 border border-[var(--signal)]/30">
