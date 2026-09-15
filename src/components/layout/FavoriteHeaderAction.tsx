@@ -59,7 +59,7 @@ export function FavoriteHeaderAction() {
   const title = count === 0 ? "No favorites yet" : `${count} favorite business${count === 1 ? "" : "es"}`;
 
   return (
-    <div className="relative" data-favorite-dropdown>
+    <div className="relative flex flex-col items-center gap-1" data-favorite-dropdown>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -79,6 +79,7 @@ export function FavoriteHeaderAction() {
           </span>
         ) : null}
       </button>
+      <span className="text-[0.6rem] font-extrabold uppercase leading-none tracking-[0.08em] text-[var(--steel)]" aria-hidden="true">Favorites</span>
 
       {open ? (
         <div className="absolute right-0 top-full z-40 w-72 pt-2">

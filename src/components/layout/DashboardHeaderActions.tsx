@@ -50,6 +50,10 @@ export const userProfileShortcuts: ProfileShortcut[] = [
 
 const iconButtonClass = "inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--gold)] hover:bg-[var(--surface)]";
 
+const headerActionLabelClass = "text-[0.6rem] font-extrabold uppercase leading-none tracking-[0.08em] text-[var(--steel)]";
+
+const headerActionColumnClass = "flex flex-col items-center gap-1";
+
 function money(value: number) {
   return new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(Number(value ?? 0));
 }
@@ -127,16 +131,19 @@ function OwnerBalanceAction() {
   }, []);
 
   return (
-    <Link
-      href="/dashboard/owner/withdrawals"
-      className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--ink)] px-4 text-xs font-black uppercase tracking-[0.1em] text-[var(--gold)] shadow-[var(--shadow-soft)] hover:bg-white"
-      aria-label="Open business balance and withdrawals"
-      title={`King Sparkon balance · ${loading ? "Loading" : money(total)}`}
-    >
-      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Landmark className="h-4 w-4" />}
-      <span className="sr-only">Business balance and withdrawals</span>
-      <span className="money hidden text-white/90 lg:inline">{loading ? "..." : money(total)}</span>
-    </Link>
+    <div className={headerActionColumnClass}>
+      <Link
+        href="/dashboard/owner/withdrawals"
+        className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--ink)] px-4 text-xs font-black uppercase tracking-[0.1em] text-[var(--gold)] shadow-[var(--shadow-soft)] hover:bg-white"
+        aria-label="Open business balance and withdrawals"
+        title={`King Sparkon balance · ${loading ? "Loading" : money(total)}`}
+      >
+        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Landmark className="h-4 w-4" />}
+        <span className="sr-only">Business balance and withdrawals</span>
+        <span className="money hidden text-white/90 lg:inline">{loading ? "..." : money(total)}</span>
+      </Link>
+      <span className={headerActionLabelClass} aria-hidden="true">Balance</span>
+    </div>
   );
 }
 
@@ -200,7 +207,7 @@ function ProfileDropdown({ role }: { role: string }) {
   const href = profileRoute(role);
 
   return (
-    <div className="relative" data-profile-dropdown>
+    <div className={`${headerActionColumnClass} relative`} data-profile-dropdown>
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
@@ -222,6 +229,7 @@ function ProfileDropdown({ role }: { role: string }) {
           <ChevronDown className="h-2.5 w-2.5" />
         </span>
       </button>
+      <span className={headerActionLabelClass} aria-hidden="true">Profile</span>
 
       {open ? (
         <div id="dashboard-profile-menu" className="absolute right-0 z-50 mt-2 grid w-[min(22rem,calc(100vw-2rem))] gap-1 rounded-[1.35rem] border border-[var(--line)] bg-white p-2 shadow-[var(--shadow-ledger)]" role="menu">
@@ -317,18 +325,27 @@ export function DashboardHeaderActions({ role }: { role: string }) {
       {showBalance ? <OwnerBalanceAction /> : null}
       {showCheckout ? (
         <>
-          <Link href="/dashboard/user/shop" className={iconButtonClass} aria-label="Buy products" title="Buy products">
-            <ShoppingCart className="h-4 w-4" />
-          </Link>
-          <Link href="/dashboard/user/tickets/buy" className={iconButtonClass} aria-label="Buy tickets" title="Buy tickets">
-            <Ticket className="h-4 w-4" />
-          </Link>
+          <div className={headerActionColumnClass} data-header-action="shop">
+            <Link href="/dashboard/user/shop" className={iconButtonClass} aria-label="Buy products" title="Buy products">
+              <ShoppingCart className="h-4 w-4" />
+            </Link>
+            <span className={headerActionLabelClass} aria-hidden="true">Shop</span>
+          </div>
+          <div className={headerActionColumnClass} data-header-action="tickets">
+            <Link href="/dashboard/user/tickets/buy" className={iconButtonClass} aria-label="Buy tickets" title="Buy tickets">
+              <Ticket className="h-4 w-4" />
+            </Link>
+            <span className={headerActionLabelClass} aria-hidden="true">Tickets</span>
+          </div>
         </>
       ) : null}
       <ProfileDropdown role={role} />
-      <LogoutButton className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--danger)] bg-white text-[var(--danger)] shadow-[var(--shadow-soft)] hover:bg-[var(--danger)] hover:text-white disabled:opacity-60" ariaLabel="Sign out">
-        <Power className="h-4 w-4" />
-      </LogoutButton>
+      <div className={headerActionColumnClass}>
+        <LogoutButton className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--danger)] bg-white text-[var(--danger)] shadow-[var(--shadow-soft)] hover:bg-[var(--danger)] hover:text-white disabled:opacity-60" ariaLabel="Sign out">
+          <Power className="h-4 w-4" />
+        </LogoutButton>
+        <span className={headerActionLabelClass} aria-hidden="true">Logout</span>
+      </div>
     </div>
   );
 }

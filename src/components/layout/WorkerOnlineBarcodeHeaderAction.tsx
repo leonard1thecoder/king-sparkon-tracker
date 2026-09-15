@@ -60,20 +60,23 @@ export function WorkerOnlineBarcodeHeaderAction() {
     : `${required} paid online product unit${required === 1 ? "" : "s"} need barcode assignment`;
 
   return (
-    <Link
-      href="/dashboard/worker/scan"
-      aria-label={title}
-      title={title}
-      className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--signal)] bg-white text-[var(--signal)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)] hover:text-white"
-    >
-      {loading ? <Loader2 className="h-4.5 w-4.5 animate-spin" /> : <PackageSearch className="h-4.5 w-4.5" />}
-      <span
-        className="absolute -right-2 -top-2 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-sky-500 px-1 text-[0.62rem] font-black leading-none text-white shadow-md"
-        aria-hidden="true"
+    <div className="flex flex-col items-center gap-1">
+      <Link
+        href="/dashboard/worker/scan"
+        aria-label={title}
+        title={title}
+        className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--signal)] bg-white text-[var(--signal)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)] hover:text-white"
       >
-        {loading ? "…" : countLabel(required)}
-      </span>
-      <span className="sr-only" aria-live="polite">{title}</span>
-    </Link>
+        {loading ? <Loader2 className="h-4.5 w-4.5 animate-spin" /> : <PackageSearch className="h-4.5 w-4.5" />}
+        <span
+          className="absolute -right-2 -top-2 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-sky-500 px-1 text-[0.62rem] font-black leading-none text-white shadow-md"
+          aria-hidden="true"
+        >
+          {loading ? "…" : countLabel(required)}
+        </span>
+        <span className="sr-only" aria-live="polite">{title}</span>
+      </Link>
+      <span className="text-[0.6rem] font-extrabold uppercase leading-none tracking-[0.08em] text-[var(--steel)]" aria-hidden="true">Scan</span>
+    </div>
   );
 }

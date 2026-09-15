@@ -55,43 +55,46 @@ function UserCartHeaderAction() {
     : `Cart · ${counts.products} product${counts.products === 1 ? "" : "s"} · ${counts.tickets} ticket${counts.tickets === 1 ? "" : "s"}`;
 
   return (
-    <Link
-      href="/dashboard/user/shop/cart"
-      aria-label={title}
-      title={title}
-      className={cn(
-        "relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border bg-white text-[var(--ink)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[var(--surface)]",
-        counts.products > 0 && counts.tickets > 0
-          ? "border-sky-400 ring-2 ring-sky-200"
-          : counts.products > 0
+    <div className="flex flex-col items-center gap-1">
+      <Link
+        href="/dashboard/user/shop/cart"
+        aria-label={title}
+        title={title}
+        className={cn(
+          "relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border bg-white text-[var(--ink)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:bg-[var(--surface)]",
+          counts.products > 0 && counts.tickets > 0
             ? "border-sky-400 ring-2 ring-sky-200"
-            : counts.tickets > 0
+            : counts.products > 0
               ? "border-sky-400 ring-2 ring-sky-200"
-              : "border-[var(--line)] hover:border-[var(--gold)]",
-      )}
-    >
-      <ShoppingCart className="h-4.5 w-4.5" />
+              : counts.tickets > 0
+                ? "border-sky-400 ring-2 ring-sky-200"
+                : "border-[var(--line)] hover:border-[var(--gold)]",
+        )}
+      >
+        <ShoppingCart className="h-4.5 w-4.5" />
 
-      {counts.products > 0 ? (
-        <span
-          className="absolute -right-2 -top-2 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-sky-500 px-1 text-[0.62rem] font-black leading-none text-white shadow-md"
-          aria-label={`${counts.products} product${counts.products === 1 ? "" : "s"} in cart`}
-        >
-          {countLabel(counts.products)}
-        </span>
-      ) : null}
+        {counts.products > 0 ? (
+          <span
+            className="absolute -right-2 -top-2 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-sky-500 px-1 text-[0.62rem] font-black leading-none text-white shadow-md"
+            aria-label={`${counts.products} product${counts.products === 1 ? "" : "s"} in cart`}
+          >
+            {countLabel(counts.products)}
+          </span>
+        ) : null}
 
-      {counts.tickets > 0 ? (
-        <span
-          className="absolute -bottom-2 -right-2 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-sky-500 px-1 text-[0.62rem] font-black leading-none text-white shadow-md"
-          aria-label={`${counts.tickets} ticket${counts.tickets === 1 ? "" : "s"} in cart`}
-        >
-          {countLabel(counts.tickets)}
-        </span>
-      ) : null}
+        {counts.tickets > 0 ? (
+          <span
+            className="absolute -bottom-2 -right-2 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-sky-500 px-1 text-[0.62rem] font-black leading-none text-white shadow-md"
+            aria-label={`${counts.tickets} ticket${counts.tickets === 1 ? "" : "s"} in cart`}
+          >
+            {countLabel(counts.tickets)}
+          </span>
+        ) : null}
 
-      <span className="sr-only" aria-live="polite">{title}</span>
-    </Link>
+        <span className="sr-only" aria-live="polite">{title}</span>
+      </Link>
+      <span className="text-[0.6rem] font-extrabold uppercase leading-none tracking-[0.08em] text-[var(--steel)]" aria-hidden="true">Cart</span>
+    </div>
   );
 }
 
@@ -123,8 +126,8 @@ export function UserAwareDashboardHeaderActions({ role }: { role: string }) {
   return (
     <>
       <style jsx global>{`
-        .user-dashboard-header-actions a[aria-label="Buy products"],
-        .user-dashboard-header-actions a[aria-label="Buy tickets"] {
+        .user-dashboard-header-actions [data-header-action="shop"],
+        .user-dashboard-header-actions [data-header-action="tickets"] {
           display: none !important;
         }
 
