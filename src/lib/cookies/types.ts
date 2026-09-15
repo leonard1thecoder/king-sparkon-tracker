@@ -35,5 +35,11 @@ export const COOKIE_CATEGORIES: readonly CookieCategory[] = [
   "marketing",
 ] as const;
 
-/** Status of the visitor's consent journey (client-side). */
-export type ConsentStatus = "pending" | "undecided" | "decided";
+/**
+ * Lifecycle of the visitor's consent:
+ * - `unknown`: no valid current-version consent exists (prompt the visitor).
+ * - `accepted`: every optional category is enabled.
+ * - `rejected`: only necessary cookies are enabled.
+ * - `custom`: some, but not all, optional categories are enabled.
+ */
+export type ConsentStatus = "unknown" | "accepted" | "rejected" | "custom";

@@ -1,24 +1,29 @@
 /**
- * Client-safe consent helpers: read, write, validate and query the
- * `cookie_consent` persistence cookie.
+ * Framework-independent consent helpers: read, write, validate and query
+ * the `cookie_consent` persistence cookie.
  *
- * - Works when `document` is unavailable (SSR) by returning safe fallbacks.
- * - Never throws on malformed cookies: unparseable or outdated values are
- *   treated as "no valid consent" instead of crashing.
+ * - Safe to import from server AND client code: every browser API access
+ *   is guarded, and the module has no React dependency.
+ * - Never throws on malformed cookies: unparseable, outdated or wrongly
+ *   shaped values resolve to "no valid consent" instead of crashing.
+ * - One central serialization/write path shared by persist + removal, so
+ *   duplicate consent cookies can never accumulate.
  * - No `any` anywhere; unknown JSON is narrowed with explicit guards.
  */
 
 import {
-  COOKIE_CONSENT_EVENT,
+  COOKIE_CONSENT_CHANGE_EVENT,
   COOKIE_CONSENT_MAX_AGE,
   COOKIE_CONSENT_NAME,
   COOKIE_CONSENT_PATH,
+  COOKIE_CONSENT_SYNC_KEY,
   COOKIE_CONSENT_VERSION,
   DEFAULT_CONSENT_STATE,
 } from "./constants";
 import { COOKIE_CATEGORIES } from "./types";
 import type {
   ConsentState,
+  ConsentStatus,
   CookieCategory,
   OptionalCookieCategory,
   StoredConsent,
@@ -30,8 +35,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 /**
  * Validate an unknown parsed value into a `StoredConsent`, or return `null`.
- * Rejects wrong shapes, wrong types, and stale policy versions so old
- * consent can never silently authorize new tracking.
+ * Rejects wrong shapes, non-boolean categories, invalid timestamps and
+ * stale policy versions, so old or forged consent can never silently
+ * authorize tracking.
  */
 export function parseStoredConsent(value: unknown): StoredConsent | null {
   if (!isRecord(value)) return null;
@@ -42,14 +48,26 @@ export function parseStoredConsent(value: unknown): StoredConsent | null {
   const state: ConsentState = { ...DEFAULT_CONSENT_STATE };
   for (const category of COOKIE_CATEGORIES) {
     if (category === "necessary") continue;
-    const flag = value[category];
+    const flag: unknown = value[category];
     if (typeof flag !== "boolean") return null;
     state[category] = flag;
   }
   return { ...state, necessary: true, timestamp: value.timestamp, version: value.version };
 }
 
-/** Read the raw `cookie_consent` value from `document.cookie` (null on SSR). */
+/**
+ * Map a stored record (or its absence) to lifecycle status:
+ * unknown (prompt) / accepted (all on) / rejected (necessary only) / custom.
+ */
+export function deriveConsentStatus(stored: StoredConsent | null): ConsentStatus {
+  if (!stored) return "unknown";
+  const optional = [stored.preferences, stored.analytics, stored.marketing];
+  if (optional.every(Boolean)) return "accepted";
+  if (optional.every((enabled) => !enabled)) return "rejected";
+  return "custom";
+}
+
+/** Read the raw `cookie_consent` value. Null on the server or when absent. */
 export function readConsentCookieRaw(): string | null {
   if (typeof document === "undefined") return null;
   const prefix = `${COOKIE_CONSENT_NAME}=`;
@@ -86,19 +104,30 @@ export function getEffectiveConsent(): ConsentState {
   };
 }
 
-/** Convenience check used to gate analytics/marketing integrations. */
+/**
+ * Category check used to gate integrations.
+ * - `necessary` is `true` whenever a valid consent object exists.
+ * - Optional categories match their stored boolean.
+ * - Missing/invalid consent is never treated as permission (all `false`).
+ */
 export function hasConsent(category: CookieCategory): boolean {
-  return getEffectiveConsent()[category];
+  const stored = getConsent();
+  if (!stored) return false;
+  return stored[category] === true;
 }
 
 /** Convenience check for any single optional category. */
 export function hasOptionalConsent(category: OptionalCookieCategory): boolean {
-  return getEffectiveConsent()[category];
+  return hasConsent(category);
 }
 
-function buildConsentCookie(record: StoredConsent, maxAge: number): string {
+/**
+ * Central cookie serialization. Both persisting and removal go through
+ * here — one format, one path, one cookie.
+ */
+function toConsentCookieString(encodedValue: string, maxAge: number): string {
   const attributes = [
-    `${COOKIE_CONSENT_NAME}=${encodeURIComponent(JSON.stringify(record))}`,
+    `${COOKIE_CONSENT_NAME}=${encodedValue}`,
     `Path=${COOKIE_CONSENT_PATH}`,
     `Max-Age=${maxAge}`,
     "SameSite=Lax",
@@ -110,14 +139,27 @@ function buildConsentCookie(record: StoredConsent, maxAge: number): string {
   return attributes.join("; ");
 }
 
+function writeConsentCookie(encodedValue: string, maxAge: number): void {
+  if (typeof document === "undefined") return;
+  document.cookie = toConsentCookieString(encodedValue, maxAge);
+}
+
 function notifyConsentChanged(consent: StoredConsent | null): void {
   if (typeof window === "undefined") return;
-  window.dispatchEvent(new CustomEvent<StoredConsent | null>(COOKIE_CONSENT_EVENT, { detail: consent }));
+  // 1. Same-tab notification (rich detail is safe here: same page already owns it).
+  window.dispatchEvent(new CustomEvent<StoredConsent | null>(COOKIE_CONSENT_CHANGE_EVENT, { detail: consent }));
+  // 2. Cross-tab ping: timestamp ONLY — never the consent object (privacy).
+  try {
+    const storage = window.localStorage;
+    if (storage) storage.setItem(COOKIE_CONSENT_SYNC_KEY, String(Date.now()));
+  } catch {
+    // Private mode / disabled storage: other tabs simply re-prompt on load.
+  }
 }
 
 /**
- * Persist a consent record. Single write path — overwrites any previous
- * `cookie_consent` value so duplicates can never accumulate.
+ * Persist a consent record. Overwrites any previous value in place so
+ * duplicates can never accumulate.
  */
 export function setConsent(state: ConsentState): StoredConsent {
   const record: StoredConsent = {
@@ -128,9 +170,7 @@ export function setConsent(state: ConsentState): StoredConsent {
     timestamp: new Date().toISOString(),
     version: COOKIE_CONSENT_VERSION,
   };
-  if (typeof document !== "undefined") {
-    document.cookie = buildConsentCookie(record, COOKIE_CONSENT_MAX_AGE);
-  }
+  writeConsentCookie(encodeURIComponent(JSON.stringify(record)), COOKIE_CONSENT_MAX_AGE);
   notifyConsentChanged(record);
   return record;
 }
@@ -146,12 +186,11 @@ export function rejectNonEssentialConsent(): StoredConsent {
 }
 
 /**
- * Delete the consent cookie and notify listeners. The banner returns on
- * next render because no valid consent exists anymore.
+ * Delete the consent cookie through the same central path and notify
+ * listeners. The banner returns on next render because no valid consent
+ * exists anymore.
  */
 export function clearConsent(): void {
-  if (typeof document !== "undefined") {
-    document.cookie = `${COOKIE_CONSENT_NAME}=; Path=${COOKIE_CONSENT_PATH}; Max-Age=0; SameSite=Lax`;
-  }
+  writeConsentCookie("", 0);
   notifyConsentChanged(null);
 }

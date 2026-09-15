@@ -1,3 +1,5 @@
+import { hasConsent } from "@/lib/cookies/consent";
+
 export type AffiliateAd = {
   id: string;
   advertiser: string;
@@ -101,6 +103,10 @@ export function trackAffiliateEvent(
 ): void {
   if (typeof window === "undefined") return;
   try {
+    // Consent-gated: never queue measurement events before the visitor
+    // grants analytics or marketing consent. Queued dataLayer events would
+    // otherwise flush into GA/GTM the moment those libraries load.
+    if (!hasConsent("analytics") && !hasConsent("marketing")) return;
     // Prefer existing analytics if present
     const w = window as unknown as Record<string, unknown>;
     const gtag = w.gtag as ((cmd: string, name: string, params: unknown) => void) | undefined;

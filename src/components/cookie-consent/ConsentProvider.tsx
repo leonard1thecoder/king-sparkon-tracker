@@ -6,34 +6,30 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
 import {
   acceptAllConsent,
   clearConsent,
-  COOKIE_CONSENT_EVENT,
-  DEFAULT_CONSENT_STATE,
+  deriveConsentStatus,
   getConsent,
   rejectNonEssentialConsent,
   setConsent,
-} from "@/lib/cookies";
-import type {
-  ConsentState,
-  ConsentStatus,
-  CookieCategory,
-  StoredConsent,
-} from "@/lib/cookies";
+} from "@/lib/cookies/consent";
+import { COOKIE_CONSENT_CHANGE_EVENT, COOKIE_CONSENT_SYNC_KEY, DEFAULT_CONSENT_STATE } from "@/lib/cookies/constants";
+import type { ConsentState, ConsentStatus, CookieCategory, StoredConsent } from "@/lib/cookies/types";
 
-interface ConsentContextValue {
-  /** Lifecycle of the visitor's choice. `pending` until the client has read the cookie. */
+interface CookieConsentContextValue {
+  /** Lifecycle: unknown (prompt) / accepted / rejected / custom. */
   status: ConsentStatus;
   /** Last stored record, or `null` when there is no valid consent. */
   stored: StoredConsent | null;
   /** Effective choices: stored consent, or privacy-safe defaults pre-decision. */
   consent: ConsentState;
-  /** Single-category check (drives conditional script loading). */
-  hasCategory: (category: CookieCategory) => boolean;
+  /** Category check. Never treats missing consent as permission. */
+  hasConsent: (category: CookieCategory) => boolean;
   acceptAll: () => void;
   rejectNonEssential: () => void;
   savePreferences: (state: ConsentState) => void;
@@ -45,7 +41,7 @@ interface ConsentContextValue {
   closeSettings: () => void;
 }
 
-const ConsentContext = createContext<ConsentContextValue | null>(null);
+const CookieConsentContext = createContext<CookieConsentContextValue | null>(null);
 
 function effectiveFrom(stored: StoredConsent | null): ConsentState {
   if (!stored) return { ...DEFAULT_CONSENT_STATE };
@@ -61,75 +57,78 @@ export function ConsentProvider({
   initialConsent = null,
   children,
 }: {
-  /** Server-read consent (via `getServerConsent`) for instant correct state. */
+  /** Server-read consent (via `getServerConsent`) used as a fast path. */
   initialConsent?: StoredConsent | null;
   children: ReactNode;
 }) {
   const [stored, setStored] = useState<StoredConsent | null>(initialConsent);
-  const [status, setStatus] = useState<ConsentStatus>(initialConsent ? "decided" : "pending");
   const [settingsOpen, setSettingsOpen] = useState(false);
+  // Guard against double initialization under StrictMode double-effects.
+  const syncedRef = useRef(false);
 
-  // Hydration-safe sync: the authoritative read always happens on the
+  // Hydration-safe sync: the authoritative cookie read happens on the
   // client after mount, so server and client render identically first.
+  // Banner/dialog/scripts additionally render nothing until mounted.
   useEffect(() => {
+    if (syncedRef.current) return;
+    syncedRef.current = true;
     const current = getConsent();
-    setStored(current);
-    setStatus(current ? "decided" : "undecided");
+    setStored((previous) =>
+      JSON.stringify(previous) === JSON.stringify(current) ? previous : current,
+    );
   }, []);
 
-  // Stay in sync when another tab (or `clearConsent` elsewhere) changes state.
+  // Cross-tab + same-tab synchronization. The cookie is authoritative:
+  // on any notification, re-read it and update state. Registered once.
   useEffect(() => {
-    const sync = () => {
+    const syncFromCookie = () => {
       const current = getConsent();
-      setStored(current);
-      setStatus((previous) => {
-        if (previous === "pending") return current ? "decided" : "undecided";
-        return current ? "decided" : "undecided";
-      });
+      setStored((previous) =>
+        JSON.stringify(previous) === JSON.stringify(current) ? previous : current,
+      );
     };
-    window.addEventListener(COOKIE_CONSENT_EVENT, sync);
-    window.addEventListener("storage", sync);
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === COOKIE_CONSENT_SYNC_KEY) syncFromCookie();
+    };
+    window.addEventListener(COOKIE_CONSENT_CHANGE_EVENT, syncFromCookie);
+    window.addEventListener("storage", onStorage);
     return () => {
-      window.removeEventListener(COOKIE_CONSENT_EVENT, sync);
-      window.removeEventListener("storage", sync);
+      window.removeEventListener(COOKIE_CONSENT_CHANGE_EVENT, syncFromCookie);
+      window.removeEventListener("storage", onStorage);
     };
   }, []);
 
   const acceptAll = useCallback(() => {
     setStored(acceptAllConsent());
-    setStatus("decided");
     setSettingsOpen(false);
   }, []);
 
   const rejectNonEssential = useCallback(() => {
     setStored(rejectNonEssentialConsent());
-    setStatus("decided");
     setSettingsOpen(false);
   }, []);
 
   const savePreferences = useCallback((state: ConsentState) => {
     setStored(setConsent(state));
-    setStatus("decided");
     setSettingsOpen(false);
   }, []);
 
   const resetConsent = useCallback(() => {
     clearConsent();
     setStored(null);
-    setStatus("undecided");
     setSettingsOpen(false);
   }, []);
 
   const openSettings = useCallback(() => setSettingsOpen(true), []);
   const closeSettings = useCallback(() => setSettingsOpen(false), []);
 
-  const value = useMemo<ConsentContextValue>(() => {
+  const value = useMemo<CookieConsentContextValue>(() => {
     const consent = effectiveFrom(stored);
     return {
-      status,
+      status: deriveConsentStatus(stored),
       stored,
       consent,
-      hasCategory: (category) => consent[category],
+      hasConsent: (category) => (stored ? stored[category] === true : false),
       acceptAll,
       rejectNonEssential,
       savePreferences,
@@ -138,19 +137,19 @@ export function ConsentProvider({
       openSettings,
       closeSettings,
     };
-  }, [status, stored, settingsOpen, acceptAll, rejectNonEssential, savePreferences, resetConsent, openSettings, closeSettings]);
+  }, [stored, settingsOpen, acceptAll, rejectNonEssential, savePreferences, resetConsent, openSettings, closeSettings]);
 
-  return <ConsentContext.Provider value={value}>{children}</ConsentContext.Provider>;
+  return <CookieConsentContext.Provider value={value}>{children}</CookieConsentContext.Provider>;
 }
 
 /** Access consent state. Must be used inside `<ConsentProvider>`. */
-export function useConsent(): ConsentContextValue {
-  const context = useContext(ConsentContext);
-  if (!context) throw new Error("useConsent must be used within a ConsentProvider.");
+export function useCookieConsent(): CookieConsentContextValue {
+  const context = useContext(CookieConsentContext);
+  if (!context) throw new Error("useCookieConsent must be used within a ConsentProvider.");
   return context;
 }
 
 /** Nullable variant for components (e.g. footer buttons) that may render outside the provider. */
-export function useConsentOptional(): ConsentContextValue | null {
-  return useContext(ConsentContext);
+export function useConsentOptional(): CookieConsentContextValue | null {
+  return useContext(CookieConsentContext);
 }

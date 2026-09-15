@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { BarChart3, LockKeyhole, Megaphone, Settings, ShieldCheck, SlidersHorizontal, X } from "lucide-react";
-import { useConsent } from "./ConsentProvider";
-import { COOKIE_CATEGORY_INFO, DEFAULT_CONSENT_STATE } from "@/lib/cookies";
-import type { ConsentState, CookieCategory } from "@/lib/cookies";
+import { Button } from "@/components/ui/Button";
+import { useCookieConsent } from "./ConsentProvider";
+import { COOKIE_CATEGORY_INFO, DEFAULT_CONSENT_STATE } from "@/lib/cookies/constants";
+import type { ConsentState, CookieCategory } from "@/lib/cookies/types";
 import { cn } from "@/lib/utils/cn";
 
 const CATEGORY_ICONS: Record<CookieCategory, typeof ShieldCheck> = {
@@ -14,7 +15,7 @@ const CATEGORY_ICONS: Record<CookieCategory, typeof ShieldCheck> = {
   marketing: Megaphone,
 };
 
-function Toggle({
+function ConsentSwitch({
   checked,
   disabled,
   label,
@@ -33,6 +34,12 @@ function Toggle({
       aria-label={label}
       disabled={disabled}
       onClick={() => onChange(!checked)}
+      onKeyDown={(event) => {
+        if (event.key === " " || event.key === "Enter") {
+          event.preventDefault();
+          if (!disabled) onChange(!checked);
+        }
+      }}
       className={cn(
         "relative inline-flex h-7 w-12 shrink-0 items-center rounded-full border px-0.5 transition-colors duration-200",
         checked ? "border-[var(--signal)] bg-[var(--signal)]" : "border-[var(--line-strong)] bg-white/10",
@@ -54,19 +61,28 @@ function Toggle({
 
 /**
  * Accessible cookie preferences dialog. Rendered only on the client after
- * mount. Manages focus (trap + restore), Escape/outside dismissal (without
- * saving), and body scroll lock while open.
+ * mount. Manages focus (trap + initial focus + restoration), Escape and
+ * overlay dismissal (both discard the draft — the cookie is written ONLY
+ * via Save Preferences, Accept All or Reject Non-Essential), and body
+ * scroll lock while open.
  */
 export function CookieSettingsDialog() {
-  const { settingsOpen, closeSettings, consent, acceptAll, rejectNonEssential, savePreferences } = useConsent();
+  const { settingsOpen, closeSettings, consent, acceptAll, rejectNonEssential, savePreferences } = useCookieConsent();
   const [draft, setDraft] = useState<ConsentState>({ ...DEFAULT_CONSENT_STATE });
+  const [mounted, setMounted] = useState(false);
   const [render, setRender] = useState(false);
   const [entered, setEntered] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
   const previouslyFocused = useRef<Element | null>(null);
 
-  // Mount/unmount with enter/exit animation.
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Mount/unmount with enter/exit animation. Draft resets from live
+  // consent on every open so reopening always shows current state.
+  useEffect(() => {
+    if (!mounted) return undefined;
     if (settingsOpen) {
       previouslyFocused.current = document.activeElement;
       setDraft({ ...consent });
@@ -80,7 +96,7 @@ export function CookieSettingsDialog() {
       return () => window.clearTimeout(timer);
     }
     return undefined;
-  }, [settingsOpen, render, consent]);
+  }, [mounted, settingsOpen, render, consent]);
 
   // Scroll lock + focus management + keyboard handling while rendered.
   useEffect(() => {
@@ -169,14 +185,9 @@ export function CookieSettingsDialog() {
               </p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={closeSettings}
-            aria-label="Close cookie settings"
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[var(--line)] text-[var(--steel)] transition hover:border-[var(--line-strong)] hover:text-[var(--ink)]"
-          >
+          <Button variant="quiet" onClick={closeSettings} aria-label="Close cookie settings" className="h-10 min-h-10 w-10 shrink-0 px-0">
             <X className="h-4 w-4" />
-          </button>
+          </Button>
         </div>
 
         <div className="grid flex-1 gap-3 overflow-y-auto p-5 sm:p-6">
@@ -205,7 +216,7 @@ export function CookieSettingsDialog() {
                     <p className="mt-1 text-[13px] leading-6 text-[var(--steel)]">{category.description}</p>
                   </div>
                 </div>
-                <Toggle
+                <ConsentSwitch
                   checked={checked}
                   disabled={category.locked}
                   label={category.locked ? `${category.title} (always on)` : `Allow ${category.title.toLowerCase()}`}
@@ -217,27 +228,15 @@ export function CookieSettingsDialog() {
         </div>
 
         <div className="grid shrink-0 gap-2 border-t border-[var(--line)] bg-black/30 p-5 sm:grid-cols-3 sm:p-6">
-          <button
-            type="button"
-            onClick={() => savePreferences(draft)}
-            className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-4 text-sm font-extrabold text-white transition hover:bg-[var(--signal-strong)]"
-          >
+          <Button variant="secondary" onClick={() => savePreferences(draft)} className="w-full px-4">
             Save Preferences
-          </button>
-          <button
-            type="button"
-            onClick={acceptAll}
-            className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--line-strong)] bg-transparent px-4 text-sm font-extrabold text-[var(--ink)] transition hover:border-[var(--signal)] hover:text-[var(--signal-strong)]"
-          >
+          </Button>
+          <Button variant="secondary" onClick={acceptAll} className="w-full px-4">
             Accept All
-          </button>
-          <button
-            type="button"
-            onClick={rejectNonEssential}
-            className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-md)] border border-transparent bg-transparent px-4 text-sm font-extrabold text-[var(--steel)] transition hover:bg-white/5 hover:text-[var(--ink)]"
-          >
+          </Button>
+          <Button variant="secondary" onClick={rejectNonEssential} className="w-full px-4">
             Reject Non-Essential
-          </button>
+          </Button>
         </div>
       </div>
     </div>

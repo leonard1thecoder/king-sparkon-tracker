@@ -2,36 +2,42 @@
 
 import { useEffect, useState } from "react";
 import { ShieldCheck } from "lucide-react";
-import { useConsent } from "./ConsentProvider";
+import { Button } from "@/components/ui/Button";
+import { useCookieConsent } from "./ConsentProvider";
 import { cn } from "@/lib/utils/cn";
 
 /**
  * Compact, non-intrusive consent banner. Rendered only after client mount
  * (never on the server) so it cannot cause hydration mismatches, and only
- * while the visitor has no valid stored consent.
+ * while no valid stored consent exists (`status === "unknown"`).
+ *
+ * Accept and Reject share identical visual weight — no dark patterns.
  */
 export function CookieConsentBanner() {
-  const { status, acceptAll, rejectNonEssential, openSettings } = useConsent();
+  const { status, acceptAll, rejectNonEssential, openSettings } = useCookieConsent();
+  const [mounted, setMounted] = useState(false);
   const [render, setRender] = useState(false);
   const [entered, setEntered] = useState(false);
 
   useEffect(() => {
-    if (status === "undecided") {
-      setRender(true);
-      // Double rAF so the entrance transition runs from the initial state.
-      const first = requestAnimationFrame(() =>
-        requestAnimationFrame(() => setEntered(true)),
-      );
-      return () => cancelAnimationFrame(first);
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || status !== "unknown") {
+      if (render) {
+        // Play the exit animation before unmounting.
+        setEntered(false);
+        const timer = window.setTimeout(() => setRender(false), 280);
+        return () => window.clearTimeout(timer);
+      }
+      return undefined;
     }
-    if (status === "decided" && render) {
-      // Play the exit animation before unmounting.
-      setEntered(false);
-      const timer = window.setTimeout(() => setRender(false), 280);
-      return () => window.clearTimeout(timer);
-    }
-    return undefined;
-  }, [status, render]);
+    setRender(true);
+    // Double rAF so the entrance transition runs from the initial state.
+    const first = requestAnimationFrame(() => requestAnimationFrame(() => setEntered(true)));
+    return () => cancelAnimationFrame(first);
+  }, [mounted, status, render]);
 
   if (!render) return null;
 
@@ -65,29 +71,16 @@ export function CookieConsentBanner() {
           </div>
 
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
-            <button
-              type="button"
-              onClick={acceptAll}
-              className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-4 text-sm font-extrabold text-white transition hover:bg-[var(--signal-strong)]"
-            >
+            <Button variant="secondary" onClick={acceptAll} className="w-full">
               Accept All
-            </button>
-            <button
-              type="button"
-              onClick={rejectNonEssential}
-              className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--line-strong)] bg-transparent px-4 text-sm font-extrabold text-[var(--ink)] transition hover:border-[var(--signal)] hover:text-[var(--signal-strong)]"
-            >
+            </Button>
+            <Button variant="secondary" onClick={rejectNonEssential} className="w-full">
               Reject Non-Essential
-            </button>
+            </Button>
           </div>
-          <button
-            type="button"
-            onClick={openSettings}
-            aria-haspopup="dialog"
-            className="mt-2 inline-flex min-h-10 w-full items-center justify-center rounded-[var(--radius-md)] px-4 text-[13px] font-bold text-[var(--steel)] transition hover:bg-white/5 hover:text-[var(--ink)]"
-          >
+          <Button variant="quiet" onClick={openSettings} aria-haspopup="dialog" className="mt-1 w-full">
             Cookie Settings
-          </button>
+          </Button>
         </div>
       </div>
     </div>

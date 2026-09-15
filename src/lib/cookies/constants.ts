@@ -42,40 +42,48 @@ export interface CookieCategoryInfo {
 }
 
 /**
- * Plain-language category explanations (South Africa / POPIA friendly).
- * No dark patterns: optional categories are described neutrally and
- * necessary cookies are clearly distinguished as always-on.
+ * Plain-language category explanations suitable for a South African
+ * website. Neutral wording, no dark patterns, and no absolute legal
+ * claims: necessary cookies are clearly distinguished as always-on,
+ * optional categories are described factually.
  */
 export const COOKIE_CATEGORY_INFO: readonly CookieCategoryInfo[] = [
   {
     key: "necessary",
     title: "Necessary cookies",
     description:
-      "Required for security, sign-in sessions and core features such as keeping you logged in and protecting forms. The site cannot work without these, so they are always on.",
+      "Required for core functionality, security, authentication and essential site operation, such as keeping you signed in and protecting forms. The site cannot work without these, so they are always on.",
     locked: true,
   },
   {
     key: "preferences",
     title: "Preferences cookies",
     description:
-      "Remember choices you make, such as language, region and display options, so you do not have to set them on every visit.",
+      "Remember choices you make, such as language, region or display preferences, so you do not have to set them on every visit.",
     locked: false,
   },
   {
     key: "analytics",
     title: "Analytics cookies",
     description:
-      "Help us understand, in aggregate, which pages are used and how the site performs, so we can fix problems and improve content.",
+      "Help us understand, in aggregate, how visitors use the site so we can fix problems and improve content.",
     locked: false,
   },
   {
     key: "marketing",
     title: "Marketing cookies",
     description:
-      "Used for relevant advertising and campaign measurement, for example Google AdSense. No advertising cookies are set unless you allow them.",
+      "Used for advertising, campaign measurement and related integrations, for example Google AdSense. No advertising cookies are set unless you allow them.",
     locked: false,
   },
 ] as const;
 
-/** Custom DOM event fired on `window` whenever consent is written/cleared. */
-export const COOKIE_CONSENT_EVENT = "king-sparkon:cookie-consent";
+/** Same-tab notification fired on `window` whenever consent is written/cleared. */
+export const COOKIE_CONSENT_CHANGE_EVENT = "cookie-consent-change";
+
+/**
+ * Cross-tab notification key. The value is only a timestamp ping — the
+ * complete consent object is NEVER stored in localStorage. The cookie
+ * remains the single source of truth; tabs re-read it on notification.
+ */
+export const COOKIE_CONSENT_SYNC_KEY = "cookie-consent-sync";

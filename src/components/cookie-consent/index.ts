@@ -1,4 +1,4 @@
-export { ConsentProvider, useConsent, useConsentOptional } from "./ConsentProvider";
+export { ConsentProvider, useConsentOptional, useCookieConsent } from "./ConsentProvider";
 export { CookieConsentBanner } from "./CookieConsentBanner";
 export { CookieSettingsDialog } from "./CookieSettingsDialog";
 export { CookieSettingsButton } from "./CookieSettingsButton";
