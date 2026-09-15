@@ -3,8 +3,15 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import { AffiliateAdManager } from "@/components/advertising/AffiliateAdManager";
 import { FloatingChatbot } from "@/components/chatbot/FloatingChatbot";
+import {
+  ConsentProvider,
+  ConsentScripts,
+  CookieConsentBanner,
+  CookieSettingsDialog,
+} from "@/components/cookie-consent";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { MotionRouter } from "@/components/motion/MotionRouter";
+import { getServerConsent } from "@/lib/cookies/consent-server";
 import "./globals.css";
 import "./brand-polish.css";
 import "./motion.css";
@@ -141,31 +148,33 @@ const websiteJsonLd = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: ReactNode;
 }>) {
+  // Server-read consent for instant, hydration-safe initial state.
+  // The banner/dialog still render only after client mount (see provider).
+  const initialConsent = await getServerConsent();
   return (
     <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable} h-full antialiased`}>
       <head>
         <meta name="google-site-verification" content="Rl_zs6neR57YMAtOtNOdPs6tfkc6wd7f_8_ex4Mstr0" />
         <meta name="google-adsense-account" content={adsensePublisherId} />
-        <script
-          id="king-sparkon-adsense"
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8918343184695576"
-          crossOrigin="anonymous"
-        />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }} />
       </head>
       <body className="min-h-full flex flex-col bg-black text-[var(--ink)]">
-        <MotionRouter />
-        {children}
-        <SiteFooter />
-        <FloatingChatbot />
-        <AffiliateAdManager />
+        <ConsentProvider initialConsent={initialConsent}>
+          <MotionRouter />
+          {children}
+          <SiteFooter />
+          <FloatingChatbot />
+          <AffiliateAdManager />
+          <CookieConsentBanner />
+          <CookieSettingsDialog />
+          <ConsentScripts />
+        </ConsentProvider>
       </body>
     </html>
   );

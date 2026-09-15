@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowRight, Barcode, Mail, MapPin, ShieldCheck } from "lucide-react";
+import { CookieSettingsButton } from "@/components/cookie-consent/CookieSettingsButton";
 import { SocialLinks } from "@/components/social/SocialLinks";
 import { SOCIAL_LINKS } from "@/lib/config/social-links";
 
@@ -16,7 +17,7 @@ const footerGroups = [
       { label: "How it works", href: "/how-it-works" },
       { label: "Features", href: "/features" },
       { label: "Guides", href: "/guides" },
-      { label: "Articles", href: "/guides" },
+      { label: "Articles", href: "/articles" },
       { label: "Jobs", href: "/jobs" },
       { label: "About", href: "/about" },
       { label: "Contact", href: "/contact" },
@@ -81,7 +82,7 @@ export function SiteFooter({ marketingOnly = false }: SiteFooterProps) {
 
         <div className="mt-6 flex flex-col gap-4 text-xs font-semibold text-[var(--muted)] md:flex-row md:items-center md:justify-between">
           <p>&copy; {year} King Sparkon Tracker. Trademark platform of Sizolwakhe Leonard Mthimunye.</p>
-          <div className="flex flex-wrap items-center gap-3"><span className="inline-flex items-center gap-2"><MapPin className="h-3.5 w-3.5" /> South Africa ready</span><Link href={SOCIAL_LINKS.find((social) => social.platform === "GitHub")?.href ?? "https://github.com/leonard1thecoder"} target="_blank" rel="noreferrer" className="hover:text-[var(--accent-hover)] transition-colors duration-200">GitHub profile</Link></div>
+          <div className="flex flex-wrap items-center gap-3"><span className="inline-flex items-center gap-2"><MapPin className="h-3.5 w-3.5" /> South Africa ready</span><CookieSettingsButton variant="footer" /><Link href={SOCIAL_LINKS.find((social) => social.platform === "GitHub")?.href ?? "https://github.com/leonard1thecoder"} target="_blank" rel="noreferrer" className="hover:text-[var(--accent-hover)] transition-colors duration-200">GitHub profile</Link></div>
         </div>
       </div>
     </footer>
