@@ -100,7 +100,7 @@ export function BusinessWorkspace({ businessKeyParam }: { businessKeyParam: stri
 
       {/* Business header */}
       <Card className="overflow-hidden">
-        <div className="bg-gradient-to-br from-[var(--signal-soft)] to-white p-6 md:p-8">
+        <div className="bg-gradient-to-br from-[var(--signal-soft)] to-[var(--surface)] p-6 md:p-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div className="flex gap-4">
               <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-[var(--line)] bg-white text-[var(--signal)] shadow-sm">

@@ -70,7 +70,7 @@ export default function FeaturesPage() {
         <div className="mx-auto max-w-7xl px-5 py-6 md:px-8"><Breadcrumbs items={[{ label: "Features" }]} /></div>
 
         <section className="relative overflow-hidden border-y border-[var(--line)]">
-          <div className="absolute inset-0 bg-gradient-to-br from-white via-[var(--signal-soft)] to-white" aria-hidden="true" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[var(--surface)] via-[var(--signal-soft)] to-[var(--surface)]" aria-hidden="true" />
           <div className="relative mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-14">
             <p className="inline-flex rounded-full border border-[var(--signal)]/20 bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Platform Capabilities</p>
             <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-[-0.05em] md:text-5xl">Built around real work, not dashboard decoration</h1>

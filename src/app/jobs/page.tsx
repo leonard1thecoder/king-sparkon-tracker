@@ -21,7 +21,7 @@ export default function JobsPage() {
       <main className="min-h-screen bg-white text-[var(--ink)]">
         <div className="mx-auto max-w-7xl px-5 py-6 md:px-8"><Breadcrumbs items={[{ label: "Jobs" }]} /></div>
         <section className="relative overflow-hidden border-y border-[var(--line)]">
-          <div className="absolute inset-0 bg-gradient-to-br from-[var(--signal-soft)] via-white to-white" aria-hidden="true" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[var(--signal-soft)] via-[var(--surface)] to-[var(--surface)]" aria-hidden="true" />
           <div className="relative mx-auto max-w-7xl px-5 py-8 md:px-8">
             <p className="inline-flex items-center gap-2 rounded-full border border-[var(--signal)]/20 bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]"><BriefcaseBusiness className="h-3.5 w-3.5" /> Jobs</p>
             <h1 className="mt-3 text-3xl font-black tracking-[-0.04em] md:text-4xl">Open opportunities from operating businesses.</h1>

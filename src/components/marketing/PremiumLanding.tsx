@@ -42,7 +42,7 @@ export function PremiumLanding() {
     <main className="bg-white text-[var(--ink)]">
       {/* Hero - glass */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[var(--signal-soft)] via-white to-sky-50" aria-hidden="true" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--signal-soft)] via-[var(--surface)] to-[var(--surface)]" aria-hidden="true" />
         <div className="absolute -top-32 -right-32 h-[32rem] w-[32rem] rounded-full bg-sky-200/25 blur-3xl" aria-hidden="true" />
         <div className="absolute -bottom-32 -left-32 h-[28rem] w-[28rem] rounded-full bg-[var(--signal)]/5 blur-3xl" aria-hidden="true" />
 
@@ -180,7 +180,7 @@ export function PremiumLanding() {
 
       {/* Role section glass */}
       <section className="relative overflow-hidden border-y border-[var(--line)]">
-        <div className="absolute inset-0 bg-gradient-to-br from-sky-50 via-white to-white" aria-hidden="true" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--surface-strong)] via-[var(--surface)] to-[var(--surface)]" aria-hidden="true" />
         <div className="relative mx-auto max-w-7xl px-5 py-12 md:px-8 md:py-16">
           <div className="mx-auto max-w-3xl text-center">
             <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Roles</p>

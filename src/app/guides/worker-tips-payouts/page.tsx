@@ -21,7 +21,7 @@ export default function TipsGuide() {
       <main className="bg-white text-[var(--ink)]">
         <div className="mx-auto max-w-7xl px-5 py-6 md:px-8"><Breadcrumbs items={[{ label: "Guides", href: "/guides" }, { label: "Worker tips" }]} /></div>
         <section className="relative overflow-hidden border-y border-[var(--line)]">
-          <div className="absolute inset-0 bg-gradient-to-br from-[var(--signal-soft)] via-white to-white" aria-hidden="true" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[var(--signal-soft)] via-[var(--surface)] to-[var(--surface)]" aria-hidden="true" />
           <div className="relative mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-12">
             <p className="inline-flex rounded-full border border-[var(--signal)]/20 bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]"><Wallet className="mr-1.5 inline h-3.5 w-3.5" /> Guide</p>
             <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-[-0.05em] md:text-5xl">Worker tips that everyone can verify.</h1>

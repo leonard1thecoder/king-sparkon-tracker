@@ -561,7 +561,7 @@ export function InteractiveRegisterShell({
             </div>
 
             {artistFields.length ? (
-              <div className="animate-in fade-in slide-in-from-top-2 duration-300 overflow-hidden rounded-[1.65rem] border border-[var(--line-strong)] bg-gradient-to-br from-[var(--signal-soft)] via-white to-[var(--signal-soft)] p-[1px] shadow-[var(--shadow-soft)]">
+              <div className="animate-in fade-in slide-in-from-top-2 duration-300 overflow-hidden rounded-[1.65rem] border border-[var(--line-strong)] bg-gradient-to-br from-[var(--signal-soft)] via-[var(--surface)] to-[var(--signal-soft)] p-[1px] shadow-[var(--shadow-soft)]">
                 <div className="rounded-[1.6rem] bg-white p-4 md:p-5">
                   <div className="mb-4 flex items-center gap-3">
                     <span className="grid h-9 w-9 place-items-center rounded-full bg-[var(--ink)] text-[var(--gold)]">

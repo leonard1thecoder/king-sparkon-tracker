@@ -125,7 +125,7 @@ export function ArtistEventDetails({ eventId }: { eventId: string }) {
             <section className="rounded-[var(--radius-2xl)] border border-[var(--line)] bg-white p-6 shadow-[var(--shadow-soft)]">
               <h2 className="text-lg font-black">Venue</h2>
               <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-[var(--steel)]"><MapPin className="h-4 w-4 text-[var(--signal)]" /> {event.venue} • {event.location}</p>
-              <div className="mt-4 h-40 rounded-xl bg-gradient-to-br from-sky-50 to-indigo-50 border border-[var(--line)] grid place-items-center text-sm font-bold text-[var(--muted)]">Map preview — {event.location}</div>
+              <div className="mt-4 h-40 rounded-xl bg-gradient-to-br from-[var(--surface-strong)] to-[var(--surface)] border border-[var(--line)] grid place-items-center text-sm font-bold text-[var(--muted)]">Map preview — {event.location}</div>
             </section>
 
             <section className="rounded-[var(--radius-2xl)] border border-[var(--line)] bg-white p-6 shadow-[var(--shadow-soft)]">

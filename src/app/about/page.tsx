@@ -40,7 +40,7 @@ export default function AboutPage() {
         </div>
 
         <section className="relative overflow-hidden border-y border-[var(--line)]">
-          <div className="absolute inset-0 bg-gradient-to-br from-[var(--signal-soft)] via-white to-white" aria-hidden="true" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[var(--signal-soft)] via-[var(--surface)] to-[var(--surface)]" aria-hidden="true" />
           <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-sky-100/40 blur-3xl" aria-hidden="true" />
           <div className="relative mx-auto grid max-w-7xl gap-8 px-5 py-10 md:px-8 md:py-14 lg:grid-cols-[1.15fr_0.85fr]">
             <div>

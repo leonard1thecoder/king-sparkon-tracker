@@ -25,7 +25,7 @@ export function UIFResult({ result, input, onReset }: UIFResultProps) {
       </div>
 
       {/* Primary Hero Result Card */}
-      <div className="rounded-3xl border border-[var(--signal)]/40 bg-gradient-to-br from-[var(--signal-soft)] via-white to-sky-50 p-6 md:p-8 shadow-[var(--shadow-soft)]">
+      <div className="rounded-3xl border border-[var(--signal)]/40 bg-gradient-to-br from-[var(--signal-soft)] via-[var(--surface)] to-[var(--surface)] p-6 md:p-8 shadow-[var(--shadow-soft)]">
         <p className="text-xs font-black uppercase tracking-[0.1em] text-[var(--signal-strong)]">
           Estimated monthly benefit
         </p>
@@ -108,10 +108,10 @@ export function UIFResult({ result, input, onReset }: UIFResultProps) {
       </div>
 
       {/* Trust & Disclaimer Panel */}
-      <div className="flex items-start gap-3 rounded-2xl border border-[var(--line)] bg-amber-50/50 p-5 text-amber-900">
-        <AlertCircle className="h-5 w-5 shrink-0 text-amber-600 mt-0.5" />
+      <div className="flex items-start gap-3 rounded-2xl border border-[var(--warning)]/30 bg-[var(--warning)]/10 p-5 text-[var(--steel)]">
+        <AlertCircle className="h-5 w-5 shrink-0 text-[var(--warning)] mt-0.5" />
         <div className="text-xs leading-5">
-          <p className="font-black text-amber-950">Important Notice:</p>
+          <p className="font-black text-[var(--ink)]">Important Notice:</p>
           <p>
             This calculator provides an estimate based on the information you enter. Your final UIF benefit, qualifying period and payment duration are determined by UIF using your official contribution records and applicable rules.
           </p>
