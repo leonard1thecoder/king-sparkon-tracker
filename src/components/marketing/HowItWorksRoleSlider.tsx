@@ -23,7 +23,6 @@ export function HowItWorksRoleSlider() {
             type="button"
             onClick={() => {
               setActive(s.key);
-              document.getElementById("role-slider")?.scrollIntoView({ behavior: "smooth", block: "start" });
             }}
             className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-5 text-sm font-extrabold transition ${active === s.key ? "border-[var(--signal)] bg-[var(--signal)] text-white shadow-[var(--shadow-soft)]" : "border-[var(--line-strong)] bg-white text-[var(--ink)] hover:border-[var(--signal)] hover:text-[var(--signal-strong)]"}`}
             aria-pressed={active === s.key}

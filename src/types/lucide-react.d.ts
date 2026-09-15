@@ -21,6 +21,7 @@ declare module "lucide-react" {
   export const Building2: LucideIcon;
   export const Calendar: LucideIcon;
   export const CalendarDays: LucideIcon;
+  export const Calculator: LucideIcon;
   export const Camera: LucideIcon;
   export const Check: LucideIcon;
   export const CheckCircle2: LucideIcon;

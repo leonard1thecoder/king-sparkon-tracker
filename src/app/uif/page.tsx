@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Landmark, ShieldCheck, UserCheck } from "lucide-react";
+import { ArrowRight, Calculator, Landmark, ShieldCheck, UserCheck } from "lucide-react";
 import { Breadcrumbs } from "@/components/content/Breadcrumbs";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { PremiumHeader } from "@/components/marketing/PremiumHeader";
-import { UifCalculator } from "@/components/marketing/UifCalculator";
+import { UifServiceSlider } from "@/components/marketing/UifServiceSlider";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -37,18 +37,21 @@ export default function UifPortalPage() {
               King Sparkon Tracker provides South African citizens with direct access to Department of Employment and Labour UIF Online services under strict Protection of Personal Information Act (POPIA) safeguards.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/dashboard/user/uif/status" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-extrabold text-white hover:bg-[var(--signal-strong)]">
+              <Link href="/uif#uif-status" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-extrabold text-white hover:bg-[var(--signal-strong)]">
                 Check UIF Status <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link href="/dashboard/user/uif/password" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--line-strong)] bg-white px-5 text-sm font-extrabold hover:border-[var(--signal)]">
+              <Link href="/uif#uif-password" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--line-strong)] bg-white px-5 text-sm font-extrabold hover:border-[var(--signal)]">
                 Update UIF Password
+              </Link>
+              <Link href="/uif#uif-calculator" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--line-strong)] bg-white px-5 text-sm font-extrabold hover:border-[var(--signal)]">
+                <Calculator className="h-4 w-4" /> UIF Calculator
               </Link>
             </div>
           </div>
         </section>
 
         <section className="mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-14">
-          <UifCalculator />
+          <UifServiceSlider />
 
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             <GlassCard variant="subtle" className="flex gap-4">
