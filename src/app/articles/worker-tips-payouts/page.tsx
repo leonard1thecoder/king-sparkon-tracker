@@ -1,5 +1,11 @@
-import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
-export const metadata: Metadata = pageMetadata({ title: "Worker Tips & Payouts", description: "Worker tips guide.", path: "/articles/worker-tips-payouts" });
-export default function Page(){ redirect("/guides/worker-tips-payouts"); }
+
+export const metadata: Metadata = pageMetadata({
+  title: "Worker Tips, Fees & Payouts | Transparent Money Flows",
+  description:
+    "How tip QR flows, gross/fee/net and withdrawal status keep money transparent before the owner approves in King Sparkon Tracker.",
+  path: "/articles/worker-tips-payouts",
+});
+
+export { default } from "@/app/guides/worker-tips-payouts/page";
