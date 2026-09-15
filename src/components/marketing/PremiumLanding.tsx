@@ -64,7 +64,7 @@ export function PremiumLanding() {
                 alt="Oracle University verification badge for Sizolwakhe Leonard Mthimunye"
                 width={56}
                 height={56}
-                unoptimized
+                loading="lazy"
                 className="h-14 w-14 shrink-0 rounded-xl border border-[var(--line)] bg-white p-1 object-contain"
               />
               <div>
