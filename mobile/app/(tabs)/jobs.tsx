@@ -26,7 +26,7 @@ export default function JobsScreen() {
 
   useEffect(() => {
     void load();
-  }, []);
+  }, [load]);
 
   return (
     <Screen>

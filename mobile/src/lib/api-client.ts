@@ -1,4 +1,4 @@
-import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
+import axios, { AxiosError, create, isAxiosError, type InternalAxiosRequestConfig } from "axios";
 import Constants from "expo-constants";
 import { clearTokens, getAccessToken, getRefreshToken, saveTokens } from "./auth-storage";
 
@@ -13,7 +13,7 @@ export function backendBaseUrl(): string {
 
 // Direct-to-backend client. Web uses cookie proxy `/api/backend`;
 // mobile attaches Bearer tokens from SecureStore instead.
-export const backendClient = axios.create({
+export const backendClient = create({
   baseURL: `${backendBaseUrl()}/api`,
   headers: { Accept: "application/json" },
   timeout: 20000,
@@ -63,7 +63,7 @@ export type BackendError = Error & {
 };
 
 export function normalizeError(error: unknown): BackendError {
-  if (!axios.isAxiosError(error)) {
+  if (!isAxiosError(error)) {
     return Object.assign(error instanceof Error ? error : new Error("Unexpected mobile error"), {});
   }
   const data = (error.response?.data ?? {}) as {

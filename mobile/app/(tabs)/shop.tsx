@@ -29,7 +29,7 @@ export default function ShopScreen() {
 
   useEffect(() => {
     void load();
-  }, []);
+  }, [load]);
 
   return (
     <Screen>
