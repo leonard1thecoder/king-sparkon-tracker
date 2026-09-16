@@ -14,16 +14,20 @@ on:
       platform:
         description: "Platform to build"
         required: true
-        default: "all"
+        default: "android"
         type: choice
-        options: ["all", "android", "ios"]
+        options: ["android", "ios", "all"]
       profile:
         description: "EAS build profile (see mobile/eas.json)"
         required: true
         default: "preview"
         type: choice
-        options: ["development", "preview", "production"]
+        options: ["preview", "production", "development"]
   push:
+    branches: [main]
+    paths:
+      - "mobile/**"
+      - ".github/workflows/mobile-eas.yml"
     tags: ["mobile-v*"]
 
 permissions:
@@ -91,12 +95,12 @@ jobs:
         run: npm install --no-audit --no-fund --package-lock=false
 
       - name: EAS build (Android)
-        run: eas build --non-interactive --platform android --profile ${{ inputs.profile || 'production' }}
+        run: eas build --non-interactive --platform android --profile ${{ inputs.profile || (startsWith(github.ref, 'refs/tags/') && 'production') || 'preview' }}
 
   build-ios:
     name: EAS iOS build
     needs: validate
-    if: github.event_name == 'push' || inputs.platform == 'all' || inputs.platform == 'ios'
+    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')) || inputs.platform == 'all' || inputs.platform == 'ios'
     runs-on: ubuntu-latest
     timeout-minutes: 120
     defaults:
