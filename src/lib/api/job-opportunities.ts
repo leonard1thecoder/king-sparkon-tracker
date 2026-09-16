@@ -29,8 +29,18 @@ type BackendJobPost = {
   jobDescription?: string | null;
   yearsOfExperienceRequired?: string | null;
   jobPostFileUrl?: string | null;
+  applicationType?: string | null;
   estimatedSalary?: number | string | null;
   currency?: string | null;
+  location?: string | null;
+  workplaceType?: string | null;
+  employmentType?: string | null;
+  salaryMin?: number | string | null;
+  salaryMax?: number | string | null;
+  contactEmail?: string | null;
+  responsibilities?: string | null;
+  requirements?: string | null;
+  benefits?: string | null;
   status?: string | null;
   createdDate?: string | null;
   modifiedDate?: string | null;
@@ -76,27 +86,56 @@ function mapExperienceLevel(value: string | null | undefined): JobOpportunity["e
 function mapStatus(value: string | null | undefined): JobOpportunity["status"] {
   if (value === "CANCELLED") return "ARCHIVED";
   if (value === "DRAFT" || value === "OPEN" || value === "CLOSED" || value === "ARCHIVED") return value;
-  return "OPEN";
+  // Fail closed: an unrecognized backend status must never render as OPEN
+  // and invite applications to a post whose state we do not understand.
+  return "ARCHIVED";
+}
+
+function textOrNull(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const trimmed = value.trim();
+  return trimmed ? trimmed : null;
+}
+
+function mapApplicationType(post: BackendJobPost): JobOpportunity["applicationType"] {
+  // Prefer an explicit backend value when the API starts sending one.
+  if (post.applicationType === "EXTERNAL") return "EXTERNAL";
+  if (post.applicationType === "INTERNAL") return "INTERNAL";
+  // Otherwise derive it: a stored external link (website or mailto) means
+  // the owner posted an external application; without one it is internal.
+  return post.jobPostFileUrl ? "EXTERNAL" : "INTERNAL";
 }
 
 function mapJob(post: BackendJobPost): JobOpportunity {
   const salary = asNumber(post.estimatedSalary);
+  const salaryMin = asNumber(post.salaryMin) ?? salary;
+  const salaryMax = asNumber(post.salaryMax) ?? salary ?? salaryMin;
 
   return {
     id: post.id,
     title: post.title,
     companyName: post.businessName ?? "King Sparkon business",
     businessId: post.businessId ?? null,
-    location: "Business location",
-    workplaceType: "ONSITE",
-    employmentType: "FULL_TIME",
+    location: textOrNull(post.location) ?? "Business location",
+    workplaceType: post.workplaceType === "REMOTE" || post.workplaceType === "HYBRID" ? post.workplaceType : "ONSITE",
+    employmentType:
+      post.employmentType === "PART_TIME" ||
+      post.employmentType === "CONTRACT" ||
+      post.employmentType === "INTERNSHIP" ||
+      post.employmentType === "TEMPORARY"
+        ? post.employmentType
+        : "FULL_TIME",
     experienceLevel: mapExperienceLevel(post.yearsOfExperienceRequired),
-    salaryMin: salary,
-    salaryMax: salary,
+    salaryMin,
+    salaryMax,
     salaryCurrency: post.currency ?? "ZAR",
     description: post.jobDescription ?? "",
-    requirements: post.yearsOfExperienceRequired ? `Experience required: ${post.yearsOfExperienceRequired.replaceAll("_", " ").toLowerCase()}.` : "See job description.",
+    responsibilities: textOrNull(post.responsibilities),
+    requirements: textOrNull(post.requirements) ?? (post.yearsOfExperienceRequired ? `Experience required: ${post.yearsOfExperienceRequired.replaceAll("_", " ").toLowerCase()}.` : "See job description."),
+    benefits: textOrNull(post.benefits),
     applyUrl: post.jobPostFileUrl ?? null,
+    contactEmail: textOrNull(post.contactEmail),
+    applicationType: mapApplicationType(post),
     status: mapStatus(post.status),
     createdAt: post.createdDate ?? undefined,
     updatedAt: post.modifiedDate ?? undefined,
@@ -170,10 +209,44 @@ export async function createJobOpportunity(payload: CreateJobOpportunityPayload)
     closingDate: dateAfterDays(30),
     jobDescription: payload.description,
     yearsOfExperienceRequired: toBackendExperienceLevel(payload.experienceLevel),
-    jobPostFileUrl: payload.applyUrl || undefined,
+    // External posts persist their application target (website URL or
+    // mailto: link) in the stored file-URL field; internal posts store
+    // nothing, which is also how the type is derived when reading back.
+    jobPostFileUrl: payload.applicationType === "EXTERNAL" ? normalizeExternalTarget(payload.applyUrl) : undefined,
+    applicationType: payload.applicationType,
     estimatedSalary: payload.salaryMax ?? payload.salaryMin,
+    currency: payload.salaryCurrency || undefined,
+    location: payload.location || undefined,
+    workplaceType: payload.workplaceType,
+    employmentType: payload.employmentType,
+    salaryMin: payload.salaryMin,
+    salaryMax: payload.salaryMax ?? payload.salaryMin,
+    contactEmail: payload.contactEmail || undefined,
+    responsibilities: payload.responsibilities || undefined,
+    requirements: payload.requirements || undefined,
+    benefits: payload.benefits || undefined,
   });
   return mapJob(data);
+}
+
+/**
+ * Normalize an owner-supplied external application target into a stored
+ * link: plain email addresses become `mailto:` links, bare domains gain
+ * `https://`. Returns undefined when nothing usable was provided.
+ */
+export function normalizeExternalTarget(target: string | undefined): string | undefined {
+  const value = (target ?? "").trim();
+  if (!value) return undefined;
+  if (/^mailto:/i.test(value)) return value;
+  if (/^https?:\/\//i.test(value)) return value;
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return `mailto:${value}`;
+  if (/^[^\s]+\.[^\s]{2,}$/.test(value)) return `https://${value}`;
+  return value;
+}
+
+/** True when the stored target is an email (`mailto:`) link. */
+export function isEmailTarget(target: string | null | undefined): boolean {
+  return !!target && (/^mailto:/i.test(target) || (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(target) && !/^https?:\/\//i.test(target)));
 }
 
 export async function updateJobOpportunity(id: number | string, payload: Partial<CreateJobOpportunityPayload>) {
@@ -183,18 +256,18 @@ export async function updateJobOpportunity(id: number | string, payload: Partial
 }
 
 export async function publishJobOpportunity(id: number | string) {
-  void id;
-  throw new Error("The deployed backend publishes owner job posts when they are created.");
+  const { data } = await apiClient.post<BackendJobPost>(`/owner/job-posts/${id}/publish`);
+  return mapJob(data);
 }
 
 export async function closeJobOpportunity(id: number | string) {
-  void id;
-  throw new Error("The deployed backend does not expose job post closing yet.");
+  const { data } = await apiClient.post<BackendJobPost>(`/owner/job-posts/${id}/close`);
+  return mapJob(data);
 }
 
 export async function archiveJobOpportunity(id: number | string) {
-  void id;
-  throw new Error("The deployed backend does not expose job post archiving yet.");
+  const { data } = await apiClient.post<BackendJobPost>(`/owner/job-posts/${id}/archive`);
+  return mapJob(data);
 }
 
 export async function applyForJob(id: number | string, payload: ApplyForJobPayload) {
@@ -203,6 +276,43 @@ export async function applyForJob(id: number | string, payload: ApplyForJobPaylo
     certificateUrls: [],
   });
   return mapApplication(data);
+}
+
+function extractResumeUrl(data: unknown): string | null {
+  if (typeof data === "string" && data.startsWith("http")) return data;
+  if (data && typeof data === "object") {
+    const record = data as Record<string, unknown>;
+    for (const key of ["resumeUrl", "fileUrl", "url"]) {
+      const value = record[key];
+      if (typeof value === "string" && value.startsWith("http")) return value;
+    }
+    const nested = record.data;
+    if (nested && typeof nested === "object") {
+      for (const key of ["resumeUrl", "fileUrl", "url"]) {
+        const value = (nested as Record<string, unknown>)[key];
+        if (typeof value === "string" && value.startsWith("http")) return value;
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Upload a CV file (PDF/DOC/DOCX) for a job application.
+ * Follows the app's multipart convention (`file` field, axios sets the
+ * boundary). The backend must expose `POST /opportunities/jobs/{id}/resume`
+ * returning the stored file URL — if it does not exist yet, this throws
+ * and callers should fall back to a pasted CV link.
+ */
+export async function uploadJobApplicationCv(id: number | string, file: File): Promise<{ resumeUrl: string }> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const { data } = await apiClient.post<unknown>(`/opportunities/jobs/${id}/resume`, formData);
+  const resumeUrl = extractResumeUrl(data);
+  if (!resumeUrl) {
+    throw new Error("CV upload did not return a file URL. Paste a CV link instead or try again later.");
+  }
+  return { resumeUrl };
 }
 
 export async function getMyJobApplications() {
@@ -215,11 +325,16 @@ export async function getJobApplications(jobId: number | string) {
   return toPage(data, mapApplication);
 }
 
-export async function updateJobApplicationStatus(applicationId: number | string, status: JobApplicationStatus) {
-  if (status !== "REJECTED") {
-    throw new Error("The deployed backend only exposes reject and interview-booking decisions for applications.");
-  }
-
-  const { data } = await apiClient.post<BackendJobApplication>(`/owner/job-posts/applications/${applicationId}/reject`);
+export async function acceptJobApplication(applicationId: number | string) {
+  const { data } = await apiClient.post<BackendJobApplication>(`/owner/job-posts/applications/${applicationId}/accept`);
   return mapApplication(data);
+}
+
+export async function updateJobApplicationStatus(applicationId: number | string, status: JobApplicationStatus) {
+  if (status === "ACCEPTED") return acceptJobApplication(applicationId);
+  if (status === "REJECTED") {
+    const { data } = await apiClient.post<BackendJobApplication>(`/owner/job-posts/applications/${applicationId}/reject`);
+    return mapApplication(data);
+  }
+  throw new Error(`Status "${status}" cannot be set from here. Owners can accept or reject; interviews are booked separately.`);
 }

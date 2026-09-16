@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
-import { FileCheck2, Loader2, RefreshCw, XCircle } from "lucide-react";
+import { CheckCircle2, FileCheck2, Loader2, RefreshCw, XCircle } from "lucide-react";
 import { getJobApplications, getMyJobApplications, updateJobApplicationStatus } from "@/lib/api/job-opportunities";
 import type { JobApplication, JobApplicationStatus } from "@/lib/types/backend";
 import { messageFromBackendPayload } from "@/lib/utils/errors";
@@ -12,17 +12,19 @@ type Props = {
   scope?: "mine" | "manage";
 };
 
-const statuses: JobApplicationStatus[] = ["SUBMITTED", "REVIEWING", "SHORTLISTED", "REJECTED", "ACCEPTED", "WITHDRAWN"];
-
 function errorMessage(error: unknown) {
   return axios.isAxiosError(error) ? messageFromBackendPayload(error.response?.data) : "Unable to load job applications.";
 }
 
 function badge(status: string) {
-  if (status === "ACCEPTED" || status === "SHORTLISTED") return "border-[var(--confirm)] bg-[var(--confirm)]/10 text-[var(--confirm)]";
+  if (status === "ACCEPTED" || status === "INTERVIEW_BOOKED") return "border-[var(--confirm)] bg-[var(--confirm)]/10 text-[var(--confirm)]";
   if (status === "REJECTED" || status === "WITHDRAWN") return "border-[var(--danger)] bg-[var(--danger)]/10 text-[var(--danger)]";
-  if (status === "REVIEWING") return "border-[var(--warning)] bg-[var(--warning)]/10 text-[var(--warning)]";
+  if (status === "VIEWED") return "border-[var(--warning)] bg-[var(--warning)]/10 text-[var(--warning)]";
   return "border-[var(--signal)] bg-[var(--signal)]/10 text-[var(--signal)]";
+}
+
+function isDecided(status: string) {
+  return status === "ACCEPTED" || status === "REJECTED" || status === "WITHDRAWN" || status === "INTERVIEW_BOOKED";
 }
 
 export function JobApplicationsPanel({ jobId, scope = jobId ? "manage" : "mine" }: Props) {
@@ -114,19 +116,25 @@ export function JobApplicationsPanel({ jobId, scope = jobId ? "manage" : "mine" 
                   <p className="mt-2 text-sm font-bold text-[var(--steel)]">{application.applicantEmail}</p>
                   {application.jobTitle ? <p className="mt-2 text-sm font-semibold text-[var(--steel)]">Role: {application.jobTitle} {application.companyName ? `at ${application.companyName}` : ""}</p> : null}
                 </div>
-                {canManage ? (
-                  <label className="grid gap-2 text-sm font-black text-[var(--ink)]" htmlFor={`status-${application.id}`}>
-                    Status
-                    <select
-                      id={`status-${application.id}`}
-                      value={application.status}
+                {canManage && !isDecided(application.status) ? (
+                  <div className="flex shrink-0 gap-2">
+                    <button
+                      type="button"
                       disabled={isSaving === application.id}
-                      onChange={(event) => void updateStatus(application.id, event.target.value as JobApplicationStatus)}
-                      className="min-h-11 rounded-full border border-[var(--line)] bg-[var(--surface)] px-4 text-sm font-bold outline-none focus:border-[var(--gold)]"
+                      onClick={() => void updateStatus(application.id, "ACCEPTED")}
+                      className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--confirm)] bg-white px-5 text-sm font-black text-[var(--confirm)] hover:bg-[var(--confirm)] hover:text-white disabled:opacity-50"
                     >
-                      {statuses.map((status) => <option key={status} value={status}>{status}</option>)}
-                    </select>
-                  </label>
+                      {isSaving === application.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />} Accept
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isSaving === application.id}
+                      onClick={() => void updateStatus(application.id, "REJECTED")}
+                      className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--danger)] bg-white px-5 text-sm font-black text-[var(--danger)] hover:bg-[var(--danger)] hover:text-white disabled:opacity-50"
+                    >
+                      {isSaving === application.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />} Reject
+                    </button>
+                  </div>
                 ) : null}
               </div>
               {application.coverMessage ? <p className="mt-5 rounded-[1.5rem] border border-[var(--line)] bg-[var(--surface)] p-4 text-sm leading-7 text-[var(--steel)]">{application.coverMessage}</p> : null}

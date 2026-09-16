@@ -8,7 +8,7 @@ export type WorkplaceType = "ONSITE" | "REMOTE" | "HYBRID";
 export type EmploymentType = "FULL_TIME" | "PART_TIME" | "CONTRACT" | "INTERNSHIP" | "TEMPORARY";
 export type ExperienceLevel = "ENTRY_LEVEL" | "JUNIOR" | "MID_LEVEL" | "SENIOR" | "LEAD" | "EXECUTIVE";
 export type JobOpportunityStatus = "DRAFT" | "OPEN" | "CLOSED" | "ARCHIVED";
-export type JobApplicationStatus = "SUBMITTED" | "REVIEWING" | "SHORTLISTED" | "REJECTED" | "ACCEPTED" | "WITHDRAWN";
+export type JobApplicationStatus = "SUBMITTED" | "VIEWED" | "REJECTED" | "ACCEPTED" | "INTERVIEW_BOOKED" | "WITHDRAWN";
 
 export type PageResponse<T> = {
   content: T[];
@@ -263,6 +263,8 @@ export type Promotion = PromotionPayload & PromotionQuote & {
   status?: string;
 };
 
+export type JobApplicationType = "INTERNAL" | "EXTERNAL";
+
 export type JobOpportunity = {
   id: number;
   title: string;
@@ -282,7 +284,7 @@ export type JobOpportunity = {
   benefits?: string | null;
   applyUrl?: string | null;
   contactEmail?: string | null;
-  whatsappNumber?: string | null;
+  applicationType: JobApplicationType;
   status: JobOpportunityStatus;
   createdAt?: string;
   updatedAt?: string;
@@ -306,7 +308,7 @@ export type CreateJobOpportunityPayload = {
   benefits?: string;
   applyUrl?: string;
   contactEmail?: string;
-  whatsappNumber?: string;
+  applicationType: JobApplicationType;
 };
 
 export type JobApplication = {

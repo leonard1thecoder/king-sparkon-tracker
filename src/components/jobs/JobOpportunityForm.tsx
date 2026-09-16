@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 import { BriefcaseBusiness, CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { createJobOpportunity } from "@/lib/api/job-opportunities";
-import type { CreateJobOpportunityPayload, EmploymentType, ExperienceLevel, WorkplaceType } from "@/lib/types/backend";
+import type { CreateJobOpportunityPayload, EmploymentType, ExperienceLevel, JobApplicationType, WorkplaceType } from "@/lib/types/backend";
 import { messageFromBackendPayload } from "@/lib/utils/errors";
 
 const workplaceTypes: Array<{ value: WorkplaceType; label: string }> = [
@@ -49,6 +49,13 @@ export function JobOpportunityForm({ audience = "owner" }: { audience?: "owner" 
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<{ tone: "success" | "error"; message: string } | null>(null);
+  const [applicationType, setApplicationType] = useState<JobApplicationType>("INTERNAL");
+
+  function isValidExternalTarget(value: string) {
+    const trimmed = value.trim();
+    if (/^https?:\/\/[^\s]+\.[^\s]{2,}/i.test(trimmed)) return true;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
+  }
 
   async function submitJob(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -57,6 +64,11 @@ export function JobOpportunityForm({ audience = "owner" }: { audience?: "owner" 
 
     try {
       const formData = new FormData(event.currentTarget);
+      const externalTarget = text(formData, "applyUrl");
+      if (applicationType === "EXTERNAL" && !isValidExternalTarget(externalTarget)) {
+        setStatus({ tone: "error", message: "External posts need an application website (https://…) or email address." });
+        return;
+      }
       const payload: CreateJobOpportunityPayload = {
         title: text(formData, "title"),
         companyName: text(formData, "companyName"),
@@ -71,9 +83,9 @@ export function JobOpportunityForm({ audience = "owner" }: { audience?: "owner" 
         responsibilities: text(formData, "responsibilities"),
         requirements: text(formData, "requirements"),
         benefits: text(formData, "benefits"),
-        applyUrl: text(formData, "applyUrl"),
+        applicationType,
+        applyUrl: applicationType === "EXTERNAL" ? externalTarget : "",
         contactEmail: text(formData, "contactEmail"),
-        whatsappNumber: text(formData, "whatsappNumber"),
       };
 
       await createJobOpportunity(payload);
@@ -111,9 +123,39 @@ export function JobOpportunityForm({ audience = "owner" }: { audience?: "owner" 
           <Select name="employmentType" label="Employment type" options={employmentTypes} />
           <Select name="experienceLevel" label="Experience level" options={experienceLevels} />
           <Field name="contactEmail" label="Contact email" placeholder="recruitment@example.com" type="email" />
-          <Field name="whatsappNumber" label="WhatsApp number" placeholder="+27123456789" />
-          <Field name="applyUrl" label="External apply URL" placeholder="https://..." type="url" />
         </div>
+
+        <fieldset className="grid gap-3">
+          <legend className="text-sm font-black text-[var(--ink)]">How do candidates apply? <span className="text-[var(--danger)]"> *</span></legend>
+          <div className="grid gap-3 md:grid-cols-2">
+            {([
+              { value: "INTERNAL", title: "Internal application", copy: "Candidates apply with the in-app form, CV upload and tracking." },
+              { value: "EXTERNAL", title: "External application", copy: "Candidates are redirected to your website or email. No in-app form." },
+            ] as const).map((option) => (
+              <label
+                key={option.value}
+                className={`flex cursor-pointer items-start gap-3 rounded-[1.35rem] border p-4 transition ${applicationType === option.value ? "border-[var(--signal)] bg-[var(--signal-soft)]" : "border-[var(--line)] bg-[var(--surface)] hover:border-[var(--line-strong)]"}`}
+              >
+                <input
+                  type="radio"
+                  name="applicationType"
+                  value={option.value}
+                  checked={applicationType === option.value}
+                  onChange={() => setApplicationType(option.value)}
+                  className="mt-1 h-4 w-4 accent-[#22d3ee]"
+                />
+                <span>
+                  <span className="block text-sm font-black text-[var(--ink)]">{option.title}</span>
+                  <span className="mt-1 block text-xs font-semibold leading-5 text-[var(--steel)]">{option.copy}</span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        {applicationType === "EXTERNAL" ? (
+          <Field name="applyUrl" label="Application website or email" placeholder="https://company.com/careers or jobs@company.com" required />
+        ) : null}
 
         <Textarea name="description" label="Description" placeholder="Explain the role, team, product, and why the opportunity matters." required />
         <Textarea name="responsibilities" label="Responsibilities" placeholder="List the daily responsibilities and delivery expectations." />

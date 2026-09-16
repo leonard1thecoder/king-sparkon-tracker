@@ -168,7 +168,12 @@ export function JobOpportunityBoard({ audience = "public", title, description }:
             <article key={job.id} className="group rounded-[2rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] transition hover:-translate-y-1 hover:border-[var(--gold)] md:p-6">
               <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div>
-                  <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-black uppercase tracking-[0.12em] ${statusClass(job.status)}`}>{job.status}</span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-black uppercase tracking-[0.12em] ${statusClass(job.status)}`}>{job.status}</span>
+                    {job.applicationType === "EXTERNAL" ? (
+                      <span className="inline-flex rounded-full border border-[var(--signal)]/40 bg-[var(--signal-soft)] px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-[var(--signal-strong)]">External</span>
+                    ) : null}
+                  </div>
                   <h2 className="mt-4 text-2xl font-black tracking-[-0.04em] text-[var(--ink)]">{job.title}</h2>
                   <Link href={`/dashboard/user/businesses/${encodeURIComponent(businessKey(job.businessId, job.companyName))}`} className="mt-2 inline-flex text-sm font-bold text-[var(--steel)] hover:text-[var(--signal)] hover:underline">
                     {job.companyName}
