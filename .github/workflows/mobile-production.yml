@@ -1,0 +1,53 @@
+name: Mobile Production Build
+
+# EAS production build (Android app-bundle + iOS) on push to main.
+# Scoped to mobile changes so web-only pushes don't consume build minutes.
+# Requires the repo secret EXPO_TOKEN.
+# Note: iOS production needs Apple credentials configured beforehand
+# via `eas credentials`; Android signing is auto-managed by EAS.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "mobile/**"
+      - ".github/workflows/mobile-production.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-production
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    defaults:
+      run:
+        working-directory: mobile
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build Android and iOS
+        run: eas build --platform all --profile production --non-interactive
