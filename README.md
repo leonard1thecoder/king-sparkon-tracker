@@ -145,7 +145,8 @@ Backend remains the source of truth. UI may show these locked states:
 - `PRO`: unlimited workers.
 - `WORKER_TIPS_PLATFORM`, `BUSINESS_ANALYSIS_AI`, and `WORKER_CLOCKER` are Pro features.
 
-## CI
+## CI## CI
+
 
 `.github/workflows/frontend-ci.yml` runs on pull requests and push to `main`:
 
