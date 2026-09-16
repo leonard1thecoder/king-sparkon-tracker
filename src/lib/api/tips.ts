@@ -1,4 +1,4 @@
-import { apiGet, apiPatch, apiPostIdempotent } from "./client";
+import { apiGet, apiPatch, apiPostIdempotent, normalizeApiError } from "./client";
 import { apiContract, createIdempotencyKey } from "@/lib/api/contracts";
 import type { Tip, TipPayload } from "@/lib/types/backend";
 
@@ -10,11 +10,22 @@ type ListTipsParams = {
   size?: number;
 };
 
-export function listTips({ status = "PAID", page, size }: ListTipsParams = {}) {
+export async function listTips({ status = "PAID", page, size }: ListTipsParams = {}) {
   const query = new URLSearchParams({ status });
   if (page !== undefined) query.set("page", String(page));
   if (size !== undefined) query.set("size", String(size));
-  return apiGet<Tip[]>(`${apiContract.tips.root}?${query.toString()}`);
+  const suffix = `?${query.toString()}`;
+  try {
+    // User-scoped sent-tips listing — works for every authenticated role.
+    return await apiGet<Tip[]>(`${apiContract.tips.root}/sent${suffix}`);
+  } catch (exception) {
+    const normalized = normalizeApiError(exception);
+    // Older backends without /sent fall back to the owner/admin status listing.
+    if (normalized.status === 403 || normalized.status === 404) {
+      return apiGet<Tip[]>(`${apiContract.tips.root}${suffix}`);
+    }
+    throw exception;
+  }
 }
 
 export function listOwnerTips() {

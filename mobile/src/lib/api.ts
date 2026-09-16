@@ -115,7 +115,8 @@ export function markTipPaid(tipId: number) {
 }
 
 export function listWorkerTips() {
-  return apiGet<Tip[]>("/tips", { status: "PAID" });
+  // Worker-scoped endpoint — GET /tips?status= is owner/admin only.
+  return apiGet<Tip[]>("/tips/me");
 }
 
 // User dashboard — favorites (mirrors web `src/lib/favorites.ts`).

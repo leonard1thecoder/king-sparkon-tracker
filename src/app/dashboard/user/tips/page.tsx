@@ -13,7 +13,6 @@ export default function UserTipWorkerPage() {
       role="USER WORKSPACE"
       title="Tip a worker"
       description="Scan a worker QR code, confirm the worker, review your tip history, and continue into the secure payment flow."
-      endpoint="SCAN /tips/workers/{workerId} · POST /api/tips/workers/{workerId}/paypal/checkout"
     >
       <WorkerTipQrScanner />
     </RouteSectionPage>

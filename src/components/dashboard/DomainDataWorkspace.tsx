@@ -35,10 +35,14 @@ type MutationConfig = {
   fields: MutationField[];
 };
 
-function parseEndpoint(endpoint: string): EndpointContract {
-  const candidate = endpoint.split(/\s+or\s+/i)[0]?.trim() ?? "";
-  const match = candidate.match(/^(GET|POST)\s+([^\s]+)$/i);
-  if (!match) throw new Error(`Unsupported endpoint contract: ${endpoint}`);
+function parseEndpoint(endpoint: string): EndpointContract | null {
+  // Endpoint strings are documentary: pages may list several contracts
+  // separated by "·" (e.g. "GET /a · POST /b") or describe non-fetchable
+  // flows (e.g. "SCAN ..."). Only the first fetchable GET/POST contract is
+  // rendered. Anything else resolves to null so the page never crashes.
+  const first = endpoint.split("·")[0]?.split(/\s+or\s+/i)[0]?.trim() ?? "";
+  const match = first.match(/^(GET|POST)\s+([^\s]+)$/i);
+  if (!match) return null;
   return { method: match[1].toUpperCase() as EndpointContract["method"], path: match[2] };
 }
 
@@ -70,6 +74,18 @@ function mutationConfig(path: string): MutationConfig | null {
       submitLabel: "Submit claim",
       successMessage: "Barcode claim submitted successfully.",
       fields: [{ name: "barcode", label: "Barcode value", required: true }],
+    };
+  }
+  if (/(^|\/)tips$/.test(path)) {
+    return {
+      submitLabel: "Create tip",
+      successMessage: "Tip created successfully. Continue to the payment handoff.",
+      fields: [
+        { name: "workerId", label: "Worker ID", type: "number", required: true },
+        { name: "tipAmount", label: "Tip amount (R)", type: "number", required: true },
+        { name: "callbackUrl", label: "Callback URL", required: true },
+        { name: "clientContact", label: "Your contact (optional)" },
+      ],
     };
   }
   return null;
@@ -139,7 +155,12 @@ function MutationWorkspace({ contract, title }: { contract: EndpointContract; ti
       return [field.name, field.type === "number" && raw ? Number(raw) : raw || undefined];
     }));
     try {
-      await apiClient.request({ method: contract.method, url: contract.path.replace(/^\/api/, ""), data: payload });
+      await apiClient.request({
+        method: contract.method,
+        url: contract.path.replace(/^\/api/, ""),
+        data: payload,
+        headers: { "Idempotency-Key": `${Date.now()}-${Math.random().toString(36).slice(2)}` },
+      });
       event.currentTarget.reset();
       setMessage(mutation.successMessage);
     } catch (exception) {
@@ -187,7 +208,7 @@ export function DomainDataWorkspace({ endpoint, title }: { endpoint: string; tit
   const [status, setStatus] = useState("");
 
   const load = useCallback(async () => {
-    if (contract.method !== "GET") return;
+    if (!contract || contract.method !== "GET") return;
     setState("loading");
     setError("");
     try {
@@ -204,6 +225,7 @@ export function DomainDataWorkspace({ endpoint, title }: { endpoint: string; tit
 
   useEffect(() => { void load(); }, [load]);
 
+  if (!contract) return null;
   if (contract.method === "POST") return <MutationWorkspace contract={contract} title={title} />;
   if (state === "loading") return <DataState icon={LoaderCircle} title={`Loading ${title}`} message="Retrieving live server data and access policy." />;
   if (state === "forbidden") return <DataState icon={ShieldAlert} title="Access denied" message="Your authenticated role or business tenant cannot access this data." />;
