@@ -1,0 +1,54 @@
+name: Mobile EAS Build
+
+# Native Android + iOS binaries via Expo Application Services.
+# Runs manually or on version tags (e.g. mobile-v0.1.0).
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: "Platform to build"
+        required: true
+        default: "all"
+        type: choice
+        options: ["all", "android", "ios"]
+      profile:
+        description: "EAS build profile (see mobile/eas.json)"
+        required: true
+        default: "preview"
+        type: choice
+        options: ["development", "preview", "production"]
+  push:
+    tags: ["mobile-v*"]
+
+jobs:
+  eas:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: EAS build (manual)
+        if: github.event_name == 'workflow_dispatch'
+        run: eas build --non-interactive --platform ${{ inputs.platform }} --profile ${{ inputs.profile }}
+
+      - name: EAS build (tag → production, all platforms)
+        if: github.event_name == 'push'
+        run: eas build --non-interactive --platform all --profile production

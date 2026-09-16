@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "King Sparkon Tracker",
+    "slug": "king-sparkon-tracker",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "kingsparkon",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kingsparkon.tracker",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Scan barcodes, QR codes and ticket codes at the counter."
+      }
+    },
+    "android": {
+      "package": "com.kingsparkon.tracker",
+      "permissions": ["CAMERA"]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow King Sparkon Tracker to scan barcodes and tickets."
+        }
+      ],
+      "expo-secure-store"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "00000000-0000-0000-0000-000000000000"
+      }
+    }
+  }
+}

@@ -18,6 +18,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Expo mobile app has its own eslint flat config.
+    "mobile/**",
   ]),
 ]);
 

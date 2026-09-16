@@ -17,6 +17,15 @@
 /.next/
 /out/
 
+# expo / react-native (mobile/)
+mobile/node_modules
+mobile/dist
+mobile/.expo
+mobile/android
+mobile/ios
+mobile/*.jks
+mobile/*.keystore
+
 # production
 /build
 
