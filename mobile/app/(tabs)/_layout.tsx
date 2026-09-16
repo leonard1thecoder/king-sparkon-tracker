@@ -59,6 +59,8 @@ export default function TabsLayout() {
       <Tabs.Screen name="favorites" options={{ title: "Favorites", href: null }} />
       <Tabs.Screen name="carts" options={{ title: "My Carts", href: null }} />
       <Tabs.Screen name="sales" options={{ title: "Sales", href: null }} />
+      <Tabs.Screen name="jobs" options={{ title: "Jobs", href: null }} />
+      <Tabs.Screen name="applications" options={{ title: "My Applications", href: null }} />
     </Tabs>
   );
 }

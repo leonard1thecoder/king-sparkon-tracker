@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { normalizeApiError } from "@/lib/api/client";
 import { getPayFastCartPaymentStatus } from "@/lib/api/tuck-shop";
 import { clearTuckShopCart, saveTuckShopPurchaseHistory } from "@/lib/tuck-shop/cart";
+import { clearTipTray } from "@/lib/tips/cart";
 import type { PayFastCartPaymentStatus } from "@/lib/types/backend";
 import {
   PayFastPendingTimeoutError,
@@ -57,6 +58,9 @@ export function PaymentResultClient() {
         full.productPurchases.forEach(saveTuckShopPurchaseHistory);
         clearTuckShopCart();
         window.dispatchEvent(new CustomEvent("king-sparkon:tuck-shop-cart"));
+        // Tips ride the same shared cart payout — a fulfilled cart means
+        // fulfilled tips, so the tip cart clears here too.
+        clearTipTray();
         setState({ kind: "complete", receipt: full });
       } catch (error) {
         if (!active) return;

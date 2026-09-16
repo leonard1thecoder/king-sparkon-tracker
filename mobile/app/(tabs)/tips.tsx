@@ -2,8 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { FlatList, Pressable, RefreshControl, StyleSheet, Text, TextInput, View } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { Link } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
-import { createTip, listWorkerTips } from "@/lib/api";
+import { listWorkerTips } from "@/lib/api";
 import type { Tip } from "@/lib/types";
 import { numericWorkerId, parseWorkerTipQr, type WorkerQrResult } from "@/lib/tip-qr";
 import { useAuth } from "@/store/auth-context";
@@ -36,7 +35,7 @@ function SendTipFlow() {
   const [customAmount, setCustomAmount] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [addedTip, setAddedTip] = useState<Tip | null>(null);
+  const [addedAmount, setAddedAmount] = useState<number | null>(null);
 
   useEffect(() => {
     if (!permission?.granted) void requestPermission();
@@ -49,7 +48,7 @@ function SendTipFlow() {
       return;
     }
     setResult(parsed);
-    setAddedTip(null);
+    setAddedAmount(null);
     setError(null);
     setScanning(false);
   }
@@ -75,35 +74,16 @@ function SendTipFlow() {
     setBusy(true);
     setError(null);
     try {
-      const tip = await createTip({
-        workerId: backendWorkerId,
-        tipAmount: amount,
-        callbackUrl: "kingsparkon://tips/callback",
-      });
-      await addToTray({
-        tipId: tip.id,
-        workerId: tip.workerId,
-        workerLabel: `Worker ${result.workerId}`,
-        tipAmount: Number(tip.tipAmount ?? amount),
-        paymentReference: tip.paymentReference ?? null,
-        paymentUrl: tip.paymentUrl ?? null,
-        createdAt: new Date().toISOString(),
-      });
-      setAddedTip(tip);
+      // Tips pay through the shared cart payout: store an intent here;
+      // POST /payments/payfast charges it with products/tickets.
+      await addToTray({ workerId: backendWorkerId, workerLabel: `Worker ${result.workerId}`, tipAmount: amount });
+      setAddedAmount(amount);
       setSelected(null);
       setCustomAmount("");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Tip failed.");
     } finally {
       setBusy(false);
-    }
-  }
-
-  async function payNow(tip: Tip) {
-    if (tip.paymentUrl) {
-      await WebBrowser.openBrowserAsync(tip.paymentUrl);
-    } else {
-      setError("No payment URL returned yet — open the tip cart and try again.");
     }
   }
 
@@ -129,11 +109,11 @@ function SendTipFlow() {
       <Card>
         <Text style={styles.label}>Worker ID or tip URL</Text>
         <TextInput value={manual} onChangeText={setManual} autoCapitalize="none" placeholder="Scan QR or type worker ID…" style={styles.input} onSubmitEditing={() => handleScan(manual)} />
-        <View style={styles.row}>
-          <PrimaryButton title="Find worker" onPress={() => handleScan(manual)} />
-          {!permission?.granted ? <PrimaryButton title="Enable camera" onPress={() => void requestPermission()} /> : null}
-          {result ? <PrimaryButton title="Scan again" onPress={() => { setResult(null); setAddedTip(null); setScanning(true); }} /> : null}
-        </View>
+          <View style={styles.row}>
+            <PrimaryButton title="Find worker" onPress={() => handleScan(manual)} />
+            {!permission?.granted ? <PrimaryButton title="Enable camera" onPress={() => void requestPermission()} /> : null}
+            {result ? <PrimaryButton title="Scan again" onPress={() => { setResult(null); setAddedAmount(null); setScanning(true); }} /> : null}
+          </View>
       </Card>
 
       <ErrorText message={error} />
@@ -144,12 +124,12 @@ function SendTipFlow() {
           <Text style={styles.amountTitle}>Set amount</Text>
           <View style={styles.amountGrid}>
             {amounts.map((entry) => (
-              <Pressable key={entry.id} onPress={() => { setSelected(entry.id); setAddedTip(null); }} style={[styles.amount, selected === entry.id && styles.amountActive]}>
+              <Pressable key={entry.id} onPress={() => { setSelected(entry.id); setAddedAmount(null); }} style={[styles.amount, selected === entry.id && styles.amountActive]}>
                 <Text style={[styles.amountLabel, selected === entry.id && styles.amountLabelActive]}>{entry.label}</Text>
                 <Text style={styles.amountDetail}>{entry.detail}</Text>
               </Pressable>
             ))}
-            <Pressable onPress={() => { setSelected("custom"); setAddedTip(null); }} style={[styles.amount, selected === "custom" && styles.amountActive]}>
+            <Pressable onPress={() => { setSelected("custom"); setAddedAmount(null); }} style={[styles.amount, selected === "custom" && styles.amountActive]}>
               <Text style={[styles.amountLabel, selected === "custom" && styles.amountLabelActive]}>Custom</Text>
               <Text style={styles.amountDetail}>Enter the exact tip value.</Text>
             </Pressable>
@@ -161,13 +141,10 @@ function SendTipFlow() {
         </Card>
       ) : null}
 
-      {addedTip ? (
+      {addedAmount !== null ? (
         <Card>
           <StatusPill label="Added to tip cart" tone="success" />
-          <Text>R{Number(addedTip.tipAmount ?? 0).toFixed(2)} for worker {result?.workerId}</Text>
-          <View style={styles.row}>
-            <PrimaryButton title="Pay now" onPress={() => void payNow(addedTip)} />
-          </View>
+          <Text>R{addedAmount.toFixed(2)} for worker {result?.workerId} — pay it with the shared cart payout.</Text>
           <Link href="/tip-cart" asChild>
             <Pressable style={styles.openCart}>
               <Text style={styles.openCartText}>Open tip cart →</Text>

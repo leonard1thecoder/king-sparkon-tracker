@@ -202,6 +202,12 @@ export type CreateEmbeddedCartPaymentPayload = {
   buyerEmail: string;
   products: TuckShopPurchaseItemPayload[];
   tickets: EmbeddedCartTicketItem[];
+  tips?: EmbeddedCartTipItem[];
+};
+
+export type EmbeddedCartTipItem = {
+  workerId: number;
+  tipAmount: number;
 };
 
 export type PayFastCartPayment = {

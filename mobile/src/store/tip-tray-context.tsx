@@ -1,18 +1,14 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { listSentTips } from "@/lib/api";
 
 // Tip cart (tray) — mirrors web `src/lib/tips/cart.ts`.
-// Same flow: scan worker QR → set amount → submit creates the tip
-// (UNPAID) and adds it here → pay from the cart.
+// Same flow: scan worker QR → set amount → submit stores an intent here →
+// the cart pays all intents through the shared PayFast cart payout.
 
 export type TipTrayLine = {
-  tipId: number;
   workerId: number;
   workerLabel: string;
   tipAmount: number;
-  paymentReference?: string | null;
-  paymentUrl?: string | null;
   createdAt: string;
 };
 
@@ -24,8 +20,8 @@ type TipTrayState = {
   total: number;
   loading: boolean;
   refresh: () => Promise<void>;
-  add: (line: TipTrayLine) => Promise<void>;
-  remove: (tipId: number) => Promise<void>;
+  add: (line: Omit<TipTrayLine, "createdAt">) => Promise<void>;
+  remove: (workerId: number, tipAmount?: number) => Promise<void>;
   clear: () => Promise<void>;
 };
 
@@ -36,7 +32,11 @@ async function readStored(): Promise<TipTrayLine[]> {
     const raw = await AsyncStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as TipTrayLine[];
-      if (Array.isArray(parsed)) return parsed;
+      if (Array.isArray(parsed)) {
+        return parsed.filter(
+          (line) => Number.isFinite(Number(line?.workerId)) && Number(line?.tipAmount) > 0,
+        );
+      }
     }
   } catch {
     // Corrupt cache — fall through to empty.
@@ -53,37 +53,35 @@ export function TipTrayProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
-    const stored = await readStored();
-    try {
-      // Reconcile: paid tips leave the cart (same as web via /tips/sent).
-      const sent = await listSentTips().catch(() => []);
-      const paidIds = new Set(
-        sent.filter((tip) => String(tip.status ?? "").toUpperCase() === "PAID").map((tip) => tip.id),
-      );
-      const next = paidIds.size > 0 ? stored.filter((line) => !paidIds.has(line.tipId)) : stored;
-      await writeStored(next);
-      setLines(next);
-    } catch {
-      setLines(stored);
-    } finally {
-      setLoading(false);
-    }
+    // Intents pay through the shared cart payout; a fulfilled cart clears
+    // the tray, so refresh just reloads valid lines.
+    setLines(await readStored());
+    setLoading(false);
   }, []);
 
   useEffect(() => {
     void refresh();
   }, [refresh]);
 
-  const add = useCallback(async (line: TipTrayLine) => {
+  const add = useCallback(async (line: Omit<TipTrayLine, "createdAt">) => {
     const stored = await readStored();
-    const next = [line, ...stored.filter((entry) => entry.tipId !== line.tipId)];
+    const next = [
+      { ...line, createdAt: new Date().toISOString() },
+      ...stored.filter(
+        (entry) => !(entry.workerId === line.workerId && Number(entry.tipAmount) === Number(line.tipAmount)),
+      ),
+    ];
     await writeStored(next);
     setLines(next);
   }, []);
 
-  const remove = useCallback(async (tipId: number) => {
+  const remove = useCallback(async (workerId: number, tipAmount?: number) => {
     const stored = await readStored();
-    const next = stored.filter((entry) => entry.tipId !== tipId);
+    const next = stored.filter((entry) =>
+      tipAmount === undefined
+        ? entry.workerId !== workerId
+        : !(entry.workerId === workerId && Number(entry.tipAmount) === Number(tipAmount)),
+    );
     await writeStored(next);
     setLines(next);
   }, []);

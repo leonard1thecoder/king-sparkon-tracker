@@ -8,7 +8,10 @@ User workspace (mirrors `src/app/dashboard/user`):
 - `/(tabs)/shop` — browse `GET /api/v1/tuck-shop/products`, add to cart
 - `/(tabs)/cart` — `POST /api/v1/tuck-shop/purchases` with idempotency key
 - `/(tabs)/tickets` — `GET /api/v1/tickets/events` + my tickets
-- `/(tabs)/tips` — `POST /api/tips` then PayFast browser payment
+- `/(tabs)/jobs` + `/job/[id]` — browse opportunities and apply (`/opportunities/jobs`)
+- `/(tabs)/applications` — my job applications (`/opportunities/applications`)
+- `/(tabs)/tips` — scan worker QR, set amount, submit to tip cart
+- `/tip-cart` — tip intents paid through the shared PayFast cart payout (`POST /payments/payfast`, same as products/tickets)
 - `/product/[id]` — product details
 
 Worker workspace (mirrors `src/app/dashboard/worker`):

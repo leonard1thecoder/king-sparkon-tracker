@@ -9,6 +9,8 @@ type Entry = { label: string; detail: string; href: string };
 
 const userEntries: Entry[] = [
   { label: "Tip Cart", detail: "Pay unpaid worker tips added from QR scans.", href: "/tip-cart" },
+  { label: "Jobs", detail: "Browse open opportunities and apply.", href: "/(tabs)/jobs" },
+  { label: "My Applications", detail: "Track your job applications.", href: "/(tabs)/applications" },
   { label: "My Carts", detail: "Review product purchases and collections.", href: "/(tabs)/carts" },
   { label: "Favorites", detail: "Favorited businesses and quick access.", href: "/(tabs)/favorites" },
   { label: "Check UIF Status", detail: "Enter your 13-digit ID to check UIF status.", href: "/uif/status" },

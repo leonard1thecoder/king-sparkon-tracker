@@ -5,12 +5,8 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2, CreditCard, Loader2, LockKeyhole, ShoppingCart, WalletCards } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { createTip } from "@/lib/api/tips";
-import { getPayFastFormFields } from "@/lib/api/tuck-shop";
-import { submitPayFastForm } from "@/lib/payfast";
 import { normalizeApiError } from "@/lib/api/client";
-import { addTipToTray } from "@/lib/tips/cart";
-import type { Tip } from "@/lib/types/backend";
+import { addTipIntent } from "@/lib/tips/cart";
 
 const tipOptions = [
   { id: "20", label: "R20", amount: 20, title: "Quick thanks", detail: "A small thank-you for fast service." },
@@ -36,9 +32,8 @@ export function WorkerTipCheckout({ workerId }: { workerId: string }) {
   const [selectedOption, setSelectedOption] = useState<TipOptionId | null>(null);
   const [customAmount, setCustomAmount] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [paying, setPaying] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
-  const [trayTip, setTrayTip] = useState<Tip | null>(null);
+  const [addedAmount, setAddedAmount] = useState<number | null>(null);
 
   const selectedAmount = useMemo(() => {
     const option = tipOptions.find((item) => item.id === selectedOption);
@@ -50,35 +45,14 @@ export function WorkerTipCheckout({ workerId }: { workerId: string }) {
   function chooseOption(id: TipOptionId) {
     setSelectedOption(id);
     setNotice(null);
-    setTrayTip(null);
+    setAddedAmount(null);
     if (id !== "custom") setCustomAmount("");
-  }
-
-  async function payForTip(tip: Tip) {
-    setPaying(true);
-    setNotice(null);
-    try {
-      if (!tip.paymentReference) {
-        throw new Error("Tip payment reference is missing.");
-      }
-      const form = await getPayFastFormFields(tip.paymentReference);
-      submitPayFastForm(form.processUrl, form.fields);
-      return;
-    } catch (formError) {
-      if (tip.paymentUrl && typeof window !== "undefined") {
-        window.location.assign(tip.paymentUrl);
-        return;
-      }
-      setNotice(formError instanceof Error ? formError.message : "PayFast payment could not start.");
-    } finally {
-      setPaying(false);
-    }
   }
 
   async function submitTip(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setNotice(null);
-    setTrayTip(null);
+    setAddedAmount(null);
 
     if (!selectedOption) {
       setNotice("Choose a tip amount first.");
@@ -99,14 +73,10 @@ export function WorkerTipCheckout({ workerId }: { workerId: string }) {
     setSubmitting(true);
 
     try {
-      const tip = await createTip({
-        workerId: backendWorkerId,
-        tipAmount: selectedAmount,
-        callbackUrl: typeof window === "undefined" ? "/dashboard/user/tips/scan" : window.location.href,
-      });
-
-      addTipToTray(tip, `Worker ${workerId}`);
-      setTrayTip(tip);
+      // Tips pay through the shared cart payout: store an intent in the tip
+      // cart here; POST /payments/payfast charges it with products/tickets.
+      addTipIntent(backendWorkerId, selectedAmount, `Worker ${workerId}`);
+      setAddedAmount(selectedAmount);
       setSelectedOption(null);
       setCustomAmount("");
     } catch (error) {
@@ -202,20 +172,14 @@ export function WorkerTipCheckout({ workerId }: { workerId: string }) {
               </div>
 
               {notice ? <p className="rounded-[1rem] border border-[var(--danger)]/25 bg-[var(--danger)]/10 p-3 text-sm font-bold text-[var(--danger)]">{notice}</p> : null}
-              {trayTip ? (
+              {addedAmount !== null ? (
                 <div className="grid gap-3 rounded-[1rem] border border-[var(--confirm)]/25 bg-[var(--confirm)]/10 p-4">
                   <p className="text-sm font-bold text-[var(--confirm)]">
-                    Added to tip cart — {new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(Number(trayTip.tipAmount ?? 0))} for worker {workerId}. Pay now or from the tip cart.
+                    Added to tip cart — {new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(addedAmount)} for worker {workerId}. Pay it with the shared cart payout.
                   </p>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <Button type="button" disabled={paying} onClick={() => void payForTip(trayTip)} className="w-full">
-                      {paying ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
-                      {paying ? "Opening PayFast..." : "Pay now"}
-                    </Button>
-                    <Link href="/dashboard/user/tips/cart" className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[var(--ink)] bg-white px-5 text-sm font-black text-[var(--ink)] hover:bg-[var(--surface)]">
-                      <ShoppingCart className="h-4 w-4" /> Open tip cart <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </div>
+                  <Link href="/dashboard/user/tips/cart" className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ink)]">
+                    <ShoppingCart className="h-4 w-4" /> Open tip cart <ArrowRight className="h-4 w-4" />
+                  </Link>
                 </div>
               ) : null}
 

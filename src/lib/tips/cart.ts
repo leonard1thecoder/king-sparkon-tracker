@@ -1,18 +1,19 @@
 import type { Tip } from "@/lib/types/backend";
 
 // Tip cart (tray) — localStorage primary, mirroring `src/lib/tuck-shop/cart.ts`.
-// Flow on web and mobile is identical: scan worker QR → set amount →
-// submit creates the tip (UNPAID) and adds it here → pay from the cart.
-// Payment itself stays per-tip through the PayFast handoff already on the tip.
+// Unified flow on web and mobile: scan worker QR → set amount → submit
+// stores a tip *intent* here → the cart pays all intents through the same
+// shared PayFast cart payout as products, tickets and UIF carts
+// (POST /payments/payfast). Tips are created server-side at fulfilment,
+// so nothing is charged until the verified backend ITN confirms payment.
 
 export type TipTrayLine = {
-  tipId: number;
   workerId: number;
   workerLabel: string;
   tipAmount: number;
-  paymentReference?: string | null;
-  paymentUrl?: string | null;
   createdAt: string;
+  /** Legacy field from pre-cart tip trays (per-tip simple payments). Ignored by cart payout. */
+  tipId?: number;
 };
 
 export const TIP_TRAY_STORAGE_KEY = "king-sparkon-tip-tray";
@@ -28,7 +29,8 @@ export function readTipTray(): TipTrayLine[] {
     const raw = window.localStorage.getItem(TIP_TRAY_STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw) as TipTrayLine[];
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((line) => Number.isFinite(Number(line?.workerId)) && Number(line?.tipAmount) > 0);
   } catch {
     return [];
   }
@@ -49,23 +51,25 @@ export function tipTrayTotal() {
   return readTipTray().reduce((sum, line) => sum + Number(line.tipAmount ?? 0), 0);
 }
 
-export function addTipToTray(tip: Tip, workerLabel?: string): TipTrayLine[] {
-  const lines = readTipTray().filter((line) => line.tipId !== tip.id);
-  lines.unshift({
-    tipId: tip.id,
-    workerId: tip.workerId,
-    workerLabel: workerLabel?.trim() || `Worker #${tip.workerId}`,
-    tipAmount: Number(tip.tipAmount ?? 0),
-    paymentReference: tip.paymentReference ?? null,
-    paymentUrl: tip.paymentUrl ?? null,
-    createdAt: new Date().toISOString(),
-  });
+export function addTipIntent(workerId: number, tipAmount: number, workerLabel?: string): TipTrayLine[] {
+  const normalizedLabel = workerLabel?.trim() || `Worker #${workerId}`;
+  const lines = [
+    { workerId, workerLabel: normalizedLabel, tipAmount: Number(tipAmount), createdAt: new Date().toISOString() },
+    ...readTipTray().filter((line) => !(line.workerId === workerId && Number(line.tipAmount) === Number(tipAmount))),
+  ];
   writeTipTray(lines);
   return lines;
 }
 
-export function removeTipFromTray(tipId: number): TipTrayLine[] {
-  const lines = readTipTray().filter((line) => line.tipId !== tipId);
+/** Back-compat: older trays stored created tips; keep their worker/amount as intents. */
+export function addTipToTray(tip: Tip, workerLabel?: string): TipTrayLine[] {
+  return addTipIntent(tip.workerId, Number(tip.tipAmount ?? 0), workerLabel);
+}
+
+export function removeTipFromTray(workerId: number, tipAmount?: number): TipTrayLine[] {
+  const lines = readTipTray().filter((line) =>
+    tipAmount === undefined ? line.workerId !== workerId : !(line.workerId === workerId && Number(line.tipAmount) === Number(tipAmount)),
+  );
   writeTipTray(lines);
   return lines;
 }
@@ -73,12 +77,4 @@ export function removeTipFromTray(tipId: number): TipTrayLine[] {
 export function clearTipTray(): TipTrayLine[] {
   writeTipTray([]);
   return [];
-}
-
-/** Drop tray lines whose backend tip record is now PAID (reconciled via /tips/sent). */
-export function reconcileTipTray(paidTipIds: Set<number>): TipTrayLine[] {
-  if (paidTipIds.size === 0) return readTipTray();
-  const lines = readTipTray().filter((line) => !paidTipIds.has(line.tipId));
-  writeTipTray(lines);
-  return lines;
 }

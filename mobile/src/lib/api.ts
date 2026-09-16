@@ -67,13 +67,112 @@ export function listMyTickets() {
   return apiGet<UserTicket[]>("/v1/tickets/my-tickets/current");
 }
 
-// User dashboard — tips.
+// User dashboard — tips (standalone creation kept for compat;
+// the tip cart pays intents through the shared cart payout below).
 export function createTip(payload: TipPayload) {
   return apiPostIdempotent<Tip, TipPayload>("/tips", payload);
 }
 
+// Shared PayFast cart payout (products + tickets + tips) — same as web
+// shop cart, ticket checkout, UIF carts and the tip cart.
+export type CartTipItem = { workerId: number; tipAmount: number };
+
+export function createPayFastCartPayment(payload: {
+  idempotencyKey: string;
+  buyerName: string;
+  buyerEmail: string;
+  products: { productId: number; quantity: number }[];
+  tickets: { eventId: string; ticketType: string; quantity: number }[];
+  tips: CartTipItem[];
+}) {
+  return apiPostIdempotent<{
+    paymentId: number;
+    merchantPaymentId: string;
+    processUrl: string;
+    fields: Record<string, string>;
+    amount: number;
+    currency: string;
+    status: string;
+  }, typeof payload>("/payments/payfast", payload);
+}
+
+export function getPayFastCartPaymentStatus(merchantPaymentId: string) {
+  return apiGet<{
+    paymentId: number;
+    merchantPaymentId: string;
+    amount: number;
+    currency: string;
+    paymentStatus: string;
+    fulfilled: boolean;
+    message: string;
+  }>(`/payments/status/${encodeURIComponent(merchantPaymentId)}`);
+}
+
+// Public web pay page for a cart payment — mobile opens this in the
+// browser to complete the shared payout (same page web uses).
+export function payPageUrl(merchantPaymentId: string): string {
+  const base = (process.env.EXPO_PUBLIC_APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
+  return `${base}/pay/${encodeURIComponent(merchantPaymentId)}`;
+}
+
 export function listSentTips(status?: string) {
   return apiGet<Tip[]>("/tips/sent", status ? { status } : undefined);
+}
+
+// User dashboard — jobs (mirrors web `src/lib/api/job-opportunities.ts`).
+export type MobileJob = {
+  id: number;
+  title: string;
+  businessName?: string | null;
+  companyName?: string | null;
+  location?: string | null;
+  workplaceType?: string | null;
+  employmentType?: string | null;
+  jobDescription?: string | null;
+  description?: string | null;
+  requirements?: string | null;
+  status?: string | null;
+  createdDate?: string | null;
+};
+
+export type MobileJobApplication = {
+  id: number;
+  status?: string | null;
+  resumeUrl?: string | null;
+  createdDate?: string | null;
+  applicantUsername?: string | null;
+  jobPost?: MobileJob | null;
+};
+
+export function listJobs(params: { keyword?: string; location?: string; page?: number; size?: number } = {}) {
+  return apiGet<PageResponse<MobileJob> | MobileJob[]>("/opportunities/jobs", {
+    keyword: params.keyword || undefined,
+    location: params.location || undefined,
+    page: params.page,
+    size: params.size,
+  });
+}
+
+export function getJobById(id: number | string) {
+  return apiGet<MobileJob>(`/opportunities/jobs/${id}`);
+}
+
+export function applyForJob(
+  id: number | string,
+  payload: { applicantName: string; applicantEmail: string; phoneNumber?: string; coverMessage?: string; cvUrl?: string },
+) {
+  return apiPost<MobileJobApplication, Record<string, unknown>>(`/opportunities/jobs/${id}/apply`, {
+    applicantName: payload.applicantName,
+    applicantEmail: payload.applicantEmail,
+    phoneNumber: payload.phoneNumber || undefined,
+    coverMessage: payload.coverMessage || undefined,
+    resumeUrl: payload.cvUrl || undefined,
+    certificateUrls: [],
+  });
+}
+
+export function listMyJobApplications() {
+  return apiGet<PageResponse<MobileJobApplication> | MobileJobApplication[]>("/opportunities/applications");
 }
 
 // Worker dashboard — counter checkout + orders + barcodes.

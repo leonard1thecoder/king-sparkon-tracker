@@ -19,6 +19,7 @@ export default function RootLayout() {
                 <Stack.Screen name="(auth)" />
                 <Stack.Screen name="(tabs)" />
                 <Stack.Screen name="product/[id]" options={{ headerShown: true, title: "Product" }} />
+                <Stack.Screen name="job/[id]" options={{ headerShown: true, title: "Job" }} />
                 <Stack.Screen name="tip-cart" options={{ headerShown: true, title: "Tip Cart" }} />
                 <Stack.Screen name="uif/status" options={{ headerShown: true, title: "Check UIF Status" }} />
                 <Stack.Screen name="uif/password" options={{ headerShown: true, title: "Update UIF Password" }} />
