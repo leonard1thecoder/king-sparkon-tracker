@@ -120,3 +120,8 @@ export async function apiPatch<TResponse, TPayload = unknown>(path: string, payl
   const response = await backendClient.patch<TResponse>(path, payload);
   return response.data;
 }
+
+export async function apiDelete<TResponse>(path: string) {
+  const response = await backendClient.delete<TResponse>(path);
+  return response.data;
+}

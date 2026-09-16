@@ -1,11 +1,20 @@
-import { useState } from "react";
-import { StyleSheet, Text, TextInput } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { FlatList, RefreshControl, StyleSheet, Text, TextInput } from "react-native";
 import * as WebBrowser from "expo-web-browser";
-import { createTip } from "@/lib/api";
+import { createTip, listWorkerTips } from "@/lib/api";
+import type { Tip } from "@/lib/types";
+import { useAuth } from "@/store/auth-context";
+import { isWorkerLike } from "@/lib/types";
 import { Card, ErrorText, PrimaryButton, Screen, StatusPill, Subtitle, Title } from "@/components/ui";
 import { tokens } from "@/theme/tokens";
 
 export default function TipsScreen() {
+  const { user } = useAuth();
+  if (isWorkerLike(user)) return <WorkerTipsPanel />;
+  return <SendTipPanel />;
+}
+
+function SendTipPanel() {
   const [workerId, setWorkerId] = useState("");
   const [amount, setAmount] = useState("");
   const [contact, setContact] = useState("");
@@ -64,3 +73,48 @@ const styles = StyleSheet.create({
   label: { color: tokens.ink, fontSize: 13, fontWeight: "800" },
   input: { backgroundColor: "#fff", borderColor: tokens.line, borderWidth: 1, borderRadius: 12, padding: 10, color: tokens.ink },
 });
+
+function WorkerTipsPanel() {
+  const [tips, setTips] = useState<Tip[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const rows = await listWorkerTips();
+      setTips(Array.isArray(rows) ? rows : []);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not load tips.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  return (
+    <Screen>
+      <Title>Tips & QR</Title>
+      <Subtitle>Owner-enabled tip activity — mirrors web `/dashboard/worker/tips`.</Subtitle>
+      <ErrorText message={error} />
+      <FlatList
+        data={tips}
+        keyExtractor={(item) => String(item.id)}
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={() => void load()} />}
+        contentContainerStyle={{ gap: 10, paddingBottom: 24 }}
+        renderItem={({ item }) => (
+          <Card>
+            <Text style={{ fontWeight: "800" }}>R{item.tipAmount.toFixed(2)}</Text>
+            <StatusPill label={item.status ?? "PAID"} tone="success" />
+            {item.paymentReference ? <Text style={{ fontSize: 12 }}>{item.paymentReference}</Text> : null}
+          </Card>
+        )}
+        ListEmptyComponent={!loading ? <Text>No tips yet. Tips access is controlled by the business owner.</Text> : null}
+      />
+    </Screen>
+  );
+}

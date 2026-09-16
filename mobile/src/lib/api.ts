@@ -1,15 +1,21 @@
-import { apiGet, apiPatch, apiPost, apiPostIdempotent } from "./api-client";
+import { apiDelete, apiGet, apiPatch, apiPost, apiPostIdempotent } from "./api-client";
 import type {
+  FaceVerificationDecision,
+  FavoriteBusiness,
   PageResponse,
   Product,
   TicketEvent,
+  TicketVerificationResult,
   Tip,
   TipPayload,
   TrackerUser,
   TransactionPayload,
   TuckShopPurchase,
+  UifBenefitsResponse,
+  UifResetCartResponse,
   UserTicket,
 } from "./types";
+import { normalizeUifRows } from "./types";
 
 // Auth — direct backend endpoints (web proxies these via /api/auth/*).
 export function loginRequest(values: { usernameOrEmail: string; password: string }) {
@@ -106,4 +112,82 @@ export function listTransactions() {
 
 export function markTipPaid(tipId: number) {
   return apiPatch(`/tips/${tipId}/status`, { status: "PAID" });
+}
+
+export function listWorkerTips() {
+  return apiGet<Tip[]>("/tips", { status: "PAID" });
+}
+
+// User dashboard — favorites (mirrors web `src/lib/favorites.ts`).
+// Backend: GET /api/v1/favorites, GET /api/v1/favorites/detailed,
+// POST /api/v1/favorites/{businessKey}, DELETE /api/v1/favorites/{businessKey}.
+export function listFavoriteKeys() {
+  return apiGet<string[]>("/v1/favorites");
+}
+
+export function listFavoriteDetailed() {
+  return apiGet<FavoriteBusiness[]>("/v1/favorites/detailed");
+}
+
+export function followFavorite(businessKey: string) {
+  return apiPost(`/v1/favorites/${encodeURIComponent(businessKey)}`);
+}
+
+export function unfollowFavorite(businessKey: string) {
+  return apiDelete(`/v1/favorites/${encodeURIComponent(businessKey)}`);
+}
+
+// User dashboard — UIF (mirrors web `src/lib/api/uif.ts`).
+export async function fetchUifBenefits(idNumber: string) {
+  const payload = { idNumber: idNumber.trim() };
+  try {
+    const response = await apiPost<UifBenefitsResponse, typeof payload>("/uif/benefits", payload);
+    return normalizeUifRows(response);
+  } catch (error) {
+    const status = (error as { status?: number })?.status;
+    if (status === 404) {
+      const response = await apiGet<UifBenefitsResponse>(`/uif/benefits?idNumber=${encodeURIComponent(payload.idNumber)}`);
+      return normalizeUifRows(response);
+    }
+    throw error;
+  }
+}
+
+export function createUifResetCart(payload: { idNumber: string; password: string; confirmPassword: string }) {
+  return apiPost<UifResetCartResponse, typeof payload>("/uif/reset-password", payload);
+}
+
+export function getUifResetCartStatus(merchantPaymentId: string) {
+  return apiGet<UifResetCartResponse>(`/uif/reset-password/status/${encodeURIComponent(merchantPaymentId)}`);
+}
+
+// Worker dashboard — product sales + ticket gate.
+export function listCompletedWorkerPurchases() {
+  return apiGet<TuckShopPurchase[]>("/v1/tuck-shop/workers/completed-purchases");
+}
+
+export function listOwnerProducts(params: { page?: number; size?: number } = {}) {
+  return apiGet<PageResponse<Product> | Product[]>("/products", {
+    page: params.page,
+    size: params.size,
+  });
+}
+
+async function verifyTicket(path: "/v1/tickets/verify/qr" | "/v1/tickets/verify/reference", value: string, workerId: string, faceDecision: FaceVerificationDecision) {
+  const data = await apiPost<TicketVerificationResult, { value: string; workerId: string; faceDecision: FaceVerificationDecision }>(
+    path,
+    { value: value.trim(), workerId, faceDecision },
+  );
+  if (!data || typeof data.valid !== "boolean") {
+    return { valid: false, message: "Ticket verification returned an unreadable response." } satisfies TicketVerificationResult;
+  }
+  return data;
+}
+
+export function verifyTicketByQr(qrValue: string, workerId: string, faceDecision: FaceVerificationDecision = "PENDING") {
+  return verifyTicket("/v1/tickets/verify/qr", qrValue, workerId, faceDecision);
+}
+
+export function verifyTicketByReference(reference: string, workerId: string, faceDecision: FaceVerificationDecision = "PENDING") {
+  return verifyTicket("/v1/tickets/verify/reference", reference, workerId, faceDecision);
 }

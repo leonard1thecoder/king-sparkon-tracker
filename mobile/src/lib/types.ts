@@ -117,6 +117,84 @@ export type UserTicket = {
   usedAt?: string;
 };
 
+export type FavoriteBusiness = { key: string; businessName: string; businessId?: number | null };
+
+// ─── UIF (mirrors web `src/lib/api/uif.ts`) ────────────────────────────────
+
+export type UifBenefitRow = {
+  idNumber?: string;
+  id_number?: string;
+  benefitType?: string;
+  benefit_type?: string;
+  type?: string;
+  applicationNumber?: string;
+  application_number?: string;
+  applicationNo?: string;
+  application_date?: string;
+  applicationDate?: string;
+  date?: string;
+  claimStatus?: string;
+  claim_status?: string;
+  claim_status_display?: string;
+  status?: string;
+  [key: string]: unknown;
+};
+
+export type UifBenefitsResponse =
+  | {
+      benefits?: UifBenefitRow[];
+      rows?: UifBenefitRow[];
+      data?: UifBenefitRow[];
+      history?: UifBenefitRow[];
+      applicationHistory?: UifBenefitRow[];
+      content?: UifBenefitRow[];
+      records?: UifBenefitRow[];
+    }
+  | UifBenefitRow[];
+
+export function normalizeUifRows(response: UifBenefitsResponse | null | undefined): UifBenefitRow[] {
+  if (!response) return [];
+  if (Array.isArray(response)) return response;
+  const anyResp = response as Record<string, unknown>;
+  for (const key of ["records", "benefits", "rows", "data", "history", "applicationHistory", "content", "benefitHistory", "applicationForBenefitHistory"]) {
+    if (Array.isArray(anyResp[key])) return anyResp[key] as UifBenefitRow[];
+  }
+  if (typeof response === "object" && ("benefitType" in response || "benefit_type" in response)) {
+    return [response as UifBenefitRow];
+  }
+  return [];
+}
+
+export function uifRowSummary(row: UifBenefitRow) {
+  const idNumber = String(row.idNumber ?? row.id_number ?? "");
+  const benefitType = String(row.benefitType ?? row.benefit_type ?? row.type ?? "");
+  const applicationNumber = String(row.applicationNumber ?? row.application_number ?? row.applicationNo ?? "");
+  const applicationDate = String(row.applicationDate ?? row.application_date ?? row.date ?? "");
+  const claimStatus = String(row.claimStatus ?? row.claim_status ?? row.claim_status_display ?? row.status ?? "");
+  return { idNumber, benefitType, applicationNumber, applicationDate, claimStatus };
+}
+
+export type UifResetCartResponse = {
+  orderId: number;
+  merchantPaymentId: string;
+  amount: number | string;
+  currency: string;
+  status: string;
+  message?: string;
+};
+
+// ─── Worker ticket gate (mirrors `src/services/ticketVerificationService.ts`) ─
+
+export type FaceVerificationDecision = "PENDING" | "MATCH" | "MISMATCH";
+
+export type TicketVerificationResult = {
+  valid: boolean;
+  message: string;
+  ticket?: unknown;
+  event?: unknown;
+  requiresFaceConfirmation?: boolean;
+  verificationPhotoUrl?: string | null;
+};
 export function getUserRoles(user: TrackerUser | null): string[] {
   if (!user) return [];
   const roles = [...(user.roles ?? [])];
