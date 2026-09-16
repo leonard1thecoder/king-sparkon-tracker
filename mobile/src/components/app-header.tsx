@@ -97,7 +97,7 @@ export function AppHeader() {
           <Pressable
             style={styles.iconButton}
             accessibilityLabel="Open profile menu"
-            accessibilityExpanded={menuOpen}
+            accessibilityState={{ expanded: menuOpen }}
             onPress={() => setMenuOpen((v) => !v)}
           >
             <Text style={styles.icon}>☺</Text>
@@ -119,7 +119,7 @@ export function AppHeader() {
               <MenuLink href="/(tabs)/applications" label="My Applications" onNavigate={() => setMenuOpen(false)} />
               <MenuLink href="/(tabs)/carts" label="My Carts" onNavigate={() => setMenuOpen(false)} />
               <MenuLink href="/(tabs)/favorites" label="Favorites" onNavigate={() => setMenuOpen(false)} />
-              <Pressable style={styles.menuItem} onPress={() => setUifOpen((v) => !v)} accessibilityExpanded={uifOpen}>
+              <Pressable style={styles.menuItem} onPress={() => setUifOpen((v) => !v)} accessibilityState={{ expanded: uifOpen }}>
                 <Text style={styles.menuItemText}>UIF {uifOpen ? "▾" : "▸"}</Text>
               </Pressable>
               {uifOpen ? (
