@@ -44,6 +44,7 @@ type HeaderProfile = TrackerUser & SessionProfile & {
 export const userProfileShortcuts: ProfileShortcut[] = [
   { label: "Buy Products", href: "/dashboard/user/shop", icon: ShoppingCart },
   { label: "My Tickets", href: "/dashboard/user/tickets", icon: Ticket },
+  { label: "Tip Cart", href: "/dashboard/user/tips/cart", icon: WalletCards },
   { label: "Applications", href: "/dashboard/user/applications", icon: FileCheck2 },
   { label: "My Carts", href: "/dashboard/user/carts", icon: ShoppingCart },
 ];

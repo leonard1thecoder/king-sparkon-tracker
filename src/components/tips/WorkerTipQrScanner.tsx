@@ -22,6 +22,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { normalizeApiError } from "@/lib/api/client";
 import { listTips } from "@/lib/api/tips";
+import { readTipTray, TIP_TRAY_EVENT } from "@/lib/tips/cart";
 import type { PageResponse, Tip } from "@/lib/types/backend";
 
 type WorkerQrResult = {
@@ -175,6 +176,7 @@ export function WorkerTipQrScanner() {
   const [tipTotalElements, setTipTotalElements] = useState(0);
   const [tipsLoading, setTipsLoading] = useState(true);
   const [tipsError, setTipsError] = useState<string | null>(null);
+  const [trayCount, setTrayCount] = useState(0);
 
   const tipHref = useMemo(() => {
     if (!result) return null;
@@ -210,6 +212,17 @@ export function WorkerTipQrScanner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tipPage]);
 
+  useEffect(() => {
+    const refreshTray = () => setTrayCount(readTipTray().length);
+    refreshTray();
+    window.addEventListener(TIP_TRAY_EVENT, refreshTray);
+    window.addEventListener("storage", refreshTray);
+    return () => {
+      window.removeEventListener(TIP_TRAY_EVENT, refreshTray);
+      window.removeEventListener("storage", refreshTray);
+    };
+  }, []);
+
   function handleScan(value: string) {
     const parsed = parseWorkerTipQr(value);
 
@@ -243,6 +256,9 @@ export function WorkerTipQrScanner() {
             </p>
           </div>
           <StatusPill label="TIP SCANNER" tone="confirm" />
+          <Link href="/dashboard/user/tips/cart" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--ink)] bg-white px-5 text-sm font-black text-[var(--ink)] hover:bg-[var(--surface)]">
+            Tip cart{trayCount > 0 ? ` (${trayCount})` : ""}
+          </Link>
         </CardHeader>
 
         <CardContent className="grid gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(18rem,0.55fr)] xl:items-start">

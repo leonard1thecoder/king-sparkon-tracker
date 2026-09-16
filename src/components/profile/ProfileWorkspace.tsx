@@ -83,6 +83,7 @@ type PasswordForm = {
 
 const userShortcuts: ProfileShortcut[] = [
   { label: "My Carts", href: "/dashboard/user/carts", detail: "Review product purchases and collections.", icon: ShoppingCart },
+  { label: "Tip Cart", href: "/dashboard/user/tips/cart", detail: "Pay unpaid worker tips added from QR scans.", icon: WalletCards },
   { label: "My Tickets", href: "/dashboard/user/tickets", detail: "View and verify purchased tickets.", icon: Ticket },
 ];
 

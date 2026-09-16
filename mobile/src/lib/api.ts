@@ -72,6 +72,10 @@ export function createTip(payload: TipPayload) {
   return apiPostIdempotent<Tip, TipPayload>("/tips", payload);
 }
 
+export function listSentTips(status?: string) {
+  return apiGet<Tip[]>("/tips/sent", status ? { status } : undefined);
+}
+
 // Worker dashboard — counter checkout + orders + barcodes.
 export function workerCheckout(payload: TransactionPayload) {
   return apiPost("/transactions", payload);

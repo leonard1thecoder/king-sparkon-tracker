@@ -8,6 +8,7 @@ import { backendBaseUrl } from "@/lib/api-client";
 import { tokens } from "@/theme/tokens";
 
 const userShortcuts = [
+  { label: "Tip Cart", detail: "Pay unpaid worker tips added from QR scans.", href: "/tip-cart" },
   { label: "My Carts", detail: "Review product purchases and collections.", href: "/(tabs)/carts" },
   { label: "My Tickets", detail: "View purchased tickets.", href: "/(tabs)/tickets" },
   { label: "Favorites", detail: "Businesses you follow.", href: "/(tabs)/favorites" },

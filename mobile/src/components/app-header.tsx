@@ -99,6 +99,7 @@ export function AppHeader() {
             <>
               <MenuLink href="/(tabs)/shop" label="Buy Products" onNavigate={() => setMenuOpen(false)} />
               <MenuLink href="/(tabs)/tickets" label="My Tickets" onNavigate={() => setMenuOpen(false)} />
+              <MenuLink href="/tip-cart" label="Tip Cart" onNavigate={() => setMenuOpen(false)} />
               <MenuLink href="/(tabs)/carts" label="My Carts" onNavigate={() => setMenuOpen(false)} />
               <MenuLink href="/(tabs)/favorites" label="Favorites" onNavigate={() => setMenuOpen(false)} />
               <Pressable style={styles.menuItem} onPress={() => setUifOpen((v) => !v)} accessibilityExpanded={uifOpen}>
