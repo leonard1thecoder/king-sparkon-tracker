@@ -1,7 +1,13 @@
 name: Mobile EAS Build
 
 # Native Android + iOS binaries via Expo Application Services.
-# Runs manually or on version tags (e.g. mobile-v0.1.0).
+# - Manual: Actions → Mobile EAS Build → Run workflow (pick platform + profile).
+# - Release: push a tag like `mobile-v0.1.0` → production build for both platforms.
+#
+# Requires the repo secret EXPO_TOKEN (an Expo access token).
+# iOS production builds additionally need Apple credentials configured
+# beforehand via `eas credentials` (preview uses simulator builds instead).
+
 on:
   workflow_dispatch:
     inputs:
@@ -20,9 +26,49 @@ on:
   push:
     tags: ["mobile-v*"]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: eas-build-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  eas:
+  validate:
+    name: Validate mobile app
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Lint
+        run: npm run lint -- --max-warnings 0
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm run test
+
+  build-android:
+    name: EAS Android build
+    needs: validate
+    if: github.event_name == 'push' || inputs.platform == 'all' || inputs.platform == 'android'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
     defaults:
       run:
         working-directory: mobile
@@ -45,10 +91,36 @@ jobs:
       - name: Install dependencies
         run: npm ci || npm install
 
-      - name: EAS build (manual)
-        if: github.event_name == 'workflow_dispatch'
-        run: eas build --non-interactive --platform ${{ inputs.platform }} --profile ${{ inputs.profile }}
+      - name: EAS build (Android)
+        run: eas build --non-interactive --platform android --profile ${{ inputs.profile || 'production' }}
 
-      - name: EAS build (tag → production, all platforms)
-        if: github.event_name == 'push'
-        run: eas build --non-interactive --platform all --profile production
+  build-ios:
+    name: EAS iOS build
+    needs: validate
+    if: github.event_name == 'push' || inputs.platform == 'all' || inputs.platform == 'ios'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: EAS build (iOS)
+        run: eas build --non-interactive --platform ios --profile ${{ inputs.profile || 'production' }}
