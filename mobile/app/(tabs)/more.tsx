@@ -1,23 +1,9 @@
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useAuth } from "@/store/auth-context";
-import { getUserRoles, isWorkerLike } from "@/lib/types";
 import { Card, Screen, Subtitle, Title } from "@/components/ui";
 import { tokens } from "@/theme/tokens";
 
 type Entry = { label: string; detail: string; href: string };
-
-const userEntries: Entry[] = [
-  { label: "Tip Cart", detail: "Pay unpaid worker tips added from QR scans.", href: "/tip-cart" },
-  { label: "Jobs", detail: "Browse open opportunities and apply.", href: "/(tabs)/jobs" },
-  { label: "My Applications", detail: "Track your job applications.", href: "/(tabs)/applications" },
-  { label: "My Carts", detail: "Review product purchases and collections.", href: "/(tabs)/carts" },
-  { label: "Favorites", detail: "Favorited businesses and quick access.", href: "/(tabs)/favorites" },
-  { label: "Check UIF Status", detail: "Enter your 13-digit ID to check UIF status.", href: "/uif/status" },
-  { label: "Update UIF Password", detail: "Reset your UIF online status password.", href: "/uif/password" },
-  { label: "UIF Cart", detail: "UIF password reset cart and payment.", href: "/uif/cart" },
-  { label: "Apply for UIF Benefits", detail: "UI-19, salary schedule and UIF 2.8 checklist.", href: "/uif/apply" },
-];
 
 const workerEntries: Entry[] = [
   { label: "Product Sales", detail: "Paid counter checkouts and collected online carts.", href: "/(tabs)/sales" },
@@ -27,18 +13,12 @@ const workerEntries: Entry[] = [
 ];
 
 export default function MoreScreen() {
-  const { user } = useAuth();
-  const worker = isWorkerLike(user);
-  const roles = getUserRoles(user);
-  const entries = [...(worker ? workerEntries : userEntries)];
-  if (worker && roles.includes("User")) entries.push(...userEntries.filter((e) => e.href.startsWith("/uif")));
-
   return (
     <Screen>
       <Title>More</Title>
-      <Subtitle>{worker ? "Secondary worker destinations." : "Shortcuts, carts, favorites and UIF services."}</Subtitle>
+      <Subtitle>Secondary worker destinations.</Subtitle>
       <Card>
-        {entries.map((entry) => (
+        {workerEntries.map((entry) => (
           <Link key={entry.href + entry.label} href={entry.href} asChild>
             <Pressable style={styles.row}>
               <View style={{ flex: 1 }}>

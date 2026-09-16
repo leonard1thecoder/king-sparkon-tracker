@@ -5,9 +5,9 @@ import { AppHeader } from "@/components/app-header";
 import { tokens } from "@/theme/tokens";
 
 // Mirrors web `MobileBottomNav` + `navByRole`:
-// - User primary: Shop, Cart, Tickets, Tip (+ header Favorites/Cart actions).
+// - User primary: Shop, Cart, Tickets, Tip; Favorites, Cart, Profile and Logout stay in the header.
 // - Worker primary: Checkout, Products, Orders, Ticket Entry.
-// - `More` holds the overflow for both roles; Profile stays first-class.
+// - `More` holds worker overflow only; User shortcuts live on Profile.
 export default function TabsLayout() {
   const { user } = useAuth();
   const worker = isWorkerLike(user);
@@ -53,7 +53,7 @@ export default function TabsLayout() {
           href: worker ? undefined : null,
         }}
       />
-      <Tabs.Screen name="more" options={{ title: "More" }} />
+      <Tabs.Screen name="more" options={{ title: "More", href: worker ? undefined : null }} />
       <Tabs.Screen name="profile" options={{ title: "Profile" }} />
       {/* Screens reachable via header / More / Profile — hidden from the tab bar */}
       <Tabs.Screen name="favorites" options={{ title: "Favorites", href: null }} />

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useAuth } from "@/store/auth-context";
@@ -7,20 +6,21 @@ import { Card, PrimaryButton, Screen, StatusPill, Subtitle, Title } from "@/comp
 import { backendBaseUrl } from "@/lib/api-client";
 import { tokens } from "@/theme/tokens";
 
-const userShortcuts = [
-  { label: "Tip Cart", detail: "Pay unpaid worker tips added from QR scans.", href: "/tip-cart" },
-  { label: "Jobs", detail: "Browse open opportunities and apply.", href: "/(tabs)/jobs" },
-  { label: "My Applications", detail: "Track your job applications.", href: "/(tabs)/applications" },
-  { label: "My Carts", detail: "Review product purchases and collections.", href: "/(tabs)/carts" },
+const userHeaderShortcuts = [
+  { label: "Buy Products", detail: "Browse the Tuck Shop.", href: "/(tabs)/shop" },
   { label: "My Tickets", detail: "View purchased tickets.", href: "/(tabs)/tickets" },
-  { label: "Favorites", detail: "Businesses you follow.", href: "/(tabs)/favorites" },
+  { label: "Tip Cart", detail: "Pay unpaid worker tips added from QR scans.", href: "/tip-cart" },
+  { label: "Applications", detail: "Track your job applications.", href: "/(tabs)/applications" },
+  { label: "My Carts", detail: "Review product purchases and collections.", href: "/(tabs)/carts" },
 ];
 
-const uifShortcuts = [
-  { label: "Check UIF Status", href: "/uif/status" },
-  { label: "Update UIF Password", href: "/uif/password" },
-  { label: "UIF Cart", href: "/uif/cart" },
-  { label: "Apply for Benefits", href: "/uif/apply" },
+const userSecondaryShortcuts = [
+  { label: "Jobs", detail: "Browse open opportunities and apply.", href: "/(tabs)/jobs" },
+  { label: "Favorites", detail: "Businesses you follow.", href: "/(tabs)/favorites" },
+  { label: "Check UIF Status", detail: "Enter your 13-digit ID to check UIF status.", href: "/uif/status" },
+  { label: "Update UIF Password", detail: "Reset your UIF online status password.", href: "/uif/password" },
+  { label: "UIF Cart", detail: "UIF password reset cart and payment.", href: "/uif/cart" },
+  { label: "Apply for UIF Benefits", detail: "UI-19, salary schedule and UIF 2.8 checklist.", href: "/uif/apply" },
 ];
 
 const workerShortcuts = [
@@ -33,10 +33,8 @@ const workerShortcuts = [
 
 export default function ProfileScreen() {
   const { user, signOut } = useAuth();
-  const [uifOpen, setUifOpen] = useState(false);
   const roles = getUserRoles(user);
   const worker = isWorkerLike(user);
-  const shortcuts = worker ? workerShortcuts : userShortcuts;
 
   return (
     <Screen>
@@ -56,7 +54,7 @@ export default function ProfileScreen() {
 
       <Card>
         <Text style={styles.section}>{worker ? "Worker shortcuts" : "Account shortcuts"}</Text>
-        {shortcuts.map((item) => (
+        {(worker ? workerShortcuts : userHeaderShortcuts).map((item) => (
           <Link key={item.href + item.label} href={item.href} asChild>
             <Pressable style={styles.row}>
               <View style={{ flex: 1 }}>
@@ -68,30 +66,24 @@ export default function ProfileScreen() {
           </Link>
         ))}
 
-        {!worker ? (
-          <>
-            <Pressable style={styles.row} onPress={() => setUifOpen((v) => !v)} accessibilityExpanded={uifOpen}>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.label}>UIF</Text>
-                <Text style={styles.detail}>Status, password, cart and applications.</Text>
-              </View>
-              <Text style={styles.chevron}>{uifOpen ? "▾" : "▸"}</Text>
-            </Pressable>
-            {uifOpen ? (
-              <View style={styles.submenu}>
-                {uifShortcuts.map((item) => (
-                  <Link key={item.href} href={item.href} asChild>
-                    <Pressable style={styles.row}>
-                      <Text style={styles.label}>{item.label}</Text>
-                      <Text style={styles.chevron}>›</Text>
-                    </Pressable>
-                  </Link>
-                ))}
-              </View>
-            ) : null}
-          </>
-        ) : null}
       </Card>
+
+      {!worker ? (
+        <Card>
+          <Text style={styles.section}>More shortcuts</Text>
+          {userSecondaryShortcuts.map((item) => (
+            <Link key={item.href} href={item.href} asChild>
+              <Pressable style={styles.row}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.label}>{item.label}</Text>
+                  <Text style={styles.detail}>{item.detail}</Text>
+                </View>
+                <Text style={styles.chevron}>›</Text>
+              </Pressable>
+            </Link>
+          ))}
+        </Card>
+      ) : null}
 
       <PrimaryButton title="Sign out" onPress={() => void signOut()} />
     </Screen>
@@ -104,5 +96,4 @@ const styles = StyleSheet.create({
   label: { color: tokens.ink, fontWeight: "800", fontSize: 15, flex: 1 },
   detail: { color: tokens.steel, fontSize: 12, fontWeight: "600" },
   chevron: { color: tokens.signalStrong, fontSize: 20, fontWeight: "900" },
-  submenu: { paddingLeft: 12 },
 });

@@ -31,6 +31,7 @@ export function AppHeader() {
   const roles = getUserRoles(user);
   const worker = isWorkerLike(user);
   const buyer = !worker || roles.includes("User");
+  const userWorkspace = !worker;
 
   useEffect(() => {
     if (!worker) return;
@@ -69,6 +70,18 @@ export function AppHeader() {
                 <Text style={styles.icon}>▣{cartCount > 0 ? ` ${cartCount > 99 ? "99+" : cartCount}` : ""}</Text>
               </Pressable>
             </Link>
+            {userWorkspace ? <Link href="/(tabs)/profile" asChild>
+              <Pressable style={styles.iconButton} accessibilityLabel="Open profile">
+                <Text style={styles.icon}>☺</Text>
+              </Pressable>
+            </Link> : null}
+            {userWorkspace ? <Pressable
+              style={styles.iconButton}
+              accessibilityLabel="Sign out"
+              onPress={() => void signOut()}
+            >
+              <Text style={styles.icon}>↪</Text>
+            </Pressable> : null}
           </>
         ) : null}
 
@@ -80,17 +93,19 @@ export function AppHeader() {
           </Link>
         ) : null}
 
-        <Pressable
-          style={styles.iconButton}
-          accessibilityLabel="Open profile menu"
-          accessibilityExpanded={menuOpen}
-          onPress={() => setMenuOpen((v) => !v)}
-        >
-          <Text style={styles.icon}>☺</Text>
-        </Pressable>
+        {worker ? (
+          <Pressable
+            style={styles.iconButton}
+            accessibilityLabel="Open profile menu"
+            accessibilityExpanded={menuOpen}
+            onPress={() => setMenuOpen((v) => !v)}
+          >
+            <Text style={styles.icon}>☺</Text>
+          </Pressable>
+        ) : null}
       </View>
 
-      {menuOpen ? (
+      {worker && menuOpen ? (
         <View style={styles.menu}>
           <Text style={styles.menuUser}>{user?.username ?? "Signed out"}</Text>
           <Text style={styles.menuEmail}>{user?.emailAddress ?? ""}</Text>
