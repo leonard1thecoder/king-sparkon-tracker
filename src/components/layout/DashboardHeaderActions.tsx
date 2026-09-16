@@ -14,6 +14,7 @@ import {
   ShoppingCart,
   Ticket,
   UserRound,
+  WalletCards,
 } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { apiGet } from "@/lib/api/client";
