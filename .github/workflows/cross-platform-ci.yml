@@ -1,10 +1,28 @@
 name: Cross-Platform CI
 
-# Unified pipeline: Next.js web + Expo mobile (Android/iOS via EAS, web via export).
+# Fast validation for the web app and the Expo app. Native release binaries are
+# intentionally built by mobile-eas.yml, where EAS credentials are available.
 on:
   pull_request:
+    paths:
+      - "src/**"
+      - "public/**"
+      - "mobile/**"
+      - "package.json"
+      - "bun.lock"
+      - ".github/workflows/cross-platform-ci.yml"
   push:
     branches: [main]
+    paths:
+      - "src/**"
+      - "public/**"
+      - "mobile/**"
+      - "package.json"
+      - "bun.lock"
+      - ".github/workflows/cross-platform-ci.yml"
+
+permissions:
+  contents: read
 
 jobs:
   web:
@@ -32,8 +50,8 @@ jobs:
       - name: Build
         run: bun run build
 
-  mobile:
-    name: Mobile (Expo)
+  expo:
+    name: Expo (Android, iOS, Web)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -47,8 +65,13 @@ jobs:
         with:
           node-version: 22
 
+      # This project does not yet commit a mobile package-lock.json, so npm ci
+      # cannot be used here. Keep this explicit instead of masking npm ci errors.
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm install --no-audit --no-fund --package-lock=false
+
+      - name: Validate Expo configuration
+        run: npx expo config --type public
 
       - name: Lint
         run: npm run lint -- --max-warnings 0
@@ -59,14 +82,14 @@ jobs:
       - name: Test
         run: npm run test
 
-      - name: Expo web export
+      - name: Export Android, iOS, and web bundles
         env:
           EXPO_PUBLIC_BACKEND_URL: https://example.com
-        run: npm run build:web
+        run: npx expo export --platform all
 
-      - name: Upload Expo web dist
+      - name: Upload Expo export
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: expo-web-dist
+          name: expo-dist
           path: mobile/dist

@@ -1,6 +1,6 @@
 name: Mobile EAS Build
 
-# Native Android + iOS binaries via Expo Application Services.
+# Native Android + iOS release binaries via Expo Application Services.
 # - Manual: Actions → Mobile EAS Build → Run workflow (pick platform + profile).
 # - Release: push a tag like `mobile-v0.1.0` → production build for both platforms.
 #
@@ -50,7 +50,10 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm install --no-audit --no-fund --package-lock=false
+
+      - name: Validate Expo configuration
+        run: npx expo config --type public
 
       - name: Lint
         run: npm run lint -- --max-warnings 0
@@ -85,7 +88,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm install --no-audit --no-fund --package-lock=false
 
       - name: EAS build (Android)
         run: eas build --non-interactive --platform android --profile ${{ inputs.profile || 'production' }}
@@ -114,7 +117,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
-        run: npm ci || npm install
+        run: npm install --no-audit --no-fund --package-lock=false
 
       - name: EAS build (iOS)
         run: eas build --non-interactive --platform ios --profile ${{ inputs.profile || 'production' }}
