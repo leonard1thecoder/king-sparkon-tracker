@@ -11,7 +11,7 @@ const softwareApplicationJsonLd = {
   name: "King Sparkon",
   alternateName: "King Sparkon",
   applicationCategory: "BusinessApplication",
-  operatingSystem: "Web",
+  operatingSystem: ["Android", "iOS", "Web"],
   description: landingDescription,
   creator: {
     "@type": "Person",

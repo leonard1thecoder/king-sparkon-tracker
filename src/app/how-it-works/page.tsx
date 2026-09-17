@@ -4,6 +4,7 @@ import { CheckCircle2 } from "lucide-react";
 import { Breadcrumbs } from "@/components/content/Breadcrumbs";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { PremiumHeader } from "@/components/marketing/PremiumHeader";
+import { DownloadAppButton } from "@/components/marketing/DownloadAppButtons";
 import { HowItWorksRoleSlider } from "@/components/marketing/HowItWorksRoleSlider";
 import { pageMetadata } from "@/lib/seo";
 
@@ -27,6 +28,9 @@ export default function HowItWorksPage() {
             <p className="inline-flex rounded-full border border-[var(--signal)]/20 bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Workflow</p>
             <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-[-0.05em] md:text-5xl">Different roles different worlds, using cutting edge solutions</h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--steel)]">No hidden steps. Each role has it&apos;s own dashboard with specific features for specific roles, easy to use in both mobile and Desktop view. The guide below follows the actual data flow</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <DownloadAppButton />
+            </div>
           </div>
         </section>
 
@@ -38,7 +42,10 @@ export default function HowItWorksPage() {
               <h2 className="text-xl font-black">Want the full capability list?</h2>
               <p className="mt-1 text-sm leading-6 text-[var(--steel)]">Features are grouped by job-to-be-done, not UI decoration. Each card shows who it serves and what ledger it writes to.</p>
             </div>
-            <Link href="/features" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-extrabold text-white hover:bg-[var(--signal-strong)]">See all features <CheckCircle2 className="h-4 w-4" /></Link>
+            <div className="flex flex-wrap gap-3">
+              <DownloadAppButton />
+              <Link href="/features" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-extrabold text-white hover:bg-[var(--signal-strong)]">See all features <CheckCircle2 className="h-4 w-4" /></Link>
+            </div>
           </GlassCard>
         </section>
       </main>

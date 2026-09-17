@@ -4,6 +4,7 @@ import { ArrowRight, Mail, MapPin, Phone } from "lucide-react";
 import { Breadcrumbs } from "@/components/content/Breadcrumbs";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { PremiumHeader } from "@/components/marketing/PremiumHeader";
+import { DownloadAppButton } from "@/components/marketing/DownloadAppButtons";
 import { ContactForm } from "@/app/contact-form";
 import { pageMetadata } from "@/lib/seo";
 
@@ -41,6 +42,7 @@ export default function ContactPage() {
               </div>
 
               <div className="mt-6 flex flex-wrap gap-3">
+                <DownloadAppButton />
                 <Link href="/how-it-works" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--line)] bg-white px-5 text-sm font-extrabold hover:border-[var(--signal)]">How it works <ArrowRight className="h-4 w-4" /></Link>
                 <Link href="/faq" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[var(--line)] bg-white px-5 text-sm font-extrabold hover:border-[var(--signal)]">Read FAQ</Link>
               </div>

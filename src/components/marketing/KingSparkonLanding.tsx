@@ -21,7 +21,10 @@ import { useEffect, useState } from "react";
 import { ContactForm } from "@/app/contact-form";
 import { ScanLoop } from "@/components/hero/ScanLoop";
 import { AffiliateProgramSection } from "@/components/marketing/AffiliateProgramSection";
-import { DevHubSection } from "@/components/marketing/DevHubSection";
+import { DevHubSection } from
+"@/components/marketing/DevHubSection";
+import { DownloadAppSection } from
+"@/components/marketing/DownloadAppButtons";
 import { FounderVerificationCard } from "@/components/marketing/FounderVerificationCard";
 import { JobOpportunitiesSection } from "@/components/marketing/JobOpportunitiesSection";
 import { Capacity3DVisual, Contact3DVisual, Engineering3DVisual, Role3DVisual, Sponsor3DVisual } from "@/components/marketing/Landing3DVisuals";
@@ -37,6 +40,7 @@ const navLinks = [
   ["Roles", "#roles"],
   ["Capacity", "#capacity"],
   ["Engineering", "#complaints"],
+  ["Download", "#download"],
   ["Contact", "#contact"],
   ["Subscribe", "#subscribe"],
 ] as const;
@@ -243,6 +247,7 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
               </Link>
               <div className="flex items-center gap-2">
                 <Link href="/login" className="hidden min-h-11 items-center justify-center rounded-lg border border-[var(--line)] bg-white px-4 text-sm font-extrabold text-[var(--steel)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)] sm:inline-flex">Login</Link>
+                <Link href="/#download" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[var(--line-strong)] bg-white px-4 text-sm font-extrabold text-[var(--ink)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]">Download app</Link>
                 <Link data-orange-hover="true" href="/register?plan=FREE_USER&privilege=USER&service=FREE_USER_ACCESS" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[var(--signal)] bg-[var(--signal)] px-4 text-sm font-extrabold text-white hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]">Start free <ArrowRight className="h-4 w-4" /></Link>
               </div>
             </nav>
@@ -260,6 +265,7 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
             <FounderVerificationCard />
             <div className="mt-8 flex flex-wrap gap-3">
               <Link data-orange-hover="true" href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-extrabold text-white hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]">Create business account <ArrowRight className="h-4 w-4" /></Link>
+              <Link href="/#download" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-[var(--signal)] bg-[var(--signal)]/10 px-6 text-sm font-extrabold text-[var(--signal-strong)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]">Download app</Link>
               <Link href="/#features" className="inline-flex min-h-12 items-center justify-center rounded-lg border border-[var(--line-strong)] bg-white px-6 text-sm font-extrabold text-[var(--ink)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]">See platform features</Link>
             </div>
           </div>
@@ -342,6 +348,8 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
           </div>
         </div>
       </section>
+
+      <DownloadAppSection />
 
       <section id="contact" className="scroll-mt-24 border-t border-[var(--line)] bg-white px-5 py-10 md:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl">
