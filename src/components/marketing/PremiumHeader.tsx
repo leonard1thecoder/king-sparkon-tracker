@@ -15,8 +15,6 @@ const navLinks = [
   { label: "UIF", href: "/uif" },
   { label: "About", href: "/about" },
   { label: "FAQ", href: "/faq" },
-  { label: "Terms", href: "/terms" },
-  { label: "Privacy", href: "/privacy" },
   { label: "Contact", href: "/contact" },
 ] as const;
 
