@@ -20,49 +20,41 @@ export function DownloadAppButton({ className, compact = false }: { className?: 
   );
 }
 
-/** The two store buttons for the download section. */
+/** The store button for the download section (Android only for now). */
 export function StoreButtons({ dark = false }: { dark?: boolean }) {
-  const { ios, android, configured } = appDownloadLinks();
-
-  const stores = [
-    { label: "Download for iOS", detail: "App Store", badge: "iOS", href: ios },
-    { label: "Download for Android", detail: "Google Play", badge: "Android", href: android },
-  ];
+  const { android, configured } = appDownloadLinks();
 
   return (
-    <div className="grid w-full gap-3 sm:grid-cols-2">
-      {stores.map(({ label, detail, badge, href }) => (
-        <Link
-          key={label}
-          href={href}
+    <div className="grid w-full gap-3">
+      <Link
+        href={android}
+        className={cn(
+          "group flex min-h-14 items-center gap-4 rounded-2xl border px-5 py-3 transition",
+          dark
+            ? "border-white/15 bg-white/[0.06] text-white hover:border-[var(--gold)] hover:bg-white/10"
+            : "border-[var(--line-strong)] bg-white text-[var(--ink)] hover:border-[var(--signal)]",
+        )}
+      >
+        <span
           className={cn(
-            "group flex min-h-14 items-center gap-4 rounded-2xl border px-5 py-3 transition",
-            dark
-              ? "border-white/15 bg-white/[0.06] text-white hover:border-[var(--gold)] hover:bg-white/10"
-              : "border-[var(--line-strong)] bg-white text-[var(--ink)] hover:border-[var(--signal)]",
+            "grid h-11 shrink-0 place-items-center rounded-xl px-2.5 text-xs font-black uppercase tracking-wider",
+            dark ? "bg-[var(--gold)] text-[var(--ink)]" : "bg-[var(--ink)] text-[var(--gold)]",
           )}
         >
-          <span
-            className={cn(
-              "grid h-11 shrink-0 place-items-center rounded-xl px-2.5 text-xs font-black uppercase tracking-wider",
-              dark ? "bg-[var(--gold)] text-[var(--ink)]" : "bg-[var(--ink)] text-[var(--gold)]",
-            )}
-          >
-            {badge}
+          Android
+        </span>
+        <span className="min-w-0 text-left">
+          <span className={cn("block text-[0.65rem] font-extrabold uppercase tracking-[0.14em]", dark ? "text-white/60" : "text-[var(--steel)]")}>
+            Google Play
           </span>
-          <span className="min-w-0 text-left">
-            <span className={cn("block text-[0.65rem] font-extrabold uppercase tracking-[0.14em]", dark ? "text-white/60" : "text-[var(--steel)]")}>
-              {detail}
-            </span>
-            <span className="block truncate text-base font-black tracking-[-0.02em]">
-              {label} <ArrowRight className="inline h-4 w-4 transition group-hover:translate-x-0.5" />
-            </span>
+          <span className="block truncate text-base font-black tracking-[-0.02em]">
+            Download for Android <ArrowRight className="inline h-4 w-4 transition group-hover:translate-x-0.5" />
           </span>
-        </Link>
-      ))}
+        </span>
+      </Link>
       {!configured ? (
-        <p className={cn("text-xs font-semibold leading-5 sm:col-span-2", dark ? "text-white/55" : "text-[var(--muted)]")}>
-          Store listings are being published — buttons activate automatically once the App Store and Google Play URLs are configured.
+        <p className={cn("text-xs font-semibold leading-5", dark ? "text-white/55" : "text-[var(--muted)]")}>
+          iOS app coming soon.
         </p>
       ) : null}
     </div>
