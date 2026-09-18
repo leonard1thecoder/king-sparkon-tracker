@@ -29,12 +29,45 @@ export function registerOwnerRequest(values: Record<string, string>) {
   return apiPost("/auth/register", values);
 }
 
+export function registerUserRequest(values: {
+  username: string;
+  emailAddress: string;
+  cellphoneNumber: string;
+  gender: "MALE" | "FEMALE" | "OTHER" | "PREFER_NOT_TO_SAY";
+  password: string;
+  localizationCountry: "SOUTH_AFRICA" | "REST_OF_WORLD";
+}) {
+  // Same backend contract as web USER registration
+  // (serviceRegisteringFor=USER, no address fields).
+  return apiPost("/auth/register", {
+    ...values,
+    serviceRegisteringFor: "USER",
+    serviceRegistrationType: "FREE_USER_ACCESS",
+  });
+}
+
 export function registerAffiliateRequest(values: Record<string, string>) {
   return apiPost("/auth/register-affiliate", values);
 }
 
 export function getMe() {
   return apiGet<TrackerUser>("/users/me");
+}
+
+export function forgotPasswordRequest(emailAddress: string) {
+  return apiPost("/auth/forgot-password", { emailAddress });
+}
+
+export function resetPasswordRequest(values: { token: string; newPassword: string; confirmPassword: string }) {
+  return apiPost("/auth/reset-password", values);
+}
+
+export function resendVerificationRequest(emailAddress: string) {
+  return apiPost("/auth/resend-verification", { emailAddress });
+}
+
+export function verifyEmailRequest(token: string) {
+  return apiGet(`/auth/verify-email?token=${encodeURIComponent(token)}`);
 }
 
 // User dashboard — tuck shop.

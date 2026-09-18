@@ -1,74 +1,99 @@
-import { useState } from "react";
-import { Link } from "expo-router";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Link, router } from "expo-router";
+import { View } from "react-native";
 import { useAuth } from "@/store/auth-context";
-import { Card, ErrorText, PrimaryButton, Screen, Subtitle, Title } from "@/components/ui";
+import {
+  AuthBrand,
+  AuthCard,
+  AuthCheckbox,
+  AuthDescription,
+  AuthEyebrow,
+  AuthField,
+  AuthFooter,
+  AuthScreen,
+  AuthStatus,
+  AuthSubmit,
+  AuthTitle,
+} from "@/components/auth";
 import { tokens } from "@/theme/tokens";
 
+// Mirrors web `/login` (AuthShell mode=login): same copy, fields,
+// helpers, remember-device checkbox, verification links and footer.
 export default function LoginScreen() {
-  const { signIn, error } = useAuth();
-  const [usernameOrEmail, setUsernameOrEmail] = useState("");
+  const { user, loading, signIn, error } = useAuth();
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(false);
   const [busy, setBusy] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!loading && user) router.replace("/(tabs)/shop");
+  }, [loading, user]);
 
   async function onSubmit() {
-    if (!usernameOrEmail.trim() || !password) {
-      setLocalError("Enter username/email and password.");
+    if (!username.trim()) {
+      setLocalError("Complete username before submitting.");
+      return;
+    }
+    if (!password) {
+      setLocalError("Complete password before submitting.");
       return;
     }
     setBusy(true);
     setLocalError(null);
+    setNotice(null);
     try {
-      await signIn(usernameOrEmail.trim(), password);
+      await signIn(username.trim(), password);
+      setNotice("Signed in successfully. Opening your role dashboard.");
     } catch (e) {
-      setLocalError(e instanceof Error ? e.message : "Sign in failed.");
+      setLocalError(e instanceof Error ? e.message : "Unable to reach the auth API.");
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <Screen>
-      <View style={{ height: 24 }} />
-      <Title>King Sparkon Tracker</Title>
-      <Subtitle>User + Worker dashboard — native mobile. Tokens are stored in SecureStore and sent directly to the backend.</Subtitle>
-      <Card>
-        <Text style={styles.label}>Username or email</Text>
-        <TextInput
-          value={usernameOrEmail}
-          onChangeText={setUsernameOrEmail}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="you@example.com"
-          style={styles.input}
+    <AuthScreen>
+      <AuthBrand />
+      <View>
+        <AuthEyebrow>Welcome back</AuthEyebrow>
+        <AuthTitle>Sign in to your King Sparkon workspace</AuthTitle>
+        <AuthDescription>
+          Use your User account. After login, King Sparkon Tracker opens the dashboard that matches your role.
+        </AuthDescription>
+      </View>
+      <AuthCard>
+        <AuthField
+          label="Username"
+          value={username}
+          onChange={setUsername}
+          placeholder="Example: owner_admin"
+          helper="Required. This is the account username created for the workspace."
         />
-        <Text style={styles.label}>Password</Text>
-        <TextInput value={password} onChangeText={setPassword} secureTextEntry placeholder="••••••••" style={styles.input} />
-        <ErrorText message={localError ?? error} />
-        <PrimaryButton title={busy ? "Signing in…" : "Sign in"} onPress={onSubmit} disabled={busy} />
-      </Card>
-      <Link href="/(auth)/register" asChild>
-        <Pressable style={styles.link}>
-          <Text style={styles.linkText}>New here? Create an owner or affiliate account</Text>
-        </Pressable>
-      </Link>
-    </Screen>
+        <AuthField
+          label="Password"
+          value={password}
+          onChange={setPassword}
+          placeholder="Account password"
+          secure
+          helper="Required. Use the account password for this workspace."
+        />
+        <AuthCheckbox label="Remember this device" checked={remember} onChange={setRemember} />
+        <View style={{ flexDirection: "row", gap: 16 }}>
+          <Link href="/(auth)/resend-verification" style={{ color: tokens.signalStrong, fontWeight: "800", fontSize: 13 }}>
+            Resend verification
+          </Link>
+          <Link href="/(auth)/forgot-password" style={{ color: tokens.signalStrong, fontWeight: "800", fontSize: 13 }}>
+            Forgot password?
+          </Link>
+        </View>
+        <AuthStatus tone="error" message={localError ?? error} />
+        <AuthStatus tone="success" message={notice} />
+        <AuthSubmit title="Sign in securely" busy={busy} onPress={() => void onSubmit()} />
+      </AuthCard>
+      <AuthFooter text="New to King Sparkon Tracker?" href="/(auth)/register" link="Register account" />
+    </AuthScreen>
   );
 }
-
-const styles = StyleSheet.create({
-  label: { color: tokens.ink, fontSize: 13, fontWeight: "800" },
-  input: {
-    backgroundColor: "#fff",
-    borderColor: tokens.line,
-    borderWidth: 1,
-    borderRadius: tokens.radiusMd,
-    paddingHorizontal: 12,
-    paddingVertical: 11,
-    fontSize: 15,
-    color: tokens.ink,
-  },
-  link: { alignItems: "center", padding: 8 },
-  linkText: { color: tokens.signalStrong, fontWeight: "800", fontSize: 13 },
-});
