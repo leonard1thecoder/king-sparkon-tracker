@@ -627,6 +627,12 @@ nav a:hover {
   color: var(--premium-gold) !important;
 }
 
+/* Download app button keeps dark text on its gold hover background —
+   without this the global nav hover rule turns the label gold-on-gold. */
+nav a.download-app-btn:hover {
+  color: #06060c !important;
+}
+
 /* Cards / divs lift with premium gradient border + glow on hover */
 :where(div[class*="rounded"], article[class*="rounded"], section[class*="rounded"]):hover {
   border-color: color-mix(in srgb, var(--premium-violet) 45%, var(--premium-cyan));

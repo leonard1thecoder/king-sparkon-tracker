@@ -73,7 +73,7 @@ export function PremiumHeader() {
             {/* Always visible, including mobile view */}
             <Link
               href={DOWNLOAD_SECTION_HREF}
-              className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xl border border-[var(--premium-gold)]/60 bg-[var(--premium-gold)]/10 px-2.5 text-xs font-extrabold text-[var(--premium-gold)] hover:bg-[var(--premium-gold)] hover:text-black sm:min-h-10 sm:gap-2 sm:px-4 sm:text-sm"
+              className="download-app-btn inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xl border border-[var(--premium-gold)]/60 bg-[var(--premium-gold)]/10 px-2.5 text-xs font-extrabold text-[var(--premium-gold)] hover:bg-[var(--premium-gold)] hover:text-black sm:min-h-10 sm:gap-2 sm:px-4 sm:text-sm"
             >
               <Smartphone className="h-4 w-4" />
               <span className="hidden min-[400px]:inline sm:inline">Download app</span>
