@@ -58,7 +58,7 @@ export function SiteFooter({ marketingOnly = false }: SiteFooterProps) {
         <div className="grid gap-10 lg:grid-cols-[1.1fr_1.4fr]">
           <div className="max-w-xl">
             <Link href="/" aria-label="King Sparkon Tracker home" className="inline-flex items-center gap-3">
-              <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker trademark barcode logo" width={56} height={56} className="rounded-[var(--radius-lg)] border border-[var(--line-strong)] bg-[#0d0d1c] p-1.5" />
+              <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={127} height={56} className="rounded-[var(--radius-lg)] border border-[var(--line-strong)] bg-[#0d0d1c] p-1.5 object-contain" />
               <div><p className="text-[0.66rem] font-extrabold uppercase tracking-[0.16em] text-[var(--signal-strong)]">Trademark platform</p><p className="text-xl font-black tracking-[-0.04em]">King Sparkon Tracker</p></div>
             </Link>
             <p className="mt-6 text-sm leading-7 text-[var(--steel)] md:text-base">Barcode inventory, QR tickets, jobs, affiliate marketing, Dev Hub software delivery, QA, cloud operations and audit-ready reports in one role-safe platform.</p>

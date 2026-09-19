@@ -242,7 +242,7 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
             </div>
             <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3 md:px-8" aria-label="Primary navigation">
               <Link href="/" className="flex min-w-0 items-center gap-3">
-                <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker barcode logo" width={46} height={46} className="rounded-lg border border-[var(--line)] bg-white p-1" priority />
+                <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={104} height={46} className="rounded-lg border border-[var(--line)] bg-white p-1 object-contain" priority />
                 <div><p className="text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">King Sparkon</p><p className="font-black tracking-[-0.02em]">Tracker</p></div>
               </Link>
               <div className="flex items-center gap-2">

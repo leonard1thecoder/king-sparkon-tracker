@@ -8,20 +8,33 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "assetBundlePatterns": ["**/*"],
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.kingsparkon.tracker",
+      "icon": "./assets/icon.png",
       "infoPlist": {
         "NSCameraUsageDescription": "Scan barcodes, QR codes and ticket codes at the counter."
       }
     },
     "android": {
       "package": "com.kingsparkon.tracker",
+      "icon": "./assets/icon.png",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
       "permissions": ["CAMERA"]
     },
     "web": {
       "bundler": "metro",
-      "output": "static"
+      "output": "static",
+      "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-router",

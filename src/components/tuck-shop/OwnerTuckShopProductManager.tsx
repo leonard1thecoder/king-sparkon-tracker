@@ -66,7 +66,7 @@ function date(value?: string | null) {
 }
 
 function productImage(product: Product) {
-  return product.productImageUrl || "/king-sparkon-logo.png";
+  return product.productImageUrl || "/king-sparkon-logo.svg";
 }
 
 function fieldClass() {

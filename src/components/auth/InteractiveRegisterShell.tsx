@@ -433,11 +433,11 @@ export function InteractiveRegisterShell({
             className="inline-flex items-center gap-3 rounded-full border border-[var(--line)] bg-white/82 px-3 py-2 shadow-[var(--shadow-soft)]"
           >
             <Image
-              src="/king-sparkon-logo.png"
-              alt="King Sparkon Tracker"
-              width={46}
+              src="/king-sparkon-logo.svg"
+              alt="King Sparkon logo"
+              width={104}
               height={46}
-              className="rounded-[1rem] border border-[var(--line)] bg-white p-1"
+              className="rounded-[1rem] border border-[var(--line)] bg-white p-1 object-contain"
             />
             <span>
               <span className="block font-mono text-[0.64rem] font-black uppercase tracking-[0.2em] text-[var(--signal)]">

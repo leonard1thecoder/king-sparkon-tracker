@@ -24,7 +24,7 @@ function money(value?: number | null) {
 }
 
 function productImage(product: Product) {
-  return product.productImageUrl || "/king-sparkon-logo.png";
+  return product.productImageUrl || "/king-sparkon-logo.svg";
 }
 
 function primaryBarcode(product: Product) {

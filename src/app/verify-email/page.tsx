@@ -30,7 +30,7 @@ export default async function VerifyEmailPage({ searchParams }: { searchParams: 
   return (
     <main className="flex min-h-screen items-center justify-center bg-white px-5 py-10 text-[var(--ink)]">
       <section className="w-full max-w-md rounded-xl border border-[var(--line-strong)] bg-white p-7 text-center shadow-[var(--shadow-soft)]">
-        <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker logo" width={132} height={132} priority className="mx-auto h-auto w-[112px] rounded-lg border border-[var(--line)] bg-white p-2" />
+        <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={224} height={99} priority className="mx-auto h-auto w-[112px] rounded-lg border border-[var(--line)] bg-white p-2 object-contain" />
         <div className={`mx-auto mt-8 flex h-14 w-14 items-center justify-center rounded-lg border ${result.ok ? "border-[var(--line-strong)] bg-[var(--signal-soft)] text-[var(--signal-strong)]" : "border-red-200 bg-red-50 text-red-700"}`}>
           <Icon className="h-7 w-7" aria-hidden="true" />
         </div>

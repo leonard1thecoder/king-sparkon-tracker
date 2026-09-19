@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     description: "Register as an affiliate and promote barcode inventory software with referral links, QR previews, and payout visibility.",
     type: "website",
     siteName: "King Sparkon Tracker",
-    images: [{ url: "/king-sparkon-logo.png", width: 512, height: 512, alt: "King Sparkon Tracker affiliate registration" }],
+    images: [{ url: "/king-sparkon-logo.png", width: 2720, height: 1200, alt: "King Sparkon Tracker affiliate registration" }],
   },
   twitter: {
     card: "summary_large_image",

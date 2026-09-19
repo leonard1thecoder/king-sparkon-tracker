@@ -79,9 +79,9 @@ export const metadata: Metadata = {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ?? "Rl_zs6neR57YMAtOtNOdPs6tfkc6wd7f_8_ex4Mstr0",
   },
   icons: {
-    icon: "/king-sparkon-logo.png",
-    shortcut: "/king-sparkon-logo.png",
-    apple: "/king-sparkon-logo.png",
+    icon: "/king-sparkon-logo.svg",
+    shortcut: "/king-sparkon-logo.svg",
+    apple: "/apple-touch-icon.png",
   },
   alternates: {
     canonical: "/",
@@ -107,9 +107,9 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/king-sparkon-logo.png",
-        width: 512,
-        height: 512,
-        alt: "King Sparkon Tracker trademark logo",
+        width: 2720,
+        height: 1200,
+        alt: "King Sparkon logo",
       },
     ],
   },

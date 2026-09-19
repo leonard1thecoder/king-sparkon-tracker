@@ -245,11 +245,11 @@ export function AuthPage({ mode }: AuthPageProps) {
           <div>
             <Link href="/" aria-label="King Sparkon Tracker home" className="inline-flex items-center gap-3">
               <Image
-                src="/king-sparkon-logo.png"
-                alt="King Sparkon Tracker barcode logo"
-                width={56}
+                src="/king-sparkon-logo.svg"
+                alt="King Sparkon logo"
+                width={127}
                 height={56}
-                className="rounded-[1.35rem] border border-white/12 bg-white/[0.08] p-1.5"
+                className="rounded-[1.35rem] border border-white/12 bg-white/[0.08] p-1.5 object-contain"
                 priority
               />
               <div>

@@ -42,7 +42,7 @@ function money(value?: number | null) {
 }
 
 function image(product?: Product) {
-  return product?.productImageUrl || "/king-sparkon-logo.png";
+  return product?.productImageUrl || "/king-sparkon-logo.svg";
 }
 
 function payment(paymentType?: string | null) {

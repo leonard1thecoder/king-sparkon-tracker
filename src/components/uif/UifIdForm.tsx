@@ -89,7 +89,7 @@ export function UifIdForm({ actionLabel, placeholderStatus }: { actionLabel: str
           category: "Service",
           price: Number(cart.amount) || 14.28,
           stockQuantity: 1,
-          productImageUrl: "/king-sparkon-logo.png",
+          productImageUrl: "/king-sparkon-logo.svg",
           status: "AVAILABLE",
         } as unknown as Product;
         try {

@@ -22,7 +22,7 @@ export function DashboardFrame({ role, nav, children }: { role: string; nav: Rea
       {/* Mobile Sticky Header — safe-area aware, uses dvh-aware sticky */}
       <header className="sticky top-0 z-30 flex min-h-[calc(4.25rem+env(safe-area-inset-top))] items-center justify-between gap-3 border-b border-[var(--line)] bg-white/95 px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] shadow-[var(--shadow-xs)] backdrop-blur-md supports-[backdrop-filter:blur(12px)]:bg-white/85 lg:hidden">
         <Link href={dashboardHomeHref} className="flex min-w-0 items-center gap-3">
-          <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker" width={40} height={40} className="rounded-[var(--radius-md)] border border-[var(--line)] bg-white p-1 shrink-0" priority />
+          <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={91} height={40} className="rounded-[var(--radius-md)] border border-[var(--line)] bg-white p-1 shrink-0 object-contain" priority />
           <div className="min-w-0">
             <p className="truncate text-[0.6rem] font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">{role}</p>
             <p className="truncate text-xs font-black tracking-[-0.02em]">King Sparkon</p>
@@ -35,7 +35,7 @@ export function DashboardFrame({ role, nav, children }: { role: string; nav: Rea
       <aside className="hidden lg:sticky lg:top-0 lg:z-30 lg:flex lg:h-dvh lg:min-h-dvh lg:w-auto lg:flex-col border-r border-[var(--line)] bg-white pt-[env(safe-area-inset-top)] text-[var(--ink)]">
         <div className="flex h-16 shrink-0 items-center justify-between gap-4 border-b border-[var(--line)] px-5">
           <Link href={dashboardHomeHref} className="flex min-w-0 items-center gap-3">
-            <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker" width={44} height={44} className="rounded-[var(--radius-md)] border border-[var(--line)] bg-white p-1" />
+            <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={100} height={44} className="rounded-[var(--radius-md)] border border-[var(--line)] bg-white p-1 object-contain" />
             <div className="min-w-0">
               <p className="truncate text-[0.65rem] font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">{role}</p>
               <p className="truncate text-sm font-black tracking-[-0.01em]">King Sparkon</p>

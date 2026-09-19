@@ -27,7 +27,7 @@ export const metadata: Metadata = {
       "Register as a free user, free affiliate, business owner or artist for barcode inventory, tickets, jobs, tips, affiliates, cart checkout, bookings and reporting.",
     type: "website",
     siteName: "King Sparkon Tracker",
-    images: [{ url: "/king-sparkon-logo.png", width: 512, height: 512, alt: "King Sparkon Tracker register page" }],
+    images: [{ url: "/king-sparkon-logo.png", width: 2720, height: 1200, alt: "King Sparkon Tracker register page" }],
   },
   twitter: {
     card: "summary_large_image",

@@ -24,7 +24,7 @@ export const metadata: Metadata = {
       "Secure access for Business Owners, Users, Workers, Affiliates, and Admins using King Sparkon Tracker commerce software.",
     type: "website",
     siteName: "King Sparkon Tracker",
-    images: [{ url: "/king-sparkon-logo.png", width: 512, height: 512, alt: "King Sparkon Tracker login page" }],
+    images: [{ url: "/king-sparkon-logo.png", width: 2720, height: 1200, alt: "King Sparkon Tracker login page" }],
   },
   twitter: {
     card: "summary_large_image",

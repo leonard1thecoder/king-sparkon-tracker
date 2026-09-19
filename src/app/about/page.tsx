@@ -60,7 +60,7 @@ export default function AboutPage() {
             </div>
             <GlassCard variant="elevated" className="relative">
               <div className="flex items-center gap-4">
-                <Image src="/king-sparkon-logo.png" alt="King Sparkon Tracker logo" width={64} height={64} className="rounded-xl border border-[var(--line)] bg-white p-1.5" />
+                <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={145} height={64} className="rounded-xl border border-[var(--line)] bg-white p-1.5 object-contain" />
                 <div>
                   <p className="text-sm font-black">Sizolwakhe Leonard Mthimunye</p>
                   <p className="text-xs font-semibold text-[var(--steel)]">Founder • King Sparkon • Oracle Verified</p>
