@@ -258,7 +258,10 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
 
         <div className="mx-auto grid max-w-7xl gap-8 px-5 pb-8 pt-8 md:px-8 lg:grid-cols-[1.12fr_0.88fr] lg:items-center lg:pb-12 lg:pt-10">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Operations without the spreadsheet chaos</p>
+            <div className="flex justify-center">
+              <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={420} height={185} className="h-auto w-full max-w-[26rem] object-contain" priority />
+            </div>
+            <p className="mt-6 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Operations without the spreadsheet chaos</p>
             <h1 className="mt-5 max-w-4xl text-5xl font-black leading-[0.98] tracking-[-0.06em] md:text-7xl">Scan it. Sell it. Track it. Prove it.</h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--steel)]">King Sparkon Tracker connects inventory, tickets, carts, jobs, worker tips, affiliates and transactions through focused dashboards for each role.</p>
             <FounderVerificationCard />
