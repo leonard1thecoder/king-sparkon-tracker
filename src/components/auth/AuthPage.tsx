@@ -247,15 +247,11 @@ export function AuthPage({ mode }: AuthPageProps) {
               <Image
                 src="/king-sparkon-logo.svg"
                 alt="King Sparkon logo"
-                width={127}
-                height={56}
+                width={190}
+                height={84}
                 className="rounded-[1.35rem] border border-white/12 bg-white/[0.08] p-1.5 object-contain"
                 priority
               />
-              <div>
-                <p className="font-mono text-[0.66rem] font-black uppercase tracking-[0.2em] text-[var(--gold)]">King Sparkon</p>
-                <p className="text-xl font-black uppercase tracking-[-0.04em]">Tracker</p>
-              </div>
             </Link>
 
             <div className="mt-12 max-w-2xl">

@@ -435,16 +435,10 @@ export function InteractiveRegisterShell({
             <Image
               src="/king-sparkon-logo.svg"
               alt="King Sparkon logo"
-              width={104}
-              height={46}
+              width={154}
+              height={68}
               className="rounded-[1rem] border border-[var(--line)] bg-white p-1 object-contain"
             />
-            <span>
-              <span className="block font-mono text-[0.64rem] font-black uppercase tracking-[0.2em] text-[var(--signal)]">
-                King Sparkon
-              </span>
-              <span className="block font-black uppercase tracking-[-0.04em]">Tracker</span>
-            </span>
           </Link>
 
           <div className="mt-10 max-w-3xl">

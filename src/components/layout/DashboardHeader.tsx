@@ -17,11 +17,7 @@ export function DashboardHeader({ title, description, role }: { title: string; d
     <header className="sticky top-0 z-20 hidden h-16 items-center border-b border-[var(--line)] bg-white/95 backdrop-blur-md px-5 shadow-[var(--shadow-xs)] md:px-8 lg:flex">
       <div className="flex w-full items-center justify-between gap-4">
         <Link href={dashboardHomeHref(role)} className="flex min-w-0 items-center gap-3">
-          <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={91} height={40} className="rounded-[var(--radius-md)] border border-[var(--line)] bg-white p-1 shrink-0 object-contain" priority />
-          <div className="min-w-0">
-            <p className="truncate text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">King Sparkon</p>
-            <p className="truncate text-sm font-black tracking-[-0.02em]">Tracker</p>
-          </div>
+          <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={125} height={55} className="rounded-[var(--radius-md)] border border-[var(--line)] bg-white p-1 shrink-0 object-contain" priority />
         </Link>
         <UserAwareDashboardHeaderActions role={role} />
       </div>

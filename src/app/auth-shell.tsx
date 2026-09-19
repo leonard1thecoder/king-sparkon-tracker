@@ -253,11 +253,7 @@ export function AuthShell({ mode, eyebrow, title, description, fields, submitLab
       <div className="relative z-10 mx-auto grid min-h-screen max-w-7xl gap-8 px-5 py-6 md:px-8 lg:grid-cols-[0.98fr_1.02fr] lg:items-center lg:py-10">
         <section className="order-2 lg:order-1">
           <Link href="/" aria-label="King Sparkon Tracker home" className="inline-flex items-center gap-3 rounded-full border border-[var(--line)] bg-white/76 px-3 py-2 shadow-[var(--shadow-soft)] backdrop-blur">
-            <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={113} height={50} className="rounded-[1.2rem] border border-[var(--line)] bg-white p-1.5 object-contain" priority />
-            <div>
-              <p className="font-mono text-[0.66rem] font-black uppercase tracking-[0.2em] text-[var(--signal)]">King Sparkon</p>
-              <p className="text-lg font-black uppercase tracking-[-0.04em]">Tracker</p>
-            </div>
+            <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={170} height={75} className="rounded-[1.2rem] border border-[var(--line)] bg-white p-1.5 object-contain" priority />
           </Link>
 
           <div className="mt-10 max-w-3xl">

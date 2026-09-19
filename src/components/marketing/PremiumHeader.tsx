@@ -49,11 +49,7 @@ export function PremiumHeader() {
       <div className={`border-b transition-all ${scrolled ? "border-[rgba(139,92,246,0.35)] bg-[rgba(5,5,12,0.88)] backdrop-blur-[20px] shadow-[0_8px_32px_rgba(0,0,0,0.6)]" : "border-[var(--line)] bg-black/90 backdrop-blur-[8px]"}`}>
         <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3 md:px-8" aria-label="Primary">
           <Link href="/" className="flex min-w-0 items-center gap-3" onClick={() => setOpen(false)}>
-            <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={100} height={44} className="rounded-xl border border-[var(--line-strong)] bg-[#0d0d1c] p-1 shadow-[0_0_18px_rgba(139,92,246,0.25)] object-contain" priority />
-            <div className="leading-none">
-              <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-[var(--premium-gold)]">King Sparkon</p>
-              <p className="text-[15px] font-black tracking-[-0.02em] text-white">Tracker™</p>
-            </div>
+            <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={150} height={66} className="rounded-xl border border-[var(--line-strong)] bg-[#0d0d1c] p-1 shadow-[0_0_18px_rgba(139,92,246,0.25)] object-contain" priority />
           </Link>
 
           {/* Desktop nav */}
