@@ -242,7 +242,7 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
             </div>
             <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3 md:px-8" aria-label="Primary navigation">
               <Link href="/" className="flex min-w-0 items-center gap-3">
-                <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={154} height={68} className="rounded-lg border border-[var(--line)] bg-white p-1 object-contain" priority />
+                <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={190} height={84} className="object-contain" priority />
               </Link>
               <div className="flex items-center gap-2">
                 <Link href="/login" className="hidden min-h-11 items-center justify-center rounded-lg border border-[var(--line)] bg-white px-4 text-sm font-extrabold text-[var(--steel)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)] sm:inline-flex">Login</Link>

@@ -430,14 +430,14 @@ export function InteractiveRegisterShell({
         <section className="hidden min-w-0 lg:sticky lg:top-10 lg:block">
           <Link
             href="/"
-            className="inline-flex items-center gap-3 rounded-full border border-[var(--line)] bg-white/82 px-3 py-2 shadow-[var(--shadow-soft)]"
+            className="inline-flex"
           >
             <Image
               src="/king-sparkon-logo.svg"
               alt="King Sparkon logo"
-              width={154}
-              height={68}
-              className="rounded-[1rem] border border-[var(--line)] bg-white p-1 object-contain"
+              width={190}
+              height={84}
+              className="object-contain"
             />
           </Link>
 

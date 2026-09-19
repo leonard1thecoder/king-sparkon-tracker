@@ -247,9 +247,9 @@ export function AuthPage({ mode }: AuthPageProps) {
               <Image
                 src="/king-sparkon-logo.svg"
                 alt="King Sparkon logo"
-                width={190}
-                height={84}
-                className="rounded-[1.35rem] border border-white/12 bg-white/[0.08] p-1.5 object-contain"
+                width={240}
+                height={106}
+                className="object-contain"
                 priority
               />
             </Link>

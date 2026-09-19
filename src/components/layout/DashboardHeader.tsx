@@ -14,10 +14,10 @@ function dashboardHomeHref(role: string) {
 
 export function DashboardHeader({ title, description, role }: { title: string; description: string; role: string }) {
   return (
-    <header className="sticky top-0 z-20 hidden h-16 items-center border-b border-[var(--line)] bg-white/95 backdrop-blur-md px-5 shadow-[var(--shadow-xs)] md:px-8 lg:flex">
+    <header className="sticky top-0 z-20 hidden h-20 items-center border-b border-[var(--line)] bg-white/95 backdrop-blur-md px-5 shadow-[var(--shadow-xs)] md:px-8 lg:flex">
       <div className="flex w-full items-center justify-between gap-4">
         <Link href={dashboardHomeHref(role)} className="flex min-w-0 items-center gap-3">
-          <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={125} height={55} className="rounded-[var(--radius-md)] border border-[var(--line)] bg-white p-1 shrink-0 object-contain" priority />
+          <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={170} height={75} className="shrink-0 object-contain" priority />
         </Link>
         <UserAwareDashboardHeaderActions role={role} />
       </div>
