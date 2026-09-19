@@ -3,7 +3,7 @@ import { PaymentResultClient } from "./payment-result-client";
 
 export const metadata = {
   title: "Payment result",
-  description: "Verify your King Sparkon Tracker PayFast payment result.",
+  description: "Verify your King Sparkon PayFast payment result.",
   robots: { index: false, follow: false },
 };
 

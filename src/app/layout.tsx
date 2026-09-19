@@ -40,16 +40,16 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://king-sparkon-tracker.com"),
-  applicationName: "King Sparkon Tracker",
+  applicationName: "King Sparkon",
   manifest: "/manifest.webmanifest",
   title: {
     default: "King Sparkon | Commerce, tickets and team operations",
     template: "%s | King Sparkon",
   },
   description:
-    "King Sparkon Tracker is a trademark platform of Sizolwakhe Leonard Mthimunye, known as King Sparkon: barcode inventory, QR tickets, jobs, affiliate marketing, Dev Hub software development, CI/CD, QA, cloud maintenance, worker tips, capacity dashboards, and role-safe business operations.",
+    "King Sparkon is a trademark platform of Sizolwakhe Leonard Mthimunye, known as King Sparkon: barcode inventory, QR tickets, jobs, affiliate marketing, Dev Hub software development, CI/CD, QA, cloud maintenance, worker tips, capacity dashboards, and role-safe business operations.",
   keywords: [
-    "King Sparkon Tracker",
+    "King Sparkon",
     "King Sparkon trademark",
     "Sizolwakhe Leonard Mthimunye",
     "Sizolwakhe Mthimunye King Sparkon",
@@ -67,7 +67,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Sizolwakhe Leonard Mthimunye", url: "https://github.com/leonard1thecoder" }],
   creator: "Sizolwakhe Leonard Mthimunye, known as King Sparkon",
-  publisher: "King Sparkon Tracker",
+  publisher: "King Sparkon",
   category: "Software Application",
   referrer: "origin-when-cross-origin",
   formatDetection: {
@@ -125,7 +125,7 @@ export const metadata: Metadata = {
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "King Sparkon Tracker",
+  name: "King Sparkon",
   url: process.env.NEXT_PUBLIC_APP_URL ?? "https://king-sparkon-tracker.com",
   logo: "https://king-sparkon-tracker.com/king-sparkon-logo.png",
   founder: {
@@ -139,7 +139,7 @@ const organizationJsonLd = {
 const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "King Sparkon Tracker",
+  name: "King Sparkon",
   url: process.env.NEXT_PUBLIC_APP_URL ?? "https://king-sparkon-tracker.com",
   potentialAction: {
     "@type": "SearchAction",

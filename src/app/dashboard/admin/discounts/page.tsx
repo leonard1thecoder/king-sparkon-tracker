@@ -5,7 +5,7 @@ import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { DashboardRoleNav } from "@/components/layout/DashboardRoleNav";
 
 export const metadata: Metadata = {
-  title: "Service Discounts | King Sparkon Tracker",
+  title: "Service Discounts | King Sparkon",
   description: "Administrator controls for Plus and Pro service discounts.",
 };
 

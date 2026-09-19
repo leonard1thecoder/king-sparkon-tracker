@@ -6,7 +6,7 @@ import { backendBaseUrl } from "@/lib/backend-auth";
 
 export const metadata: Metadata = {
   title: "Email Verification Result",
-  description: "Verify your King Sparkon Tracker account for secure platform access.",
+  description: "Verify your King Sparkon account for secure platform access.",
   robots: { index: false, follow: false },
 };
 

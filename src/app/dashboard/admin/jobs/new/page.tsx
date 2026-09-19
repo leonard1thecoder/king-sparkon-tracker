@@ -5,7 +5,7 @@ import { JobOpportunityForm } from "@/components/jobs/JobOpportunityForm";
 
 export const metadata: Metadata = {
   title: "Create Job Opportunity | Admin Dashboard",
-  description: "Create a job opportunity from the King Sparkon Tracker admin dashboard.",
+  description: "Create a job opportunity from the King Sparkon admin dashboard.",
 };
 
 export default function AdminCreateJobPage() {

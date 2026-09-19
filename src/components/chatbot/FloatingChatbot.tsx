@@ -24,7 +24,7 @@ const starterMessages: ChatMessage[] = [
     id: "assistant-welcome",
     role: "assistant",
     content:
-      "Welcome to King Sparkon Tracker™. I can help with barcode tracking, QR tickets, owner dashboards, jobs, affiliates, Dev Hub, QA, and cloud maintenance.",
+      "Welcome to King Sparkon™. I can help with barcode tracking, QR tickets, owner dashboards, jobs, affiliates, Dev Hub, QA, and cloud maintenance.",
   },
 ];
 
@@ -198,7 +198,7 @@ function FloatingChatbotPanel() {
     <div className="fixed bottom-4 right-4 z-[90] flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
       {isOpen ? (
         <section
-          aria-label="King Sparkon Tracker chatbot"
+          aria-label="King Sparkon chatbot"
           className="fixed bottom-20 left-3 right-3 flex max-h-[calc(100dvh-6rem)] flex-col overflow-hidden rounded-[1.55rem] border border-white/70 bg-white shadow-[0_34px_120px_rgba(7,19,31,0.24)] ring-1 ring-[var(--line)] sm:bottom-24 sm:left-auto sm:right-6 sm:max-h-[calc(100dvh-7rem)] sm:w-[390px] sm:rounded-[1.85rem]"
         >
           <div className="relative shrink-0 overflow-hidden bg-[var(--ink)] px-4 py-3.5 text-white sm:px-5 sm:py-4">

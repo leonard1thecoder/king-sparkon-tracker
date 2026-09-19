@@ -8,9 +8,9 @@ import { registrationPrivilegeOptions } from "@/lib/auth/registration";
 export const metadata: Metadata = {
   title: "Register Business, User, Affiliate or Artist Account",
   description:
-    "Create a King Sparkon Tracker account as a free user, free affiliate, business owner or artist for barcode inventory, QR tickets, cart checkout, job opportunities, worker tips, promotions, bookings and reports.",
+    "Create a King Sparkon account as a free user, free affiliate, business owner or artist for barcode inventory, QR tickets, cart checkout, job opportunities, worker tips, promotions, bookings and reports.",
   keywords: [
-    "King Sparkon Tracker register",
+    "King Sparkon register",
     "free user account",
     "free affiliate account",
     "artist booking platform",
@@ -26,12 +26,12 @@ export const metadata: Metadata = {
     description:
       "Register as a free user, free affiliate, business owner or artist for barcode inventory, tickets, jobs, tips, affiliates, cart checkout, bookings and reporting.",
     type: "website",
-    siteName: "King Sparkon Tracker",
-    images: [{ url: "/king-sparkon-logo.png", width: 2720, height: 1200, alt: "King Sparkon Tracker register page" }],
+    siteName: "King Sparkon",
+    images: [{ url: "/king-sparkon-logo.png", width: 2720, height: 1200, alt: "King Sparkon register page" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Register Business, User, Affiliate or Artist | King Sparkon Tracker",
+    title: "Register Business, User, Affiliate or Artist | King Sparkon",
     description: "Choose User, Affiliate, Business Owner or Artist and see only the fields that role needs.",
     images: ["/king-sparkon-logo.png"],
   },

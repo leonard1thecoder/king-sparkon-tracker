@@ -10,7 +10,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "Barcode Inventory Guide | Products, Unit Codes & Stock Audits",
   description:
-    "Learn how to create products, assign barcodes or unit codes, manage stock quantity and remaining slots, and use night-shift pricing in King Sparkon Tracker — with troubleshooting for common scan errors.",
+    "Learn how to create products, assign barcodes or unit codes, manage stock quantity and remaining slots, and use night-shift pricing in King Sparkon — with troubleshooting for common scan errors.",
   path: "/guides/barcode-inventory-guide",
 });
 
@@ -20,7 +20,7 @@ export default function BarcodeGuide() {
     "@type": "Article",
     headline: "Barcode Inventory Guide",
     author: { "@type": "Person", name: "Sizolwakhe Leonard Mthimunye" },
-    publisher: { "@type": "Organization", name: "King Sparkon Tracker", logo: { "@type": "ImageObject", url: "https://king-sparkon-tracker.com/king-sparkon-logo.png" } },
+    publisher: { "@type": "Organization", name: "King Sparkon", logo: { "@type": "ImageObject", url: "https://king-sparkon-tracker.com/king-sparkon-logo.png" } },
     datePublished: "2026-01-01",
     dateModified: new Date().toISOString().slice(0, 10),
     mainEntityOfPage: "https://king-sparkon-tracker.com/guides/barcode-inventory-guide",

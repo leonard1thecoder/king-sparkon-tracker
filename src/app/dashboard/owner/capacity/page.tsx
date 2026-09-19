@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { RouteSectionPage } from "@/components/layout/RouteSectionPage";
 
 export const metadata: Metadata = {
-  title: "Owner Capacity | King Sparkon Tracker",
+  title: "Owner Capacity | King Sparkon",
   description: "Owner capacity dashboard shell for products, workers, tickets, jobs, tips, promotions, and reports.",
 };
 

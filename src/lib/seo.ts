@@ -31,7 +31,7 @@ export function pageMetadata({
       title,
       description,
       url,
-      siteName: "King Sparkon Tracker",
+      siteName: "King Sparkon",
       type: "website",
       locale: "en_ZA",
       images: [{ url: image ?? "/king-sparkon-logo.png", width: 2720, height: 1200, alt: title }],
@@ -48,8 +48,8 @@ export function pageMetadata({
 
 export const siteConfig = {
   url: siteUrl,
-  name: "King Sparkon Tracker",
-  title: "King Sparkon Tracker™ | Barcode, QR Tickets & Business Operations",
+  name: "King Sparkon",
+  title: "King Sparkon™ | Barcode, QR Tickets & Business Operations",
   description:
-    "King Sparkon Tracker is a trademark platform of Sizolwakhe Leonard Mthimunye for barcode inventory, QR ticket verification, cart checkout, job opportunities, worker tips, affiliate marketing and role-safe dashboards.",
+    "King Sparkon is a trademark platform of Sizolwakhe Leonard Mthimunye for barcode inventory, QR ticket verification, cart checkout, job opportunities, worker tips, affiliate marketing and role-safe dashboards.",
 };

@@ -4,7 +4,7 @@ import { AuthShell } from "../auth-shell";
 export const metadata: Metadata = {
   title: "Reset Barcode Inventory Password",
   description:
-    "Reset your King Sparkon Tracker password and restore secure access to barcode inventory, product tracking, claims, reports, and billing.",
+    "Reset your King Sparkon password and restore secure access to barcode inventory, product tracking, claims, reports, and billing.",
   robots: { index: false, follow: false },
 };
 

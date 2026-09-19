@@ -3,7 +3,7 @@ import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { BulkSubscriberImport } from "@/components/admin/BulkSubscriberImport";
 
 export const metadata: Metadata = {
-  title: "Bulk Subscriber Import | King Sparkon Tracker",
+  title: "Bulk Subscriber Import | King Sparkon",
   description: "Import multiple subscribers from a CSV file.",
 };
 

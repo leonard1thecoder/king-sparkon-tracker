@@ -3,8 +3,8 @@ import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { JobOpportunityBoard } from "@/components/jobs/JobOpportunityBoard";
 
 export const metadata: Metadata = {
-  title: "User Job Opportunities | King Sparkon Tracker",
-  description: "User dashboard view for browsing job opportunities and applying through King Sparkon Tracker.",
+  title: "User Job Opportunities | King Sparkon",
+  description: "User dashboard view for browsing job opportunities and applying through King Sparkon.",
 };
 
 export default function UserJobsPage() {

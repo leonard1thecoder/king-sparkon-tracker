@@ -47,7 +47,7 @@ const softwareApplicationJsonLd = {
 };
 
 export const metadata: Metadata = {
-  title: "King Sparkon Tracker™ | Trademark Platform by Sizolwakhe Mthimunye",
+  title: "King Sparkon™ | Trademark Platform by Sizolwakhe Mthimunye",
   description: landingDescription,
   keywords: [
     "King Sparkon",
@@ -68,9 +68,9 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Sizolwakhe Leonard Mthimunye", url: "https://github.com/leonard1thecoder" }],
   creator: "Sizolwakhe Leonard Mthimunye, known as King Sparkon",
-  publisher: "King Sparkon Tracker",
+  publisher: "King Sparkon",
   openGraph: {
-    title: "King Sparkon Tracker™ | King Sparkon is the best king",
+    title: "King Sparkon™ | King Sparkon is the best king",
     description: landingDescription,
     type: "website",
     siteName: "King Sparkon",
@@ -79,7 +79,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "King Sparkon Tracker™ | Barcode, Jobs, Affiliate & Dev Hub Platform",
+    title: "King Sparkon™ | Barcode, Jobs, Affiliate & Dev Hub Platform",
     description: "Trademark platform of Sizolwakhe Leonard Mthimunye: barcode scanning, QR tickets, jobs, affiliates, Dev Hub, QA, CI/CD, cloud maintenance, and capacity dashboards.",
     images: ["/king-sparkon-logo.png"],
   },

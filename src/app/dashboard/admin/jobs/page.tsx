@@ -5,7 +5,7 @@ import { JobApplicationsPanel } from "@/components/jobs/JobApplicationsPanel";
 import { JobOpportunityBoard } from "@/components/jobs/JobOpportunityBoard";
 
 export const metadata: Metadata = {
-  title: "Admin Job Opportunities | King Sparkon Tracker",
+  title: "Admin Job Opportunities | King Sparkon",
   description: "Admin dashboard for reviewing platform job opportunities and applications.",
 };
 

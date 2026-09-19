@@ -263,7 +263,7 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
             </div>
             <p className="mt-6 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Operations without the spreadsheet chaos</p>
             <h1 className="mt-5 max-w-4xl text-5xl font-black leading-[0.98] tracking-[-0.06em] md:text-7xl">Scan it. Sell it. Track it. Prove it.</h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--steel)]">King Sparkon Tracker connects inventory, tickets, carts, jobs, worker tips, affiliates and transactions through focused dashboards for each role.</p>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--steel)]">King Sparkon connects inventory, tickets, carts, jobs, worker tips, affiliates and transactions through focused dashboards for each role.</p>
             <FounderVerificationCard />
             <div className="mt-8 flex flex-wrap gap-3">
               <Link data-orange-hover="true" href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-extrabold text-white hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]">Create business account <ArrowRight className="h-4 w-4" /></Link>

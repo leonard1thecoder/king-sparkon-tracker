@@ -9,9 +9,9 @@ import { HowItWorksRoleSlider } from "@/components/marketing/HowItWorksRoleSlide
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "How King Sparkon Tracker Works | Inventory, Tickets, Checkout & Payouts",
+  title: "How King Sparkon Works | Inventory, Tickets, Checkout & Payouts",
   description:
-    "A step-by-step explanation of how King Sparkon Tracker handles barcode inventory, QR ticket sales and gate verification, cart checkout, worker scans, tips and affiliate payouts — with role-safe dashboards and audit trails.",
+    "A step-by-step explanation of how King Sparkon handles barcode inventory, QR ticket sales and gate verification, cart checkout, worker scans, tips and affiliate payouts — with role-safe dashboards and audit trails.",
   path: "/how-it-works",
 });
 

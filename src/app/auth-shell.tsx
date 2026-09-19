@@ -252,7 +252,7 @@ export function AuthShell({ mode, eyebrow, title, description, fields, submitLab
 
       <div className="relative z-10 mx-auto grid min-h-screen max-w-7xl gap-8 px-5 py-6 md:px-8 lg:grid-cols-[0.98fr_1.02fr] lg:items-center lg:py-10">
         <section className="order-2 lg:order-1">
-          <Link href="/" aria-label="King Sparkon Tracker home" className="inline-flex">
+          <Link href="/" aria-label="King Sparkon home" className="inline-flex">
             <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={220} height={97} className="object-contain" priority />
           </Link>
 
@@ -305,7 +305,7 @@ export function AuthShell({ mode, eyebrow, title, description, fields, submitLab
             <div className="absolute -inset-4 rounded-[3rem] bg-gradient-to-br from-[var(--gold)]/28 via-white to-[var(--ember)]/18 blur-2xl" />
             <div className="relative rounded-[2.75rem] border border-[var(--line)] bg-white/86 p-4 shadow-[var(--shadow-depth)] backdrop-blur [transform:rotateX(3deg)_rotateY(-6deg)] md:p-5">
               <div className="overflow-hidden rounded-[2.25rem] border border-white/10 bg-[var(--ink)] text-white enterprise-grid">
-                <div className="flex items-center justify-between border-b border-white/10 px-5 py-4"><div><p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.18em] text-[var(--gold)]">Auth terminal</p><p className="mt-1 text-sm font-semibold text-white/62">King Sparkon Tracker access</p></div><span className="rounded-full border border-white/10 bg-white/[0.08] px-3 py-1 text-xs font-black text-white/78">Ready</span></div>
+                <div className="flex items-center justify-between border-b border-white/10 px-5 py-4"><div><p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.18em] text-[var(--gold)]">Auth terminal</p><p className="mt-1 text-sm font-semibold text-white/62">King Sparkon access</p></div><span className="rounded-full border border-white/10 bg-white/[0.08] px-3 py-1 text-xs font-black text-white/78">Ready</span></div>
                 <div className="grid gap-4 p-5"><div className="rounded-[1.75rem] border border-white/10 bg-white/[0.06] p-5"><div className="barcode-rule h-16 text-white" /><div className="mt-4 flex items-center justify-between text-xs font-bold uppercase tracking-[0.14em] text-white/48"><span>Workspace</span><span>{isRegister ? "Role selected" : "Secure login"}</span></div></div><div className="grid gap-3">{trustItems.map((point) => <div key={point} className="flex items-center gap-3 rounded-[1.35rem] border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-bold text-white/68"><CheckCircle2 className="h-4 w-4 shrink-0 text-[var(--gold)]" />{point}</div>)}</div></div>
               </div>
             </div>

@@ -31,10 +31,10 @@ const authCopy = {
       "Access barcode scanning, inventory dashboards, worker activity, tip payouts, affiliate reports, and audit-ready business operations from one premium terminal.",
     badge: "Protected owner, worker, affiliate and admin routes",
     primaryAction: "Open dashboard",
-    alternateText: "New to King Sparkon Tracker?",
+    alternateText: "New to King Sparkon?",
     alternateAction: "Create business account",
     alternateHref: "/register",
-    schemaName: "King Sparkon Tracker Login",
+    schemaName: "King Sparkon Login",
     schemaPath: "/login",
   },
   register: {
@@ -47,20 +47,20 @@ const authCopy = {
     alternateText: "Already running operations here?",
     alternateAction: "Login instead",
     alternateHref: "/login",
-    schemaName: "King Sparkon Tracker Business Registration",
+    schemaName: "King Sparkon Business Registration",
     schemaPath: "/register",
   },
   affiliate: {
     eyebrow: "Affiliate access",
     title: "Join the referral engine behind the scanner.",
     description:
-      "Create an affiliate profile to share trackable links, QR-ready promotion assets, and measurable business referrals for King Sparkon Tracker.",
+      "Create an affiliate profile to share trackable links, QR-ready promotion assets, and measurable business referrals for King Sparkon.",
     badge: "Referral links, QR previews and payout visibility",
     primaryAction: "Join affiliate program",
     alternateText: "Registering a business instead?",
     alternateAction: "Create business account",
     alternateHref: "/register",
-    schemaName: "King Sparkon Tracker Affiliate Registration",
+    schemaName: "King Sparkon Affiliate Registration",
     schemaPath: "/register-affiliate",
   },
 } as const;
@@ -88,7 +88,7 @@ function AuthStructuredData({ mode }: { mode: AuthMode }) {
     description: copy.description,
     isPartOf: {
       "@type": "WebSite",
-      name: "King Sparkon Tracker",
+      name: "King Sparkon",
       url: "https://king-sparkon-tracker.com",
     },
     potentialAction: {
@@ -243,7 +243,7 @@ export function AuthPage({ mode }: AuthPageProps) {
       <div className="relative z-10 mx-auto grid min-h-screen max-w-7xl gap-8 px-5 py-6 md:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center lg:py-10">
         <section className="flex min-h-[42rem] flex-col justify-between rounded-[2.5rem] border border-white/10 bg-white/[0.055] p-6 shadow-[var(--shadow-depth)] backdrop-blur-xl md:p-8">
           <div>
-            <Link href="/" aria-label="King Sparkon Tracker home" className="inline-flex items-center gap-3">
+            <Link href="/" aria-label="King Sparkon home" className="inline-flex items-center gap-3">
               <Image
                 src="/king-sparkon-logo.svg"
                 alt="King Sparkon logo"

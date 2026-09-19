@@ -34,7 +34,7 @@ export default function UifPortalPage() {
               UIF Online System & POPIA Data Protection
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--steel)]">
-              King Sparkon Tracker provides South African citizens with direct access to Department of Employment and Labour UIF Online services under strict Protection of Personal Information Act (POPIA) safeguards.
+              King Sparkon provides South African citizens with direct access to Department of Employment and Labour UIF Online services under strict Protection of Personal Information Act (POPIA) safeguards.
             </p>
           </div>
         </section>

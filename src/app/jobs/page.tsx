@@ -8,9 +8,9 @@ import { PremiumHeader } from "@/components/marketing/PremiumHeader";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Job Opportunities | Businesses Hiring via King Sparkon Tracker",
+  title: "Job Opportunities | Businesses Hiring via King Sparkon",
   description:
-    "Browse open job opportunities published by King Sparkon Tracker businesses. Filter by workplace, employment and experience level, and apply with role-aware application tracking.",
+    "Browse open job opportunities published by King Sparkon businesses. Filter by workplace, employment and experience level, and apply with role-aware application tracking.",
   path: "/jobs",
 });
 

@@ -4,8 +4,8 @@ import { InteractiveRegisterShell } from "@/components/auth/InteractiveRegisterS
 const ADMIN_EMAIL = "leonard1thecoder@gmail.com";
 
 export const metadata: Metadata = {
-  title: "Admin Registration | King Sparkon Tracker",
-  description: "Restricted King Sparkon Tracker admin registration page for the approved platform owner email only.",
+  title: "Admin Registration | King Sparkon",
+  description: "Restricted King Sparkon admin registration page for the approved platform owner email only.",
   alternates: { canonical: "/register-admin" },
   robots: { index: false, follow: false },
 };

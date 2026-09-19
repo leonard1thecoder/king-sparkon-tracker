@@ -61,7 +61,7 @@ export default function LoginScreen() {
         <AuthEyebrow>Welcome back</AuthEyebrow>
         <AuthTitle>Sign in to your King Sparkon workspace</AuthTitle>
         <AuthDescription>
-          Use your User account. After login, King Sparkon Tracker opens the dashboard that matches your role.
+          Use your User account. After login, King Sparkon opens the dashboard that matches your role.
         </AuthDescription>
       </View>
       <AuthCard>
@@ -93,7 +93,7 @@ export default function LoginScreen() {
         <AuthStatus tone="success" message={notice} />
         <AuthSubmit title="Sign in securely" busy={busy} onPress={() => void onSubmit()} />
       </AuthCard>
-      <AuthFooter text="New to King Sparkon Tracker?" href="/(auth)/register" link="Register account" />
+      <AuthFooter text="New to King Sparkon?" href="/(auth)/register" link="Register account" />
     </AuthScreen>
   );
 }

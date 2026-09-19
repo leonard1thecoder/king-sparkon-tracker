@@ -4,9 +4,9 @@ import { AuthShell } from "../auth-shell";
 export const metadata: Metadata = {
   title: "Login | Business, User and Affiliate Dashboard Access",
   description:
-    "Login to King Sparkon Tracker for secure Business Owner, User, Worker, Affiliate, or Admin access to barcode inventory, QR tickets, jobs, tips, payments, promotions, and reports.",
+    "Login to King Sparkon for secure Business Owner, User, Worker, Affiliate, or Admin access to barcode inventory, QR tickets, jobs, tips, payments, promotions, and reports.",
   keywords: [
-    "King Sparkon Tracker login",
+    "King Sparkon login",
     "barcode inventory login",
     "QR scanner dashboard login",
     "inventory tracking account",
@@ -19,16 +19,16 @@ export const metadata: Metadata = {
     canonical: "/login",
   },
   openGraph: {
-    title: "Login to King Sparkon Tracker",
+    title: "Login to King Sparkon",
     description:
-      "Secure access for Business Owners, Users, Workers, Affiliates, and Admins using King Sparkon Tracker commerce software.",
+      "Secure access for Business Owners, Users, Workers, Affiliates, and Admins using King Sparkon commerce software.",
     type: "website",
-    siteName: "King Sparkon Tracker",
-    images: [{ url: "/king-sparkon-logo.png", width: 2720, height: 1200, alt: "King Sparkon Tracker login page" }],
+    siteName: "King Sparkon",
+    images: [{ url: "/king-sparkon-logo.png", width: 2720, height: 1200, alt: "King Sparkon login page" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "King Sparkon Tracker Login",
+    title: "King Sparkon Login",
     description:
       "Access barcode scanning, job opportunities, product tracking, tips, payouts, affiliates, and dashboard reporting.",
     images: ["/king-sparkon-logo.png"],
@@ -46,9 +46,9 @@ export default function LoginPage() {
       endpoint="/api/auth/login"
       eyebrow="Welcome back"
       title="Sign in to your King Sparkon workspace"
-      description="Use your Business Owner, User, Worker, Affiliate, or Admin account. After login, King Sparkon Tracker opens the dashboard that matches your role."
+      description="Use your Business Owner, User, Worker, Affiliate, or Admin account. After login, King Sparkon opens the dashboard that matches your role."
       submitLabel="Sign in securely"
-      footerText="New to King Sparkon Tracker?"
+      footerText="New to King Sparkon?"
       footerHref="/register"
       footerLink="Register account"
       visualTitle="Secure access for barcode inventory teams."

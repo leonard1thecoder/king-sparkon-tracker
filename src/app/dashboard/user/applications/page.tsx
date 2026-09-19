@@ -3,8 +3,8 @@ import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { JobApplicationsPanel } from "@/components/jobs/JobApplicationsPanel";
 
 export const metadata: Metadata = {
-  title: "My Applications | King Sparkon Tracker",
-  description: "Track submitted job applications from the King Sparkon Tracker user dashboard.",
+  title: "My Applications | King Sparkon",
+  description: "Track submitted job applications from the King Sparkon user dashboard.",
 };
 
 export default function UserApplicationsPage() {

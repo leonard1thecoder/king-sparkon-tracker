@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Home, Search } from "lucide-react";
 
-export const metadata: Metadata = { title: "Page Not Found", description: "Return to King Sparkon Tracker." };
+export const metadata: Metadata = { title: "Page Not Found", description: "Return to King Sparkon." };
 
 export default function NotFound() {
   return (

@@ -189,7 +189,7 @@ export function JobOpportunityDetail({ id, canApply = true, manageHref }: { id: 
             <div>
               <p className="inline-flex rounded-full border border-[var(--signal)]/30 bg-[var(--signal-soft)] px-3 py-1 font-mono text-xs font-black uppercase tracking-[0.16em] text-[var(--signal-strong)]">External posting</p>
               <h2 className="mt-3 text-2xl font-black tracking-[-0.04em]">Apply on the recruiter&apos;s site</h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--steel)]">This role is handled outside King Sparkon Tracker. Continue on the company website or email your CV directly — applications here are disabled for external posts.</p>
+              <p className="mt-2 text-sm leading-6 text-[var(--steel)]">This role is handled outside King Sparkon. Continue on the company website or email your CV directly — applications here are disabled for external posts.</p>
             </div>
             {job.applyUrl ? (
               isEmailTarget(job.applyUrl) ? (

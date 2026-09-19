@@ -4,7 +4,7 @@ import { CreateEventForm } from "@/components/tickets/CreateEventForm";
 
 export const metadata: Metadata = {
   title: "Create Ticket Event | Owner Dashboard",
-  description: "Create King Sparkon Tracker ticket events inside the owner dashboard.",
+  description: "Create King Sparkon ticket events inside the owner dashboard.",
 };
 
 export default function OwnerCreateTicketEventPage() {

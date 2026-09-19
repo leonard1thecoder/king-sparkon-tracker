@@ -1,4 +1,4 @@
-# King Sparkon Tracker — Mobile (Expo)
+# King Sparkon — Mobile (Expo)
 
 Native React + Expo app for the **User + Worker dashboards**. Mobile view builds for Android and iOS via EAS, plus Expo web export for CI parity with the Next.js web app.
 

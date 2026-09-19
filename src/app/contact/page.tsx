@@ -9,9 +9,9 @@ import { ContactForm } from "@/app/contact-form";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Contact King Sparkon Tracker | Implementation & Support Inquiries",
+  title: "Contact King Sparkon | Implementation & Support Inquiries",
   description:
-    "Contact King Sparkon Tracker for implementation inquiries, support questions, billing, and affiliate or worker setup. Get guidance on barcode inventory, QR tickets and role-safe operations.",
+    "Contact King Sparkon for implementation inquiries, support questions, billing, and affiliate or worker setup. Get guidance on barcode inventory, QR tickets and role-safe operations.",
   path: "/contact",
 });
 

@@ -10,7 +10,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "QR Ticket Operations Manual | Capacity, Sales & Gate Verification",
   description:
-    "How to create events, manage ticket capacity, handle buyer QR tickets and verify entry at the gate with King Sparkon Tracker — including capacity visibility and checked-in audit.",
+    "How to create events, manage ticket capacity, handle buyer QR tickets and verify entry at the gate with King Sparkon — including capacity visibility and checked-in audit.",
   path: "/guides/qr-ticket-operations",
 });
 

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { JobOpportunityDetail } from "@/components/jobs/JobOpportunityDetail";
 
 export const metadata: Metadata = {
-  title: "Job Detail | King Sparkon Tracker",
-  description: "Review a King Sparkon Tracker job opportunity and submit an application.",
+  title: "Job Detail | King Sparkon",
+  description: "Review a King Sparkon job opportunity and submit an application.",
 };
 
 export default async function JobDetailPage({ params }: { params: Promise<{ id: string }> }) {

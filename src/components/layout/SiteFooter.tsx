@@ -57,7 +57,7 @@ export function SiteFooter({ marketingOnly = false }: SiteFooterProps) {
       <div className="mx-auto max-w-7xl px-5 py-14 md:px-8 lg:py-16">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_1.4fr]">
           <div className="max-w-xl">
-            <Link href="/" aria-label="King Sparkon Tracker home" className="inline-flex items-center gap-3">
+            <Link href="/" aria-label="King Sparkon home" className="inline-flex items-center gap-3">
               <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={240} height={106} className="object-contain" />
             </Link>
             <p className="mt-6 text-sm leading-7 text-[var(--steel)] md:text-base">Barcode inventory, QR tickets, jobs, affiliate marketing, Dev Hub software delivery, QA, cloud operations and audit-ready reports in one role-safe platform.</p>
@@ -80,7 +80,7 @@ export function SiteFooter({ marketingOnly = false }: SiteFooterProps) {
         </div>
 
         <div className="mt-6 flex flex-col gap-4 text-xs font-semibold text-[var(--muted)] md:flex-row md:items-center md:justify-between">
-          <p>&copy; {year} King Sparkon Tracker. Trademark platform of Sizolwakhe Leonard Mthimunye.</p>
+          <p>&copy; {year} King Sparkon. Trademark platform of Sizolwakhe Leonard Mthimunye.</p>
           <div className="flex flex-wrap items-center gap-3"><span className="inline-flex items-center gap-2"><MapPin className="h-3.5 w-3.5" /> South Africa ready</span><CookieSettingsButton variant="footer" /><Link href={SOCIAL_LINKS.find((social) => social.platform === "GitHub")?.href ?? "https://github.com/leonard1thecoder"} target="_blank" rel="noreferrer" className="hover:text-[var(--accent-hover)] transition-colors duration-200">GitHub profile</Link></div>
         </div>
       </div>

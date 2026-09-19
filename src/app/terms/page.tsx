@@ -7,8 +7,8 @@ import { PremiumHeader } from "@/components/marketing/PremiumHeader";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Terms of Service | King Sparkon Tracker",
-  description: "Terms of service for King Sparkon Tracker: eligibility, accounts, acceptable use, inventory & ticket accuracy, fees, and liability limits.",
+  title: "Terms of Service | King Sparkon",
+  description: "Terms of service for King Sparkon: eligibility, accounts, acceptable use, inventory & ticket accuracy, fees, and liability limits.",
   path: "/terms",
 });
 
@@ -23,7 +23,7 @@ export default function TermsPage() {
           <div className="relative mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-12">
             <p className="inline-flex rounded-full border border-[var(--signal)]/20 bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Legal</p>
             <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-[-0.05em] md:text-5xl">Terms of service</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--steel)]">Last updated: 12 February 2026 • By registering or using King Sparkon Tracker™ you agree to these terms as offered by Sizolwakhe Leonard Mthimunye.</p>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--steel)]">Last updated: 12 February 2026 • By registering or using King Sparkon™ you agree to these terms as offered by Sizolwakhe Leonard Mthimunye.</p>
           </div>
         </section>
 
@@ -42,7 +42,7 @@ export default function TermsPage() {
             <h2>6. Acceptable use</h2>
             <p>Do not upload unlawful content, infringe trademarks or copyrights, attempt to intercept scan data, probe the backend proxy, scrape private dashboards, or submit automated registrations that evade rate limits. Rate-limit responses include retryAfterSeconds or Retry-After headers — respect the cooldown.</p>
             <h2>7. Intellectual property</h2>
-            <p>King Sparkon Tracker™ and related logos are trademarks of the founder. Your business names, product images and ticket creatives remain yours. You grant a limited license to host and display them to operate the platform. The underlying software, 3D visuals and ledger logic remain the property of the platform.</p>
+            <p>King Sparkon™ and related logos are trademarks of the founder. Your business names, product images and ticket creatives remain yours. You grant a limited license to host and display them to operate the platform. The underlying software, 3D visuals and ledger logic remain the property of the platform.</p>
             <h2>8. Disclaimer & limits</h2>
             <p>The platform is provided on an &quot;as is&quot; basis. We do not warrant uninterrupted camera scanning on all devices, carrier delivery of portal messages, or venue acceptance of QR codes. To the fullest extent permitted by law, liability is limited to the fees paid for the service in the 3 months prior to the claim. Nothing limits liability where law prohibits.</p>
             <h2>9. Changes</h2>

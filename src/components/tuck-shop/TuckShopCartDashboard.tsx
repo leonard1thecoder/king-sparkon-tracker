@@ -221,7 +221,7 @@ export function TuckShopCartDashboard() {
 
               <div className="flex items-start gap-2 rounded-[1rem] bg-[var(--surface)] p-3 text-xs font-semibold leading-5 text-[var(--steel)]">
                 <LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-[var(--confirm)]" />
-                You pay on PayFast&apos;s secure page (card, Instant EFT and more). Card details are never stored by King Sparkon Tracker.
+                You pay on PayFast&apos;s secure page (card, Instant EFT and more). Card details are never stored by King Sparkon.
               </div>
 
               <div className="grid gap-3 rounded-[1.35rem] bg-[var(--ink)] p-4 text-white">

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "King Sparkon Tracker",
+    "name": "King Sparkon",
     "slug": "king-sparkon-tracker",
     "version": "0.1.0",
     "orientation": "portrait",
@@ -41,7 +41,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow King Sparkon Tracker to scan barcodes and tickets."
+          "cameraPermission": "Allow King Sparkon to scan barcodes and tickets."
         }
       ],
       "expo-secure-store"

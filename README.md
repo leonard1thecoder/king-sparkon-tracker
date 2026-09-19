@@ -1,6 +1,6 @@
-# King Sparkon Tracker Frontend
+# King Sparkon Frontend
 
-King Sparkon Tracker is a Bun-powered Next.js 16 frontend for a barcode and QR operations platform. It supports product verification, stock movement, worker scan flows, website payments, worker tips, withdrawals, affiliate referrals, promotions, billing, reports, and audit trails.
+King Sparkon is a Bun-powered Next.js 16 frontend for a barcode and QR operations platform. It supports product verification, stock movement, worker scan flows, website payments, worker tips, withdrawals, affiliate referrals, promotions, billing, reports, and audit trails.
 
 This frontend is aligned to the Spring Boot backend in `leonard1thecoder/king-sparkon-tracker-backend`.
 

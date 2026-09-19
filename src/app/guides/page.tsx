@@ -10,7 +10,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "Guides | Barcode Inventory, QR Tickets, Worker Tips & Affiliates",
   description:
-    "Practical guides for King Sparkon Tracker: how to register products with barcodes, run QR ticket events, process worker tips and withdrawals, and use affiliate referrals without spreadsheet errors.",
+    "Practical guides for King Sparkon: how to register products with barcodes, run QR ticket events, process worker tips and withdrawals, and use affiliate referrals without spreadsheet errors.",
   path: "/guides",
 });
 

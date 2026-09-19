@@ -8,7 +8,7 @@ import { FaqRoleSlider } from "@/components/marketing/FaqRoleSlider";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "FAQ | King Sparkon Tracker — Questions by Role Answered",
+  title: "FAQ | King Sparkon — Questions by Role Answered",
   description:
     "Role-separated answers for users, businesses and affiliates: shop and tickets, tips and UIF, inventory and plans, referrals and payouts, billing, dashboards and data privacy.",
   path: "/faq",

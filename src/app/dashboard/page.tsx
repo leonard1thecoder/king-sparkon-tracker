@@ -6,7 +6,7 @@ import { ACCESS_COOKIE_NAME, dashboardPathForSession, decodeJwtPayload } from "@
 
 export const metadata: Metadata = {
   title: "Dashboard Session Check",
-  description: "King Sparkon Tracker validates secure dashboard access by role before opening a workspace.",
+  description: "King Sparkon validates secure dashboard access by role before opening a workspace.",
 };
 
 export default async function DashboardRedirectPage() {

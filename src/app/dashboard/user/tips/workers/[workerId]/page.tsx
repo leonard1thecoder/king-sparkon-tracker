@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: WorkerTipPageProps): Promise<
 
   return {
     title: `Tip Worker ${workerLabel}`,
-    description: `User dashboard worker tip page for King Sparkon Tracker worker ${workerLabel}.`,
+    description: `User dashboard worker tip page for King Sparkon worker ${workerLabel}.`,
   };
 }
 

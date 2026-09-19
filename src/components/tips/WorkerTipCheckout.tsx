@@ -168,7 +168,7 @@ export function WorkerTipCheckout({ workerId }: { workerId: string }) {
 
               <div className="flex items-start gap-2 rounded-[1rem] bg-[var(--surface)] p-3 text-xs font-semibold leading-5 text-[var(--steel)]">
                 <LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-[var(--confirm)]" />
-                The backend receives only the worker ID and tip amount. PayFast completes the secure charge and confirms it back to King Sparkon Tracker.
+                The backend receives only the worker ID and tip amount. PayFast completes the secure charge and confirms it back to King Sparkon.
               </div>
 
               {notice ? <p className="rounded-[1rem] border border-[var(--danger)]/25 bg-[var(--danger)]/10 p-3 text-sm font-bold text-[var(--danger)]">{notice}</p> : null}

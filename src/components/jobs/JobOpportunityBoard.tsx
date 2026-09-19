@@ -73,7 +73,7 @@ export function JobOpportunityBoard({ audience = "public", title, description }:
   const subheading = useMemo(() => {
     if (description) return description;
     if (isManagement) return "Publish roles, close filled openings, and keep applications visible from the role dashboard.";
-    return "Browse open roles from businesses using King Sparkon Tracker and apply from one clean workspace.";
+    return "Browse open roles from businesses using King Sparkon and apply from one clean workspace.";
   }, [description, isManagement]);
 
   const loadJobs = useCallback(async () => {

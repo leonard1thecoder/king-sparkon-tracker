@@ -5,7 +5,7 @@ import { DashboardRoleNav } from "@/components/layout/DashboardRoleNav";
 import { DeveloperHubWorkspace } from "@/components/developer-hub/DeveloperHubWorkspace";
 
 export const metadata: Metadata = {
-  title: "Owner Developer Hub | King Sparkon Tracker",
+  title: "Owner Developer Hub | King Sparkon",
   description: "Owner workspace for requesting software development, cloud maintenance, Quality Assurance regression, and King Sparkon Dev Hub free quotes.",
 };
 

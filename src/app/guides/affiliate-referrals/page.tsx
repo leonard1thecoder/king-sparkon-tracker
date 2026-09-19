@@ -10,7 +10,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "Affiliate Referrals & Campaigns Guide | Codes, Quotes & Commissions",
   description:
-    "How affiliate referral codes, promotion links, audience & channel targeting, and commission tracking work in King Sparkon Tracker — and how to run promotions with a quote before sending.",
+    "How affiliate referral codes, promotion links, audience & channel targeting, and commission tracking work in King Sparkon — and how to run promotions with a quote before sending.",
   path: "/guides/affiliate-referrals",
 });
 

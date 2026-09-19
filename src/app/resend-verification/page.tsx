@@ -4,7 +4,7 @@ import { AuthShell } from "../auth-shell";
 export const metadata: Metadata = {
   title: "Verify Barcode Inventory Account",
   description:
-    "Request a new King Sparkon Tracker verification email for secure barcode inventory tracking and business-scoped product operations.",
+    "Request a new King Sparkon verification email for secure barcode inventory tracking and business-scoped product operations.",
   robots: { index: false, follow: false },
 };
 

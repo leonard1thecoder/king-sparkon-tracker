@@ -10,7 +10,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "Worker Tips, Fees & Withdrawals Guide | Transparent Payouts",
   description:
-    "How worker tip QR codes, callback URLs, gross/fee/net transparency and withdrawal status work in King Sparkon Tracker — and how owners approve payouts without hidden fees.",
+    "How worker tip QR codes, callback URLs, gross/fee/net transparency and withdrawal status work in King Sparkon — and how owners approve payouts without hidden fees.",
   path: "/guides/worker-tips-payouts",
 });
 

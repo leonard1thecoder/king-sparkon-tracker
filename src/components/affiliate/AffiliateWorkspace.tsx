@@ -207,7 +207,7 @@ function normalizeAssets(payload: unknown): AffiliateAssetRow[] {
     title: text(record, ["title", "name"], `Campaign asset ${index + 1}`),
     channel: text(record, ["channel", "platform"], "Social"),
     format: text(record, ["format", "type"], "Campaign copy"),
-    copy: text(record, ["copy", "message", "content", "description"], "Share King Sparkon Tracker with your audience."),
+    copy: text(record, ["copy", "message", "content", "description"], "Share King Sparkon with your audience."),
     callToAction: text(record, ["callToAction", "cta"], "Open my affiliate referral link."),
     status: text(record, ["status", "state"], "READY"),
     updatedAt: text(record, ["updatedAt", "createdAt"], ""),

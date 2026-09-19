@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "King Sparkon Tracker",
+    name: "King Sparkon",
     short_name: "King Sparkon",
     description: "Barcode inventory, QR tickets, jobs, worker tips, affiliate commissions, and role-safe business operations.",
     start_url: "/",

@@ -4,7 +4,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "Affiliate Referrals & Campaigns | Codes, Quotes & Commissions",
   description:
-    "Referral codes, promotion quotes, audience targeting and commission visibility — no guesswork on earnings with King Sparkon Tracker.",
+    "Referral codes, promotion quotes, audience targeting and commission visibility — no guesswork on earnings with King Sparkon.",
   path: "/articles/affiliate-referrals",
 });
 

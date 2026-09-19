@@ -31,7 +31,7 @@ const steps = [
 ];
 
 const faqs = [
-  { question: "Is King Sparkon Tracker a real trademark platform or a template?", answer: "It is the trademark platform of Sizolwakhe Leonard Mthimunye (King Sparkon), Oracle-verified via Credly. The codebase contains custom role workspaces, scan protocols and audit trails backed by a Spring Boot backend — not a cloned marketplace skin." },
+  { question: "Is King Sparkon a real trademark platform or a template?", answer: "It is the trademark platform of Sizolwakhe Leonard Mthimunye (King Sparkon), Oracle-verified via Credly. The codebase contains custom role workspaces, scan protocols and audit trails backed by a Spring Boot backend — not a cloned marketplace skin." },
   { question: "Why does SELL require barcodes to match quantity?", answer: "To prevent untraceable sales. The API enforces barcodes.length === total quantity. One missing barcode fails the checkout — deliberately — so every unit sold has a ledger entry." },
   { question: "Can I use it without taking website payments?", answer: "Yes. CASH and SWIPE_MACHINE flows work without paymentUrl and never subscribe the customer. WEBSITE_PAYMENT is optional and surfaces paymentUrl, status and referenceEmail when the backend returns them." },
   { question: "What do Free Trial, Plus and Pro limit?", answer: "Free Trial max 2 workers, Plus max 5, Pro unlimited. Pro unlocks worker tips platform, business analysis AI and worker clocker. Limits and locks are enforced server-side; the UI only reflects them." },
@@ -55,7 +55,7 @@ export function PremiumLanding() {
               Scan it. Sell it. <span className="bg-gradient-to-br from-[var(--signal)] to-[var(--signal-strong)] bg-clip-text text-transparent">Track it. Prove it.</span>
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-7 text-[var(--steel)]">
-              King Sparkon Tracker connects inventory, tickets, carts, jobs, worker tips and affiliates through role-safe dashboards — each one showing only what that role needs, and every action leaving an audit trail.
+              King Sparkon connects inventory, tickets, carts, jobs, worker tips and affiliates through role-safe dashboards — each one showing only what that role needs, and every action leaving an audit trail.
             </p>
 
             <GlassCard variant="subtle" className="mt-6 flex items-center gap-4">

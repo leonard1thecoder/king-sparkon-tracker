@@ -46,7 +46,7 @@ export default function TipsPayPalOnboardingPage() {
               Worker tip payouts need a serious onboarding checkpoint.
             </h2>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-white/68 md:text-base">
-              This page is the frontend landing point for TIPS_PAYPAL_ONBOARDING_URL. It keeps the owner informed after PayPal redirects back to King Sparkon Tracker.
+              This page is the frontend landing point for TIPS_PAYPAL_ONBOARDING_URL. It keeps the owner informed after PayPal redirects back to King Sparkon.
             </p>
 
             <div className="mt-7 grid gap-3 sm:grid-cols-3">

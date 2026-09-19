@@ -7,9 +7,9 @@ import { PremiumHeader } from "@/components/marketing/PremiumHeader";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Articles | King Sparkon Tracker Guides & Resources",
+  title: "Articles | King Sparkon Guides & Resources",
   description:
-    "Browse all King Sparkon Tracker articles and guides — barcode inventory, QR tickets, worker tips, affiliate referrals, how-it-works and feature explainers.",
+    "Browse all King Sparkon articles and guides — barcode inventory, QR tickets, worker tips, affiliate referrals, how-it-works and feature explainers.",
   path: "/articles",
 });
 
@@ -56,7 +56,7 @@ export default function ArticlesPage() {
           <div className="relative mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-14">
             <p className="inline-flex rounded-full border border-[var(--signal)]/20 bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Articles & Resources</p>
             <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-[-0.05em] md:text-5xl">Articles that explain how the work gets done</h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--steel)]">Browse all King Sparkon Tracker articles — barcode inventory, QR tickets, worker tips, affiliate referrals and platform explainers.</p>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--steel)]">Browse all King Sparkon articles — barcode inventory, QR tickets, worker tips, affiliate referrals and platform explainers.</p>
           </div>
         </section>
 

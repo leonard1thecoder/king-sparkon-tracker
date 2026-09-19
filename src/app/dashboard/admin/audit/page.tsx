@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { RouteSectionPage } from "@/components/layout/RouteSectionPage";
 
 export const metadata: Metadata = {
-  title: "Admin Audit Logs | King Sparkon Tracker",
+  title: "Admin Audit Logs | King Sparkon",
   description: "Admin audit trail shell for barcode, auth, ticket, job, payout, and role events.",
 };
 

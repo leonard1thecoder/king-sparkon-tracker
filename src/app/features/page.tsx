@@ -10,7 +10,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "Features | Barcode Inventory, QR Tickets, Jobs, Tips & Affiliate Platform",
   description:
-    "Explore King Sparkon Tracker features: barcode inventory with unit-level tracking, QR ticket capacity and verification, cart checkout, job opportunities, worker tips, affiliate referrals, promotions, billing and audit-ready reports.",
+    "Explore King Sparkon features: barcode inventory with unit-level tracking, QR ticket capacity and verification, cart checkout, job opportunities, worker tips, affiliate referrals, promotions, billing and audit-ready reports.",
   path: "/features",
 });
 
@@ -26,7 +26,7 @@ export default function FeaturesPage() {
           <div className="relative mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-14">
             <p className="inline-flex rounded-full border border-[var(--signal)]/20 bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Platform Capabilities</p>
             <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-[-0.05em] md:text-5xl">Built around real work, not dashboard decoration</h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--steel)]">Explore King Sparkon Tracker features: barcode inventory with unit-level tracking, QR ticket capacity & gate verification, cart checkout, job opportunities, worker tips, affiliate referrals, promotions, and role-safe dashboards.</p>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--steel)]">Explore King Sparkon features: barcode inventory with unit-level tracking, QR ticket capacity & gate verification, cart checkout, job opportunities, worker tips, affiliate referrals, promotions, and role-safe dashboards.</p>
           </div>
         </section>
 

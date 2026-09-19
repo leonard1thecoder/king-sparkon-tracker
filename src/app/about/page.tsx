@@ -8,9 +8,9 @@ import { PremiumHeader } from "@/components/marketing/PremiumHeader";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "About King Sparkon Tracker | Founder, Purpose & Platform Principles",
+  title: "About King Sparkon | Founder, Purpose & Platform Principles",
   description:
-    "Learn who built King Sparkon Tracker, why it exists, and how Sizolwakhe Leonard Mthimunye — Oracle-verified developer and founder known as King Sparkon — designed a barcode, QR ticket and role-safe operations platform for South African businesses.",
+    "Learn who built King Sparkon, why it exists, and how Sizolwakhe Leonard Mthimunye — Oracle-verified developer and founder known as King Sparkon — designed a barcode, QR ticket and role-safe operations platform for South African businesses.",
   path: "/about",
   keywords: ["about King Sparkon", "Sizolwakhe Leonard Mthimunye", "King Sparkon founder", "barcode platform South Africa"],
 });
@@ -47,7 +47,7 @@ export default function AboutPage() {
               <p className="inline-flex rounded-full border border-[var(--signal)]/20 bg-[var(--signal-soft)] px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">About the platform</p>
               <h1 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-5xl">A South African operations platform built for verifiable work.</h1>
               <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--steel)] md:text-lg md:leading-8">
-                King Sparkon Tracker™ is the trademark platform of <strong className="font-extrabold text-[var(--ink)]">Sizolwakhe Leonard Mthimunye</strong>, known as King Sparkon. It was created to replace spreadsheet chaos with a single auditable record for barcode inventory, QR tickets, cart checkout, jobs, affiliate referrals, worker tips and payouts.
+                King Sparkon™ is the trademark platform of <strong className="font-extrabold text-[var(--ink)]">Sizolwakhe Leonard Mthimunye</strong>, known as King Sparkon. It was created to replace spreadsheet chaos with a single auditable record for barcode inventory, QR tickets, cart checkout, jobs, affiliate referrals, worker tips and payouts.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link href="/how-it-works" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-extrabold text-white hover:bg-[var(--signal-strong)]">
@@ -85,7 +85,7 @@ export default function AboutPage() {
           <div className="grid gap-6 md:grid-cols-3">
             <GlassCard variant="subtle" className="flex gap-4">
               <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[var(--line)] bg-white text-[var(--signal)]"><Building2 className="h-5 w-5" /></div>
-              <div><h2 className="font-black">Trademark, not a marketplace clone</h2><p className="mt-2 text-sm leading-6 text-[var(--steel)]">King Sparkon Tracker is not a reseller skin. It is a custom commerce + operations platform with its own business workspaces, scan protocols and audit logs.</p></div>
+              <div><h2 className="font-black">Trademark, not a marketplace clone</h2><p className="mt-2 text-sm leading-6 text-[var(--steel)]">King Sparkon is not a reseller skin. It is a custom commerce + operations platform with its own business workspaces, scan protocols and audit logs.</p></div>
             </GlassCard>
             <GlassCard variant="subtle" className="flex gap-4">
               <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[var(--line)] bg-white text-[var(--signal)]"><ShieldCheck className="h-5 w-5" /></div>

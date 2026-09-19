@@ -10,7 +10,7 @@ const heroCards = [
       "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jun%2029,%202026,%2001_23_49%20PM.png",
     eyebrow: "King Sparkon brand terminal",
     title: "Present King Sparkon Lego",
-    alt: "King Sparkon Tracker 3D Lego barcode visual",
+    alt: "King Sparkon 3D Lego barcode visual",
   },
   {
     imageSrc:

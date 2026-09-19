@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { RouteSectionPage } from "@/components/layout/RouteSectionPage";
 
 export const metadata: Metadata = {
-  title: "Admin Tips & Withdrawals | King Sparkon Tracker",
+  title: "Admin Tips & Withdrawals | King Sparkon",
   description: "Admin tips and withdrawals oversight shell for worker QR tips and payout reviews.",
 };
 

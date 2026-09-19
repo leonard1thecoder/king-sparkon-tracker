@@ -67,7 +67,7 @@ export default function PayPage() {
       <Card className="w-full max-w-md overflow-hidden">
         <CardHeader className="flex flex-col gap-2">
           <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">
-            King Sparkon Tracker
+            King Sparkon
           </p>
           <CardTitle>Complete your payment</CardTitle>
           <p className="text-sm leading-6 text-[var(--steel)]">
@@ -112,7 +112,7 @@ export default function PayPage() {
 
               <p className="flex items-start gap-2 rounded-[1rem] bg-[var(--surface)] p-3 text-xs font-semibold leading-5 text-[var(--steel)]">
                 <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[var(--confirm)]" />
-                You pay on PayFast. King Sparkon Tracker only marks the order paid after PayFast confirms it.
+                You pay on PayFast. King Sparkon only marks the order paid after PayFast confirms it.
               </p>
             </>
           ) : null}
