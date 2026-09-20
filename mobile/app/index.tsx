@@ -19,6 +19,6 @@ export default function Index() {
     );
   }
 
-  if (!user) return <Redirect href="/(auth)/login" />;
+  if (!user) return <Redirect href="/(public)/products" />;
   return <Redirect href="/(tabs)/shop" />;
 }

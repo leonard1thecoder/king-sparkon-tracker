@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -5,8 +6,16 @@ import { AuthProvider } from "@/store/auth-context";
 import { CartProvider } from "@/store/cart-context";
 import { FavoritesProvider } from "@/store/favorites-context";
 import { TipTrayProvider } from "@/store/tip-tray-context";
+import { STARTUP_SPLASH_DURATION_MS, StartupSplash } from "@/components/startup-splash";
 
 export default function RootLayout() {
+  const [splashVisible, setSplashVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setSplashVisible(false), STARTUP_SPLASH_DURATION_MS);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <SafeAreaProvider>
       <AuthProvider>
@@ -17,6 +26,7 @@ export default function RootLayout() {
               <Stack screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="index" />
                 <Stack.Screen name="(auth)" />
+                <Stack.Screen name="(public)" />
                 <Stack.Screen name="(tabs)" />
                 <Stack.Screen name="product/[id]" options={{ headerShown: true, title: "Product" }} />
                 <Stack.Screen name="job/[id]" options={{ headerShown: true, title: "Job" }} />
@@ -30,6 +40,7 @@ export default function RootLayout() {
           </FavoritesProvider>
         </CartProvider>
       </AuthProvider>
+      {splashVisible ? <StartupSplash /> : null}
     </SafeAreaProvider>
   );
 }

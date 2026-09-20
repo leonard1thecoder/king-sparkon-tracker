@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     await clearTokens();
     setUser(null);
-    router.replace("/(auth)/login");
+    router.replace("/(public)/products");
   }, []);
 
   const value = useMemo(() => ({ user, loading, error, signIn, signOut, refresh }), [user, loading, error, signIn, signOut, refresh]);

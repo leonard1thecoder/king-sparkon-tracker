@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { Link, router } from "expo-router";
 import { useAuth } from "@/store/auth-context";
 import { useCart } from "@/store/cart-context";
@@ -7,6 +7,7 @@ import { useFavorites } from "@/store/favorites-context";
 import { getUserRoles, isWorkerLike } from "@/lib/types";
 import { listWorkerOnlinePurchases } from "@/lib/api";
 import { tokens } from "@/theme/tokens";
+import LogoImage from "../../assets/icon.png";
 
 function homeForRoles(roles: string[]): string {
   if (roles.includes("Worker")) return "/(tabs)/scan";
@@ -52,7 +53,13 @@ export function AppHeader() {
         <Pressable style={styles.brand}>
           <View>
             <Text style={styles.role}>{roleLabel(roles)}</Text>
-            <Text style={styles.name}>King Sparkon</Text>
+            <Image
+              source={LogoImage}
+              style={styles.logo}
+              resizeMode="contain"
+              accessibilityRole="image"
+              accessibilityLabel="King Sparkon logo"
+            />
           </View>
         </Pressable>
       </Link>
@@ -190,7 +197,7 @@ const styles = StyleSheet.create({
   },
   brand: { flexDirection: "row", alignItems: "center" },
   role: { color: tokens.signalStrong, fontSize: 10, fontWeight: "800", letterSpacing: 1.5 },
-  name: { color: tokens.ink, fontSize: 15, fontWeight: "900" },
+  logo: { width: 104, height: 46 },
   actions: { flexDirection: "row", gap: 8, alignItems: "center" },
   iconButton: {
     minHeight: 40,
