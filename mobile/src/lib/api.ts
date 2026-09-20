@@ -152,6 +152,39 @@ export function listSentTips(status?: string) {
   return apiGet<Tip[]>("/tips/sent", status ? { status } : undefined);
 }
 
+// User dashboard — worker discovery for tips (mirrors web `src/lib/api/user-dashboard.ts`).
+// Backend: GET /api/user-dashboard/businesses,
+// GET /api/user-dashboard/businesses/{businessId}/workers
+// (WorkerTipCardResponse: workerId, username, emailAddress, jobTitle,
+// profilePictureUrl, tipQrCodeEnabled, tipQrCodeUrl).
+export type UserBusiness = {
+  businessId: number;
+  businessName: string;
+  description?: string | null;
+  qrCodeUrl?: string | null;
+  ownerId?: number | null;
+  ownerUsername?: string | null;
+  ownerProfilePictureUrl?: string | null;
+};
+
+export type WorkerTipCard = {
+  workerId: number;
+  username: string;
+  emailAddress?: string | null;
+  jobTitle?: string | null;
+  profilePictureUrl?: string | null;
+  tipQrCodeEnabled: boolean;
+  tipQrCodeUrl?: string | null;
+};
+
+export function listUserBusinesses() {
+  return apiGet<UserBusiness[]>("/user-dashboard/businesses");
+}
+
+export function listBusinessWorkers(businessId: number) {
+  return apiGet<WorkerTipCard[]>(`/user-dashboard/businesses/${businessId}/workers`);
+}
+
 // User dashboard — jobs (mirrors web `src/lib/api/job-opportunities.ts`).
 export type MobileJob = {
   id: number;

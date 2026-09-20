@@ -119,6 +119,21 @@ export type UserTicket = {
 
 export type FavoriteBusiness = { key: string; businessName: string; businessId?: number | null };
 
+// Worker favorites are device-local snapshots (the backend favorites API
+// is business-scoped), mirroring web `src/lib/worker-favorites.ts`.
+export type FavoriteWorker = {
+  workerId: number;
+  username: string;
+  jobTitle?: string | null;
+  businessId?: number | null;
+  businessName?: string | null;
+  profilePictureUrl?: string | null;
+};
+
+export function workerFavoriteKey(workerId: number, businessId?: number | null): string {
+  return `${businessId ?? "any"}:${workerId}`;
+}
+
 // ─── UIF (mirrors web `src/lib/api/uif.ts`) ────────────────────────────────
 
 export type UifBenefitRow = {

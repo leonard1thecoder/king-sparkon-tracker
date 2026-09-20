@@ -17,6 +17,7 @@ export default function PublicTabsLayout() {
       <Tabs.Screen name="products" options={{ title: "Products" }} />
       <Tabs.Screen name="tickets" options={{ title: "Tickets" }} />
       <Tabs.Screen name="jobs" options={{ title: "Jobs" }} />
+      <Tabs.Screen name="tips" options={{ title: "Tip worker" }} />
     </Tabs>
   );
 }

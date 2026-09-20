@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
-import { FlatList, Pressable, RefreshControl, StyleSheet, Text, TextInput, View } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { FlatList, Image, Pressable, RefreshControl, StyleSheet, Text, TextInput, View } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
-import { Link } from "expo-router";
-import { listWorkerTips } from "@/lib/api";
+import { Link, useLocalSearchParams } from "expo-router";
+import { listBusinessWorkers, listUserBusinesses, listWorkerTips, type UserBusiness, type WorkerTipCard } from "@/lib/api";
+import { useFavorites } from "@/store/favorites-context";
 import type { Tip } from "@/lib/types";
 import { numericWorkerId, parseWorkerTipQr, type WorkerQrResult } from "@/lib/tip-qr";
 import { useAuth } from "@/store/auth-context";
@@ -27,6 +28,8 @@ const amounts = [
 
 function SendTipFlow() {
   const { add: addToTray, count: trayCount } = useTipTray();
+  const { workerFavorites, toggleWorkerFavorite, isWorkerFavorite } = useFavorites();
+  const params = useLocalSearchParams<{ workerId?: string | string[] }>();
   const [permission, requestPermission] = useCameraPermissions();
   const [result, setResult] = useState<WorkerQrResult | null>(null);
   const [manual, setManual] = useState("");
@@ -36,10 +39,96 @@ function SendTipFlow() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [addedAmount, setAddedAmount] = useState<number | null>(null);
+  const [businesses, setBusinesses] = useState<UserBusiness[]>([]);
+  const [businessId, setBusinessId] = useState<number | null>(null);
+  const [workers, setWorkers] = useState<WorkerTipCard[]>([]);
+  const [query, setQuery] = useState("");
+  const [workersLoading, setWorkersLoading] = useState(false);
+  const [workersError, setWorkersError] = useState<string | null>(null);
+  const presetApplied = useRef(false);
 
   useEffect(() => {
     if (!permission?.granted) void requestPermission();
   }, [permission, requestPermission]);
+
+  useEffect(() => {
+    let active = true;
+    listUserBusinesses()
+      .then((rows) => {
+        if (!active) return;
+        const list = Array.isArray(rows) ? rows : [];
+        setBusinesses(list);
+        setBusinessId((current) =>
+          current !== null && list.some((business) => business.businessId === current)
+            ? current
+            : list.length > 0
+              ? list[0].businessId
+              : null,
+        );
+      })
+      .catch(() => {
+        if (active) setBusinesses([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (businessId === null) {
+      setWorkers([]);
+      return;
+    }
+    let active = true;
+    setWorkersLoading(true);
+    setWorkersError(null);
+    listBusinessWorkers(businessId)
+      .then((rows) => {
+        if (active) setWorkers(Array.isArray(rows) ? rows : []);
+      })
+      .catch((e: unknown) => {
+        if (active) {
+          setWorkers([]);
+          setWorkersError(e instanceof Error ? e.message : "Could not load workers.");
+        }
+      })
+      .finally(() => {
+        if (active) setWorkersLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [businessId]);
+
+  // Deep link from Favorites ("Tip worker") presets the amount step.
+  useEffect(() => {
+    if (presetApplied.current) return;
+    const raw = Array.isArray(params.workerId) ? params.workerId[0] : params.workerId;
+    if (!raw) return;
+    const digits = raw.match(/\d+/);
+    if (!digits) return;
+    presetApplied.current = true;
+    setResult({ workerId: digits[0], source: "RAW", rawValue: raw });
+    setAddedAmount(null);
+    setError(null);
+    setScanning(false);
+  }, [params.workerId]);
+
+  function selectWorkerForTip(worker: WorkerTipCard) {
+    setResult({ workerId: String(worker.workerId), source: "RAW", rawValue: String(worker.workerId) });
+    setAddedAmount(null);
+    setError(null);
+    setScanning(false);
+  }
+
+  const activeBusiness = businesses.find((business) => business.businessId === businessId) ?? null;
+  const needle = query.trim().toLowerCase();
+  const visibleWorkers = needle
+    ? workers.filter(
+        (worker) =>
+          worker.username.toLowerCase().includes(needle) || (worker.jobTitle ?? "").toLowerCase().includes(needle),
+      )
+    : workers;
 
   function handleScan(value: string) {
     const parsed = parseWorkerTipQr(value);
@@ -95,6 +184,100 @@ function SendTipFlow() {
       <Link href="/tip-cart" style={styles.cartLink}>
         Tip cart{trayCount > 0 ? ` (${trayCount})` : ""} →
       </Link>
+
+      {workerFavorites.length > 0 ? (
+        <Card>
+          <Text style={styles.label}>♥ Favorite workers ({workerFavorites.length})</Text>
+          {workerFavorites.map((favorite) => (
+            <View key={`${favorite.businessId ?? "any"}:${favorite.workerId}`} style={styles.workerRow}>
+              <View style={styles.avatar}>
+                <Text style={styles.avatarText}>{favorite.username.trim().charAt(0).toUpperCase()}</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.workerName}>{favorite.username}</Text>
+                <Text style={styles.workerMeta}>
+                  {favorite.jobTitle || "Worker"}{favorite.businessName ? ` · ${favorite.businessName}` : ""}
+                </Text>
+              </View>
+              <PrimaryButton
+                title="Tip"
+                onPress={() => {
+                  setResult({ workerId: String(favorite.workerId), source: "RAW", rawValue: String(favorite.workerId) });
+                  setAddedAmount(null);
+                  setError(null);
+                  setScanning(false);
+                }}
+              />
+            </View>
+          ))}
+        </Card>
+      ) : null}
+
+      <Card>
+        <Text style={styles.label}>Find workers</Text>
+        <Text style={styles.hint}>Pick a business, search by name, or scan a worker QR below.</Text>
+        <View style={styles.chipRow}>
+          {businesses.map((business) => (
+            <Pressable
+              key={business.businessId}
+              onPress={() => setBusinessId(business.businessId)}
+              style={[styles.chip, business.businessId === businessId && styles.chipActive]}
+              accessibilityRole="button"
+              accessibilityState={{ selected: business.businessId === businessId }}
+            >
+              <Text style={[styles.chipText, business.businessId === businessId && styles.chipTextActive]}>
+                {business.businessName}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+        <TextInput value={query} onChangeText={setQuery} placeholder="Search worker by name…" style={styles.input} />
+        {workersError ? <Text style={styles.workersError}>{workersError}</Text> : null}
+        {workersLoading ? <Text style={styles.hint}>Loading workers…</Text> : null}
+        {!workersLoading && visibleWorkers.length === 0 ? (
+          <Text style={styles.hint}>
+            {workers.length === 0 ? "No workers found for this business." : "No workers match your search."}
+          </Text>
+        ) : null}
+        {visibleWorkers.map((worker) => {
+          const favorited = isWorkerFavorite(worker.workerId, activeBusiness?.businessId ?? null);
+          return (
+            <View key={worker.workerId} style={styles.workerRow}>
+              {worker.profilePictureUrl ? (
+                <Image source={{ uri: worker.profilePictureUrl }} style={styles.avatarImage} />
+              ) : (
+                <View style={styles.avatar}>
+                  <Text style={styles.avatarText}>{worker.username.trim().charAt(0).toUpperCase()}</Text>
+                </View>
+              )}
+              <View style={{ flex: 1 }}>
+                <Text style={styles.workerName}>{worker.username}</Text>
+                <Text style={styles.workerMeta}>
+                  {worker.jobTitle || "Worker"}{activeBusiness ? ` · ${activeBusiness.businessName}` : ""}
+                </Text>
+              </View>
+              <Pressable
+                onPress={() =>
+                  void toggleWorkerFavorite({
+                    workerId: worker.workerId,
+                    username: worker.username,
+                    jobTitle: worker.jobTitle,
+                    businessId: activeBusiness?.businessId ?? null,
+                    businessName: activeBusiness?.businessName ?? null,
+                    profilePictureUrl: worker.profilePictureUrl,
+                  })
+                }
+                style={[styles.favButton, favorited && styles.favButtonActive]}
+                accessibilityRole="button"
+                accessibilityLabel={favorited ? `Remove ${worker.username} from favorites` : `Add ${worker.username} to favorites`}
+              >
+                <Text style={[styles.favText, favorited && styles.favTextActive]}>♥</Text>
+              </Pressable>
+              <PrimaryButton title="Tip worker" onPress={() => selectWorkerForTip(worker)} />
+            </View>
+          );
+        })}
+      </Card>
 
       {scanning && permission?.granted ? (
         <View style={styles.preview}>
@@ -207,8 +390,25 @@ const styles = StyleSheet.create({
   openCartText: { color: "#fff", fontWeight: "800", fontSize: 15 },
   preview: { height: 200, borderRadius: 12, overflow: "hidden", backgroundColor: "#000" },
   label: { color: tokens.ink, fontSize: 13, fontWeight: "800" },
+  hint: { color: tokens.steel, fontSize: 12, fontWeight: "600" },
+  workersError: { color: tokens.danger, fontSize: 13, fontWeight: "700" },
   input: { backgroundColor: "#fff", borderColor: tokens.line, borderWidth: 1, borderRadius: 12, padding: 10, color: tokens.ink },
   row: { flexDirection: "row", gap: 8, flexWrap: "wrap" },
+  chipRow: { flexDirection: "row", gap: 8, flexWrap: "wrap" },
+  chip: { borderWidth: 1, borderColor: tokens.line, borderRadius: 999, paddingVertical: 8, paddingHorizontal: 14, backgroundColor: "#fff" },
+  chipActive: { backgroundColor: tokens.ink, borderColor: tokens.ink },
+  chipText: { fontWeight: "800", fontSize: 13, color: tokens.ink },
+  chipTextActive: { color: "#fff" },
+  workerRow: { flexDirection: "row", alignItems: "center", gap: 10 },
+  avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: tokens.ink, alignItems: "center", justifyContent: "center" },
+  avatarImage: { width: 44, height: 44, borderRadius: 22 },
+  avatarText: { color: "#fff", fontWeight: "900", fontSize: 18 },
+  workerName: { color: tokens.ink, fontWeight: "800", fontSize: 15 },
+  workerMeta: { color: tokens.steel, fontSize: 12, fontWeight: "600" },
+  favButton: { width: 40, height: 40, borderRadius: 20, borderWidth: 1, borderColor: tokens.line, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" },
+  favButtonActive: { backgroundColor: tokens.signal, borderColor: tokens.signal },
+  favText: { color: tokens.steel, fontWeight: "900", fontSize: 16 },
+  favTextActive: { color: "#fff" },
   amountTitle: { fontWeight: "800", fontSize: 15, color: tokens.ink },
   amountGrid: { gap: 8 },
   amount: { borderWidth: 1, borderColor: tokens.line, borderRadius: 12, padding: 12, backgroundColor: "#fff" },

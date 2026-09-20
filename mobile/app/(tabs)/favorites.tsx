@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import { FlatList, RefreshControl, Text } from "react-native";
+import { FlatList, RefreshControl, Text, View } from "react-native";
+import { router } from "expo-router";
 import { listFavoriteDetailed } from "@/lib/api";
 import type { FavoriteBusiness } from "@/lib/types";
 import { useFavorites } from "@/store/favorites-context";
 import { Card, ErrorText, PrimaryButton, Screen, Subtitle, Title } from "@/components/ui";
 
 export default function FavoritesScreen() {
-  const { keys, toggle, refresh } = useFavorites();
+  const { keys, toggle, refresh, workerFavorites, toggleWorkerFavorite } = useFavorites();
   const [detailed, setDetailed] = useState<FavoriteBusiness[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,8 +36,28 @@ export default function FavoritesScreen() {
   return (
     <Screen>
       <Title>Favorites</Title>
-      <Subtitle>Businesses you favorited — mirrors web `/dashboard/user/favorites`. Tap the heart in the shop to add or remove.</Subtitle>
+      <Subtitle>Businesses and workers you favorited — mirrors web `/dashboard/user/favorites`. Tap the heart in the shop or tip tab to add or remove.</Subtitle>
       <ErrorText message={error} />
+      <Title>Favorite workers</Title>
+      {workerFavorites.length === 0 ? (
+        <Text>None yet. Tap the heart on any worker in the Tip tab to save them here.</Text>
+      ) : null}
+      {workerFavorites.map((worker) => (
+        <Card key={`${worker.businessId ?? "any"}:${worker.workerId}`}>
+          <Text style={{ fontWeight: "800", fontSize: 15 }}>{worker.username}</Text>
+          <Text style={{ fontSize: 12 }}>
+            {worker.jobTitle || "Worker"}{worker.businessName ? ` · ${worker.businessName}` : ""}
+          </Text>
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            <PrimaryButton
+              title="Tip worker"
+              onPress={() => router.push({ pathname: "/(tabs)/tips", params: { workerId: String(worker.workerId) } })}
+            />
+            <PrimaryButton title="Remove" onPress={() => void toggleWorkerFavorite(worker)} />
+          </View>
+        </Card>
+      ))}
+      <Title>Favorite businesses</Title>
       <FlatList
         data={rows}
         keyExtractor={(item) => item.key}
