@@ -1,5 +1,5 @@
 import { Image, StyleSheet, View } from "react-native";
-import LogoImage from "../../assets/icon.png";
+import LogoImage from "../../assets/splash-logo.png";
 
 /** How long the startup splash stays visible (7 seconds). */
 export const STARTUP_SPLASH_DURATION_MS = 7000;
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   logo: {
-    width: 280,
-    height: 280,
+    width: 340,
+    height: 150,
   },
 });

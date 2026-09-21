@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { tokens } from "@/theme/tokens";
+import LogoImage from "../../assets/icon.png";
 
 // Shared auth UI — mirrors web `AuthShell` + `InteractiveRegisterShell`
 // (paper background, brand block, eyebrow pill, card form, status banner,
@@ -10,14 +11,28 @@ import { tokens } from "@/theme/tokens";
 // the website verbatim; only the role picker is gone (mobile is User-only).
 
 export function AuthScreen({ children }: { children: ReactNode }) {
-  return <View style={styles.screen}>{children}</View>;
+  return (
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={styles.screenContent}
+      keyboardShouldPersistTaps="handled"
+      automaticallyAdjustKeyboardInsets
+    >
+      {children}
+    </ScrollView>
+  );
 }
 
 export function AuthBrand() {
   return (
     <View style={styles.brand}>
-      <Text style={styles.brandEyebrow}>King Sparkon</Text>
-      <Text style={styles.brandName}>Tracker</Text>
+      <Image
+        source={LogoImage}
+        style={styles.brandLogo}
+        resizeMode="contain"
+        accessibilityRole="image"
+        accessibilityLabel="King Sparkon logo"
+      />
     </View>
   );
 }
@@ -181,10 +196,10 @@ export function AuthCheckbox({ label, checked, onChange }: { label: string; chec
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: tokens.paper, padding: 16, gap: 12 },
+  screen: { flex: 1, backgroundColor: tokens.paper },
+  screenContent: { padding: 16, paddingBottom: 32, gap: 12 },
   brand: { marginTop: 24 },
-  brandEyebrow: { color: tokens.signal, fontSize: 11, fontWeight: "900", letterSpacing: 2, textTransform: "uppercase" },
-  brandName: { color: tokens.ink, fontSize: 22, fontWeight: "900", textTransform: "uppercase" },
+  brandLogo: { width: 192, height: 85 },
   eyebrow: {
     alignSelf: "flex-start",
     borderWidth: 1,

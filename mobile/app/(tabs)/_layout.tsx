@@ -1,8 +1,15 @@
 import { Tabs } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@/store/auth-context";
 import { isWorkerLike } from "@/lib/types";
 import { AppHeader } from "@/components/app-header";
 import { tokens } from "@/theme/tokens";
+
+function tabIcon(name: keyof typeof Ionicons.glyphMap) {
+  return ({ color, size }: { color: string; size: number }) => (
+    <Ionicons name={name} size={size} color={color} />
+  );
+}
 
 // Mirrors web `MobileBottomNav` + `navByRole`:
 // - User primary: Shop, Cart, Tickets, Tip; Favorites, Cart, Profile and Logout stay in the header.
@@ -21,14 +28,15 @@ export default function TabsLayout() {
         tabBarStyle: { backgroundColor: "#fff", borderTopColor: tokens.line },
       }}
     >
-      <Tabs.Screen name="shop" options={{ title: "Shop", href: worker ? null : undefined }} />
-      <Tabs.Screen name="cart" options={{ title: "Cart", href: worker ? null : undefined }} />
-      <Tabs.Screen name="tickets" options={{ title: "Tickets", href: worker ? null : undefined }} />
-      <Tabs.Screen name="tips" options={{ title: "Tip", href: worker ? null : undefined }} />
+      <Tabs.Screen name="shop" options={{ title: "Shop", tabBarIcon: tabIcon("storefront"), href: worker ? null : undefined }} />
+      <Tabs.Screen name="cart" options={{ title: "Cart", tabBarIcon: tabIcon("cart"), href: worker ? null : undefined }} />
+      <Tabs.Screen name="tickets" options={{ title: "Tickets", tabBarIcon: tabIcon("ticket"), href: worker ? null : undefined }} />
+      <Tabs.Screen name="tips" options={{ title: "Tip", tabBarIcon: tabIcon("heart"), href: worker ? null : undefined }} />
       <Tabs.Screen
         name="scan"
         options={{
           title: "Checkout",
+          tabBarIcon: tabIcon("scan"),
           href: worker ? undefined : null,
         }}
       />
@@ -36,6 +44,7 @@ export default function TabsLayout() {
         name="products"
         options={{
           title: "Products",
+          tabBarIcon: tabIcon("cube"),
           href: worker ? undefined : null,
         }}
       />
@@ -43,6 +52,7 @@ export default function TabsLayout() {
         name="orders"
         options={{
           title: "Orders",
+          tabBarIcon: tabIcon("receipt"),
           href: worker ? undefined : null,
         }}
       />
@@ -50,11 +60,12 @@ export default function TabsLayout() {
         name="verify"
         options={{
           title: "Entry",
+          tabBarIcon: tabIcon("shield-checkmark"),
           href: worker ? undefined : null,
         }}
       />
-      <Tabs.Screen name="more" options={{ title: "More", href: worker ? undefined : null }} />
-      <Tabs.Screen name="profile" options={{ title: "Profile" }} />
+      <Tabs.Screen name="more" options={{ title: "More", tabBarIcon: tabIcon("ellipsis-horizontal"), href: worker ? undefined : null }} />
+      <Tabs.Screen name="profile" options={{ title: "Profile", tabBarIcon: tabIcon("person") }} />
       {/* Screens reachable via header / More / Profile — hidden from the tab bar */}
       <Tabs.Screen name="favorites" options={{ title: "Favorites", href: null }} />
       <Tabs.Screen name="carts" options={{ title: "My Carts", href: null }} />
