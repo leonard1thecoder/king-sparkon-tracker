@@ -2,8 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 import { FlatList, Pressable, RefreshControl, Text, TextInput } from "react-native";
 import { router } from "expo-router";
 import { listJobs, type MobileJob } from "@/lib/api";
+import { DEMO_NOTICE, demoJobs } from "@/lib/demo-data";
 import { normalizeList } from "@/lib/types";
 import { Card, ErrorText, Screen, StatusPill, Subtitle, Title } from "@/components/ui";
+import { tokens } from "@/theme/tokens";
 
 // Guest mirror of the user Jobs tab — same opportunity view, but
 // viewing details and applying require sign-in.
@@ -11,6 +13,7 @@ export default function PublicJobsScreen() {
   const [jobs, setJobs] = useState<MobileJob[]>([]);
   const [keyword, setKeyword] = useState("");
   const [loading, setLoading] = useState(true);
+  const [demo, setDemo] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -19,8 +22,11 @@ export default function PublicJobsScreen() {
     try {
       const result = await listJobs({ size: 50, keyword: keyword.trim() || undefined });
       setJobs(normalizeList(result));
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not load jobs.");
+      setDemo(false);
+    } catch {
+      setJobs(demoJobs(keyword));
+      setDemo(true);
+      setError(null);
     } finally {
       setLoading(false);
     }
@@ -34,6 +40,7 @@ export default function PublicJobsScreen() {
     <Screen>
       <Title>Jobs</Title>
       <Subtitle>Browse open opportunities — mirrors web `/dashboard/user/jobs`.</Subtitle>
+      {demo ? <Text style={{ color: tokens.steel, fontSize: 12, fontWeight: "700" }}>{DEMO_NOTICE}</Text> : null}
       <TextInput
         value={keyword}
         onChangeText={setKeyword}

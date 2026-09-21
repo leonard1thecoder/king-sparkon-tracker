@@ -49,7 +49,7 @@ export function PremiumHeader() {
       <div className={`border-b transition-all ${scrolled ? "border-[rgba(139,92,246,0.35)] bg-[rgba(5,5,12,0.88)] backdrop-blur-[20px] shadow-[0_8px_32px_rgba(0,0,0,0.6)]" : "border-[var(--line)] bg-black/90 backdrop-blur-[8px]"}`}>
         <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3 md:px-8" aria-label="Primary">
           <Link href="/" className="flex min-w-0 items-center gap-3" onClick={() => setOpen(false)}>
-            <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={190} height={84} className="object-contain" priority />
+            <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={190} height={84} className="h-auto w-[104px] shrink-0 object-contain sm:w-[190px]" priority />
           </Link>
 
           {/* Desktop nav */}
@@ -65,11 +65,11 @@ export function PremiumHeader() {
             ))}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {/* Always visible, including mobile view */}
             <Link
               href={DOWNLOAD_SECTION_HREF}
-              className="download-app-btn inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xl border border-[var(--premium-gold)]/60 bg-[var(--premium-gold)]/10 px-2.5 text-xs font-extrabold text-[var(--premium-gold)] hover:bg-[var(--premium-gold)] hover:text-black sm:min-h-10 sm:gap-2 sm:px-4 sm:text-sm"
+              className="download-app-btn inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border border-[var(--premium-gold)]/60 bg-[var(--premium-gold)]/10 px-2 text-[11px] font-extrabold text-[var(--premium-gold)] hover:bg-[var(--premium-gold)] hover:text-black sm:min-h-10 sm:gap-2 sm:px-4 sm:text-sm"
             >
               <Smartphone className="h-4 w-4" />
               <span className="hidden min-[400px]:inline sm:inline">Download app</span>
@@ -77,16 +77,15 @@ export function PremiumHeader() {
             </Link>
             <Link
               href="/login"
-              className="inline-flex min-h-9 items-center justify-center rounded-xl border border-[var(--line-strong)] bg-[#0d0d1c] px-2.5 text-xs font-extrabold text-[var(--steel)] hover:border-[var(--premium-cyan)] hover:text-[var(--premium-cyan)] sm:min-h-10 sm:px-4 sm:text-sm"
+              className="inline-flex min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-xl border border-[var(--line-strong)] bg-[#0d0d1c] px-2 text-[11px] font-extrabold text-[var(--steel)] hover:border-[var(--premium-cyan)] hover:text-[var(--premium-cyan)] sm:min-h-10 sm:px-4 sm:text-sm"
             >
-              Login
+              Sign in
             </Link>
             <Link
               href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE"
-              className="inline-flex min-h-9 items-center justify-center gap-2 rounded-xl border border-transparent bg-gradient-to-r from-cyan-400 via-violet-500 to-pink-500 px-2.5 text-xs font-extrabold text-white shadow-[0_8px_22px_rgba(139,92,246,0.4)] hover:from-yellow-300 hover:via-pink-500 hover:to-cyan-400 hover:text-black sm:min-h-10 sm:px-4 sm:text-sm"
+              className="inline-flex min-h-9 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-transparent bg-gradient-to-r from-cyan-400 via-violet-500 to-pink-500 px-2 text-[11px] font-extrabold text-white shadow-[0_8px_22px_rgba(139,92,246,0.4)] hover:from-yellow-300 hover:via-pink-500 hover:to-cyan-400 hover:text-black sm:min-h-10 sm:px-4 sm:text-sm"
             >
-              <span className="hidden sm:inline">Register</span>
-              <span className="sm:hidden">Register</span>
+              <span>Sign up</span>
               <ArrowRight className="hidden h-4 w-4 sm:block" />
             </Link>
 
@@ -123,14 +122,14 @@ export function PremiumHeader() {
                   <Smartphone className="h-4 w-4" /> Download app
                 </Link>
                 <Link href="/login" onClick={() => setOpen(false)} className="rounded-xl border border-[var(--line-strong)] bg-[#0d0d1c] px-3 py-2.5 text-center text-xs font-extrabold text-[var(--ink)] hover:border-[var(--premium-cyan)] hover:text-[var(--premium-cyan)]">
-                  Login
+                  Sign in
                 </Link>
                 <Link
                   href="/register"
                   onClick={() => setOpen(false)}
                   className="rounded-xl border border-transparent bg-gradient-to-r from-cyan-400 via-violet-500 to-pink-500 px-3 py-2.5 text-center text-xs font-extrabold text-white hover:from-yellow-300 hover:via-pink-500 hover:to-cyan-400 hover:text-black"
                 >
-                  Create account
+                  Sign up
                 </Link>
               </div>
             </div>

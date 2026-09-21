@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { FlatList, Image, Pressable, RefreshControl, StyleSheet, Text, TextInput, View } from "react-native";
 import { router } from "expo-router";
 import { listBusinessWorkers, listUserBusinesses, type UserBusiness, type WorkerTipCard } from "@/lib/api";
+import { DEMO_NOTICE, demoBusinesses, demoWorkers } from "@/lib/demo-data";
 import { Card, ErrorText, PrimaryButton, Screen, Subtitle, Title } from "@/components/ui";
 import { tokens } from "@/theme/tokens";
 
@@ -13,6 +14,7 @@ export default function PublicTipsScreen() {
   const [workers, setWorkers] = useState<WorkerTipCard[]>([]);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [demo, setDemo] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadBusinesses = useCallback(async () => {
@@ -27,8 +29,12 @@ export default function PublicTipsScreen() {
             ? list[0].businessId
             : null,
       );
+      setDemo(false);
     } catch {
-      setBusinesses([]);
+      const list = demoBusinesses();
+      setBusinesses(list);
+      setBusinessId(list.length > 0 ? list[0].businessId : null);
+      setDemo(true);
     }
   }, []);
 
@@ -43,9 +49,11 @@ export default function PublicTipsScreen() {
     try {
       const rows = await listBusinessWorkers(businessId);
       setWorkers(Array.isArray(rows) ? rows : []);
-    } catch (e) {
-      setWorkers([]);
-      setError(e instanceof Error ? e.message : "Could not load workers.");
+      setDemo(false);
+    } catch {
+      setWorkers(demoWorkers(businessId));
+      setDemo(true);
+      setError(null);
     } finally {
       setLoading(false);
     }
@@ -76,6 +84,7 @@ export default function PublicTipsScreen() {
     <Screen>
       <Title>Tip worker</Title>
       <Subtitle>Find workers by business or name — mirrors the member Tip tab.</Subtitle>
+      {demo ? <Text style={{ color: tokens.steel, fontSize: 12, fontWeight: "700" }}>{DEMO_NOTICE}</Text> : null}
       <View style={styles.chipRow}>
         {businesses.map((business) => (
           <Pressable

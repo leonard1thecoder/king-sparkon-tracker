@@ -172,6 +172,8 @@ export type WorkerTipCard = {
   username: string;
   emailAddress?: string | null;
   jobTitle?: string | null;
+  businessId?: number | null;
+  businessName?: string | null;
   profilePictureUrl?: string | null;
   tipQrCodeEnabled: boolean;
   tipQrCodeUrl?: string | null;
