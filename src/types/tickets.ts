@@ -27,6 +27,8 @@ export interface TicketEvent {
   earlyBirdEndsAt?: string;
   marketplaceHubEnabled?: boolean;
   marketplaceHubPrice?: number | null;
+  coolerboxFree?: boolean;
+  coolerboxPrice?: number | null;
 }
 
 export interface EventTicketType {
@@ -61,6 +63,7 @@ export interface UserTicket {
   transferredAt?: string | null;
   transferredFromUserId?: string | null;
   ownershipVersion?: number;
+  coolerboxAdded?: boolean;
 }
 
 export interface TicketPurchaseRequest {
@@ -120,6 +123,8 @@ export interface CreateTicketEventPayload {
   earlyBirdEndsAt?: string;
   marketplaceHubEnabled?: boolean;
   marketplaceHubPrice?: number;
+  coolerboxFree?: boolean;
+  coolerboxPrice?: number;
 }
 
 export type UpdateTicketEventPayload = Partial<Omit<CreateTicketEventPayload, "ticketTypes">> & {

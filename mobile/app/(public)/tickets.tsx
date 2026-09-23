@@ -60,6 +60,12 @@ export default function PublicTicketsScreen() {
                 {type.type}: R{Number(type.price).toFixed(2)} · {type.available} left
               </Text>
             ))}
+            {item.coolerboxFree === true || item.coolerboxPrice != null ? (
+              <StatusPill
+                label={`Coolerbox · ${item.coolerboxFree ? "Free" : `R${Number(item.coolerboxPrice ?? 0).toFixed(2)}`} · sign in to add`}
+                tone="action"
+              />
+            ) : null}
             <PrimaryButton title="Get tickets" onPress={() => router.replace("/(auth)/login")} />
           </Card>
         )}

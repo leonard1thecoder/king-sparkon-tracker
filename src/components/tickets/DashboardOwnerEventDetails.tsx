@@ -25,6 +25,10 @@ export function DashboardOwnerEventDetails({ eventId }: DashboardOwnerEventDetai
   const [hubPrice, setHubPrice] = useState("");
   const [hubSaving, setHubSaving] = useState(false);
   const [hubMessage, setHubMessage] = useState<{ tone: "success" | "error"; message: string } | null>(null);
+  const [coolerboxMode, setCoolerboxMode] = useState<"none" | "free" | "priced">("none");
+  const [coolerboxPrice, setCoolerboxPrice] = useState("");
+  const [coolerboxSaving, setCoolerboxSaving] = useState(false);
+  const [coolerboxMessage, setCoolerboxMessage] = useState<{ tone: "success" | "error"; message: string } | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -42,6 +46,9 @@ export function DashboardOwnerEventDetails({ eventId }: DashboardOwnerEventDetai
     setHubEnabled(Boolean(event?.marketplaceHubEnabled));
     setHubPrice(event?.marketplaceHubPrice != null ? String(event.marketplaceHubPrice) : "");
     setHubMessage(null);
+    setCoolerboxMode(event?.coolerboxFree ? "free" : event?.coolerboxPrice != null ? "priced" : "none");
+    setCoolerboxPrice(event?.coolerboxPrice != null ? String(event.coolerboxPrice) : "");
+    setCoolerboxMessage(null);
   }, [event?.id]);
 
   if (isLoading) {
@@ -60,6 +67,37 @@ export function DashboardOwnerEventDetails({ eventId }: DashboardOwnerEventDetai
         <main className="bg-[var(--surface)] p-5 md:p-8"><div className="rounded-[2rem] border border-dashed border-[var(--line-strong)] bg-white p-10 text-center shadow-[var(--shadow-soft)]"><Ticket className="mx-auto h-10 w-10 text-[var(--signal)]" /><h1 className="mt-4 text-3xl font-black tracking-[-0.04em]">Event not found</h1><Link href="/dashboard/owner/tickets" className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white">Back to owner tickets</Link></div></main>
       </>
     );
+  }
+
+  async function saveCoolerbox() {
+    setCoolerboxSaving(true);
+    setCoolerboxMessage(null);
+    try {
+      const trimmed = coolerboxPrice.trim();
+      const price = trimmed === "" ? undefined : Number(trimmed);
+      if (coolerboxMode === "priced" && (price === undefined || !Number.isFinite(price) || price < 0)) {
+        setCoolerboxMessage({ tone: "error", message: "Coolerbox price must be zero or positive." });
+        return;
+      }
+      const updated = await updateEvent(eventId, {
+        coolerboxFree: coolerboxMode === "free",
+        coolerboxPrice: coolerboxMode === "priced" ? price : undefined,
+      });
+      setEvent(updated);
+      setCoolerboxMessage({
+        tone: "success",
+        message:
+          coolerboxMode === "none"
+            ? "Coolerbox removed from this event."
+            : coolerboxMode === "free"
+              ? "Free coolerbox enabled — buyers add it from My Tickets."
+              : "Priced coolerbox enabled — buyers pay it through the shared cart.",
+      });
+    } catch (error) {
+      setCoolerboxMessage({ tone: "error", message: error instanceof Error ? error.message : "Could not update coolerbox." });
+    } finally {
+      setCoolerboxSaving(false);
+    }
   }
 
   async function saveMarketplaceHub() {
@@ -147,6 +185,60 @@ export function DashboardOwnerEventDetails({ eventId }: DashboardOwnerEventDetai
         {event.marketplaceHubEnabled ? (
           <MarketplaceHubProducts businessId={event.businessId ?? null} hubPrice={event.marketplaceHubPrice ?? null} cartHref="/dashboard/owner/cart" />
         ) : null}
+
+        <section className="rounded-[2.5rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] md:p-7">
+          <div>
+            <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Coolerbox</p>
+            <h2 className="mt-3 text-4xl font-black tracking-[-0.05em]">Buyer coolerbox option</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--steel)]">
+              {event.coolerboxFree
+                ? "Free coolerbox is live — buyers add it from My Tickets."
+                : event.coolerboxPrice != null
+                  ? `Priced coolerbox is live at R${Number(event.coolerboxPrice).toFixed(2)} — buyers pay it through the shared cart.`
+                  : "No coolerbox offered. Buyers cannot add one to this event."}
+            </p>
+          </div>
+          <div className="mt-4 grid gap-2 sm:grid-cols-3">
+            {([
+              { value: "none", label: "No coolerbox" },
+              { value: "free", label: "Free coolerbox" },
+              { value: "priced", label: "Priced coolerbox" },
+            ] as const).map((option) => (
+              <label
+                key={option.value}
+                className={`flex cursor-pointer items-center gap-2 rounded-[1.25rem] border px-4 py-3 text-sm font-black transition ${
+                  coolerboxMode === option.value
+                    ? "border-[var(--signal)] bg-[var(--signal-soft)] text-[var(--signal-strong)]"
+                    : "border-[var(--line)] bg-white text-[var(--steel)]"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="coolerboxMode"
+                  value={option.value}
+                  checked={coolerboxMode === option.value}
+                  onChange={() => setCoolerboxMode(option.value)}
+                  className="h-4 w-4 accent-[var(--signal)]"
+                />
+                {option.label}
+              </label>
+            ))}
+          </div>
+          {coolerboxMode === "priced" ? (
+            <label className="mt-4 grid max-w-md gap-2">
+              <span className="text-sm font-black">Coolerbox price (R)</span>
+              <input type="number" min="0" step="0.01" value={coolerboxPrice} onChange={(e) => setCoolerboxPrice(e.target.value.replace(/[^0-9.]/g, ""))} placeholder="Example: 100" className="min-h-12 rounded-[1.25rem] border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none placeholder:text-[var(--muted)] focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]" />
+            </label>
+          ) : null}
+          {coolerboxMessage ? (
+            <p className={`mt-4 rounded-[1.25rem] border p-4 text-sm font-bold leading-6 ${coolerboxMessage.tone === "error" ? "border-[var(--danger)]/30 bg-[var(--danger)]/10 text-[var(--danger)]" : "border-[var(--confirm)]/30 bg-[var(--confirm)]/10 text-[var(--confirm)]"}`}>
+              {coolerboxMessage.message}
+            </p>
+          ) : null}
+          <button type="button" onClick={() => void saveCoolerbox()} disabled={coolerboxSaving} className="mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] disabled:opacity-60">
+            {coolerboxSaving ? "Saving..." : "Save coolerbox"}
+          </button>
+        </section>
 
         <section className="rounded-[2.5rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] md:p-7"><div><p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Ticket classes</p><h2 className="mt-3 text-4xl font-black tracking-[-0.05em]">Owner class-level capacity</h2></div><div className="mt-8 grid gap-5 lg:grid-cols-3">{event.ticketTypes.map((ticketType) => <TicketTypeCard key={ticketType.id} ticketType={ticketType} eventId={event.id} showBuyAction={false} />)}</div></section>
 

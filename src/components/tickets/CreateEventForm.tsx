@@ -27,6 +27,8 @@ type FormState = {
   earlyBirdEndsAt: string;
   marketplaceHubEnabled: boolean;
   marketplaceHubPrice: string;
+  coolerboxMode: "none" | "free" | "priced";
+  coolerboxPrice: string;
 };
 
 const initialState: FormState = {
@@ -46,6 +48,8 @@ const initialState: FormState = {
   earlyBirdEndsAt: "",
   marketplaceHubEnabled: false,
   marketplaceHubPrice: "",
+  coolerboxMode: "none",
+  coolerboxPrice: "",
 };
 
 function todayValue() {
@@ -112,6 +116,11 @@ export function CreateEventForm() {
       if (!Number.isFinite(hubPrice) || hubPrice < 0) return "Marketplace Hub price must be zero or positive.";
     }
 
+    if (formState.coolerboxMode === "priced") {
+      const coolerPrice = Number(formState.coolerboxPrice);
+      if (!Number.isFinite(coolerPrice) || coolerPrice < 0) return "Coolerbox price must be zero or positive.";
+    }
+
     return null;
   }
 
@@ -141,6 +150,8 @@ export function CreateEventForm() {
       earlyBirdEndsAt: formState.earlyBirdEnabled ? new Date(formState.earlyBirdEndsAt).toISOString() : undefined,
       marketplaceHubEnabled: formState.marketplaceHubEnabled,
       marketplaceHubPrice: formState.marketplaceHubEnabled ? Number(formState.marketplaceHubPrice) : undefined,
+      coolerboxFree: formState.coolerboxMode === "free",
+      coolerboxPrice: formState.coolerboxMode === "priced" ? Number(formState.coolerboxPrice) : undefined,
     };
 
     try {
@@ -265,6 +276,43 @@ export function CreateEventForm() {
           </label>
         ) : null}
         <p className="mt-2 text-xs font-semibold text-[var(--muted)]">When enabled, this business&apos;s products are listed inside the ticket event details for buyers.</p>
+      </div>
+
+      <div className="rounded-[1.8rem] border border-[var(--line)] bg-white p-4">
+        <span className="text-sm font-black">Coolerbox</span>
+        <div className="mt-3 grid gap-2 sm:grid-cols-3">
+          {([
+            { value: "none", label: "No coolerbox" },
+            { value: "free", label: "Free coolerbox" },
+            { value: "priced", label: "Priced coolerbox" },
+          ] as const).map((option) => (
+            <label
+              key={option.value}
+              className={`flex cursor-pointer items-center gap-2 rounded-[1.25rem] border px-4 py-3 text-sm font-black transition ${
+                formState.coolerboxMode === option.value
+                  ? "border-[var(--signal)] bg-[var(--signal-soft)] text-[var(--signal-strong)]"
+                  : "border-[var(--line)] bg-white text-[var(--steel)]"
+              }`}
+            >
+              <input
+                type="radio"
+                name="coolerboxMode"
+                value={option.value}
+                checked={formState.coolerboxMode === option.value}
+                onChange={() => updateField("coolerboxMode", option.value)}
+                className="h-4 w-4 accent-[var(--signal)]"
+              />
+              {option.label}
+            </label>
+          ))}
+        </div>
+        {formState.coolerboxMode === "priced" ? (
+          <label className="mt-4 grid gap-2">
+            <span className="text-sm font-black">Coolerbox price (R)</span>
+            <input type="number" min="0" step="0.01" value={formState.coolerboxPrice} onChange={(event) => updateField("coolerboxPrice", event.target.value.replace(/[^0-9.]/g, ""))} placeholder="Example: 100" className="min-h-12 rounded-[1.25rem] border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none placeholder:text-[var(--muted)] focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]" />
+          </label>
+        ) : null}
+        <p className="mt-2 text-xs font-semibold text-[var(--muted)]">Buyers can add a coolerbox to a purchased ticket — free ones in one tap, priced ones through the shared cart.</p>
       </div>
 
       {statusMessage ? (
