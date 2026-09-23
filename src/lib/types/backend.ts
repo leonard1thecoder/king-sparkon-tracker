@@ -212,7 +212,7 @@ export type EmbeddedCartTipItem = {
 };
 
 export type EmbeddedCartServiceItem = {
-  kind: "BASIC_CARE" | "PERFORMANCE_CARE" | "BUSINESS_CARE" | "MARKETPLACE_HUB" | "DEV_HUB";
+  kind: "BASIC_CARE" | "PERFORMANCE_CARE" | "BUSINESS_CARE" | "MARKETPLACE_HUB" | "COOLER_BOX" | "DEV_HUB";
   referenceId: string;
   label?: string;
   amount: number;

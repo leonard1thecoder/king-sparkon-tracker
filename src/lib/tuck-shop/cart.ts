@@ -16,7 +16,7 @@ export type TuckShopCartTicketLine = {
   quantity: number;
 };
 
-export type ServiceLineKind = "BASIC_CARE" | "PERFORMANCE_CARE" | "BUSINESS_CARE" | "MARKETPLACE_HUB" | "DEV_HUB";
+export type ServiceLineKind = "BASIC_CARE" | "PERFORMANCE_CARE" | "BUSINESS_CARE" | "MARKETPLACE_HUB" | "COOLER_BOX" | "DEV_HUB";
 
 export type TuckShopCartServiceLine = {
   kind: "SERVICE";
@@ -146,6 +146,8 @@ export function serviceKindLabel(kind: ServiceLineKind) {
       return "Business Care plan";
     case "MARKETPLACE_HUB":
       return "Marketplace Hub access";
+    case "COOLER_BOX":
+      return "Coolerbox";
     case "DEV_HUB":
       return "Dev Hub build";
     default:

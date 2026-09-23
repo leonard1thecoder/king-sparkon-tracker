@@ -13,6 +13,11 @@ type TicketQrCardProps = {
   eventLocation: string;
   onCapturePhoto?: (file: File) => Promise<void>;
   onShare?: (username: string) => Promise<void>;
+  coolerboxFree?: boolean;
+  coolerboxPrice?: number | null;
+  coolerboxAdded?: boolean;
+  onAddFreeCoolerbox?: () => Promise<void>;
+  onAddPricedCoolerbox?: () => void;
 };
 
 function formatDate(eventDate: string) {
@@ -30,6 +35,11 @@ export function TicketQrCard({
   eventLocation,
   onCapturePhoto,
   onShare,
+  coolerboxFree,
+  coolerboxPrice,
+  coolerboxAdded,
+  onAddFreeCoolerbox,
+  onAddPricedCoolerbox,
 }: TicketQrCardProps) {
   const [copied, setCopied] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
@@ -46,6 +56,8 @@ export function TicketQrCard({
   const hasPhoto = Boolean(ticket.verificationPhotoUrl);
   const canShare = active && ticket.canShare !== false;
   const canChangePhoto = active && ticket.canChangeVerificationPhoto !== false;
+  const coolerboxOffered = Boolean(coolerboxFree) || coolerboxPrice != null;
+  const coolerboxIsAdded = Boolean(coolerboxAdded ?? ticket.coolerboxAdded);
 
   useEffect(() => () => stopStream(streamRef.current), []);
 
@@ -132,6 +144,26 @@ export function TicketQrCard({
       }
       void savePhoto(new File([blob], `ticket-${ticket.id}-verification.jpg`, { type: "image/jpeg" }));
     }, "image/jpeg", 0.9);
+  }
+
+  async function submitCoolerbox() {
+    if (!active || coolerboxIsAdded) return;
+    setBusy(true);
+    setError(null);
+    setMessage(null);
+    try {
+      if (coolerboxFree && onAddFreeCoolerbox) {
+        await onAddFreeCoolerbox();
+        setMessage("Free coolerbox added to this ticket.");
+      } else if (!coolerboxFree && onAddPricedCoolerbox) {
+        onAddPricedCoolerbox();
+        setMessage("Coolerbox added to the shared cart — pay it at checkout.");
+      }
+    } catch (exception) {
+      setError(exception instanceof Error ? exception.message : "Coolerbox could not be added.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function submitShare() {
@@ -243,6 +275,26 @@ export function TicketQrCard({
             <div className="rounded-[1.1rem] border border-[var(--line)] bg-[var(--surface)] p-3"><dt className="text-[0.65rem] uppercase tracking-[0.12em] text-[var(--muted)]">Date</dt><dd className="mt-1 font-black text-[var(--ink)]">{formatDate(eventDate)}</dd></div>
             <div className="rounded-[1.1rem] border border-[var(--line)] bg-[var(--surface)] p-3"><dt className="text-[0.65rem] uppercase tracking-[0.12em] text-[var(--muted)]">Location</dt><dd className="mt-1 font-black text-[var(--ink)]">{eventLocation}</dd></div>
           </dl>
+
+          {coolerboxOffered && active ? (
+            <div className="mt-4 rounded-[1.3rem] border border-[var(--gold)] bg-[var(--gold)]/10 p-4">
+              <p className="text-sm font-black text-[var(--ink)]">
+                Coolerbox · {coolerboxIsAdded ? "Added" : coolerboxFree ? "Free" : coolerboxPrice != null ? `R${Number(coolerboxPrice).toFixed(2)}` : ""}
+              </p>
+              <p className="mt-1 text-xs font-semibold leading-5 text-[var(--steel)]">
+                {coolerboxIsAdded
+                  ? "This ticket includes coolerbox access at the gate."
+                  : coolerboxFree
+                    ? "Add the free coolerbox to this ticket in one tap."
+                    : "Add the coolerbox to the shared cart and pay it at checkout."}
+              </p>
+              {!coolerboxIsAdded ? (
+                <button type="button" onClick={submitCoolerbox} disabled={busy} className="mt-3 inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-xs font-black uppercase tracking-[0.08em] text-white disabled:opacity-50">
+                  {busy ? "Adding..." : coolerboxFree ? "Add free coolerbox" : "Add coolerbox to cart"}
+                </button>
+              ) : null}
+            </div>
+          ) : null}
         </div>
 
         {cameraOpen ? (

@@ -6,11 +6,13 @@ import { ArrowLeft, ArrowRight, Info, ShoppingCart, Ticket } from "lucide-react"
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { TicketQrCard } from "@/components/tickets/TicketQrCard";
 import {
+  addTicketCoolerbox,
   getLiveEventById,
   getLiveMyTickets,
   shareTicketByUsername,
   uploadTicketVerificationPhoto,
 } from "@/lib/api/tickets";
+import { addServiceToCart } from "@/lib/tuck-shop/cart";
 import type { TicketEvent, UserTicket } from "@/types/tickets";
 
 type TicketWithEvent = {
@@ -92,6 +94,27 @@ export function DashboardMyTickets() {
     setItems((current) => current.filter((candidate) => candidate.ticket.id !== item.ticket.id));
   }
 
+  async function addFreeCoolerbox(item: TicketWithEvent) {
+    const updated = await addTicketCoolerbox(item.ticket.id);
+    setItems((current) =>
+      current.map((candidate) => (candidate.ticket.id === item.ticket.id ? { ...candidate, ticket: updated } : candidate)),
+    );
+  }
+
+  function addPricedCoolerboxToCart(item: TicketWithEvent) {
+    const price = Number(item.event?.coolerboxPrice ?? NaN);
+    if (!Number.isFinite(price) || price <= 0) {
+      throw new Error("This event has no priced coolerbox to add.");
+    }
+
+    addServiceToCart({
+      serviceKind: "COOLER_BOX",
+      referenceId: item.ticket.id,
+      label: `Coolerbox — ${item.event?.name ?? "event"}`,
+      unitPrice: price,
+    });
+  }
+
   return (
     <>
       <DashboardHeader
@@ -158,6 +181,11 @@ export function DashboardMyTickets() {
                 eventLocation={item.event.location}
                 onCapturePhoto={(file) => captureVerificationPhoto(item, file)}
                 onShare={(username) => shareTicket(item, username)}
+                coolerboxFree={item.event.coolerboxFree}
+                coolerboxPrice={item.event.coolerboxPrice}
+                coolerboxAdded={item.ticket.coolerboxAdded}
+                onAddFreeCoolerbox={() => addFreeCoolerbox(item)}
+                onAddPricedCoolerbox={() => addPricedCoolerboxToCart(item)}
               />
             ) : null)}
           </div>

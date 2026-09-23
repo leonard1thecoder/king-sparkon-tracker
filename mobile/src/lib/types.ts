@@ -108,6 +108,8 @@ export type TicketEvent = {
   businessId?: number | null;
   marketplaceHubEnabled?: boolean | null;
   marketplaceHubPrice?: number | null;
+  coolerboxFree?: boolean | null;
+  coolerboxPrice?: number | null;
 };
 
 export type UserTicket = {
@@ -118,6 +120,7 @@ export type UserTicket = {
   pricePaid: number;
   purchasedAt: string;
   usedAt?: string;
+  coolerboxAdded?: boolean | null;
 };
 
 export type FavoriteBusiness = { key: string; businessName: string; businessId?: number | null };

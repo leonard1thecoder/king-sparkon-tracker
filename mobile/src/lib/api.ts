@@ -101,6 +101,10 @@ export function listMyTickets() {
   return apiGet<UserTicket[]>("/v1/tickets/my-tickets/current");
 }
 
+export function addTicketCoolerbox(ticketId: string) {
+  return apiPost<UserTicket>(`/v1/tickets/my-tickets/${encodeURIComponent(ticketId)}/coolerbox`, {});
+}
+
 // User dashboard — tips (standalone creation kept for compat;
 // the tip cart pays intents through the shared cart payout below).
 export function createTip(payload: TipPayload) {
@@ -111,7 +115,7 @@ export function createTip(payload: TipPayload) {
 // as web shop cart, ticket checkout, UIF carts and the tip cart.
 export type CartTipItem = { workerId: number; tipAmount: number };
 
-export type ServiceLineKind = "BASIC_CARE" | "PERFORMANCE_CARE" | "BUSINESS_CARE" | "MARKETPLACE_HUB" | "DEV_HUB";
+export type ServiceLineKind = "BASIC_CARE" | "PERFORMANCE_CARE" | "BUSINESS_CARE" | "MARKETPLACE_HUB" | "COOLER_BOX" | "DEV_HUB";
 
 export type CartServiceItem = {
   kind: ServiceLineKind;

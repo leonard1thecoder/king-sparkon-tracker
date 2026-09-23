@@ -1,4 +1,4 @@
-import { apiClient, apiGet, normalizeApiError } from "@/lib/api/client";
+import { apiClient, apiGet, apiPost, normalizeApiError } from "@/lib/api/client";
 import type { TrackerUser } from "@/lib/types/backend";
 import type { TicketEvent, UserTicket } from "@/types/tickets";
 
@@ -71,4 +71,9 @@ export async function shareTicketByUsername(ticketId: string, username: string) 
     { username: username.trim() },
   );
   return normalizeTicket(response.data);
+}
+
+export async function addTicketCoolerbox(ticketId: string) {
+  const ticket = await apiPost<UserTicket>(`/v1/tickets/my-tickets/${encodeURIComponent(ticketId)}/coolerbox`, {});
+  return normalizeTicket(ticket);
 }

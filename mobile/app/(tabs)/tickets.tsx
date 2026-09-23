@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { FlatList, RefreshControl, Text, View } from "react-native";
-import { router } from "expo-router";
-import { listMyTickets, listTicketEvents } from "@/lib/api";
+import { Link, router } from "expo-router";
+import { addTicketCoolerbox, listMyTickets, listTicketEvents } from "@/lib/api";
 import type { TicketEvent, UserTicket } from "@/lib/types";
+import { useCart } from "@/store/cart-context";
 import { Card, ErrorText, PrimaryButton, Screen, StatusPill, Subtitle, Title } from "@/components/ui";
 
 export default function TicketsScreen() {
+  const { addService } = useCart();
   const [events, setEvents] = useState<TicketEvent[]>([]);
   const [mine, setMine] = useState<UserTicket[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,6 +31,31 @@ export default function TicketsScreen() {
     void load();
   }, [load]);
 
+  async function addFreeCoolerbox(ticketId: string) {
+    setError(null);
+    try {
+      await addTicketCoolerbox(ticketId);
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not add coolerbox.");
+    }
+  }
+
+  function addPricedCoolerbox(ticket: UserTicket, event: TicketEvent) {
+    const price = Number(event.coolerboxPrice ?? NaN);
+    if (!Number.isFinite(price) || price <= 0) {
+      setError("This event has no priced coolerbox to add.");
+      return;
+    }
+    addService({
+      serviceKind: "COOLER_BOX",
+      referenceId: ticket.id,
+      label: `Coolerbox — ${event.name}`,
+      price,
+    });
+    router.push("/(tabs)/cart");
+  }
+
   return (
     <Screen>
       <Title>Buy tickets</Title>
@@ -36,11 +63,32 @@ export default function TicketsScreen() {
       <ErrorText message={error} />
       <Card>
         <Text style={{ fontWeight: "800" }}>My tickets ({mine.length})</Text>
-        {mine.slice(0, 3).map((ticket) => (
-          <Text key={ticket.id} style={{ fontSize: 12 }}>
-            {ticket.eventName ?? ticket.eventId} · {ticket.ticketType}
-          </Text>
-        ))}
+        {mine.slice(0, 5).map((ticket) => {
+          const event = events.find((candidate) => candidate.id === ticket.eventId);
+          const offered = event != null && (event.coolerboxFree === true || event.coolerboxPrice != null);
+          const added = ticket.coolerboxAdded === true;
+          return (
+            <View key={ticket.id} style={{ gap: 4 }}>
+              <Text style={{ fontSize: 12 }}>
+                {ticket.eventName ?? ticket.eventId} · {ticket.ticketType}
+                {added ? " · Coolerbox ✓" : ""}
+              </Text>
+              {offered && !added ? (
+                event.coolerboxFree ? (
+                  <PrimaryButton title="Add free coolerbox" onPress={() => void addFreeCoolerbox(ticket.id)} />
+                ) : (
+                  <PrimaryButton
+                    title={`Add coolerbox R${Number(event?.coolerboxPrice ?? 0).toFixed(2)} to cart`}
+                    onPress={() => event && addPricedCoolerbox(ticket, event)}
+                  />
+                )
+              ) : null}
+            </View>
+          );
+        })}
+        <Link href="/(tabs)/cart" style={{ color: "#C93316", fontWeight: "800" }}>
+          Open cart →
+        </Link>
       </Card>
       <FlatList
         data={events}
