@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { BadgePercent, Ban, BarChart3, Calendar, Clock, Crown, Eye, MapPin, Pencil, Plus, Ticket, UsersRound, WalletCards } from "lucide-react";
+import { BadgePercent, Ban, BarChart3, Calendar, Clock, Crown, Eye, MapPin, Pencil, Plus, Store, Ticket, UsersRound, WalletCards } from "lucide-react";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { TicketStatsCard } from "@/components/tickets/TicketStatsCard";
 import { TicketStatusBadge } from "@/components/tickets/TicketStatusBadge";
@@ -115,6 +115,7 @@ export function DashboardOwnerTickets() {
                         <div className="flex flex-wrap items-center gap-2">
                           <TicketStatusBadge status={event.status} />
                           {earlyBirdActive ? <span className="inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-500 px-2.5 py-1 text-xs font-black text-white"><BadgePercent className="h-3 w-3" /> Early Bird -{event.earlyBirdPercent}%</span> : null}
+                          {event.marketplaceHubEnabled ? <span className="inline-flex items-center gap-1 rounded-full border border-[var(--gold)] bg-[var(--gold)]/20 px-2.5 py-1 text-xs font-black text-[var(--ink)]"><Store className="h-3 w-3" /> Hub{event.marketplaceHubPrice != null ? ` R${event.marketplaceHubPrice}` : ""}</span> : null}
                         </div>
                         <span className="truncate rounded-full border border-white/20 bg-black/40 px-3 py-1 text-xs font-black text-white backdrop-blur">{event.name}</span>
                       </div>
@@ -133,6 +134,7 @@ export function DashboardOwnerTickets() {
                       {earlyBirdActive && event.earlyBirdEndsAt ? <div className="mt-3 flex items-center justify-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-3 py-2 text-xs font-black text-orange-700"><Clock className="h-3.5 w-3.5" /> Early bird ends in <EarlyBirdCountdown endsAt={event.earlyBirdEndsAt} /></div> : null}
                       <div className="mt-5 grid gap-2">
                         <Link href={`/dashboard/owner/tickets/events/${event.id}`} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]"><Eye className="h-4 w-4" /> View</Link>
+                        <Link href={`/dashboard/owner/tickets/events/${event.id}#marketplace-hub`} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--gold)]/15 px-5 text-sm font-black text-[var(--ink)] shadow-[var(--shadow-soft)] hover:bg-[var(--gold)]/30"><Store className="h-4 w-4" /> {event.marketplaceHubEnabled ? "Marketplace Hub live" : "Request Marketplace Hub"}</Link>
                         <div className="grid grid-cols-3 gap-2">
                           <button type="button" onClick={() => void handleStatusChange(event.id, "PUBLISHED")} className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full border border-[var(--line)] bg-white px-3 text-xs font-black text-[var(--steel)] hover:border-[var(--confirm)] hover:text-[var(--confirm)]"><Pencil className="h-3.5 w-3.5" /> Publish</button>
                           <Link href={`/dashboard/owner/tickets/events/${event.id}?tab=sales`} className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full border border-[var(--line)] bg-white px-3 text-xs font-black text-[var(--steel)] hover:border-[var(--signal)] hover:text-[var(--signal)]"><BarChart3 className="h-3.5 w-3.5" /> Sales</Link>

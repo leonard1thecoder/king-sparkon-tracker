@@ -16,7 +16,18 @@ export type TuckShopCartTicketLine = {
   quantity: number;
 };
 
-export type TuckShopCartLine = TuckShopCartProductLine | TuckShopCartTicketLine;
+export type ServiceLineKind = "BASIC_CARE" | "PERFORMANCE_CARE" | "BUSINESS_CARE" | "MARKETPLACE_HUB" | "DEV_HUB";
+
+export type TuckShopCartServiceLine = {
+  kind: "SERVICE";
+  serviceKind: ServiceLineKind;
+  referenceId: string;
+  label: string;
+  unitPrice: number;
+  quantity: number;
+};
+
+export type TuckShopCartLine = TuckShopCartProductLine | TuckShopCartTicketLine | TuckShopCartServiceLine;
 
 export type TuckShopPurchaseHistoryItem = {
   id: string;
@@ -53,7 +64,9 @@ export function ticketLinePrice(line: TuckShopCartTicketLine) {
 }
 
 export function cartLineUnitPrice(line: TuckShopCartLine) {
-  return line.kind === "PRODUCT" ? productPrice(line.product) : ticketLinePrice(line);
+  if (isProductLine(line)) return productPrice(line.product);
+  if (isServiceLine(line)) return serviceLinePrice(line);
+  return ticketLinePrice(line);
 }
 
 export function productImage(product: Product) {
@@ -115,6 +128,31 @@ export function isTicketLine(line: TuckShopCartLine): line is TuckShopCartTicket
   return line.kind === "TICKET";
 }
 
+export function isServiceLine(line: TuckShopCartLine): line is TuckShopCartServiceLine {
+  return line.kind === "SERVICE";
+}
+
+export function serviceLinePrice(line: TuckShopCartServiceLine) {
+  return Number(line.unitPrice ?? 0);
+}
+
+export function serviceKindLabel(kind: ServiceLineKind) {
+  switch (kind) {
+    case "BASIC_CARE":
+      return "Basic Care plan";
+    case "PERFORMANCE_CARE":
+      return "Performance Care plan";
+    case "BUSINESS_CARE":
+      return "Business Care plan";
+    case "MARKETPLACE_HUB":
+      return "Marketplace Hub access";
+    case "DEV_HUB":
+      return "Dev Hub build";
+    default:
+      return "Service";
+  }
+}
+
 function productLineMaxQuantity(product: Product) {
   return Math.max(product.stockQuantity ?? 1, 1);
 }
@@ -133,6 +171,17 @@ function normalizeCartLine(line: Partial<TuckShopCartLine>): TuckShopCartLine | 
 
   if ((line.kind === "PRODUCT" || !line.kind) && "product" in line && line.product?.id) {
     return { kind: "PRODUCT", product: line.product, quantity: Math.min(quantity, productLineMaxQuantity(line.product)) } as TuckShopCartProductLine;
+  }
+
+  if (line.kind === "SERVICE" && line.serviceKind && line.referenceId && Number(line.unitPrice) > 0) {
+    return {
+      kind: "SERVICE",
+      serviceKind: line.serviceKind,
+      referenceId: String(line.referenceId),
+      label: String(line.label || serviceKindLabel(line.serviceKind)),
+      unitPrice: Number(line.unitPrice),
+      quantity: 1,
+    } as TuckShopCartServiceLine;
   }
 
   return null;
@@ -280,8 +329,45 @@ export function removeTuckShopCartLine(kind: TuckShopCartLine["kind"], id: strin
   const nextCart = readTuckShopCart().filter((line) => {
     if (isProductLine(line) && kind === "PRODUCT") return line.product.id !== id;
     if (isTicketLine(line) && kind === "TICKET") return line.event.id !== id || line.ticketType !== ticketType;
+    if (isServiceLine(line) && kind === "SERVICE") return line.referenceId !== String(id);
     return true;
   });
+
+  writeTuckShopCart(nextCart);
+  return nextCart;
+}
+
+export function addServiceToCart(input: {
+  serviceKind: ServiceLineKind;
+  referenceId: string;
+  label?: string;
+  unitPrice: number;
+}) {
+  const unitPrice = Number(input.unitPrice ?? 0);
+  if (!input.serviceKind || !String(input.referenceId ?? "").trim() || !(unitPrice > 0)) {
+    return readTuckShopCart();
+  }
+
+  const referenceId = String(input.referenceId).trim();
+  const nextLine: TuckShopCartServiceLine = {
+    kind: "SERVICE",
+    serviceKind: input.serviceKind,
+    referenceId,
+    label: input.label?.trim() || serviceKindLabel(input.serviceKind),
+    unitPrice,
+    quantity: 1,
+  };
+
+  const current = readTuckShopCart();
+  const nextCart = current.some(
+    (line) => isServiceLine(line) && line.serviceKind === nextLine.serviceKind && line.referenceId === referenceId,
+  )
+    ? current.map((line) =>
+        isServiceLine(line) && line.serviceKind === nextLine.serviceKind && line.referenceId === referenceId
+          ? nextLine
+          : line,
+      )
+    : [...current, nextLine];
 
   writeTuckShopCart(nextCart);
   return nextCart;

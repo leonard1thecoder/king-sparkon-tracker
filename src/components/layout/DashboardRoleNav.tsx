@@ -68,6 +68,7 @@ export const navByRole: Record<UserRole, NavItem[]> = {
   ],
   Owner: [
     { label: "Products", href: "/dashboard/owner/products", icon: Boxes, description: "Customer view and stock controls", shortLabel: "Products" },
+    { label: "Shared Cart", href: "/dashboard/owner/cart", icon: ShoppingCart, description: "Review and pay the shared cart", shortLabel: "Cart" },
     { label: "Workers", href: "/dashboard/owner/workers", icon: UsersRound, description: "Accounts and privileges", shortLabel: "Workers" },
     { label: "Product Transactions", href: "/dashboard/owner/transactions", icon: ReceiptText, description: "Cash, card and app purchases", shortLabel: "Sales" },
     { label: "Withdrawals", href: "/dashboard/owner/withdrawals", icon: Landmark, description: "Unified balance and payout history", shortLabel: "Payouts" },

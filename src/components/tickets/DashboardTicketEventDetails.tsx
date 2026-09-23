@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowRight, Calendar, MapPin, MessageCircle, ShieldCheck, Store, Ticket } from "lucide-react";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
+import { MarketplaceHubProducts } from "@/components/tickets/MarketplaceHubProducts";
 import { TicketTypeCard } from "@/components/tickets/TicketTypeCard";
 import { TicketStatusBadge } from "@/components/tickets/TicketStatusBadge";
 import { getTicketBannerImage } from "@/components/tickets/ticketBannerImage";
@@ -123,8 +124,13 @@ export function DashboardTicketEventDetails({ eventId }: DashboardTicketEventDet
                 <Calendar className="h-4.5 w-4.5 text-[var(--signal)]" />{formatDate(event.eventDate, event.eventTime)}
               </span>
               <span className="inline-flex items-center gap-2 rounded-[1.2rem] border border-[var(--line)] bg-[var(--surface)] px-4 py-3 text-sm font-bold text-[var(--steel)] shadow-[var(--shadow-soft)]">
-                <MapPin className="h-4.5 w-4.5 text-[var(--signal)]" />{event.location}
+                <MapPin className="h-4 w-4 text-[var(--signal)]" />{event.location}
               </span>
+              {event.marketplaceHubEnabled ? (
+                <span className="inline-flex items-center gap-2 rounded-[1.2rem] border border-[var(--gold)] bg-[var(--gold)]/15 px-4 py-3 text-sm font-black text-[var(--ink)] shadow-[var(--shadow-soft)]">
+                  <Store className="h-4 w-4 text-[var(--signal)]" /> Marketplace Hub
+                </span>
+              ) : null}
             </div>
 
             <div className="mt-6 grid grid-cols-3 gap-3 text-center sm:max-w-xl">
@@ -166,6 +172,10 @@ export function DashboardTicketEventDetails({ eventId }: DashboardTicketEventDet
         </section>
 
         <section className="rounded-[2.5rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] md:p-7"><div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between"><div><p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Ticket classes</p><h2 className="mt-3 text-4xl font-black tracking-[-0.05em]">Regular, VIP and VVIP availability</h2></div><div className="inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface)] px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-[var(--steel)]"><ShieldCheck className="h-4 w-4 text-[var(--confirm)]" /> Backend capacity checked again at payment</div></div><div className="mt-8 grid gap-5 lg:grid-cols-3">{event.ticketTypes.map((ticketType) => <TicketTypeCard key={ticketType.id} ticketType={ticketType} eventId={event.id} checkoutHref={`/dashboard/user/tickets/checkout/${event.id}?type=${ticketType.type}`} />)}</div></section>
+
+        {event.marketplaceHubEnabled ? (
+          <MarketplaceHubProducts businessId={event.businessId ?? null} hubPrice={event.marketplaceHubPrice ?? null} cartHref="/dashboard/user/shop/cart" />
+        ) : null}
 
         <section className="rounded-[2.25rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-7"><div className="flex items-center gap-3"><MessageCircle className="h-5 w-5 text-[var(--signal)]" /><div><p className="font-mono text-xs font-black uppercase tracking-[0.16em] text-[var(--signal)]">Event comments</p><h2 className="text-2xl font-black tracking-[-0.04em]">Ask questions before buying</h2></div></div>{commentsError ? <p className="mt-4 rounded-2xl border border-[var(--danger)]/25 bg-[var(--danger)]/10 p-4 text-sm font-bold text-[var(--danger)]">{commentsError}</p> : null}<div className="mt-6 grid gap-3 md:grid-cols-[0.35fr_1fr_auto]"><input value={displayName} onChange={(changeEvent) => setDisplayName(changeEvent.target.value)} placeholder="Display name" className="min-h-12 rounded-2xl border border-[var(--line)] bg-[var(--surface)] px-4 text-sm font-bold outline-none focus:border-[var(--signal)]" /><input value={comment} onChange={(changeEvent) => setComment(changeEvent.target.value)} placeholder="Write a comment about this event" className="min-h-12 rounded-2xl border border-[var(--line)] bg-[var(--surface)] px-4 text-sm font-bold outline-none focus:border-[var(--signal)]" /><button type="button" onClick={submitComment} className="min-h-12 rounded-2xl border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)]">Comment</button></div>{commentError ? <p className="mt-3 text-sm font-bold text-[var(--danger)]">{commentError}</p> : null}<div className="mt-6 grid gap-3">{comments.length === 0 ? <p className="rounded-2xl border border-dashed border-[var(--line-strong)] bg-[var(--surface)] p-4 text-sm font-bold text-[var(--steel)]">No comments yet.</p> : comments.map((item) => <article key={item.id} className="rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-4"><p className="font-black text-[var(--ink)]">{item.displayName}</p><p className="mt-2 text-sm leading-6 text-[var(--steel)]">{item.comment}</p></article>)}</div></section>
       </main>

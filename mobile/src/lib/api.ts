@@ -71,11 +71,12 @@ export function verifyEmailRequest(token: string) {
 }
 
 // User dashboard — tuck shop.
-export function listTuckShopProducts(params: { page?: number; size?: number; search?: string } = {}) {
+export function listTuckShopProducts(params: { page?: number; size?: number; search?: string; businessId?: number } = {}) {
   return apiGet<PageResponse<Product> | Product[]>("/v1/tuck-shop/products", {
     page: params.page,
     size: params.size,
     search: params.search ?? undefined,
+    businessId: params.businessId ?? undefined,
   });
 }
 
@@ -106,9 +107,18 @@ export function createTip(payload: TipPayload) {
   return apiPostIdempotent<Tip, TipPayload>("/tips", payload);
 }
 
-// Shared PayFast cart payout (products + tickets + tips) — same as web
-// shop cart, ticket checkout, UIF carts and the tip cart.
+// Shared PayFast cart payout (products + tickets + tips + services) — same
+// as web shop cart, ticket checkout, UIF carts and the tip cart.
 export type CartTipItem = { workerId: number; tipAmount: number };
+
+export type ServiceLineKind = "BASIC_CARE" | "PERFORMANCE_CARE" | "BUSINESS_CARE" | "MARKETPLACE_HUB" | "DEV_HUB";
+
+export type CartServiceItem = {
+  kind: ServiceLineKind;
+  referenceId: string;
+  label?: string;
+  amount: number;
+};
 
 export function createPayFastCartPayment(payload: {
   idempotencyKey: string;
@@ -117,6 +127,7 @@ export function createPayFastCartPayment(payload: {
   products: { productId: number; quantity: number }[];
   tickets: { eventId: string; ticketType: string; quantity: number }[];
   tips: CartTipItem[];
+  services?: CartServiceItem[];
 }) {
   return apiPostIdempotent<{
     paymentId: number;
@@ -185,6 +196,79 @@ export function listUserBusinesses() {
 
 export function listBusinessWorkers(businessId: number) {
   return apiGet<WorkerTipCard[]>(`/user-dashboard/businesses/${businessId}/workers`);
+}
+
+// NM Computer Care plans (mirrors web `src/lib/api/computer-care.ts`).
+// Backend: GET /api/v1/basic-care-plans, /performance-care-plans,
+// /business-care-plans (paged envelopes, optional /status/{code}).
+export type RawCarePlan = {
+  id: number;
+  totalQuote: number;
+  status?: number | null;
+  statusDisplayName?: string | null;
+  createdDate?: string | null;
+  operationSystemDisplayName?: string | null;
+  deviceTypeDisplayName?: string | null;
+  bulkTypeDisplayName?: string | null;
+  appliedUpgradePrice?: number | null;
+  unitPrice?: number | null;
+  quantity?: number | null;
+};
+
+async function listCarePlans(path: string): Promise<RawCarePlan[]> {
+  const data = await apiGet<{ content?: RawCarePlan[] } | RawCarePlan[]>(path);
+  if (Array.isArray(data)) return data;
+  return data.content ?? [];
+}
+
+export function listBasicCarePlans() {
+  return listCarePlans("/v1/basic-care-plans?size=50");
+}
+
+export function listPerformanceCarePlans() {
+  return listCarePlans("/v1/performance-care-plans?size=50");
+}
+
+export function listBusinessCarePlans() {
+  return listCarePlans("/v1/business-care-plans?size=50");
+}
+
+// Dev Hub AI console (mirrors web `DevHubAiConsole`).
+// Backend: POST + GET /api/dev-hub/requests, PATCH /{id}/accept|reject.
+export type DevHubRequest = {
+  id: number;
+  title: string;
+  projectType: string;
+  clientName?: string | null;
+  status: string;
+  currency?: string | null;
+  estimatedMinPrice: number;
+  estimatedMaxPrice: number;
+  createdAt?: string | null;
+};
+
+export function submitDevHubRequest(payload: {
+  clientName: string;
+  emailAddress: string;
+  phoneNumber?: string;
+  companyName?: string;
+  projectType: string;
+  title: string;
+  description: string;
+  budgetRange?: string;
+  timeline?: string;
+}) {
+  return apiPost<DevHubRequest>("/dev-hub/requests", payload);
+}
+
+export function acceptDevHubRequest(id: number | string) {
+  return apiPatch<DevHubRequest>(`/dev-hub/requests/${id}/accept`, {
+    reason: "Accepted from mobile app.",
+  });
+}
+
+export function listDevHubRequests() {
+  return apiGet<DevHubRequest[] | { content?: DevHubRequest[] }>("/dev-hub/requests?size=20");
 }
 
 // User dashboard — jobs (mirrors web `src/lib/api/job-opportunities.ts`).

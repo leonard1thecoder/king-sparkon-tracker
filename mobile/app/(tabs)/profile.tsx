@@ -16,6 +16,8 @@ const userHeaderShortcuts = [
 
 const userSecondaryShortcuts = [
   { label: "Jobs", detail: "Browse open opportunities and apply.", href: "/(tabs)/jobs" },
+  { label: "Computer Care", detail: "Service plan quotes you can pay from the cart.", href: "/(tabs)/care" },
+  { label: "Dev Hub", detail: "Request a build and accept AI quotes.", href: "/(tabs)/devhub" },
   { label: "Favorites", detail: "Businesses you follow.", href: "/(tabs)/favorites" },
   { label: "Check UIF Status", detail: "Enter your 13-digit ID to check UIF status.", href: "/uif/status" },
   { label: "Update UIF Password", detail: "Reset your UIF online status password.", href: "/uif/password" },

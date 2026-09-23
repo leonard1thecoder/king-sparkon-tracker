@@ -203,11 +203,19 @@ export type CreateEmbeddedCartPaymentPayload = {
   products: TuckShopPurchaseItemPayload[];
   tickets: EmbeddedCartTicketItem[];
   tips?: EmbeddedCartTipItem[];
+  services?: EmbeddedCartServiceItem[];
 };
 
 export type EmbeddedCartTipItem = {
   workerId: number;
   tipAmount: number;
+};
+
+export type EmbeddedCartServiceItem = {
+  kind: "BASIC_CARE" | "PERFORMANCE_CARE" | "BUSINESS_CARE" | "MARKETPLACE_HUB" | "DEV_HUB";
+  referenceId: string;
+  label?: string;
+  amount: number;
 };
 
 export type PayFastCartPayment = {

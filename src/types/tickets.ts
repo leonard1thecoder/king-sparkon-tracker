@@ -11,6 +11,7 @@ export type FaceVerificationDecision = "PENDING" | "MATCH" | "NO_MATCH";
 export interface TicketEvent {
   id: string;
   ownerId: string;
+  businessId?: number | null;
   name: string;
   description: string;
   location: string;
@@ -24,6 +25,8 @@ export interface TicketEvent {
   earlyBirdEnabled?: boolean;
   earlyBirdPercent?: number;
   earlyBirdEndsAt?: string;
+  marketplaceHubEnabled?: boolean;
+  marketplaceHubPrice?: number | null;
 }
 
 export interface EventTicketType {
@@ -115,6 +118,8 @@ export interface CreateTicketEventPayload {
   earlyBirdEnabled?: boolean;
   earlyBirdPercent?: number;
   earlyBirdEndsAt?: string;
+  marketplaceHubEnabled?: boolean;
+  marketplaceHubPrice?: number;
 }
 
 export type UpdateTicketEventPayload = Partial<Omit<CreateTicketEventPayload, "ticketTypes">> & {

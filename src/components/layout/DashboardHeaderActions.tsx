@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   BriefcaseBusiness,
   ChevronDown,
+  Code2,
   FileCheck2,
   Landmark,
   Loader2,
@@ -15,10 +16,13 @@ import {
   Ticket,
   UserRound,
   WalletCards,
+  Wrench,
 } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
+import { FavoriteHeaderAction } from "@/components/layout/FavoriteHeaderAction";
 import { apiGet } from "@/lib/api/client";
 import { getOwnerWallet } from "@/lib/api/owner-finance";
+import { readTuckShopCart } from "@/lib/tuck-shop/cart";
 import type { TrackerUser } from "@/lib/types/backend";
 
 type ProfileShortcut = {
@@ -48,6 +52,13 @@ export const userProfileShortcuts: ProfileShortcut[] = [
   { label: "Tip Cart", href: "/dashboard/user/tips/cart", icon: WalletCards },
   { label: "Applications", href: "/dashboard/user/applications", icon: FileCheck2 },
   { label: "My Carts", href: "/dashboard/user/carts", icon: ShoppingCart },
+  { label: "NM Computer Care", href: "/dashboard/user/computer-care", icon: Wrench },
+  { label: "Dev Hub", href: "/dev-hub", icon: Code2 },
+];
+
+export const ownerProfileShortcuts: ProfileShortcut[] = [
+  { label: "Dev Hub", href: "/dashboard/owner/developer", icon: Code2 },
+  { label: "NM Computer Care", href: "/dashboard/owner/computer-care", icon: Wrench },
 ];
 
 const iconButtonClass = "inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--gold)] hover:bg-[var(--surface)]";
@@ -149,6 +160,53 @@ function OwnerBalanceAction() {
   );
 }
 
+function OwnerCartHeaderAction() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    function refreshCount() {
+      try {
+        setCount(readTuckShopCart().reduce((total, line) => total + line.quantity, 0));
+      } catch {
+        setCount(0);
+      }
+    }
+
+    refreshCount();
+    window.addEventListener("storage", refreshCount);
+    window.addEventListener("king-sparkon:tuck-shop-cart", refreshCount);
+
+    return () => {
+      window.removeEventListener("storage", refreshCount);
+      window.removeEventListener("king-sparkon:tuck-shop-cart", refreshCount);
+    };
+  }, []);
+
+  const title = count === 0 ? "Shared cart is empty" : `Shared cart · ${count} item${count === 1 ? "" : "s"}`;
+
+  return (
+    <div className={headerActionColumnClass}>
+      <Link
+        href="/dashboard/owner/cart"
+        aria-label={title}
+        title={title}
+        className={`${iconButtonClass} relative`}
+      >
+        <ShoppingCart className="h-4 w-4" />
+        {count > 0 ? (
+          <span
+            className="absolute -right-2 -top-2 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-sky-500 px-1 text-[0.62rem] font-black leading-none text-white shadow-md"
+            aria-label={`${count} items in shared cart`}
+          >
+            {count > 99 ? "99+" : count}
+          </span>
+        ) : null}
+      </Link>
+      <span className={headerActionLabelClass} aria-hidden="true">Cart</span>
+    </div>
+  );
+}
+
 function ProfileDropdown({ role }: { role: string }) {
   const [open, setOpen] = useState(false);
   const [uifOpen, setUifOpen] = useState(false);
@@ -205,7 +263,7 @@ function ProfileDropdown({ role }: { role: string }) {
   const emailAddress = source.emailAddress || source.email || "Email address not available";
   const accountRole = String(source.roles?.[0] ?? source.privilege ?? source.role ?? normalizedRole(role));
   const verified = source.emailVerified !== false;
-  const shortcuts = userRole(role) ? userProfileShortcuts : [];
+  const shortcuts = userRole(role) ? userProfileShortcuts : ownerRole(role) ? ownerProfileShortcuts : [];
   const href = profileRoute(role);
 
   return (
@@ -321,6 +379,7 @@ function ProfileDropdown({ role }: { role: string }) {
 export function DashboardHeaderActions({ role }: { role: string }) {
   const showCheckout = useMemo(() => userRole(role), [role]);
   const showBalance = useMemo(() => ownerRole(role), [role]);
+  const showOwnerShortcuts = useMemo(() => ownerRole(role), [role]);
 
   return (
     <div className="flex items-center justify-end gap-2">
@@ -339,6 +398,12 @@ export function DashboardHeaderActions({ role }: { role: string }) {
             </Link>
             <span className={headerActionLabelClass} aria-hidden="true">Tickets</span>
           </div>
+        </>
+      ) : null}
+      {showOwnerShortcuts ? (
+        <>
+          <FavoriteHeaderAction favoritesHref="/dashboard/owner/favorites" />
+          <OwnerCartHeaderAction />
         </>
       ) : null}
       <ProfileDropdown role={role} />
