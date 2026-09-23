@@ -9,7 +9,7 @@ import { TicketStatusBadge } from "@/components/tickets/TicketStatusBadge";
 import { calculateCheckoutQuote, getTicketTypeLabel } from "@/services/ticketService";
 import { getLiveEventById } from "@/lib/api/tickets";
 import type { TicketEvent, TicketType } from "@/types/tickets";
-import { addTicketToCart } from "@/lib/tuck-shop/cart";
+import { addServiceToCart, addTicketToCart } from "@/lib/tuck-shop/cart";
 
 type DashboardTicketCheckoutProps = {
   eventId: string;
@@ -59,6 +59,7 @@ export function DashboardTicketCheckout({ eventId }: DashboardTicketCheckoutProp
   const selectedTicketType = event?.ticketTypes.find((candidate) => candidate.type === ticketType) ?? event?.ticketTypes[0];
   const quote = useMemo(() => calculateCheckoutQuote(selectedTicketType?.price ?? 0, quantity), [quantity, selectedTicketType?.price]);
   const soldOut = !selectedTicketType || selectedTicketType.available <= 0 || selectedTicketType.sold >= selectedTicketType.capacity;
+  const hubFee = event?.marketplaceHubEnabled && event.marketplaceHubPrice != null ? Number(event.marketplaceHubPrice) : 0;
 
   async function handleSubmit(submitEvent: FormEvent<HTMLFormElement>) {
     submitEvent.preventDefault();
@@ -79,6 +80,14 @@ export function DashboardTicketCheckout({ eventId }: DashboardTicketCheckoutProp
         unitPrice: selectedTicketType.price,
         quantity,
       });
+      if (hubFee > 0) {
+        addServiceToCart({
+          serviceKind: "MARKETPLACE_HUB",
+          referenceId: event.id,
+          label: `Marketplace Hub — ${event.name}`,
+          unitPrice: hubFee,
+        });
+      }
       router.push("/dashboard/user/shop/cart");
     } catch (cartError) {
       setError(cartError instanceof Error ? cartError.message : "Unable to add ticket to cart.");
@@ -142,6 +151,7 @@ export function DashboardTicketCheckout({ eventId }: DashboardTicketCheckoutProp
                 <div className="flex justify-between rounded-[1.15rem] border border-[var(--line)] bg-[var(--surface)] p-3"><dt>Ticket price</dt><dd className="money">{formatCurrency(selectedTicketType.price)}</dd></div>
                 <div className="flex justify-between rounded-[1.15rem] border border-[var(--line)] bg-[var(--surface)] p-3"><dt>Subtotal</dt><dd className="money">{formatCurrency(quote.subtotal)}</dd></div>
                 <div className="flex justify-between rounded-[1.15rem] border border-[var(--line)] bg-[var(--surface)] p-3"><dt>Platform fee preview</dt><dd className="money">{formatCurrency(quote.serviceFee)}</dd></div>
+                {hubFee > 0 ? <div className="flex justify-between rounded-[1.15rem] border border-[var(--gold)] bg-[var(--gold)]/10 p-3"><dt>Marketplace Hub access</dt><dd className="money">{formatCurrency(hubFee)}</dd></div> : null}
                 <div className="flex justify-between rounded-[1.25rem] border border-[var(--signal)] bg-white p-4 text-lg"><dt>Total preview</dt><dd className="money font-black">{formatCurrency(quote.total)}</dd></div>
               </dl>
               <button type="submit" disabled={isSubmitting || soldOut} className="mt-6 inline-flex min-h-13 w-full items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] disabled:opacity-50">{soldOut ? "Sold out" : isSubmitting ? "Adding to cart..." : "Add to cart"} <ShoppingCart className="h-4 w-4" /></button>

@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, Text, TextInput, View } from "react-native";
-import { Link } from "expo-router";
+import { Link, router, useLocalSearchParams } from "expo-router";
 import { listTuckShopProducts } from "@/lib/api";
 import { normalizeList, type Product } from "@/lib/types";
 import { useCart } from "@/store/cart-context";
@@ -9,23 +9,45 @@ import { tokens } from "@/theme/tokens";
 
 export default function ShopScreen() {
   const { add } = useCart();
+  const params = useLocalSearchParams<{ businessId?: string | string[] }>();
   const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState("");
+  const [hubBusinessId, setHubBusinessId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const hubPresetApplied = useRef<string | null>(null);
+
+  useEffect(() => {
+    const raw = Array.isArray(params.businessId) ? params.businessId[0] : params.businessId;
+    if ((raw ?? null) === hubPresetApplied.current) return;
+    hubPresetApplied.current = raw ?? null;
+    if (raw == null) return;
+    const parsed = Number(raw);
+    if (Number.isSafeInteger(parsed) && parsed > 0) setHubBusinessId(parsed);
+  }, [params.businessId]);
+
+  function clearHubFilter() {
+    hubPresetApplied.current = null;
+    router.setParams({ businessId: undefined });
+    setHubBusinessId(null);
+  }
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await listTuckShopProducts({ size: 50, search: search.trim() || undefined });
+      const result = await listTuckShopProducts({
+        size: 50,
+        search: search.trim() || undefined,
+        businessId: hubBusinessId ?? undefined,
+      });
       setProducts(normalizeList(result));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not load products.");
     } finally {
       setLoading(false);
     }
-  }, [search]);
+  }, [search, hubBusinessId]);
 
   useEffect(() => {
     void load();
@@ -35,6 +57,13 @@ export default function ShopScreen() {
     <Screen>
       <Title>Buy products</Title>
       <Subtitle>Browse business catalogues and checkout — mirrors web `/dashboard/user/shop`.</Subtitle>
+      {hubBusinessId !== null ? (
+        <Card>
+          <Text style={{ fontWeight: "800" }}>Marketplace Hub business #{hubBusinessId}</Text>
+          <Text style={styles.meta}>Showing hub products only.</Text>
+          <PrimaryButton title="Clear hub filter" onPress={clearHubFilter} />
+        </Card>
+      ) : null}
       <TextInput value={search} onChangeText={setSearch} placeholder="Search products…" style={styles.input} onSubmitEditing={() => void load()} />
       <ErrorText message={error} />
       <FlatList

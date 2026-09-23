@@ -2,6 +2,7 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { CheckCircle2, Code2, Loader2, Search, Sparkles, XCircle } from "lucide-react";
+import { addServiceToCart } from "@/lib/tuck-shop/cart";
 
 type DevHubStatus = "PENDING_REVIEW" | "AI_QUOTED" | "ACCEPTED" | "REJECTED";
 
@@ -224,6 +225,15 @@ export function DevHubAiConsole() {
 
       setCreatedRequest((current) => (current?.id === data.id ? data : current));
       setRequests((current) => upsertTableRow(current, data));
+      if (action === "accept" && data.status === "ACCEPTED" && Number(data.estimatedMaxPrice) > 0) {
+        addServiceToCart({
+          serviceKind: "DEV_HUB",
+          referenceId: String(data.id),
+          label: `Dev Hub build — ${data.title}`,
+          unitPrice: Number(data.estimatedMaxPrice),
+        });
+        setTableNotice(`Accepted. The quoted ${data.currency} ${data.estimatedMaxPrice} build fee was added to the shared cart — pay it from the shop cart.`);
+      }
       await searchRequests(page);
     } catch (error) {
       console.error("Dev Hub decision failed", error);

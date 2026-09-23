@@ -9,7 +9,7 @@ function countLabel(count: number) {
   return count > 99 ? "99+" : String(count);
 }
 
-export function FavoriteHeaderAction() {
+export function FavoriteHeaderAction({ favoritesHref = "/dashboard/user/favorites" }: { favoritesHref?: string }) {
   const [count, setCount] = useState(0);
   const [keys, setKeys] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
@@ -99,7 +99,7 @@ export function FavoriteHeaderAction() {
             <p className="mt-3 rounded-lg border border-dashed border-[var(--line)] bg-[var(--surface)] p-3 text-center text-xs font-semibold text-[var(--muted)]">Tap the heart on any business to favorite it.</p>
           )}
           <Link
-            href="/dashboard/user/favorites"
+            href={favoritesHref}
             onClick={() => setOpen(false)}
             className="mt-3 flex min-h-9 w-full items-center justify-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 text-xs font-black text-rose-600 hover:bg-rose-100"
           >

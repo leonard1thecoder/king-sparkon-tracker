@@ -10,9 +10,11 @@ import {
   ShoppingCart,
   Ticket,
   Trash2,
+  Wrench,
 } from "lucide-react";
 import { createPayFastCartPayment } from "@/lib/api/tuck-shop";
 import { normalizeApiError } from "@/lib/api/client";
+import { dashboardHref, type SharedDashboardRole } from "@/lib/dashboard-routes";
 import { submitPayFastForm } from "@/lib/payfast";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -22,12 +24,14 @@ import {
   cartTicketTotal,
   cartTotal,
   isProductLine,
+  isServiceLine,
   isTicketLine,
   money,
   productImage,
   productPrice,
   readTuckShopCart,
   removeTuckShopCartLine,
+  serviceKindLabel,
   type TuckShopCartLine,
   updateTuckShopCartQuantity,
 } from "@/lib/tuck-shop/cart";
@@ -57,7 +61,7 @@ function checkoutIdempotencyKey() {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
-export function TuckShopCartDashboard() {
+export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboardRole }) {
   const [cart, setCart] = useState<TuckShopCartLine[]>([]);
   const [paymentStage, setPaymentStage] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -85,6 +89,8 @@ export function TuckShopCartDashboard() {
       return;
     }
 
+    if (isServiceLine(line)) return;
+
     setCart(updateTuckShopCartQuantity("TICKET", line.event.id, quantity, line.ticketType));
   }
 
@@ -94,12 +100,17 @@ export function TuckShopCartDashboard() {
       return;
     }
 
+    if (isServiceLine(line)) {
+      setCart(removeTuckShopCartLine("SERVICE", line.referenceId));
+      return;
+    }
+
     setCart(removeTuckShopCartLine("TICKET", line.event.id, line.ticketType));
   }
 
   async function checkout() {
     if (cart.length === 0) {
-      setError("Add at least one product or ticket before checkout.");
+      setError("Add at least one product, ticket or service before checkout.");
       return;
     }
 
@@ -108,6 +119,7 @@ export function TuckShopCartDashboard() {
 
     const productLines = cart.filter(isProductLine);
     const ticketLines = cart.filter(isTicketLine);
+    const serviceLines = cart.filter(isServiceLine);
 
     try {
       setPaymentStage("Securing your cart total...");
@@ -118,6 +130,12 @@ export function TuckShopCartDashboard() {
         buyerEmail: user.emailAddress,
         products: productLines.map((line) => ({ productId: line.product.id, quantity: line.quantity })),
         tickets: ticketLines.map((line) => ({ eventId: line.event.id, ticketType: line.ticketType, quantity: line.quantity })),
+        services: serviceLines.map((line) => ({
+          kind: line.serviceKind,
+          referenceId: line.referenceId,
+          label: line.label,
+          amount: line.unitPrice,
+        })),
       });
 
       setPaymentStage("Redirecting to PayFast for secure payment...");
@@ -134,7 +152,7 @@ export function TuckShopCartDashboard() {
     <section className="grid gap-5">
       <SectionHeader
         eyebrow="Verified PayFast Cart"
-        title="Pay for products and tickets securely in one cart."
+        title="Pay for products, tickets and services securely in one cart."
         description="PayFast processes the payment on its secure page. King Sparkon clears the cart only after the verified backend ITN confirms payment and completes fulfilment."
       />
 
@@ -145,10 +163,10 @@ export function TuckShopCartDashboard() {
             <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{cartLineCount(cart)} item{cartLineCount(cart) === 1 ? "" : "s"} ready for verified checkout.</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Link href="/dashboard/user/shop" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black uppercase tracking-[0.08em] text-[var(--ink)] hover:border-[var(--gold)]">
+            <Link href={dashboardHref(role, "/dashboard/user/shop")} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black uppercase tracking-[0.08em] text-[var(--ink)] hover:border-[var(--gold)]">
               Buy products <ShoppingBag className="h-4 w-4" />
             </Link>
-            <Link href="/dashboard/user/tickets/buy" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--gold)] px-5 text-sm font-black uppercase tracking-[0.08em] text-[var(--ink)] hover:bg-white">
+            <Link href={dashboardHref(role, "/dashboard/user/tickets/buy")} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--gold)] px-5 text-sm font-black uppercase tracking-[0.08em] text-[var(--ink)] hover:bg-white">
               Buy tickets <Ticket className="h-4 w-4" />
             </Link>
           </div>
@@ -163,38 +181,53 @@ export function TuckShopCartDashboard() {
               </div>
             ) : (
               cart.map((line) => {
-                const key = isProductLine(line) ? `product-${line.product.id}` : `ticket-${line.event.id}-${line.ticketType}`;
+                const key = isProductLine(line)
+                  ? `product-${line.product.id}`
+                  : isServiceLine(line)
+                    ? `service-${line.serviceKind}-${line.referenceId}`
+                    : `ticket-${line.event.id}-${line.ticketType}`;
                 const maxQuantity = isProductLine(line)
                   ? line.product.stockQuantity
-                  : line.event.ticketTypes.find((candidate) => candidate.type === line.ticketType)?.available ?? line.quantity;
-                const title = isProductLine(line) ? line.product.name : line.event.name;
+                  : isServiceLine(line)
+                    ? 1
+                    : line.event.ticketTypes.find((candidate) => candidate.type === line.ticketType)?.available ?? line.quantity;
+                const title = isProductLine(line) ? line.product.name : isServiceLine(line) ? line.label : line.event.name;
                 const subtitle = isProductLine(line)
                   ? line.product.businessName ?? `Business #${line.product.businessId ?? "-"}`
-                  : `${line.ticketTypeLabel} ticket · ${line.event.eventDate} ${line.event.eventTime}`;
-                const unitPrice = isProductLine(line) ? productPrice(line.product) : line.unitPrice;
+                  : isServiceLine(line)
+                    ? `${serviceKindLabel(line.serviceKind)} · ref ${line.referenceId}`
+                    : `${line.ticketTypeLabel} ticket · ${line.event.eventDate} ${line.event.eventTime}`;
+                const unitPrice = isProductLine(line) ? productPrice(line.product) : isServiceLine(line) ? line.unitPrice : line.unitPrice;
 
                 return (
                   <div key={key} className="grid gap-4 rounded-[1.5rem] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)] sm:grid-cols-[5rem_1fr_auto_auto] sm:items-center">
                     {isProductLine(line) ? (
                       <img src={productImage(line.product)} alt={line.product.name} className="h-20 w-20 rounded-[1.15rem] object-cover" />
+                    ) : isServiceLine(line) ? (
+                      <div className="grid h-20 w-20 place-items-center rounded-[1.15rem] bg-[var(--ink)] text-[var(--gold)]"><Wrench className="h-8 w-8" /></div>
                     ) : (
                       <div className="grid h-20 w-20 place-items-center rounded-[1.15rem] bg-[var(--ink)] text-[var(--gold)]"><Ticket className="h-8 w-8" /></div>
                     )}
                     <div>
-                      <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">{isProductLine(line) ? "Product" : "Ticket"}</p>
+                      <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">{isProductLine(line) ? "Product" : isServiceLine(line) ? "Service" : "Ticket"}</p>
                       <p className="mt-1 font-black text-[var(--ink)]">{title}</p>
                       <p className="mt-1 text-xs font-semibold text-[var(--steel)]">{subtitle}</p>
                       <p className="mt-1 text-xs font-semibold text-[var(--steel)]">{money(unitPrice)} each · max {maxQuantity}</p>
                     </div>
-                    <input
-                      type="number"
-                      min={1}
-                      max={maxQuantity}
-                      value={line.quantity}
-                      onChange={(event) => updateQuantity(line, Number(event.target.value))}
-                      disabled={saving}
-                      className="min-h-11 w-24 rounded-full border border-[var(--line)] bg-[var(--surface)] px-4 text-sm font-black outline-none focus:border-[var(--signal)] disabled:opacity-50"
-                    />
+                    {isServiceLine(line) ? (
+                      <span className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--surface)] px-4 text-sm font-black text-[var(--steel)]">× 1</span>
+                    ) : (
+                      <input
+                        type="number"
+                        min={1}
+                        max={maxQuantity}
+                        value={line.quantity}
+                        onChange={(event) => updateQuantity(line, Number(event.target.value))}
+                        disabled={saving}
+                        className="min-h-11 w-24 rounded-full border border-[var(--line)] bg-[var(--surface)] px-4 text-sm font-black outline-none focus:border-[var(--signal)] disabled:opacity-50"
+                      />
+                    )}
+
                     <button type="button" onClick={() => removeFromCart(line)} disabled={saving} className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--danger)] hover:border-[var(--danger)] disabled:opacity-50">
                       <Trash2 className="h-4 w-4" />
                     </button>

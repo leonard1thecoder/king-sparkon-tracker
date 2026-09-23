@@ -25,6 +25,8 @@ type FormState = {
   earlyBirdEnabled: boolean;
   earlyBirdPercent: string;
   earlyBirdEndsAt: string;
+  marketplaceHubEnabled: boolean;
+  marketplaceHubPrice: string;
 };
 
 const initialState: FormState = {
@@ -42,6 +44,8 @@ const initialState: FormState = {
   earlyBirdEnabled: false,
   earlyBirdPercent: "",
   earlyBirdEndsAt: "",
+  marketplaceHubEnabled: false,
+  marketplaceHubPrice: "",
 };
 
 function todayValue() {
@@ -103,6 +107,11 @@ export function CreateEventForm() {
       if (endsAt <= new Date()) return "Early bird end must be in the future.";
     }
 
+    if (formState.marketplaceHubEnabled) {
+      const hubPrice = Number(formState.marketplaceHubPrice);
+      if (!Number.isFinite(hubPrice) || hubPrice < 0) return "Marketplace Hub price must be zero or positive.";
+    }
+
     return null;
   }
 
@@ -130,6 +139,8 @@ export function CreateEventForm() {
       earlyBirdEnabled: formState.earlyBirdEnabled,
       earlyBirdPercent: formState.earlyBirdEnabled ? Number(formState.earlyBirdPercent) : undefined,
       earlyBirdEndsAt: formState.earlyBirdEnabled ? new Date(formState.earlyBirdEndsAt).toISOString() : undefined,
+      marketplaceHubEnabled: formState.marketplaceHubEnabled,
+      marketplaceHubPrice: formState.marketplaceHubEnabled ? Number(formState.marketplaceHubPrice) : undefined,
     };
 
     try {
@@ -239,6 +250,21 @@ export function CreateEventForm() {
           </div>
         ) : null}
         <p className="mt-2 text-xs font-semibold text-[var(--muted)]">Early bird discount from original ticket price, active from creation until end, then reverts.</p>
+      </div>
+
+      <div className="rounded-[1.8rem] border border-[var(--line)] bg-white p-4">
+        <label className="flex items-center gap-3">
+          <input type="checkbox" checked={formState.marketplaceHubEnabled} onChange={(e) => setFormState((c) => ({ ...c, marketplaceHubEnabled: e.target.checked }))} className="h-5 w-5 rounded border-[var(--line)] accent-[var(--signal)]" />
+          <span className="text-sm font-black">Create Marketplace Hub</span>
+          <span className="rounded-full bg-[var(--signal-soft)] px-2.5 py-1 text-xs font-black text-[var(--signal-strong)]">Business products appear in event details</span>
+        </label>
+        {formState.marketplaceHubEnabled ? (
+          <label className="mt-4 grid gap-2">
+            <span className="text-sm font-black">Marketplace Hub price (R)</span>
+            <input type="number" min="0" step="0.01" value={formState.marketplaceHubPrice} onChange={(event) => updateField("marketplaceHubPrice", event.target.value.replace(/[^0-9.]/g, ""))} placeholder="Example: 250" className="min-h-12 rounded-[1.25rem] border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none placeholder:text-[var(--muted)] focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]" />
+          </label>
+        ) : null}
+        <p className="mt-2 text-xs font-semibold text-[var(--muted)]">When enabled, this business&apos;s products are listed inside the ticket event details for buyers.</p>
       </div>
 
       {statusMessage ? (

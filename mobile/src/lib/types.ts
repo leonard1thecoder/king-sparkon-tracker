@@ -105,6 +105,9 @@ export type TicketEvent = {
   eventTime: string;
   status: string;
   ticketTypes: TicketTypeEntry[];
+  businessId?: number | null;
+  marketplaceHubEnabled?: boolean | null;
+  marketplaceHubPrice?: number | null;
 };
 
 export type UserTicket = {

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Heart, Package, Ticket, BriefcaseBusiness, Store, Trash2, MapPin, Calendar } from "lucide-react";
 import { businessKey, fetchFavoriteKeysFromBackend, readFavoriteBusinessKeys, removeFavoriteFromBackend, writeFavoriteBusinessKeys } from "@/lib/favorites";
+import { dashboardHref, type SharedDashboardRole } from "@/lib/dashboard-routes";
 import { listTuckShopProducts } from "@/lib/api/tuck-shop";
 import { getLiveUpcomingEvents } from "@/lib/api/tickets";
 import { getPublicJobs } from "@/lib/api/job-opportunities";
@@ -16,7 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { ProductCard } from "@/components/tuck-shop/ProductCard";
 
-export function FavoritesWorkspace() {
+export function FavoritesWorkspace({ role = "user" }: { role?: SharedDashboardRole }) {
   const [favoriteKeys, setFavoriteKeys] = useState<Set<string>>(new Set());
   const [products, setProducts] = useState<Product[]>([]);
   const [events, setEvents] = useState<TicketEvent[]>([]);
@@ -121,7 +122,7 @@ export function FavoritesWorkspace() {
             </div>
             <h2 className="mt-4 text-2xl font-black tracking-[-0.04em]">No favorites yet</h2>
             <p className="mt-2 max-w-md text-sm leading-6 text-[var(--steel)]">Tap the heart on any business in the shop to favorite it. Your favorites will appear here with quick access to their products, tickets and job posts.</p>
-            <Link href="/dashboard/user/shop" className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-rose-200 bg-rose-500 px-6 text-sm font-black text-white hover:bg-rose-600">
+            <Link href={dashboardHref(role, "/dashboard/user/shop")} className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-rose-200 bg-rose-500 px-6 text-sm font-black text-white hover:bg-rose-600">
               <Store className="h-4 w-4" /> Browse shop
             </Link>
           </CardContent>
@@ -201,13 +202,13 @@ export function FavoritesWorkspace() {
                 <CardContent className="grid gap-3">
                   {/* Quick links */}
                   <div className="grid grid-cols-3 gap-2">
-                    <Link href={`/dashboard/user/shop?businessId=${businessId ?? ""}`} className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-[var(--line)] bg-white px-2 text-xs font-black hover:border-[var(--signal)]">
+                    <Link href={dashboardHref(role, `/dashboard/user/shop?businessId=${businessId ?? ""}`)} className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-[var(--line)] bg-white px-2 text-xs font-black hover:border-[var(--signal)]">
                       <Package className="h-3.5 w-3.5" /> Products
                     </Link>
-                    <Link href="/dashboard/user/tickets/buy" className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-[var(--line)] bg-white px-2 text-xs font-black hover:border-[var(--signal)]">
+                    <Link href={dashboardHref(role, "/dashboard/user/tickets/buy")} className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-[var(--line)] bg-white px-2 text-xs font-black hover:border-[var(--signal)]">
                       <Ticket className="h-3.5 w-3.5" /> Tickets
                     </Link>
-                    <Link href="/dashboard/user/jobs" className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-[var(--line)] bg-white px-2 text-xs font-black hover:border-[var(--signal)]">
+                    <Link href={dashboardHref(role, "/dashboard/user/jobs")} className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-[var(--line)] bg-white px-2 text-xs font-black hover:border-[var(--signal)]">
                       <BriefcaseBusiness className="h-3.5 w-3.5" /> Jobs
                     </Link>
                   </div>
@@ -223,7 +224,7 @@ export function FavoritesWorkspace() {
       <section className="grid gap-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-black tracking-[-0.04em]">Products from favorites</h2>
-          <Link href="/dashboard/user/shop" className="text-xs font-black text-[var(--signal)] hover:text-[var(--signal-strong)]">View shop</Link>
+          <Link href={dashboardHref(role, "/dashboard/user/shop")} className="text-xs font-black text-[var(--signal)] hover:text-[var(--signal-strong)]">View shop</Link>
         </div>
         {loading ? (
           <div className="grid gap-4 md:grid-cols-3">
@@ -248,7 +249,7 @@ export function FavoritesWorkspace() {
       <section className="grid gap-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-black tracking-[-0.04em]">Tickets from favorites</h2>
-          <Link href="/dashboard/user/tickets/buy" className="text-xs font-black text-[var(--signal)] hover:text-[var(--signal-strong)]">View tickets</Link>
+          <Link href={dashboardHref(role, "/dashboard/user/tickets/buy")} className="text-xs font-black text-[var(--signal)] hover:text-[var(--signal-strong)]">View tickets</Link>
         </div>
         {favoriteEvents.length === 0 ? (
           <Card className="p-8 text-center">
@@ -266,7 +267,7 @@ export function FavoritesWorkspace() {
                   <h3 className="line-clamp-2 text-sm font-black">{e.name}</h3>
                   <p className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-[var(--muted)]"><MapPin className="h-3.5 w-3.5" />{e.location}</p>
                   <p className="flex items-center gap-1.5 text-xs font-semibold text-[var(--muted)]"><Calendar className="h-3.5 w-3.5" />{e.eventDate}</p>
-                  <Link href={`/dashboard/user/tickets/events/${e.id}`} className="mt-3 flex min-h-10 items-center justify-center rounded-xl border border-[var(--signal)] bg-white text-xs font-black hover:bg-[var(--signal)] hover:text-white">View tickets</Link>
+                  <Link href={dashboardHref(role, `/dashboard/user/tickets/events/${e.id}`)} className="mt-3 flex min-h-10 items-center justify-center rounded-xl border border-[var(--signal)] bg-white text-xs font-black hover:bg-[var(--signal)] hover:text-white">View tickets</Link>
                 </CardContent>
               </Card>
             ))}
@@ -278,7 +279,7 @@ export function FavoritesWorkspace() {
       <section className="grid gap-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-black tracking-[-0.04em]">Job posts from favorites</h2>
-          <Link href="/dashboard/user/jobs" className="text-xs font-black text-[var(--signal)] hover:text-[var(--signal-strong)]">View jobs</Link>
+          <Link href={dashboardHref(role, "/dashboard/user/jobs")} className="text-xs font-black text-[var(--signal)] hover:text-[var(--signal-strong)]">View jobs</Link>
         </div>
         {favoriteJobs.length === 0 ? (
           <Card className="p-8 text-center">
@@ -292,7 +293,7 @@ export function FavoritesWorkspace() {
                 <h3 className="line-clamp-2 text-sm font-black">{job.title}</h3>
                 <p className="mt-1 text-xs font-semibold text-[var(--muted)]">{job.companyName}</p>
                 <p className="mt-2 line-clamp-2 text-xs leading-5 text-[var(--steel)]">{job.description}</p>
-                <Link href={`/dashboard/user/jobs`} className="mt-3 inline-flex min-h-9 items-center gap-1 rounded-lg border border-[var(--line)] bg-white px-3 text-xs font-black">View job</Link>
+                <Link href={dashboardHref(role, `/dashboard/user/jobs`)} className="mt-3 inline-flex min-h-9 items-center gap-1 rounded-lg border border-[var(--line)] bg-white px-3 text-xs font-black">View job</Link>
               </Card>
             ))}
           </div>

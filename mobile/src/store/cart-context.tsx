@@ -1,14 +1,32 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import type { ServiceLineKind } from "@/lib/api";
 
-export type CartLine = { productId: number; name: string; price: number; quantity: number };
+export type ProductCartLine = { productId: number; name: string; price: number; quantity: number };
+
+export type ServiceCartLine = {
+  kind: "SERVICE";
+  key: string;
+  serviceKind: ServiceLineKind;
+  referenceId: string;
+  label: string;
+  price: number;
+  quantity: number;
+};
+
+export type CartLine = ProductCartLine | ServiceCartLine;
+
+export function isServiceLine(line: CartLine): line is ServiceCartLine {
+  return (line as ServiceCartLine).kind === "SERVICE";
+}
 
 type CartState = {
   lines: CartLine[];
   count: number;
   total: number;
-  add: (line: Omit<CartLine, "quantity">, quantity?: number) => void;
-  remove: (productId: number) => void;
-  setQuantity: (productId: number, quantity: number) => void;
+  add: (line: Omit<ProductCartLine, "quantity">, quantity?: number) => void;
+  addService: (input: { serviceKind: ServiceLineKind; referenceId: string; label: string; price: number }) => void;
+  remove: (productId: number | string) => void;
+  setQuantity: (productId: number | string, quantity: number) => void;
   clear: () => void;
 };
 
@@ -26,18 +44,42 @@ export function CartProvider({ children }: { children: ReactNode }) {
       total,
       add: (line, quantity = 1) =>
         setLines((prev) => {
-          const existing = prev.find((entry) => entry.productId === line.productId);
+          const existing = prev.find((entry) => !isServiceLine(entry) && entry.productId === line.productId);
           if (!existing) return [...prev, { ...line, quantity }];
           return prev.map((entry) =>
-            entry.productId === line.productId ? { ...entry, quantity: entry.quantity + quantity } : entry,
+            !isServiceLine(entry) && entry.productId === line.productId
+              ? { ...entry, quantity: entry.quantity + quantity }
+              : entry,
           );
         }),
-      remove: (productId) => setLines((prev) => prev.filter((entry) => entry.productId !== productId)),
-      setQuantity: (productId, quantity) =>
+      addService: (input) =>
+        setLines((prev) => {
+          const key = `${input.serviceKind}:${input.referenceId}`;
+          const next: ServiceCartLine = {
+            kind: "SERVICE",
+            key,
+            serviceKind: input.serviceKind,
+            referenceId: input.referenceId,
+            label: input.label,
+            price: input.price,
+            quantity: 1,
+          };
+          const existing = prev.some((entry) => isServiceLine(entry) && entry.key === key);
+          if (!existing) return [...prev, next];
+          return prev.map((entry) => (isServiceLine(entry) && entry.key === key ? next : entry));
+        }),
+      remove: (id) =>
+        setLines((prev) =>
+          prev.filter((entry) => (isServiceLine(entry) ? entry.key !== id : entry.productId !== id)),
+        ),
+      setQuantity: (id, quantity) =>
         setLines((prev) =>
           quantity <= 0
-            ? prev.filter((entry) => entry.productId !== productId)
-            : prev.map((entry) => (entry.productId === productId ? { ...entry, quantity } : entry)),
+            ? prev.filter((entry) => (isServiceLine(entry) ? entry.key !== id : entry.productId !== id))
+            : prev.map((entry) => {
+                if (isServiceLine(entry)) return entry.key === id ? { ...entry, quantity: 1 } : entry;
+                return entry.productId === id ? { ...entry, quantity } : entry;
+              }),
         ),
       clear: () => setLines([]),
     };

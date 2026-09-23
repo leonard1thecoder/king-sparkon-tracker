@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { FlatList, RefreshControl, Text, View } from "react-native";
+import { router } from "expo-router";
 import { listMyTickets, listTicketEvents } from "@/lib/api";
 import type { TicketEvent, UserTicket } from "@/lib/types";
-import { Card, ErrorText, Screen, StatusPill, Subtitle, Title } from "@/components/ui";
+import { Card, ErrorText, PrimaryButton, Screen, StatusPill, Subtitle, Title } from "@/components/ui";
 
 export default function TicketsScreen() {
   const [events, setEvents] = useState<TicketEvent[]>([]);
@@ -60,6 +61,22 @@ export default function TicketsScreen() {
                 {type.type}: R{Number(type.price).toFixed(2)} · {type.available} left
               </Text>
             ))}
+            {item.marketplaceHubEnabled ? (
+              <View style={{ gap: 8 }}>
+                <StatusPill
+                  label={`Marketplace Hub${item.marketplaceHubPrice != null ? ` · R${Number(item.marketplaceHubPrice).toFixed(2)}` : ""}`}
+                  tone="action"
+                />
+                {item.businessId != null ? (
+                  <PrimaryButton
+                    title="Shop hub products"
+                    onPress={() =>
+                      router.push({ pathname: "/(tabs)/shop", params: { businessId: String(item.businessId) } })
+                    }
+                  />
+                ) : null}
+              </View>
+            ) : null}
           </Card>
         )}
         ListEmptyComponent={!loading ? <Text>No live events right now.</Text> : null}
