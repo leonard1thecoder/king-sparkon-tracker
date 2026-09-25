@@ -33,6 +33,24 @@ refresh POST {BACKEND}/api/auth/refresh
 
 Tokens are stored in `expo-secure-store` (`SecureStore` on native, in-memory fallback on web). Axios attaches `Authorization: Bearer` and retries once on 401.
 
+### OAuth (Google, Facebook, X)
+
+Login screen also offers provider buttons (hidden per provider unless the
+backend reports it configured via `GET /api/auth/oauth/providers`):
+
+```text
+App → GET {BACKEND}/api/auth/oauth/authorize/{google|facebook|x}
+        ?redirect_uri=kingsparkon://(auth)/oauth-callback   (system browser)
+    → provider login → Spring callback → local user → ticket
+    → 302 kingsparkon://(auth)/oauth-callback?code=...
+App → POST {BACKEND}/api/auth/oauth/exchange { code }
+    → standard token pair → SecureStore → existing /users/me flow
+```
+
+`signInWithProvider` opens the system browser (`openAuthSessionAsync`); the
+ticket is exchanged for the same JWT pair as password login, so roles and
+protected endpoints behave identically. Provider tokens never reach the app.
+
 Design tokens match web `src/styles/tokens.css`: `--ink #14161A`, `--paper #F1EFE6`, `--signal #FF4D2E`, `--confirm #1C7C54`.
 
 ## Local setup

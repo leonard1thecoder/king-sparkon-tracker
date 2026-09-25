@@ -1,7 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { router } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { clearTokens, getAccessToken, saveTokens } from "@/lib/auth-storage";
-import { getMe, loginRequest } from "@/lib/api";
+import { exchangeOAuthTicket, getMe, loginRequest } from "@/lib/api";
+import { backendBaseUrl } from "@/lib/api-client";
+import { oauthAuthorizeUrl, oauthErrorMessage, oauthRedirectUri, parseOAuthCallbackUrl } from "@/lib/oauth";
+import type { OAuthProviderId } from "@/lib/oauth";
 import type { TrackerUser } from "@/lib/types";
 
 type AuthState = {
@@ -9,6 +13,8 @@ type AuthState = {
   loading: boolean;
   error: string | null;
   signIn: (usernameOrEmail: string, password: string) => Promise<void>;
+  signInWithProvider: (provider: OAuthProviderId) => Promise<void>;
+  completeOAuthCallback: (params: { code?: string; error?: string }) => Promise<void>;
   signOut: () => Promise<void>;
   refresh: () => Promise<void>;
 };
@@ -62,7 +68,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.replace("/(public)/products");
   }, []);
 
-  const value = useMemo(() => ({ user, loading, error, signIn, signOut, refresh }), [user, loading, error, signIn, signOut, refresh]);
+  const completeOAuthCallback = useCallback(async (params: { code?: string; error?: string }) => {
+    setError(null);
+    if (!params.code) {
+      const message = oauthErrorMessage(params.error) ?? "The provider sign-in failed.";
+      setError(message);
+      throw new Error(message);
+    }
+    try {
+      const response = await exchangeOAuthTicket(params.code);
+      await saveTokens({ accessToken: response.accessToken, refreshToken: response.refreshToken });
+      const me = response.user ?? (response.accessToken ? await getMe() : null);
+      setUser(me);
+      router.replace("/(tabs)/shop");
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "The sign-in could not be completed.";
+      setError(message);
+      throw e instanceof Error ? e : new Error(message);
+    }
+  }, []);
+
+  const signInWithProvider = useCallback(async (provider: OAuthProviderId) => {
+    setError(null);
+    const redirectUri = oauthRedirectUri();
+    const result = await WebBrowser.openAuthSessionAsync(oauthAuthorizeUrl(backendBaseUrl(), provider), redirectUri);
+    if (result.type !== "success") {
+      // cancel/dismiss/locked: user left the browser, stay on login silently.
+      return;
+    }
+    const parsed = parseOAuthCallbackUrl(result.url);
+    if (!parsed) {
+      const message = oauthErrorMessage("exchange_failed") ?? "The sign-in could not be completed.";
+      setError(message);
+      throw new Error(message);
+    }
+    await completeOAuthCallback(parsed);
+  }, [completeOAuthCallback]);
+
+  const value = useMemo(() => ({ user, loading, error, signIn, signInWithProvider, completeOAuthCallback, signOut, refresh }), [user, loading, error, signIn, signInWithProvider, completeOAuthCallback, signOut, refresh]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

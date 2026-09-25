@@ -13,6 +13,7 @@ type AuthEndpoint =
   | "/api/auth/register-affiliate"
   | "/api/auth/refresh"
   | "/api/auth/logout"
+  | "/api/auth/oauth/exchange"
   | "/api/auth/forgot-password"
   | "/api/auth/reset-password"
   | "/api/auth/resend-verification";
@@ -112,7 +113,7 @@ export async function postToBackendAuth(request: Request, endpoint: AuthEndpoint
   }
 }
 
-export async function getFromBackendAuth(request: Request, endpoint: "/api/auth/verify-email") {
+export async function getFromBackendAuth(request: Request, endpoint: "/api/auth/verify-email" | "/api/auth/oauth/providers") {
   const baseUrl = backendBaseUrl();
   const incomingUrl = new URL(request.url);
   const backendUrl = new URL(endpoint, baseUrl);

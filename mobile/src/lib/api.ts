@@ -70,6 +70,18 @@ export function verifyEmailRequest(token: string) {
   return apiGet(`/auth/verify-email?token=${encodeURIComponent(token)}`);
 }
 
+export function exchangeOAuthTicket(code: string) {
+  // Same token-pair contract as password login; the ticket is single-use.
+  return apiPost<{ accessToken?: string; refreshToken?: string; user?: TrackerUser }>(
+    "/auth/oauth/exchange",
+    { code },
+  );
+}
+
+export function oauthProviders() {
+  return apiGet<{ id: string; displayName: string; enabled: boolean }[]>("/auth/oauth/providers");
+}
+
 // User dashboard — tuck shop.
 export function listTuckShopProducts(params: { page?: number; size?: number; search?: string; businessId?: number } = {}) {
   return apiGet<PageResponse<Product> | Product[]>("/v1/tuck-shop/products", {

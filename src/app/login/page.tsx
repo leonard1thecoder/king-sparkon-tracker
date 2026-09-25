@@ -39,11 +39,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error = "" } = await searchParams;
+
   return (
     <AuthShell
       mode="login"
       endpoint="/api/auth/login"
+      showOAuth
+      oauthErrorCode={error || undefined}
       eyebrow="Welcome back"
       title="Sign in to your King Sparkon workspace"
       description="Use your Business Owner, User, Worker, Affiliate, or Admin account. After login, King Sparkon opens the dashboard that matches your role."
