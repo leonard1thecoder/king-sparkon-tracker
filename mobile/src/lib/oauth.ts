@@ -1,7 +1,7 @@
 // OAuth login helpers — pure functions (no native imports) so they stay
 // unit-testable. Mirrors web `src/lib/auth/oauth.ts` copy and codes.
 
-export type OAuthProviderId = "google" | "facebook" | "x";
+export type OAuthProviderId = "google" | "facebook" | "x" | "tiktok";
 
 export type OAuthProviderStatus = {
   id: string;
@@ -13,6 +13,7 @@ export const OAUTH_PROVIDERS: ReadonlyArray<{ id: OAuthProviderId; displayName: 
   { id: "google", displayName: "Google" },
   { id: "facebook", displayName: "Facebook" },
   { id: "x", displayName: "X" },
+  { id: "tiktok", displayName: "TikTok" },
 ];
 
 // Deep link registered in app.json (`scheme: kingsparkon`) and allowlisted

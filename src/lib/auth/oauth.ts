@@ -1,4 +1,4 @@
-export type OAuthProviderId = "google" | "facebook" | "x";
+export type OAuthProviderId = "google" | "facebook" | "x" | "tiktok";
 
 export type OAuthProviderStatus = {
   id: string;
@@ -10,6 +10,7 @@ export const OAUTH_PROVIDERS: ReadonlyArray<{ id: OAuthProviderId; displayName: 
   { id: "google", displayName: "Google" },
   { id: "facebook", displayName: "Facebook" },
   { id: "x", displayName: "X" },
+  { id: "tiktok", displayName: "TikTok" },
 ];
 
 const DEV_API_FALLBACK = "http://localhost:8080";

@@ -33,7 +33,7 @@ refresh POST {BACKEND}/api/auth/refresh
 
 Tokens are stored in `expo-secure-store` (`SecureStore` on native, in-memory fallback on web). Axios attaches `Authorization: Bearer` and retries once on 401.
 
-### OAuth (Google, Facebook, X)
+### OAuth (Google, Facebook, X, TikTok)
 
 Login screen also offers provider buttons (hidden per provider unless the
 backend reports it configured via `GET /api/auth/oauth/providers`):

@@ -37,10 +37,19 @@ function XIcon() {
   );
 }
 
+function TikTokIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" aria-hidden="true">
+      <path fill="currentColor" d="M21 8.6a6.4 6.4 0 0 1-4.6-1.9v8.1a6 6 0 1 1-6-6c.3 0 .7 0 1 .1v3.2a2.9 2.9 0 1 0 2 2.7V1.4h3.2a6.4 6.4 0 0 0 4.4 4.1v3.1z" />
+    </svg>
+  );
+}
+
 const providerIcons: Record<OAuthProviderId, () => JSX.Element> = {
   google: GoogleIcon,
   facebook: FacebookIcon,
   x: XIcon,
+  tiktok: TikTokIcon,
 };
 
 export function OAuthButtons({ errorCode }: { errorCode?: string }) {
