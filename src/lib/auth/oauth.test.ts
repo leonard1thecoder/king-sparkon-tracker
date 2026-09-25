@@ -6,6 +6,7 @@ describe("oauth helpers", () => {
     expect(oauthAuthorizationUrl("google")).toBe("http://localhost:8080/oauth2/authorization/google");
     expect(oauthAuthorizationUrl("facebook")).toBe("http://localhost:8080/oauth2/authorization/facebook");
     expect(oauthAuthorizationUrl("x")).toBe("http://localhost:8080/oauth2/authorization/x");
+    expect(oauthAuthorizationUrl("tiktok")).toBe("http://localhost:8080/oauth2/authorization/tiktok");
   });
 
   test("exposes the configured api base url", () => {
