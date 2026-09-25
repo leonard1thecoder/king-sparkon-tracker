@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, router } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { View } from "react-native";
 import { useAuth } from "@/store/auth-context";
 import {
@@ -15,22 +16,41 @@ import {
   AuthSubmit,
   AuthTitle,
 } from "@/components/auth";
+import { OAuthButtons } from "@/components/oauth-buttons";
+import { oauthProviders } from "@/lib/api";
+import type { OAuthProviderId, OAuthProviderStatus } from "@/lib/oauth";
 import { tokens } from "@/theme/tokens";
+
+WebBrowser.maybeCompleteAuthSession();
 
 // Mirrors web `/login` (AuthShell mode=login): same copy, fields,
 // helpers, remember-device checkbox, verification links and footer.
 export default function LoginScreen() {
-  const { user, loading, signIn, error } = useAuth();
+  const { user, loading, signIn, signInWithProvider, error } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [busy, setBusy] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [providers, setProviders] = useState<OAuthProviderStatus[] | null>(null);
+  const [pendingProvider, setPendingProvider] = useState<OAuthProviderId | null>(null);
 
   useEffect(() => {
     if (!loading && user) router.replace("/(tabs)/shop");
   }, [loading, user]);
+
+  useEffect(() => {
+    let cancelled = false;
+    oauthProviders()
+      .then((list) => {
+        if (!cancelled && Array.isArray(list)) setProviders(list);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function onSubmit() {
     if (!username.trim()) {
@@ -92,6 +112,20 @@ export default function LoginScreen() {
         <AuthStatus tone="error" message={localError ?? error} />
         <AuthStatus tone="success" message={notice} />
         <AuthSubmit title="Sign in securely" busy={busy} onPress={() => void onSubmit()} />
+        <OAuthButtons
+          providers={providers}
+          pending={pendingProvider}
+          onSelect={(provider) => {
+            if (pendingProvider) return;
+            setPendingProvider(provider);
+            setLocalError(null);
+            signInWithProvider(provider)
+              .catch((e: unknown) => {
+                setLocalError(e instanceof Error ? e.message : "Unable to reach the auth API.");
+              })
+              .finally(() => setPendingProvider(null));
+          }}
+        />
       </AuthCard>
       <AuthFooter text="New to King Sparkon?" href="/(auth)/register" link="Register account" />
     </AuthScreen>

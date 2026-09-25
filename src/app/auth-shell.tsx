@@ -27,6 +27,7 @@ import {
   WalletCards,
 } from "lucide-react";
 import { SocialLinks } from "@/components/social/SocialLinks";
+import { OAuthButtons } from "@/components/auth/OAuthButtons";
 import { messageFromBackendPayload } from "@/lib/utils/errors";
 
 type AuthField = {
@@ -58,6 +59,8 @@ type AuthShellProps = {
   footerLink: string;
   endpoint: string;
   note?: string;
+  showOAuth?: boolean;
+  oauthErrorCode?: string;
   visualTitle: string;
   visualText: string;
   allowedEmailAddress?: string;
@@ -201,7 +204,7 @@ function FieldInput({ field, onValueChange }: { field: AuthField; onValueChange?
   );
 }
 
-export function AuthShell({ mode, eyebrow, title, description, fields, submitLabel, footerText, footerHref, footerLink, endpoint, note, visualTitle, visualText, allowedEmailAddress, extraPayload }: AuthShellProps) {
+export function AuthShell({ mode, eyebrow, title, description, fields, submitLabel, footerText, footerHref, footerLink, endpoint, note, visualTitle, visualText, allowedEmailAddress, extraPayload, showOAuth, oauthErrorCode }: AuthShellProps) {
   const initialPrivilege = fields.find((field) => field.name === "serviceRegisteringFor")?.defaultValue ?? "BUSINESS_OWNER";
   const [selectedPrivilege, setSelectedPrivilege] = useState(initialPrivilege);
   const [status, setStatus] = useState<AuthStatus | null>(null);
@@ -294,6 +297,12 @@ export function AuthShell({ mode, eyebrow, title, description, fields, submitLab
                 </button>
               </div>
             </form>
+
+            {showOAuth ? (
+              <div className="mt-6">
+                <OAuthButtons errorCode={oauthErrorCode} />
+              </div>
+            ) : null}
 
             <div className="mt-6 rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--surface)] p-4"><p className="text-sm font-bold text-[var(--steel)]">{footerText} <Link href={footerHref} className="font-black text-[var(--signal)] hover:text-[var(--accent-hover)] transition-colors duration-200">{footerLink}</Link></p></div>
             <div className="mt-6 border-t border-[var(--line)] pt-6"><p className="mb-3 font-mono text-[0.68rem] font-black uppercase tracking-[0.16em] text-[var(--muted)]">Official profiles</p><SocialLinks variant="light" /></div>

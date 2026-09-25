@@ -6,3 +6,9 @@ export type AuthResponse = {
   refreshTokenExpiresAt?: string;
   message?: string;
 };
+
+export type OAuthProviderStatus = {
+  id: string;
+  displayName: string;
+  enabled: boolean;
+};
