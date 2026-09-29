@@ -59,6 +59,9 @@ type PendingLine = {
   quantity: number;
   automaticBarcode: boolean;
   unitPrice: number;
+  emptiesReturned: number;
+  returnableEnabled: boolean;
+  returnablePrice: number;
 };
 
 function readPendingLines(): PendingLine[] {
@@ -201,6 +204,9 @@ export function WorkerProductWorkspace() {
       quantity: qty,
       automaticBarcode: automatic,
       unitPrice: unitPriceOf(quantityProduct),
+      emptiesReturned: 0,
+      returnableEnabled: Boolean(quantityProduct.returnableEnabled),
+      returnablePrice: Number(quantityProduct.returnablePrice ?? 0),
     };
     addPendingLine(line);
     setLastAdded({ name: quantityProduct.name, qty });

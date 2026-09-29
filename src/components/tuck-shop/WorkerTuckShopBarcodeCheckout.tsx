@@ -17,6 +17,8 @@ export type WorkerScannedProduct = {
   scannedValue: string;
   automaticBarcode?: boolean;
   unitPrice?: number;
+  returnableEnabled?: boolean;
+  returnablePrice?: number;
 };
 
 type BarcodeLine = {
@@ -27,6 +29,9 @@ type BarcodeLine = {
   quantity: string;
   automaticBarcode: boolean;
   unitPrice: string;
+  emptiesReturned: string;
+  returnableEnabled: boolean;
+  returnablePrice: string;
 };
 
 type WorkerTuckShopBarcodeCheckoutProps = { scannedProduct?: WorkerScannedProduct | null };
@@ -36,7 +41,28 @@ function lineId() {
 }
 
 function emptyLine(): BarcodeLine {
-  return { id: lineId(), productId: "", productName: "", barcode: "", quantity: "1", automaticBarcode: false, unitPrice: "" };
+  return { id: lineId(), productId: "", productName: "", barcode: "", quantity: "1", automaticBarcode: false, unitPrice: "", emptiesReturned: "0", returnableEnabled: false, returnablePrice: "" };
+}
+
+function lineQuantity(line: BarcodeLine) {
+  const qty = Number(line.quantity);
+  return Number.isInteger(qty) && qty > 0 ? qty : 0;
+}
+
+function lineDeposit(line: BarcodeLine) {
+  if (!line.returnableEnabled) return 0;
+  const deposit = Number(line.returnablePrice);
+  return Number.isFinite(deposit) && deposit > 0 ? deposit : 0;
+}
+
+function clampLineEmpties(line: BarcodeLine, empties: number) {
+  if (!line.returnableEnabled || lineDeposit(line) <= 0) return 0;
+  const safe = Number.isInteger(empties) ? empties : Math.floor(Number(empties) || 0);
+  return Math.min(Math.max(safe, 0), lineQuantity(line));
+}
+
+function lineEmpties(line: BarcodeLine) {
+  return clampLineEmpties(line, Number(line.emptiesReturned));
 }
 
 function rowTotal(line: BarcodeLine): number {
@@ -44,6 +70,14 @@ function rowTotal(line: BarcodeLine): number {
   const price = Number(line.unitPrice);
   if (!Number.isFinite(qty) || !Number.isFinite(price)) return 0;
   return qty * price;
+}
+
+function rowCredit(line: BarcodeLine): number {
+  return lineDeposit(line) * lineEmpties(line);
+}
+
+function rowNet(line: BarcodeLine): number {
+  return rowTotal(line) - rowCredit(line);
 }
 
 function money(value?: number | null) {
@@ -71,7 +105,7 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
     try {
       const raw = localStorage.getItem("workerPendingCheckoutLines");
       if (!raw) return;
-      const pending: Array<{ productId: number; productName: string; barcode: string; quantity: number; automaticBarcode: boolean; unitPrice?: number }> = JSON.parse(raw);
+      const pending: Array<{ productId: number; productName: string; barcode: string; quantity: number; automaticBarcode: boolean; unitPrice?: number; emptiesReturned?: number; returnableEnabled?: boolean; returnablePrice?: number }> = JSON.parse(raw);
       if (!Array.isArray(pending) || pending.length === 0) return;
       setLines(() =>
         pending.map((p) => ({
@@ -82,16 +116,21 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
           quantity: String(p.quantity),
           automaticBarcode: Boolean(p.automaticBarcode),
           unitPrice: p.unitPrice != null ? String(p.unitPrice) : "",
+          emptiesReturned: String(Math.max(Math.floor(Number(p.emptiesReturned ?? 0)), 0)),
+          returnableEnabled: Boolean(p.returnableEnabled),
+          returnablePrice: p.returnablePrice != null ? String(p.returnablePrice) : "",
         })),
       );
-      // Fill missing unitPrice for old pending lines
+      // Fill missing unitPrice and returnable metadata for old pending lines
       pending.forEach((p) => {
-        if (p.unitPrice == null) {
+        if (p.unitPrice == null || p.returnablePrice == null) {
           void import("@/lib/api/tuck-shop").then(({ getWorkerProductById }) =>
             getWorkerProductById(p.productId)
               .then((product) => {
                 const price = String(Number(product.salePrice ?? product.price ?? 0));
-                setLines((cur) => cur.map((l) => (l.productId === String(p.productId) && !l.unitPrice ? { ...l, unitPrice: price } : l)));
+                const returnableEnabled = Boolean(product.returnableEnabled);
+                const returnablePrice = product.returnablePrice != null ? String(product.returnablePrice) : "";
+                setLines((cur) => cur.map((l) => (l.productId === String(p.productId) && (!l.unitPrice || !l.returnablePrice) ? { ...l, unitPrice: l.unitPrice || price, returnableEnabled, returnablePrice } : l)));
               })
               .catch(() => {}),
           );
@@ -118,6 +157,9 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
             quantity: "1",
             automaticBarcode: Boolean(scannedProduct.automaticBarcode),
             unitPrice: scannedProduct.unitPrice != null ? String(scannedProduct.unitPrice) : "",
+            emptiesReturned: "0",
+            returnableEnabled: Boolean(scannedProduct.returnableEnabled),
+            returnablePrice: scannedProduct.returnablePrice != null ? String(scannedProduct.returnablePrice) : "",
           },
         ];
       }
@@ -135,13 +177,16 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
         quantity: "1",
         automaticBarcode: Boolean(scannedProduct.automaticBarcode),
         unitPrice: scannedProduct.unitPrice != null ? String(scannedProduct.unitPrice) : "",
+        emptiesReturned: "0",
+        returnableEnabled: Boolean(scannedProduct.returnableEnabled),
+        returnablePrice: scannedProduct.returnablePrice != null ? String(scannedProduct.returnablePrice) : "",
       };
       if (emptyIndex >= 0) return current.map((line, index) => index === emptyIndex ? scannedLine : line);
       return [...current, scannedLine];
     });
   }, [scannedProduct]);
 
-  function updateLine(id: string, field: keyof Omit<BarcodeLine, "id" | "automaticBarcode">, value: string) {
+  function updateLine(id: string, field: keyof Omit<BarcodeLine, "id" | "automaticBarcode" | "returnableEnabled" | "returnablePrice" | "emptiesReturned">, value: string) {
     setLines((current) => current.map((line) => line.id === id ? { ...line, [field]: value } : line));
     if (field === "productId") {
       const pid = Number(value.replace(/\D/g, ""));
@@ -151,10 +196,12 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
             .then((product) => {
               const price = Number(product.salePrice ?? product.price ?? 0);
               const barcode = product.productBarcode?.trim() || "";
+              const returnableEnabled = Boolean(product.returnableEnabled);
+              const returnablePrice = product.returnablePrice != null ? String(product.returnablePrice) : "";
               setLines((cur) =>
                 cur.map((l) =>
                   l.id === id
-                    ? { ...l, productName: l.productName || product.name, unitPrice: String(price), barcode: l.barcode || barcode, automaticBarcode: !product.productBarcode }
+                    ? { ...l, productName: l.productName || product.name, unitPrice: String(price), barcode: l.barcode || barcode, automaticBarcode: !product.productBarcode, returnableEnabled, returnablePrice }
                     : l,
                 ),
               );
@@ -165,7 +212,18 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
     }
   }
 
+  function updateEmpties(id: string, value: string) {
+    setLines((current) =>
+      current.map((line) => {
+        if (line.id !== id) return line;
+        const next = { ...line, emptiesReturned: value.replace(/\D/g, "") };
+        return { ...next, emptiesReturned: String(clampLineEmpties(next, Number(next.emptiesReturned))) };
+      }),
+    );
+  }
+
   const totalPrice = lines.reduce((sum, line) => sum + rowTotal(line), 0);
+  const totalCredit = lines.reduce((sum, line) => sum + rowCredit(line), 0);
 
   function addLine() {
     setLines((current) => [...current, emptyLine()]);
@@ -181,7 +239,7 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
     setError(null);
     setPurchase(null);
 
-    const grouped = new Map<number, { quantity: number; barcodes: string[]; automaticBarcode: boolean }>();
+    const grouped = new Map<number, { quantity: number; barcodes: string[]; automaticBarcode: boolean; emptiesReturned: number }>();
     for (const line of lines) {
       const productId = Number(line.productId);
       const barcode = line.barcode.trim();
@@ -197,9 +255,10 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
         return;
       }
 
-      const existing = grouped.get(productId) ?? { quantity: 0, barcodes: [], automaticBarcode: line.automaticBarcode };
+      const existing = grouped.get(productId) ?? { quantity: 0, barcodes: [], automaticBarcode: line.automaticBarcode, emptiesReturned: 0 };
       existing.quantity += quantity;
       existing.automaticBarcode = existing.automaticBarcode || line.automaticBarcode;
+      existing.emptiesReturned = Math.min(existing.emptiesReturned + lineEmpties(line), existing.quantity);
       if (!line.automaticBarcode) existing.barcodes.push(...Array.from({ length: quantity }, () => barcode));
       grouped.set(productId, existing);
     }
@@ -212,6 +271,7 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
           productId,
           quantity: item.quantity,
           barcodes: item.automaticBarcode ? [] : item.barcodes,
+          emptiesReturned: item.emptiesReturned,
         })),
       });
       setPurchase(result);
@@ -280,6 +340,12 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
                     <span className="text-[0.65rem] font-black uppercase tracking-[0.08em] text-[var(--steel)]">Row total</span>
                     <div className="flex min-h-11 items-center rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-sm font-black text-[var(--ink)]">{money(rt)}</div>
                     <span className="min-h-[0.9rem] text-left text-[0.65rem] font-bold leading-none text-[var(--muted)]">{line.unitPrice ? `${money(Number(line.unitPrice))} × ${line.quantity}` : "\u00A0"}</span>
+                    {line.returnableEnabled && lineDeposit(line) > 0 ? (
+                      <span className="text-left text-[0.65rem] font-black uppercase leading-none tracking-[0.06em] text-[var(--confirm)]">Returnable · {money(lineDeposit(line))} deposit each</span>
+                    ) : null}
+                    {rowCredit(line) > 0 ? (
+                      <span className="text-left text-[0.65rem] font-black leading-none text-[var(--confirm)]">Empties credit −{money(rowCredit(line))} · to pay {money(rowNet(line))}</span>
+                    ) : null}
                   </div>
 
                   {/* 3. QUANTITY — own section, aligned with row total field */}
@@ -294,6 +360,19 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
                       className="min-h-11 w-full rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-center text-sm font-black text-[var(--ink)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]"
                     />
                   </label>
+
+                  {line.returnableEnabled && lineDeposit(line) > 0 ? (
+                    <label className="grid gap-1.5 text-[0.65rem] font-black uppercase tracking-[0.08em] text-[var(--steel)]">
+                      Empties back · max {lineQuantity(line)}
+                      <input
+                        value={line.emptiesReturned}
+                        onChange={(event) => updateEmpties(line.id, event.target.value)}
+                        min={0}
+                        inputMode="numeric"
+                        className="min-h-11 w-full rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-center text-sm font-black text-[var(--ink)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]"
+                      />
+                    </label>
+                  ) : null}
 
                   {/* 4. REMOVE — own small column, vertically aligned with quantity field */}
                   <div className="grid gap-1.5 lg:self-end">
@@ -312,13 +391,13 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
               <Button type="button" variant="quiet" onClick={addLine}><Plus className="h-4 w-4" /> Add product line</Button>
-              <div className="rounded-full border border-[var(--line)] bg-[var(--surface)] px-4 py-2 text-sm font-black text-[var(--ink)]">Total: <span className="money text-[var(--signal)]">{money(totalPrice)}</span> <span className="ml-1 text-xs font-bold text-[var(--muted)]">to tell customer</span></div>
+              <div className="rounded-full border border-[var(--line)] bg-[var(--surface)] px-4 py-2 text-sm font-black text-[var(--ink)]">Total: <span className="money text-[var(--signal)]">{money(totalPrice - totalCredit)}</span> <span className="ml-1 text-xs font-bold text-[var(--muted)]">to tell customer{totalCredit > 0 ? ` (incl. ${money(totalCredit)} empties credit)` : ""}</span></div>
             </div>
             <Button type="submit" disabled={saving}>{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />} {saving ? "Creating checkout..." : `Create ${paymentLabel(paymentType)} checkout`}</Button>
           </div>
         </form>
 
-        {purchase ? <div className="mt-5 grid gap-4 rounded-[1.5rem] border border-[var(--confirm)]/30 bg-[var(--confirm)]/5 p-5 md:grid-cols-[1fr_auto] md:items-center"><div><p className="font-mono text-xs font-black uppercase tracking-[0.16em] text-[var(--signal)]">Transaction #{purchase.transactionId}</p><p className="money mt-2 text-3xl font-black text-[var(--ink)]">{money(purchase.productTotal)}</p><p className="mt-2 text-sm font-semibold text-[var(--steel)]">{purchase.paymentType ?? paymentType} · {purchase.paymentStatus ?? "PAID"}</p></div><CreditCard className="h-12 w-12 text-[var(--confirm)]" /></div> : null}
+        {purchase ? <div className="mt-5 grid gap-4 rounded-[1.5rem] border border-[var(--confirm)]/30 bg-[var(--confirm)]/5 p-5 md:grid-cols-[1fr_auto] md:items-center"><div><p className="font-mono text-xs font-black uppercase tracking-[0.16em] text-[var(--signal)]">Transaction #{purchase.transactionId}</p><p className="money mt-2 text-3xl font-black text-[var(--ink)]">{money(purchase.netTotal ?? purchase.productTotal)}</p><p className="mt-2 text-sm font-semibold text-[var(--steel)]">{purchase.paymentType ?? paymentType} · {purchase.paymentStatus ?? "PAID"}{(purchase.emptiesCreditTotal ?? 0) > 0 ? ` · empties credit ${money(purchase.emptiesCreditTotal)}` : ""}</p></div><CreditCard className="h-12 w-12 text-[var(--confirm)]" /></div> : null}
       </CardContent>
     </Card>
   );

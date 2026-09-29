@@ -3,12 +3,12 @@ import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import { createPayFastCartPayment, createTuckShopPurchase, getPayFastCartPaymentStatus, payPageUrl } from "@/lib/api";
 import { idempotencyKey } from "@/lib/api-client";
-import { isServiceLine, useCart } from "@/store/cart-context";
+import { isServiceLine, lineCredit, lineDeposit, lineEmpties, lineNet, useCart, type ProductCartLine } from "@/store/cart-context";
 import { useAuth } from "@/store/auth-context";
 import { Card, ErrorText, PrimaryButton, Screen, StatusPill, Subtitle, Title } from "@/components/ui";
 
 export default function CartScreen() {
-  const { lines, total, setQuantity, remove } = useCart();
+  const { lines, total, netTotal, depositTotal, creditTotal, returnableUnitCount, emptiesCount, setQuantity, setEmpties, remove } = useCart();
   const { user } = useAuth();
   const [email, setEmail] = useState("");
   const [contact, setContact] = useState("");
@@ -23,7 +23,7 @@ export default function CartScreen() {
   const serviceTotal = serviceLines.reduce((sum, line) => sum + line.price * line.quantity, 0);
 
   async function checkout() {
-    const productLines = lines.filter((line) => !isServiceLine(line));
+    const productLines = lines.filter((line): line is ProductCartLine => !isServiceLine(line));
     if (productLines.length === 0) {
       setError("Cart has no products — pay service lines below.");
       return;
@@ -35,10 +35,10 @@ export default function CartScreen() {
       const purchase = await createTuckShopPurchase({
         paymentEmail: email.trim() || undefined,
         paymentContact: contact.trim() || undefined,
-        items: productLines.map((line) => ({ productId: (line as { productId: number }).productId, quantity: line.quantity })),
+        items: productLines.map((line) => ({ productId: line.productId, quantity: line.quantity, emptiesReturned: lineEmpties(line) })),
       });
       setReference(`Order ${purchase.transactionId} · ${purchase.paymentStatus ?? "PENDING"}`);
-      productLines.forEach((line) => remove((line as { productId: number }).productId));
+      productLines.forEach((line) => remove(line.productId));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Checkout failed.");
     } finally {
@@ -112,11 +112,36 @@ export default function CartScreen() {
               <Text style={styles.meta}>
                 R{item.price.toFixed(2)} × {item.quantity} = R{(item.price * item.quantity).toFixed(2)}
               </Text>
+              {item.returnableEnabled ? (
+                <Text style={styles.returnable}>
+                  Returnable · R{lineDeposit(item).toFixed(2)} deposit each
+                </Text>
+              ) : null}
+              {lineCredit(item) > 0 ? (
+                <Text style={styles.credit}>
+                  Empties credit −R{lineCredit(item).toFixed(2)} · to pay R{lineNet(item).toFixed(2)}
+                </Text>
+              ) : null}
               <View style={styles.row}>
                 <PrimaryButton title="−" onPress={() => setQuantity(item.productId, item.quantity - 1)} />
                 <PrimaryButton title="+" onPress={() => setQuantity(item.productId, item.quantity + 1)} />
                 <PrimaryButton title="Remove" onPress={() => remove(item.productId)} />
               </View>
+              {item.returnableEnabled && lineDeposit(item) > 0 ? (
+                <View style={styles.row}>
+                  <PrimaryButton
+                    title="Empty −"
+                    onPress={() => setEmpties(item.productId, lineEmpties(item) - 1)}
+                  />
+                  <Text style={styles.meta}>
+                    Empties back {lineEmpties(item)} of {item.quantity} (max)
+                  </Text>
+                  <PrimaryButton
+                    title="Empty +"
+                    onPress={() => setEmpties(item.productId, lineEmpties(item) + 1)}
+                  />
+                </View>
+              ) : null}
             </Card>
           )
         }
@@ -124,6 +149,13 @@ export default function CartScreen() {
       />
       <Card>
         <Text style={styles.total}>Total R{total.toFixed(2)}</Text>
+        {returnableUnitCount > 0 ? (
+          <Text style={styles.meta}>
+            Returnables in cart: {emptiesCount} of {returnableUnitCount} empties back · deposits R{depositTotal.toFixed(2)}
+            {creditTotal > 0 ? ` · credit −R${creditTotal.toFixed(2)}` : ""}
+          </Text>
+        ) : null}
+        {creditTotal > 0 ? <Text style={styles.total}>To pay R{netTotal.toFixed(2)}</Text> : null}
         <TextInput value={email} onChangeText={setEmail} placeholder="Payment email (website payment)" keyboardType="email-address" autoCapitalize="none" style={styles.input} />
         <TextInput value={contact} onChangeText={setContact} placeholder="Payment contact" keyboardType="phone-pad" style={styles.input} />
         <ErrorText message={error} />
@@ -150,7 +182,9 @@ export default function CartScreen() {
 const styles = StyleSheet.create({
   name: { fontWeight: "800", fontSize: 15 },
   meta: { fontSize: 12, fontWeight: "600", opacity: 0.7 },
-  row: { flexDirection: "row", gap: 8 },
+  returnable: { fontSize: 12, fontWeight: "800", color: "#1C7C54" },
+  credit: { fontSize: 12, fontWeight: "800", color: "#1C7C54" },
+  row: { flexDirection: "row", gap: 8, alignItems: "center" },
   total: { fontWeight: "800", fontSize: 16 },
   input: { borderWidth: 1, borderColor: "#D8D3C4", borderRadius: 12, padding: 10, backgroundColor: "#fff" },
 });

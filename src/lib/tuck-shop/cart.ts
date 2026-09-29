@@ -5,6 +5,7 @@ export type TuckShopCartProductLine = {
   kind: "PRODUCT";
   product: Product;
   quantity: number;
+  emptiesReturned: number;
 };
 
 export type TuckShopCartTicketLine = {
@@ -38,6 +39,9 @@ export type TuckShopPurchaseHistoryItem = {
   paymentStatus?: string | null;
   paymentReference?: string | null;
   productTotal: number;
+  depositTotal?: number;
+  emptiesCreditTotal?: number;
+  netTotal?: number;
   items: Array<{
     productId: number;
     productName: string;
@@ -45,6 +49,10 @@ export type TuckShopPurchaseHistoryItem = {
     quantity: number;
     unitPrice: number;
     lineTotal: number;
+    emptiesReturned?: number;
+    depositUnitPrice?: number;
+    emptiesCreditTotal?: number;
+    netLineTotal?: number;
   }>;
 };
 
@@ -57,6 +65,53 @@ export function money(value?: number | null) {
 
 export function productPrice(product: Product) {
   return Number(product.salePrice ?? product.price ?? 0);
+}
+
+export function returnableDeposit(product: Product) {
+  if (!product.returnableEnabled) return 0;
+  return Number(product.returnablePrice ?? 0);
+}
+
+export function clampEmptiesReturned(product: Product, quantity: number, empties: number) {
+  const safeEmpties = Math.max(Math.floor(Number(empties ?? 0)), 0);
+  if (!product.returnableEnabled || returnableDeposit(product) <= 0) return 0;
+  return Math.min(safeEmpties, Math.max(Math.floor(Number(quantity ?? 0)), 0));
+}
+
+export function lineEmptiesReturned(line: TuckShopCartProductLine) {
+  return clampEmptiesReturned(line.product, line.quantity, line.emptiesReturned);
+}
+
+export function lineDepositTotal(line: TuckShopCartProductLine) {
+  return returnableDeposit(line.product) * line.quantity;
+}
+
+export function lineEmptiesCreditTotal(line: TuckShopCartProductLine) {
+  return returnableDeposit(line.product) * lineEmptiesReturned(line);
+}
+
+export function lineNetTotal(line: TuckShopCartProductLine) {
+  return productPrice(line.product) * line.quantity - lineEmptiesCreditTotal(line);
+}
+
+export function cartDepositTotal(cart: TuckShopCartLine[]) {
+  return cart.filter(isProductLine).reduce((total, line) => total + lineDepositTotal(line), 0);
+}
+
+export function cartEmptiesCreditTotal(cart: TuckShopCartLine[]) {
+  return cart.filter(isProductLine).reduce((total, line) => total + lineEmptiesCreditTotal(line), 0);
+}
+
+export function cartReturnableUnitCount(cart: TuckShopCartLine[]) {
+  return cart.filter(isProductLine).reduce((total, line) => total + (line.product.returnableEnabled ? line.quantity : 0), 0);
+}
+
+export function cartEmptiesReturnedCount(cart: TuckShopCartLine[]) {
+  return cart.filter(isProductLine).reduce((total, line) => total + lineEmptiesReturned(line), 0);
+}
+
+export function cartNetTotal(cart: TuckShopCartLine[]) {
+  return cartTotal(cart) - cartEmptiesCreditTotal(cart);
 }
 
 export function ticketLinePrice(line: TuckShopCartTicketLine) {
@@ -172,7 +227,14 @@ function normalizeCartLine(line: Partial<TuckShopCartLine>): TuckShopCartLine | 
   }
 
   if ((line.kind === "PRODUCT" || !line.kind) && "product" in line && line.product?.id) {
-    return { kind: "PRODUCT", product: line.product, quantity: Math.min(quantity, productLineMaxQuantity(line.product)) } as TuckShopCartProductLine;
+    const safeQuantity = Math.min(Math.max(Number(line.quantity ?? 0), 1), productLineMaxQuantity(line.product));
+    const productLine = line as Partial<TuckShopCartProductLine>;
+    return {
+      kind: "PRODUCT",
+      product: line.product,
+      quantity: safeQuantity,
+      emptiesReturned: clampEmptiesReturned(line.product, safeQuantity, productLine.emptiesReturned ?? 0),
+    } as TuckShopCartProductLine;
   }
 
   if (line.kind === "SERVICE" && line.serviceKind && line.referenceId && Number(line.unitPrice) > 0) {
@@ -201,6 +263,9 @@ function normalizePurchaseHistoryItem(item: Partial<TuckShopPurchaseHistoryItem>
     paymentStatus: item.paymentStatus,
     paymentReference: item.paymentReference,
     productTotal: Number(item.productTotal ?? 0),
+    depositTotal: Number(item.depositTotal ?? 0),
+    emptiesCreditTotal: Number(item.emptiesCreditTotal ?? 0),
+    netTotal: Number(item.netTotal ?? item.productTotal ?? 0),
     items: item.items.map((line) => ({
       productId: Number(line.productId),
       productName: String(line.productName ?? "Product"),
@@ -208,6 +273,10 @@ function normalizePurchaseHistoryItem(item: Partial<TuckShopPurchaseHistoryItem>
       quantity: Number(line.quantity ?? 0),
       unitPrice: Number(line.unitPrice ?? 0),
       lineTotal: Number(line.lineTotal ?? 0),
+      emptiesReturned: Number(line.emptiesReturned ?? 0),
+      depositUnitPrice: Number(line.depositUnitPrice ?? 0),
+      emptiesCreditTotal: Number(line.emptiesCreditTotal ?? 0),
+      netLineTotal: Number(line.netLineTotal ?? line.lineTotal ?? 0),
     })),
   };
 }
@@ -262,6 +331,9 @@ export function saveTuckShopPurchaseHistory(purchase: TuckShopPurchase) {
     paymentStatus: purchase.paymentStatus,
     paymentReference: purchase.paymentReference,
     productTotal: Number(purchase.productTotal ?? 0),
+    depositTotal: Number(purchase.depositTotal ?? 0),
+    emptiesCreditTotal: Number(purchase.emptiesCreditTotal ?? 0),
+    netTotal: Number(purchase.netTotal ?? purchase.productTotal ?? 0),
     items: (purchase.items ?? []).map((item) => ({
       productId: item.productId,
       productName: item.productName,
@@ -269,6 +341,10 @@ export function saveTuckShopPurchaseHistory(purchase: TuckShopPurchase) {
       quantity: item.quantity,
       unitPrice: item.unitPrice,
       lineTotal: item.lineTotal,
+      emptiesReturned: item.emptiesReturned ?? 0,
+      depositUnitPrice: item.depositUnitPrice ?? 0,
+      emptiesCreditTotal: item.emptiesCreditTotal ?? 0,
+      netLineTotal: item.netLineTotal ?? item.lineTotal,
     })),
   };
 
@@ -283,12 +359,12 @@ export function addTuckShopProductToCart(product: Product, quantity = 1) {
   const safeQuantity = Math.max(Number(quantity || 1), 1);
   const maxQuantity = productLineMaxQuantity(product);
   const nextCart = current.some((line) => isProductLine(line) && line.product.id === product.id)
-    ? current.map((line) =>
-        isProductLine(line) && line.product.id === product.id
-          ? { ...line, product, quantity: Math.min(line.quantity + safeQuantity, maxQuantity) }
-          : line,
-      )
-    : [...current, { kind: "PRODUCT" as const, product, quantity: Math.min(safeQuantity, maxQuantity) }];
+    ? current.map((line) => {
+        if (!isProductLine(line) || line.product.id !== product.id) return line;
+        const quantity = Math.min(line.quantity + safeQuantity, maxQuantity);
+        return { ...line, product, quantity, emptiesReturned: clampEmptiesReturned(product, quantity, line.emptiesReturned) };
+      })
+    : [...current, { kind: "PRODUCT" as const, product, quantity: Math.min(safeQuantity, maxQuantity), emptiesReturned: 0 }];
 
   writeTuckShopCart(nextCart);
   return nextCart;
@@ -313,11 +389,26 @@ export function updateTuckShopCartQuantity(kind: TuckShopCartLine["kind"], id: s
   const current = readTuckShopCart();
   const nextCart = current.map((line) => {
     if (isProductLine(line) && kind === "PRODUCT" && line.product.id === id) {
-      return { ...line, quantity: Math.min(Math.max(quantity, 1), productLineMaxQuantity(line.product)) };
+      const safeQuantity = Math.min(Math.max(quantity, 1), productLineMaxQuantity(line.product));
+      return { ...line, quantity: safeQuantity, emptiesReturned: clampEmptiesReturned(line.product, safeQuantity, line.emptiesReturned) };
     }
 
     if (isTicketLine(line) && kind === "TICKET" && line.event.id === id && line.ticketType === ticketType) {
       return { ...line, quantity: Math.min(Math.max(quantity, 1), ticketLineMaxQuantity(line)) };
+    }
+
+    return line;
+  });
+
+  writeTuckShopCart(nextCart);
+  return nextCart;
+}
+
+export function updateTuckShopCartEmpties(productId: number, empties: number) {
+  const current = readTuckShopCart();
+  const nextCart = current.map((line) => {
+    if (isProductLine(line) && line.product.id === productId) {
+      return { ...line, emptiesReturned: clampEmptiesReturned(line.product, line.quantity, empties) };
     }
 
     return line;

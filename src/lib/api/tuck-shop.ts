@@ -14,6 +14,7 @@ import { removeTuckShopCartLine } from "@/lib/tuck-shop/cart";
 import type {
   CreateEmbeddedCartPaymentPayload,
   CreateProductPayload,
+  CreateReturnableRefundPayload,
   CreateTuckShopPurchasePayload,
   EmbeddedCartTicketItem,
   PageResponse,
@@ -22,6 +23,7 @@ import type {
   PayFastFormResponse,
   Product,
   ProductImageUpdatePayload,
+  ReturnableRefund,
   TuckShopPurchase,
 } from "@/lib/types/backend";
 import type { TicketType } from "@/types/tickets";
@@ -189,6 +191,26 @@ export function createWorkerTuckShopBarcodePurchase(
 
 export function getWorkerProductByBarcode(barcode: string) {
   return apiGet<Product>(`/products/barcode/${encodeURIComponent(barcode.trim())}`);
+}
+
+export function listMyReturnableRefunds() {
+  return apiGet<ReturnableRefund[]>("/v1/tuck-shop/returnable-refunds/me");
+}
+
+export function createReturnableRefund(payload: CreateReturnableRefundPayload) {
+  return apiPost<ReturnableRefund, CreateReturnableRefundPayload>("/v1/tuck-shop/returnable-refunds", payload);
+}
+
+export function listPendingReturnableRefunds() {
+  return apiGet<ReturnableRefund[]>("/v1/tuck-shop/returnable-refunds/pending");
+}
+
+export function approveReturnableRefund(refundId: number) {
+  return apiPost<ReturnableRefund>(`/v1/tuck-shop/returnable-refunds/${refundId}/approve`);
+}
+
+export function rejectReturnableRefund(refundId: number, reason: string) {
+  return apiPost<ReturnableRefund, { reason: string }>(`/v1/tuck-shop/returnable-refunds/${refundId}/reject`, { reason });
 }
 
 export function getWorkerProductById(productId: number) {

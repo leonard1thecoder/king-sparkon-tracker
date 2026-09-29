@@ -79,6 +79,11 @@ export default function ShopScreen() {
                 <Text style={styles.meta}>
                   {item.businessName ?? "Tuck shop"} · R{item.price.toFixed(2)} · {item.stockQuantity} in stock
                 </Text>
+                {item.returnableEnabled ? (
+                  <Text style={styles.returnable}>
+                    Returnable · R{Number(item.returnablePrice ?? 0).toFixed(2)} deposit each
+                  </Text>
+                ) : null}
               </View>
               <StatusPill label={item.category} />
             </View>
@@ -86,7 +91,18 @@ export default function ShopScreen() {
               <Link href={`/product/${item.id}`} style={styles.details}>
                 Details
               </Link>
-              <PrimaryButton title="Add" onPress={() => add({ productId: item.id, name: item.name, price: item.price })} />
+              <PrimaryButton
+                title="Add"
+                onPress={() =>
+                  add({
+                    productId: item.id,
+                    name: item.name,
+                    price: item.price,
+                    returnableEnabled: item.returnableEnabled,
+                    returnablePrice: item.returnablePrice,
+                  })
+                }
+              />
             </View>
           </Card>
         )}
@@ -109,6 +125,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 },
   name: { color: tokens.ink, fontWeight: "800", fontSize: 15 },
   meta: { color: tokens.steel, fontSize: 12, fontWeight: "600" },
+  returnable: { color: "#1C7C54", fontSize: 12, fontWeight: "800" },
   details: { color: tokens.signalStrong, fontWeight: "800" },
   empty: { color: tokens.steel, textAlign: "center", marginTop: 16 },
 });

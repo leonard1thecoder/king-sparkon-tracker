@@ -39,9 +39,20 @@ export default function ProductDetails() {
           <Text>
             {product.stockQuantity} in stock · {product.category}
           </Text>
+          {product.returnableEnabled ? (
+            <Text>Returnable · R{Number(product.returnablePrice ?? 0).toFixed(2)} deposit each — declare empties in the cart.</Text>
+          ) : null}
           <PrimaryButton
             title="Add to cart"
-            onPress={() => add({ productId: product.id, name: product.name, price: product.price })}
+            onPress={() =>
+              add({
+                productId: product.id,
+                name: product.name,
+                price: product.price,
+                returnableEnabled: product.returnableEnabled,
+                returnablePrice: product.returnablePrice,
+              })
+            }
           />
         </Card>
       ) : null}

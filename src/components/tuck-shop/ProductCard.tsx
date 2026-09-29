@@ -5,7 +5,7 @@ import { Eye, ShoppingCart, Package, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Product } from "@/lib/types/backend";
 import { Button } from "@/components/ui/Button";
-import { money, productImage, productPrice } from "@/lib/tuck-shop/cart";
+import { money, productImage, productPrice, returnableDeposit } from "@/lib/tuck-shop/cart";
 
 function SaleCountdown({ endsAt }: { endsAt: string }) {
   const [now, setNow] = useState(() => Date.now());
@@ -91,6 +91,11 @@ export function ProductCard({
               Sale
             </span>
           )}
+          {product.returnableEnabled && (
+            <span className="inline-flex items-center rounded-full border border-[var(--confirm)]/30 bg-white/90 px-2 py-0.5 text-[0.6rem] font-black uppercase tracking-[0.12em] text-[var(--confirm)] backdrop-blur-sm">
+              Returnable
+            </span>
+          )}
         </div>
 
         {/* Quick-view overlay on hover */}
@@ -126,6 +131,11 @@ export function ProductCard({
             {hasDiscount && (
               <p className="money text-xs font-semibold text-[var(--muted)] line-through">
                 {money(product.price)}
+              </p>
+            )}
+            {product.returnableEnabled && (
+              <p className="mt-1 text-[0.65rem] font-black uppercase tracking-[0.08em] text-[var(--confirm)]">
+                +{money(returnableDeposit(product))} returnable deposit
               </p>
             )}
             {hasDiscount && product.saleEndsAt ? (

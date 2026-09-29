@@ -38,6 +38,8 @@ export type Product = {
   salePrice?: number;
   stockQuantity: number;
   productImageUrl?: string | null;
+  returnableEnabled?: boolean;
+  returnablePrice?: number;
 };
 
 export type TransactionItemPayload = {
@@ -55,18 +57,26 @@ export type TransactionPayload = {
 };
 
 export type TuckShopPurchaseItem = {
+  transactionItemId?: number;
   productId: number;
   productName: string;
   productImageUrl?: string | null;
   quantity: number;
   unitPrice: number;
   lineTotal: number;
+  emptiesReturned?: number;
+  depositUnitPrice?: number;
+  emptiesCreditTotal?: number;
+  netLineTotal?: number;
 };
 
 export type TuckShopPurchase = {
   transactionId: number;
   businessName?: string | null;
   productTotal: number;
+  depositTotal?: number;
+  emptiesCreditTotal?: number;
+  netTotal?: number;
   paymentStatus?: string | null;
   paymentReference?: string | null;
   paymentUrl?: string | null;
@@ -80,6 +90,23 @@ export type TipPayload = {
   tipAmount: number;
   callbackUrl: string;
   clientContact?: string;
+};
+
+export type ReturnableRefund = {
+  id: number;
+  transactionId: number;
+  transactionItemId: number;
+  productId: number;
+  productName: string;
+  quantity: number;
+  depositUnitPrice: number;
+  amount: number;
+  status: "REQUESTED" | "APPROVED" | "REJECTED";
+  requestedAt?: string | null;
+  requestedByUsername?: string | null;
+  decidedAt?: string | null;
+  decidedByUsername?: string | null;
+  rejectReason?: string | null;
 };
 
 export type Tip = TipPayload & {
