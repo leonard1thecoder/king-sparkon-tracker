@@ -162,6 +162,30 @@ export interface FollowResponse {
   following: boolean;
 }
 
+export type RefundKind = "PRODUCT_ITEM" | "TICKET";
+
+export type RefundStatus = "REQUESTED" | "APPROVED" | "REJECTED";
+
+export interface RefundRequest {
+  id: number;
+  kind: RefundKind;
+  transactionId?: number | null;
+  transactionItemId?: number | null;
+  userTicketId?: string | null;
+  eventId?: string | null;
+  productName?: string | null;
+  quantity?: number | null;
+  grossAmount: number;
+  feeAmount: number;
+  netAmount: number;
+  status: RefundStatus;
+  requestedAt?: string | null;
+  requestedByUsername?: string | null;
+  decidedAt?: string | null;
+  decidedByUsername?: string | null;
+  rejectReason?: string | null;
+}
+
 export type EventSetType = "VOW" | "MANUAL";
 
 export type EventSetStatus = "OPEN" | "BOOKED" | "CANCELLED";

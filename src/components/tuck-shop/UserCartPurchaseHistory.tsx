@@ -16,7 +16,11 @@ import {
   verifyTuckShopCollection,
   type OnlineTuckShopPurchase,
 } from "@/lib/api/tuck-shop";
-import type { ReturnableRefund } from "@/lib/types/backend";
+import {
+  listMyRefunds,
+  requestProductRefund,
+} from "@/lib/api/refunds";
+import type { RefundRequest, ReturnableRefund } from "@/lib/types/backend";
 import {
   money,
   readTuckShopPurchaseHistory,
@@ -49,6 +53,7 @@ type PurchaseView = {
     emptiesReturned?: number;
     emptiesCreditTotal?: number;
     netLineTotal?: number;
+    refunded?: boolean;
   }>;
   fulfilmentStatus: string;
   barcodesRequired: number;
@@ -110,6 +115,53 @@ export function UserCartPurchaseHistory() {
   const [refunds, setRefunds] = useState<ReturnableRefund[]>([]);
   const [refundQty, setRefundQty] = useState<Record<string, number>>({});
   const [refundBusy, setRefundBusy] = useState<string | null>(null);
+  const [purchaseRefunds, setPurchaseRefunds] = useState<RefundRequest[]>([]);
+  const [purchaseRefundBusy, setPurchaseRefundBusy] = useState<string | null>(null);
+  const [purchaseRefundConfirm, setPurchaseRefundConfirm] = useState<string | null>(null);
+
+  function refundKey(transactionId: number | undefined, itemId: number | undefined) {
+    return `${transactionId ?? 0}:${itemId ?? 0}`;
+  }
+
+  function purchaseRefundForItem(transactionId: number | undefined, itemId: number | undefined) {
+    return purchaseRefunds.find(
+      (refund) =>
+        refund.kind === "PRODUCT_ITEM" &&
+        refund.transactionId === transactionId &&
+        refund.transactionItemId === itemId &&
+        (refund.status === "REQUESTED" || refund.status === "APPROVED"),
+    );
+  }
+
+  function refundFee(net: number) {
+    return Math.round(Number(net ?? 0) * 7) / 100;
+  }
+
+  async function refreshPurchaseRefunds() {
+    try {
+      const rows = await listMyRefunds();
+      setPurchaseRefunds(Array.isArray(rows) ? rows.filter((refund) => refund.kind === "PRODUCT_ITEM") : []);
+    } catch {
+      setPurchaseRefunds([]);
+    }
+  }
+
+  async function submitPurchaseRefund(purchase: PurchaseView, itemId: number) {
+    const key = refundKey(purchase.transactionId, itemId);
+    if (!purchase.transactionId) return;
+    setPurchaseRefundBusy(key);
+    setError(null);
+    try {
+      await requestProductRefund({ transactionId: purchase.transactionId, transactionItemId: itemId });
+      setPurchaseRefundConfirm(null);
+      await refreshPurchaseRefunds();
+      setSuccess("Purchase refund requested — the counter pays out after staff approval.");
+    } catch (exception) {
+      setError(normalizeApiError(exception).message);
+    } finally {
+      setPurchaseRefundBusy(null);
+    }
+  }
 
   function refundKey(transactionId: number | undefined, itemId: number | undefined) {
     return `${transactionId ?? 0}:${itemId ?? 0}`;
@@ -164,6 +216,7 @@ export function UserCartPurchaseHistory() {
         .map(fromSaved);
       setPurchaseHistory([...liveViews, ...savedViews].sort((left, right) => right.createdAt.localeCompare(left.createdAt)));
       void refreshRefunds();
+      void refreshPurchaseRefunds();
     } catch (exception) {
       setPurchaseHistory(readTuckShopPurchaseHistory().map(fromSaved));
       setError(`Live collection status is unavailable. Showing saved carts: ${normalizeApiError(exception).message}`);
@@ -311,6 +364,18 @@ export function UserCartPurchaseHistory() {
                           : 0;
                         const key = refundKey(purchase.transactionId, item.transactionItemId);
                         const wanted = Math.min(Math.max(refundQty[key] ?? refundable, 1), Math.max(refundable, 1));
+                        const existingRefund = purchase.source === "LIVE" ? purchaseRefundForItem(purchase.transactionId, item.transactionItemId) : undefined;
+                        const netPaid = Number(item.netLineTotal ?? item.lineTotal ?? 0);
+                        const fee = refundFee(netPaid);
+                        const payout = netPaid - fee;
+                        const canRequestRefund =
+                          purchase.source === "LIVE" &&
+                          item.transactionItemId != null &&
+                          !item.refunded &&
+                          purchase.fulfilmentStatus !== "COLLECTED" &&
+                          purchase.paymentStatus !== "PENDING" &&
+                          purchase.paymentStatus !== "FAILED" &&
+                          !existingRefund;
                         return (
                           <div key={`${purchase.id}-${item.productId}`} className="flex flex-col gap-2 rounded-[1rem] border border-[var(--line)] bg-white p-3 sm:flex-row sm:items-center sm:justify-between">
                             <div>
@@ -347,6 +412,47 @@ export function UserCartPurchaseHistory() {
                                   >
                                     {refundBusy === key ? "Requesting..." : "Request returnable"}
                                   </button>
+                                </div>
+                              ) : null}
+                              {item.refunded ? (
+                                <p className="mt-1 text-xs font-black uppercase tracking-[0.08em] text-[var(--steel)]">Refunded in full</p>
+                              ) : existingRefund ? (
+                                <p className="mt-1 text-xs font-bold text-[var(--steel)]">
+                                  Purchase refund #{existingRefund.id} · payout {money(existingRefund.netAmount)} ·{" "}
+                                  {existingRefund.status === "REQUESTED" ? <span className="text-[var(--signal)]">awaiting staff approval</span> : null}
+                                  {existingRefund.status === "APPROVED" ? <span className="text-[var(--confirm)]">approved · cash paid out</span> : null}
+                                  {existingRefund.status === "REJECTED" ? <span className="text-[var(--danger)]">rejected{existingRefund.rejectReason ? ` · ${existingRefund.rejectReason}` : ""}</span> : null}
+                                </p>
+                              ) : canRequestRefund ? (
+                                <div className="mt-2 flex flex-wrap items-center gap-2">
+                                  <span className="text-xs font-bold text-[var(--steel)]">Refund full line · get {money(payout)} after {money(fee)} fee</span>
+                                  {purchaseRefundConfirm === key ? (
+                                    <>
+                                      <button
+                                        type="button"
+                                        onClick={() => void submitPurchaseRefund(purchase, item.transactionItemId as number)}
+                                        disabled={purchaseRefundBusy === key}
+                                        className="inline-flex min-h-9 items-center justify-center rounded-full border border-[var(--danger)] bg-[var(--danger)] px-4 text-xs font-black text-white disabled:opacity-50"
+                                      >
+                                        {purchaseRefundBusy === key ? "Requesting..." : "Confirm refund"}
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => setPurchaseRefundConfirm(null)}
+                                        className="inline-flex min-h-9 items-center justify-center rounded-full border border-[var(--line)] px-4 text-xs font-black text-[var(--steel)]"
+                                      >
+                                        Cancel
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={() => setPurchaseRefundConfirm(key)}
+                                      className="inline-flex min-h-9 items-center justify-center rounded-full border border-[var(--danger)]/40 bg-white px-4 text-xs font-black text-[var(--danger)] hover:border-[var(--danger)]"
+                                    >
+                                      Request refund
+                                    </button>
+                                  )}
                                 </div>
                               ) : null}
                             </div>

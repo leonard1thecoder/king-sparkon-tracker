@@ -12,6 +12,8 @@ import {
   shareTicketByUsername,
   uploadTicketVerificationPhoto,
 } from "@/lib/api/tickets";
+import { listMyRefunds, requestTicketRefund } from "@/lib/api/refunds";
+import type { RefundRequest } from "@/types/tickets";
 import { addServiceToCart } from "@/lib/tuck-shop/cart";
 import type { TicketEvent, UserTicket } from "@/types/tickets";
 
@@ -24,6 +26,7 @@ const TICKETS_PER_PAGE = 6;
 
 export function DashboardMyTickets() {
   const [items, setItems] = useState<TicketWithEvent[]>([]);
+  const [refunds, setRefunds] = useState<RefundRequest[]>([]);
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,6 +48,12 @@ export function DashboardMyTickets() {
         setItems(liveTicketsWithEvents);
         setPage(0);
         setError(null);
+        try {
+          const rows = await listMyRefunds();
+          if (mounted) setRefunds(Array.isArray(rows) ? rows.filter((refund) => refund.kind === "TICKET") : []);
+        } catch {
+          if (mounted) setRefunds([]);
+        }
       } catch (loadError) {
         if (!mounted) return;
         setItems([]);
@@ -115,6 +124,22 @@ export function DashboardMyTickets() {
     });
   }
 
+  function refundForTicket(ticketId: string) {
+    return refunds.find(
+      (refund) => refund.userTicketId === ticketId && (refund.status === "REQUESTED" || refund.status === "APPROVED"),
+    ) ?? refunds.find((refund) => refund.userTicketId === ticketId);
+  }
+
+  async function handleTicketRefund(ticketId: string) {
+    await requestTicketRefund({ userTicketId: ticketId });
+    try {
+      const rows = await listMyRefunds();
+      setRefunds(Array.isArray(rows) ? rows.filter((refund) => refund.kind === "TICKET") : []);
+    } catch {
+      // keep existing list; card shows backend errors inline
+    }
+  }
+
   return (
     <>
       <DashboardHeader
@@ -178,6 +203,7 @@ export function DashboardMyTickets() {
                 ticket={item.ticket}
                 eventName={item.event.name}
                 eventDate={item.event.eventDate}
+                eventTime={item.event.eventTime}
                 eventLocation={item.event.location}
                 onCapturePhoto={(file) => captureVerificationPhoto(item, file)}
                 onShare={(username) => shareTicket(item, username)}
@@ -186,6 +212,8 @@ export function DashboardMyTickets() {
                 coolerboxAdded={item.ticket.coolerboxAdded}
                 onAddFreeCoolerbox={() => addFreeCoolerbox(item)}
                 onAddPricedCoolerbox={() => addPricedCoolerboxToCart(item)}
+                ticketRefund={refundForTicket(item.ticket.id)}
+                onRequestTicketRefund={handleTicketRefund}
               />
             ) : null)}
           </div>

@@ -53,6 +53,7 @@ export type TuckShopPurchaseHistoryItem = {
     depositUnitPrice?: number;
     emptiesCreditTotal?: number;
     netLineTotal?: number;
+    refunded?: boolean;
   }>;
 };
 
@@ -279,6 +280,7 @@ function normalizePurchaseHistoryItem(item: Partial<TuckShopPurchaseHistoryItem>
       depositUnitPrice: Number(line.depositUnitPrice ?? 0),
       emptiesCreditTotal: Number(line.emptiesCreditTotal ?? 0),
       netLineTotal: Number(line.netLineTotal ?? line.lineTotal ?? 0),
+      refunded: Boolean(line.refunded),
     })),
   };
 }
@@ -347,6 +349,7 @@ export function saveTuckShopPurchaseHistory(purchase: TuckShopPurchase) {
       depositUnitPrice: item.depositUnitPrice ?? 0,
       emptiesCreditTotal: item.emptiesCreditTotal ?? 0,
       netLineTotal: item.netLineTotal ?? item.lineTotal,
+      refunded: item.refunded ?? false,
     })),
   };
 
