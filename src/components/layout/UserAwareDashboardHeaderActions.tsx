@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ShoppingCart } from "lucide-react";
+import { ArtistBalanceHeaderAction } from "@/components/layout/ArtistBalanceHeaderAction";
 import { DashboardHeaderActions } from "@/components/layout/DashboardHeaderActions";
 import { FavoriteHeaderAction } from "@/components/layout/FavoriteHeaderAction";
 import { WorkerOnlineBarcodeHeaderAction } from "@/components/layout/WorkerOnlineBarcodeHeaderAction";
@@ -106,14 +107,28 @@ function isWorkerWorkspace(role: string) {
   return role.toLowerCase().includes("worker");
 }
 
+function isArtistWorkspace(role: string) {
+  return role.toLowerCase().includes("artist");
+}
+
 export function UserAwareDashboardHeaderActions({ role }: { role: string }) {
   const showUserCart = useMemo(() => isUserWorkspace(role), [role]);
   const showWorkerOnlineBarcode = useMemo(() => isWorkerWorkspace(role), [role]);
+  const showArtistBalance = useMemo(() => isArtistWorkspace(role), [role]);
 
   if (showWorkerOnlineBarcode) {
     return (
       <div className="flex items-center justify-end gap-2">
         <WorkerOnlineBarcodeHeaderAction />
+        <DashboardHeaderActions role={role} />
+      </div>
+    );
+  }
+
+  if (showArtistBalance) {
+    return (
+      <div className="flex items-center justify-end gap-2">
+        <ArtistBalanceHeaderAction />
         <DashboardHeaderActions role={role} />
       </div>
     );

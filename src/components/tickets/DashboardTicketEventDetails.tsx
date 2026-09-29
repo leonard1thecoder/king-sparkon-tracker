@@ -11,6 +11,7 @@ import { getTicketBannerImage } from "@/components/tickets/ticketBannerImage";
 import { addEventComment, getEventComments } from "@/services/ticketEngagementService";
 import { getEventTotals } from "@/services/ticketService";
 import { getLiveEventById } from "@/lib/api/tickets";
+import { EventSetVows } from "@/components/tickets/EventSetVows";
 import type { TicketEvent, TicketEventComment } from "@/types/tickets";
 
 type DashboardTicketEventDetailsProps = { eventId: string };
@@ -176,6 +177,8 @@ export function DashboardTicketEventDetails({ eventId }: DashboardTicketEventDet
         {event.marketplaceHubEnabled ? (
           <MarketplaceHubProducts businessId={event.businessId ?? null} hubPrice={event.marketplaceHubPrice ?? null} cartHref="/dashboard/user/shop/cart" />
         ) : null}
+
+        <EventSetVows eventId={event.id} eventStatus={event.status} />
 
         <section className="rounded-[2.25rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-7"><div className="flex items-center gap-3"><MessageCircle className="h-5 w-5 text-[var(--signal)]" /><div><p className="font-mono text-xs font-black uppercase tracking-[0.16em] text-[var(--signal)]">Event comments</p><h2 className="text-2xl font-black tracking-[-0.04em]">Ask questions before buying</h2></div></div>{commentsError ? <p className="mt-4 rounded-2xl border border-[var(--danger)]/25 bg-[var(--danger)]/10 p-4 text-sm font-bold text-[var(--danger)]">{commentsError}</p> : null}<div className="mt-6 grid gap-3 md:grid-cols-[0.35fr_1fr_auto]"><input value={displayName} onChange={(changeEvent) => setDisplayName(changeEvent.target.value)} placeholder="Display name" className="min-h-12 rounded-2xl border border-[var(--line)] bg-[var(--surface)] px-4 text-sm font-bold outline-none focus:border-[var(--signal)]" /><input value={comment} onChange={(changeEvent) => setComment(changeEvent.target.value)} placeholder="Write a comment about this event" className="min-h-12 rounded-2xl border border-[var(--line)] bg-[var(--surface)] px-4 text-sm font-bold outline-none focus:border-[var(--signal)]" /><button type="button" onClick={submitComment} className="min-h-12 rounded-2xl border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)]">Comment</button></div>{commentError ? <p className="mt-3 text-sm font-bold text-[var(--danger)]">{commentError}</p> : null}<div className="mt-6 grid gap-3">{comments.length === 0 ? <p className="rounded-2xl border border-dashed border-[var(--line-strong)] bg-[var(--surface)] p-4 text-sm font-bold text-[var(--steel)]">No comments yet.</p> : comments.map((item) => <article key={item.id} className="rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-4"><p className="font-black text-[var(--ink)]">{item.displayName}</p><p className="mt-2 text-sm leading-6 text-[var(--steel)]">{item.comment}</p></article>)}</div></section>
       </main>

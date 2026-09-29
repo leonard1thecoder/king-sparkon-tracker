@@ -19,6 +19,7 @@ type FormState = {
   description: string;
   eventDate: string;
   eventTime: string;
+  eventEndTime: string;
   location: string;
   status: EventStatus;
   ticketTypes: Record<TicketType, TicketTypeInput>;
@@ -36,6 +37,7 @@ const initialState: FormState = {
   description: "",
   eventDate: "",
   eventTime: "",
+  eventEndTime: "",
   location: "",
   status: "PUBLISHED",
   ticketTypes: {
@@ -95,6 +97,9 @@ export function CreateEventForm() {
 
     const selectedDateTime = new Date(`${formState.eventDate}T${formState.eventTime}`);
     if (selectedDateTime < new Date()) return "Date must not be in the past.";
+    if (formState.eventEndTime && formState.eventEndTime <= formState.eventTime) {
+      return "Event end time must be after the start time — sets cannot run past it.";
+    }
 
     for (const type of ticketTypes) {
       const price = Number(formState.ticketTypes[type].price);
@@ -139,6 +144,7 @@ export function CreateEventForm() {
       location: formState.location,
       eventDate: formState.eventDate,
       eventTime: formState.eventTime,
+      eventEndTime: formState.eventEndTime || undefined,
       status: formState.status,
       ticketTypes: ticketTypes.map((type) => ({
         type,
@@ -206,6 +212,10 @@ export function CreateEventForm() {
         <label className="grid gap-2">
           <span className="text-sm font-black">Event time</span>
           <input type="time" value={formState.eventTime} onChange={(event) => updateField("eventTime", event.target.value)} className="min-h-13 rounded-[1.35rem] border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]" />
+        </label>
+        <label className="grid gap-2">
+          <span className="text-sm font-black">Event end time <span className="font-bold text-[var(--muted)]">(sets cannot run past it)</span></span>
+          <input type="time" value={formState.eventEndTime} onChange={(event) => updateField("eventEndTime", event.target.value)} className="min-h-13 rounded-[1.35rem] border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]" />
         </label>
         <label className="grid gap-2 lg:col-span-2">
           <span className="text-sm font-black">Banner image</span>
