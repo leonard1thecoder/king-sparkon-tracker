@@ -17,6 +17,7 @@ export interface TicketEvent {
   location: string;
   eventDate: string;
   eventTime: string;
+  eventEndTime?: string | null;
   bannerUrl?: string;
   status: EventStatus;
   ticketTypes: EventTicketType[];
@@ -115,6 +116,7 @@ export interface CreateTicketEventPayload {
   location: string;
   eventDate: string;
   eventTime: string;
+  eventEndTime?: string | null;
   bannerUrl?: string;
   status: EventStatus;
   ticketTypes: Array<Pick<EventTicketType, "type" | "price" | "capacity">>;
@@ -158,4 +160,99 @@ export interface FollowResponse {
   businessId: string;
   userId: string;
   following: boolean;
+}
+
+export type EventSetType = "VOW" | "MANUAL";
+
+export type EventSetStatus = "OPEN" | "BOOKED" | "CANCELLED";
+
+export type SetBookingStatus = "PENDING" | "ACCEPTED" | "REJECTED" | "CONFIRMED";
+
+export interface EventSet {
+  id: string;
+  eventId: string;
+  businessId?: number | null;
+  eventName: string;
+  eventDate: string;
+  eventTime: string;
+  eventEndTime?: string | null;
+  name: string;
+  setType: EventSetType;
+  status: EventSetStatus;
+  startTime: string;
+  endTime: string;
+  price?: number | null;
+  applicationCount: number;
+  totalVows: number;
+  bookingCount: number;
+  topArtistName?: string | null;
+  topVowCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SetApplication {
+  id: string;
+  setId: string;
+  artistId: number;
+  artistName: string;
+  status: SetBookingStatus;
+  vowCount: number;
+  appliedAt: string;
+}
+
+export interface EventSetBooking {
+  id: string;
+  setId: string;
+  setName: string;
+  eventId: string;
+  eventName: string;
+  artistId: number;
+  artistName: string;
+  offerAmount: number;
+  status: SetBookingStatus;
+  requestedAt: string;
+  respondedAt?: string | null;
+  paidAt?: string | null;
+  paymentReference?: string | null;
+}
+
+export interface ArtistCartLine {
+  kind: "ARTIST_BOOKING";
+  referenceId: string;
+  label: string;
+  amount: number;
+}
+
+export interface CompleteDraftResult {
+  eventId: string;
+  status: EventStatus;
+  published: boolean;
+  cartLines: ArtistCartLine[];
+}
+
+export interface ArtistBusinessBalance {
+  businessId: number;
+  businessName?: string | null;
+  available: number;
+}
+
+export interface ArtistBalance {
+  totalAvailable: number;
+  totalPending: number;
+  minimumWithdrawal: number;
+  businesses: ArtistBusinessBalance[];
+}
+
+export type ArtistWithdrawalStatus = "REQUESTED" | "APPROVED" | "REJECTED" | "PAID";
+
+export interface ArtistWithdrawal {
+  id: number;
+  businessId: number;
+  grossAmount: number;
+  paypalEmail?: string | null;
+  status: ArtistWithdrawalStatus;
+  requestedAt?: string | null;
+  decidedAt?: string | null;
+  decidedByUsername?: string | null;
 }

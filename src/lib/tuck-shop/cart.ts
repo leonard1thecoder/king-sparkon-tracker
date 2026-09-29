@@ -17,7 +17,7 @@ export type TuckShopCartTicketLine = {
   quantity: number;
 };
 
-export type ServiceLineKind = "BASIC_CARE" | "PERFORMANCE_CARE" | "BUSINESS_CARE" | "MARKETPLACE_HUB" | "COOLER_BOX" | "DEV_HUB";
+export type ServiceLineKind = "BASIC_CARE" | "PERFORMANCE_CARE" | "BUSINESS_CARE" | "MARKETPLACE_HUB" | "COOLER_BOX" | "DEV_HUB" | "ARTIST_BOOKING";
 
 export type TuckShopCartServiceLine = {
   kind: "SERVICE";
@@ -205,6 +205,8 @@ export function serviceKindLabel(kind: ServiceLineKind) {
       return "Coolerbox";
     case "DEV_HUB":
       return "Dev Hub build";
+    case "ARTIST_BOOKING":
+      return "Artist booking";
     default:
       return "Service";
   }

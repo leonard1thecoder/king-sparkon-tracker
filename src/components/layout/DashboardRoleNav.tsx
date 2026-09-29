@@ -73,6 +73,7 @@ export const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Workers", href: "/dashboard/owner/workers", icon: UsersRound, description: "Accounts and privileges", shortLabel: "Workers" },
     { label: "Product Transactions", href: "/dashboard/owner/transactions", icon: ReceiptText, description: "Cash, card and app purchases", shortLabel: "Sales" },
     { label: "Withdrawals", href: "/dashboard/owner/withdrawals", icon: Landmark, description: "Unified balance and payout history", shortLabel: "Payouts" },
+    { label: "Artist Payouts", href: "/dashboard/owner/artist-payouts", icon: Mic2, description: "Approve artist withdrawals", shortLabel: "Artists" },
     { label: "Tips", href: "/dashboard/owner/tips", icon: WalletCards, description: "Worker tip activity", shortLabel: "Tips" },
     { label: "Tickets", href: "/dashboard/owner/tickets", icon: Ticket, description: "Events and ticket sales", shortLabel: "Tickets" },
     { label: "Jobs", href: "/dashboard/owner/jobs", icon: BriefcaseBusiness, description: "Business opportunities", shortLabel: "Jobs" },
@@ -111,8 +112,10 @@ export const navByRole: Record<UserRole, NavItem[]> = {
   Artist: [
     { label: "Dashboard", href: "/dashboard/artist", icon: LayoutDashboard, description: "Overview and opportunities", shortLabel: "Home" },
     { label: "Drafted Events", href: "/dashboard/artist/drafted", icon: ClipboardList, description: "Discover events looking for artists", shortLabel: "Drafted" },
+    { label: "Performance Sets", href: "/dashboard/artist/sets", icon: Mic2, description: "Apply for open sets and offers", shortLabel: "Sets" },
     { label: "Booked Events", href: "/dashboard/artist/booked", icon: Ticket, description: "Your confirmed performances", shortLabel: "Booked" },
     { label: "Schedule", href: "/dashboard/artist/schedule", icon: CalendarDays, description: "Monthly performance calendar", shortLabel: "Schedule" },
+    { label: "Payouts", href: "/dashboard/artist/payouts", icon: WalletCards, description: "Booking balance and withdrawals", shortLabel: "Payouts" },
     { label: "Profile", href: "/dashboard/artist/profile", icon: UserRound, description: "Bio, links and fee", shortLabel: "Profile" },
     { label: "Settings", href: "/dashboard/artist/settings", icon: Settings, description: "Artist preferences", shortLabel: "Settings" },
   ],
