@@ -20,19 +20,27 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import {
+  cartDepositTotal,
+  cartEmptiesCreditTotal,
+  cartEmptiesReturnedCount,
   cartLineCount,
+  cartNetTotal,
+  cartReturnableUnitCount,
   cartTicketTotal,
-  cartTotal,
   isProductLine,
   isServiceLine,
   isTicketLine,
+  lineEmptiesCreditTotal,
+  lineEmptiesReturned,
   money,
   productImage,
   productPrice,
   readTuckShopCart,
   removeTuckShopCartLine,
+  returnableDeposit,
   serviceKindLabel,
   type TuckShopCartLine,
+  updateTuckShopCartEmpties,
   updateTuckShopCartQuantity,
 } from "@/lib/tuck-shop/cart";
 
@@ -94,6 +102,10 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
     setCart(updateTuckShopCartQuantity("TICKET", line.event.id, quantity, line.ticketType));
   }
 
+  function updateEmpties(productId: number, empties: number) {
+    setCart(updateTuckShopCartEmpties(productId, empties));
+  }
+
   function removeFromCart(line: TuckShopCartLine) {
     if (isProductLine(line)) {
       setCart(removeTuckShopCartLine("PRODUCT", line.product.id));
@@ -128,7 +140,7 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
         idempotencyKey: checkoutIdempotencyKey(),
         buyerName: user.name,
         buyerEmail: user.emailAddress,
-        products: productLines.map((line) => ({ productId: line.product.id, quantity: line.quantity })),
+        products: productLines.map((line) => ({ productId: line.product.id, quantity: line.quantity, emptiesReturned: lineEmptiesReturned(line) })),
         tickets: ticketLines.map((line) => ({ eventId: line.event.id, ticketType: line.ticketType, quantity: line.quantity })),
         services: serviceLines.map((line) => ({
           kind: line.serviceKind,
@@ -213,7 +225,29 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
                       <p className="mt-1 font-black text-[var(--ink)]">{title}</p>
                       <p className="mt-1 text-xs font-semibold text-[var(--steel)]">{subtitle}</p>
                       <p className="mt-1 text-xs font-semibold text-[var(--steel)]">{money(unitPrice)} each · max {maxQuantity}</p>
+                      {isProductLine(line) && line.product.returnableEnabled ? (
+                        <p className="mt-1 inline-flex items-center gap-1 rounded-full border border-[var(--confirm)]/30 bg-[var(--confirm)]/10 px-2 py-0.5 text-[0.68rem] font-black uppercase tracking-[0.08em] text-[var(--confirm)]">
+                          Returnable · {money(returnableDeposit(line.product))} deposit each
+                        </p>
+                      ) : null}
+                      {isProductLine(line) && lineEmptiesCreditTotal(line) > 0 ? (
+                        <p className="mt-1 text-xs font-black text-[var(--confirm)]">Empties credit −{money(lineEmptiesCreditTotal(line))}</p>
+                      ) : null}
                     </div>
+                    {isProductLine(line) && line.product.returnableEnabled ? (
+                      <label className="grid gap-1 text-xs font-black uppercase tracking-[0.08em] text-[var(--steel)]">
+                        Empties back · max {line.quantity}
+                        <input
+                          type="number"
+                          min={0}
+                          max={line.quantity}
+                          value={lineEmptiesReturned(line)}
+                          onChange={(event) => updateEmpties(line.product.id, Number(event.target.value))}
+                          disabled={saving}
+                          className="min-h-11 w-24 rounded-full border border-[var(--line)] bg-[var(--surface)] px-4 text-sm font-black outline-none focus:border-[var(--signal)] disabled:opacity-50"
+                        />
+                      </label>
+                    ) : null}
                     {isServiceLine(line) ? (
                       <span className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--surface)] px-4 text-sm font-black text-[var(--steel)]">× 1</span>
                     ) : (
@@ -263,8 +297,15 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
                   <span>{cartLineCount(cart)} items</span>
                 </div>
                 {cartTicketTotal(cart) > 0 ? <div className="flex justify-between gap-3 text-sm font-bold"><span>Tickets preview</span><span className="money">{money(cartTicketTotal(cart))}</span></div> : null}
-                <div className="flex justify-between gap-3 border-t border-white/10 pt-3 text-xl font-black"><span>Cart preview</span><span className="money text-[var(--gold)]">{money(cartTotal(cart))}</span></div>
-                <p className="text-xs leading-5 text-white/62">The backend recalculates the trusted amount before PayFast payment.</p>
+                {cartReturnableUnitCount(cart) > 0 ? (
+                  <>
+                    <div className="flex justify-between gap-3 text-sm font-bold"><span>Returnables in cart</span><span>{cartEmptiesReturnedCount(cart)} of {cartReturnableUnitCount(cart)} empties back</span></div>
+                    <div className="flex justify-between gap-3 text-sm font-bold"><span>Returnable deposits</span><span className="money">{money(cartDepositTotal(cart))}</span></div>
+                    {cartEmptiesCreditTotal(cart) > 0 ? <div className="flex justify-between gap-3 text-sm font-bold text-[var(--confirm)]"><span>Empties credit</span><span className="money">−{money(cartEmptiesCreditTotal(cart))}</span></div> : null}
+                  </>
+                ) : null}
+                <div className="flex justify-between gap-3 border-t border-white/10 pt-3 text-xl font-black"><span>To pay</span><span className="money text-[var(--gold)]">{money(cartNetTotal(cart))}</span></div>
+                <p className="text-xs leading-5 text-white/62">Return empties at the counter or declare them above to reduce the deposit. The backend recalculates the trusted amount before PayFast payment.</p>
               </div>
 
               <Button onClick={checkout} disabled={saving || cart.length === 0} className="w-full">

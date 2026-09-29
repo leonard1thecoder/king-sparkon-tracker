@@ -22,6 +22,9 @@ type PendingLine = {
   quantity: number;
   automaticBarcode: boolean;
   unitPrice: number;
+  emptiesReturned: number;
+  returnableEnabled: boolean;
+  returnablePrice: number;
 };
 
 export function WorkerScanCheckoutWorkspace() {
@@ -48,6 +51,8 @@ export function WorkerScanCheckoutWorkspace() {
           const qty = Number.isInteger(quantity) && quantity > 0 ? quantity : 1;
           const barcode = automatic ? "" : (barcodeParam ?? productBarcode(product));
           const unitPrice = Number(product.salePrice ?? product.price ?? 0);
+          const returnableEnabled = Boolean(product.returnableEnabled);
+          const returnablePrice = Number(product.returnablePrice ?? 0);
           setScannedProduct({
             token: `${Date.now()}-query-${product.id}-${qty}`,
             productId: product.id,
@@ -56,6 +61,8 @@ export function WorkerScanCheckoutWorkspace() {
             scannedValue: barcode || "AUTO-GENERATED",
             automaticBarcode: automatic,
             unitPrice,
+            returnableEnabled,
+            returnablePrice,
           });
           // also push to pending storage for Quantity persistence
           if (typeof window !== "undefined") {
@@ -63,8 +70,8 @@ export function WorkerScanCheckoutWorkspace() {
               const existing: PendingLine[] = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
               const next = [...existing];
               const idx = next.findIndex((l) => l.productId === product.id && l.automaticBarcode === automatic && l.barcode === barcode);
-              if (idx >= 0) next[idx] = { ...next[idx], quantity: next[idx].quantity + qty };
-              else next.push({ productId: product.id, productName: product.name, barcode, quantity: qty, automaticBarcode: automatic, unitPrice });
+              if (idx >= 0) next[idx] = { ...next[idx], quantity: next[idx].quantity + qty, returnableEnabled, returnablePrice };
+              else next.push({ productId: product.id, productName: product.name, barcode, quantity: qty, automaticBarcode: automatic, unitPrice, emptiesReturned: 0, returnableEnabled, returnablePrice });
               localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
             } catch {}
           }
@@ -97,6 +104,8 @@ export function WorkerScanCheckoutWorkspace() {
               scannedValue: first.barcode || "AUTO-GENERATED",
               automaticBarcode: first.automaticBarcode,
               unitPrice: (first as unknown as { unitPrice?: number }).unitPrice,
+              returnableEnabled: Boolean(first.returnableEnabled),
+              returnablePrice: Number(first.returnablePrice ?? 0),
             });
           }
         }

@@ -143,6 +143,7 @@ export type TuckShopPurchaseItemPayload = {
   productId: number;
   quantity: number;
   barcodes?: string[];
+  emptiesReturned?: number;
 };
 
 export type CreateTuckShopPurchasePayload = {
@@ -155,6 +156,7 @@ export type CreateTuckShopPurchasePayload = {
 };
 
 export type TuckShopPurchaseItem = {
+  transactionItemId?: number;
   productId: number;
   productName: string;
   productImageUrl?: string | null;
@@ -162,6 +164,11 @@ export type TuckShopPurchaseItem = {
   unitPrice: number;
   lineTotal: number;
   barcodes?: string[];
+  emptiesReturned?: number;
+  depositUnitPrice?: number;
+  depositTotal?: number;
+  emptiesCreditTotal?: number;
+  netLineTotal?: number;
 };
 
 export type TuckShopPurchase = {
@@ -171,6 +178,9 @@ export type TuckShopPurchase = {
   workerId?: number | null;
   ownerId?: number | null;
   productTotal: number;
+  depositTotal?: number;
+  emptiesCreditTotal?: number;
+  netTotal?: number;
   paymentStatus?: string | null;
   paymentType?: PaymentType | string | null;
   paymentReference?: string | null;
@@ -216,6 +226,31 @@ export type EmbeddedCartServiceItem = {
   referenceId: string;
   label?: string;
   amount: number;
+};
+
+export type ReturnableRefundStatus = "REQUESTED" | "APPROVED" | "REJECTED";
+
+export type ReturnableRefund = {
+  id: number;
+  transactionId: number;
+  transactionItemId: number;
+  productId: number;
+  productName: string;
+  quantity: number;
+  depositUnitPrice: number;
+  amount: number;
+  status: ReturnableRefundStatus;
+  requestedAt?: string | null;
+  requestedByUsername?: string | null;
+  decidedAt?: string | null;
+  decidedByUsername?: string | null;
+  rejectReason?: string | null;
+};
+
+export type CreateReturnableRefundPayload = {
+  transactionId: number;
+  transactionItemId: number;
+  quantity: number;
 };
 
 export type PayFastCartPayment = {

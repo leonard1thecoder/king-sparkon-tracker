@@ -6,6 +6,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   Activity,
   BadgePercent,
+  Banknote,
   BarChart3,
   Bot,
   Boxes,
@@ -87,6 +88,7 @@ export const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Online Orders", href: "/dashboard/worker/orders", icon: PackageSearch, description: "Prepare paid carts", shortLabel: "Orders" },
     { label: "Ticket Entry", href: "/dashboard/worker/tickets/scan", icon: QrCode, description: "Face and QR verification", shortLabel: "Tickets" },
     { label: "Product Sales", href: "/dashboard/worker/transactions", icon: CreditCard, description: "Completed carts", shortLabel: "Sales" },
+    { label: "Returnable Refunds", href: "/dashboard/worker/returnable-refunds", icon: Banknote, description: "Approve empties cash-back", shortLabel: "Refunds" },
     { label: "Tips & QR", href: "/dashboard/worker/tips", icon: WalletCards, description: "Owner-enabled tips", shortLabel: "Tips" },
     { label: "King Sparkon AI", href: "/dashboard/worker/ai", icon: Bot, description: "AI assistant", shortLabel: "AI" },
     { label: "Profile", href: "/dashboard/worker/profile", icon: UserRound, description: "Identity and business assignment", shortLabel: "Profile" },

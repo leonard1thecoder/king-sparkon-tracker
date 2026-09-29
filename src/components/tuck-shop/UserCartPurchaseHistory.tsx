@@ -10,10 +10,13 @@ import { MetricCard } from "@/components/ui/MetricCard";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { normalizeApiError } from "@/lib/api/client";
 import {
+  createReturnableRefund,
+  listMyReturnableRefunds,
   listMyTuckShopPurchases,
   verifyTuckShopCollection,
   type OnlineTuckShopPurchase,
 } from "@/lib/api/tuck-shop";
+import type { ReturnableRefund } from "@/lib/types/backend";
 import {
   money,
   readTuckShopPurchaseHistory,
@@ -31,6 +34,8 @@ type PurchaseView = {
   paymentStatus?: string | null;
   paymentReference?: string | null;
   productTotal: number;
+  emptiesCreditTotal?: number;
+  netTotal?: number;
   items: Array<{
     productId: number;
     productName: string;
@@ -39,6 +44,11 @@ type PurchaseView = {
     unitPrice: number;
     lineTotal: number;
     barcodes?: string[];
+    transactionItemId?: number;
+    depositUnitPrice?: number;
+    emptiesReturned?: number;
+    emptiesCreditTotal?: number;
+    netLineTotal?: number;
   }>;
   fulfilmentStatus: string;
   barcodesRequired: number;
@@ -55,6 +65,8 @@ function fromLive(purchase: OnlineTuckShopPurchase): PurchaseView {
     paymentStatus: purchase.paymentStatus,
     paymentReference: purchase.paymentReference,
     productTotal: Number(purchase.productTotal ?? 0),
+    emptiesCreditTotal: Number(purchase.emptiesCreditTotal ?? 0),
+    netTotal: Number(purchase.netTotal ?? purchase.productTotal ?? 0),
     items: (purchase.items ?? []).map((item) => ({ ...item, barcodes: item.barcodes ?? [] })),
     fulfilmentStatus: String(purchase.fulfilmentStatus ?? "AWAITING_BARCODE_ASSIGNMENT"),
     barcodesRequired: Math.max(Number(purchase.barcodesRequired ?? 0), 0),
@@ -95,6 +107,50 @@ export function UserCartPurchaseHistory() {
   const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [refunds, setRefunds] = useState<ReturnableRefund[]>([]);
+  const [refundQty, setRefundQty] = useState<Record<string, number>>({});
+  const [refundBusy, setRefundBusy] = useState<string | null>(null);
+
+  function refundKey(transactionId: number | undefined, itemId: number | undefined) {
+    return `${transactionId ?? 0}:${itemId ?? 0}`;
+  }
+
+  function refundsForItem(transactionId: number | undefined, itemId: number | undefined) {
+    return refunds.filter((refund) => refund.transactionId === transactionId && refund.transactionItemId === itemId);
+  }
+
+  function reservedRefundQty(transactionId: number | undefined, itemId: number | undefined) {
+    return refundsForItem(transactionId, itemId)
+      .filter((refund) => refund.status === "REQUESTED" || refund.status === "APPROVED")
+      .reduce((sum, refund) => sum + refund.quantity, 0);
+  }
+
+  async function refreshRefunds() {
+    try {
+      const rows = await listMyReturnableRefunds();
+      setRefunds(Array.isArray(rows) ? rows : []);
+    } catch {
+      setRefunds([]);
+    }
+  }
+
+  async function submitRefund(purchase: PurchaseView, itemId: number, maxQty: number, deposit: number) {
+    const key = refundKey(purchase.transactionId, itemId);
+    const quantity = Math.min(Math.max(refundQty[key] ?? maxQty, 1), maxQty);
+    if (!purchase.transactionId) return;
+    setRefundBusy(key);
+    setError(null);
+    try {
+      await createReturnableRefund({ transactionId: purchase.transactionId, transactionItemId: itemId, quantity });
+      setRefundQty((current) => ({ ...current, [key]: 1 }));
+      await refreshRefunds();
+      setSuccess(`Returnable refund requested: ${quantity} empties · ${money(deposit * quantity)} cash at the counter after worker approval.`);
+    } catch (exception) {
+      setError(normalizeApiError(exception).message);
+    } finally {
+      setRefundBusy(null);
+    }
+  }
 
   async function refreshPurchaseHistory() {
     setLoading(true);
@@ -107,6 +163,7 @@ export function UserCartPurchaseHistory() {
         .filter((purchase) => !purchase.transactionId || !liveTransactionIds.has(purchase.transactionId))
         .map(fromSaved);
       setPurchaseHistory([...liveViews, ...savedViews].sort((left, right) => right.createdAt.localeCompare(left.createdAt)));
+      void refreshRefunds();
     } catch (exception) {
       setPurchaseHistory(readTuckShopPurchaseHistory().map(fromSaved));
       setError(`Live collection status is unavailable. Showing saved carts: ${normalizeApiError(exception).message}`);
@@ -239,18 +296,64 @@ export function UserCartPurchaseHistory() {
                         <StatusPill label={statusLabel(purchase.fulfilmentStatus)} tone={statusTone(purchase.fulfilmentStatus)} />
                         <p className="money text-2xl font-black text-[var(--ink)]">{money(purchase.productTotal)}</p>
                       </div>
+                      {(purchase.emptiesCreditTotal ?? 0) > 0 ? (
+                        <p className="mt-1 text-xs font-black text-[var(--confirm)]">Empties credit −{money(purchase.emptiesCreditTotal)} · paid {money(purchase.netTotal ?? purchase.productTotal)}</p>
+                      ) : null}
                     </div>
 
                     <div className="grid gap-3 p-4">
-                      {purchase.items.map((item) => (
-                        <div key={`${purchase.id}-${item.productId}`} className="flex flex-col gap-2 rounded-[1rem] border border-[var(--line)] bg-white p-3 sm:flex-row sm:items-center sm:justify-between">
-                          <div>
-                            <p className="font-black text-[var(--ink)]">{item.productName}</p>
-                            <p className="text-xs font-bold text-[var(--steel)]">Qty {item.quantity} · {money(item.unitPrice)} each · {item.barcodes?.length ?? 0} barcode{(item.barcodes?.length ?? 0) === 1 ? "" : "s"} assigned</p>
+                      {purchase.items.map((item) => {
+                        const deposit = Number(item.depositUnitPrice ?? 0);
+                        const isReturnable = deposit > 0;
+                        const itemRefunds = purchase.source === "LIVE" ? refundsForItem(purchase.transactionId, item.transactionItemId) : [];
+                        const refundable = isReturnable
+                          ? Math.max(item.quantity - Number(item.emptiesReturned ?? 0) - reservedRefundQty(purchase.transactionId, item.transactionItemId), 0)
+                          : 0;
+                        const key = refundKey(purchase.transactionId, item.transactionItemId);
+                        const wanted = Math.min(Math.max(refundQty[key] ?? refundable, 1), Math.max(refundable, 1));
+                        return (
+                          <div key={`${purchase.id}-${item.productId}`} className="flex flex-col gap-2 rounded-[1rem] border border-[var(--line)] bg-white p-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                              <p className="font-black text-[var(--ink)]">{item.productName}</p>
+                              <p className="text-xs font-bold text-[var(--steel)]">Qty {item.quantity} · {money(item.unitPrice)} each · {item.barcodes?.length ?? 0} barcode{(item.barcodes?.length ?? 0) === 1 ? "" : "s"} assigned{(item.emptiesReturned ?? 0) > 0 ? ` · ${item.emptiesReturned} empties back (−${money(item.emptiesCreditTotal ?? 0)})` : ""}</p>
+                              {isReturnable ? (
+                                <p className="mt-1 text-xs font-black uppercase tracking-[0.08em] text-[var(--confirm)]">Returnable · {money(deposit)} deposit each</p>
+                              ) : null}
+                              {itemRefunds.map((refund) => (
+                                <p key={refund.id} className="mt-1 text-xs font-bold text-[var(--steel)]">
+                                  Refund #{refund.id} · {refund.quantity} empties · {money(refund.amount)} ·{" "}
+                                  {refund.status === "REQUESTED" ? <span className="text-[var(--signal)]">awaiting worker approval</span> : null}
+                                  {refund.status === "APPROVED" ? <span className="text-[var(--confirm)]">approved · collect cash at the counter</span> : null}
+                                  {refund.status === "REJECTED" ? <span className="text-[var(--danger)]">rejected{refund.rejectReason ? ` · ${refund.rejectReason}` : ""}</span> : null}
+                                </p>
+                              ))}
+                              {purchase.source === "LIVE" && isReturnable && refundable > 0 && item.transactionItemId ? (
+                                <div className="mt-2 flex flex-wrap items-center gap-2">
+                                  <span className="text-xs font-bold text-[var(--steel)]">Request refund up to {refundable} · get {money(deposit * wanted)}</span>
+                                  <input
+                                    type="number"
+                                    min={1}
+                                    max={refundable}
+                                    value={wanted}
+                                    onChange={(event) => setRefundQty((current) => ({ ...current, [key]: Math.min(Math.max(Number(event.target.value) || 1, 1), refundable) }))}
+                                    disabled={refundBusy === key}
+                                    className="min-h-9 w-20 rounded-full border border-[var(--line)] bg-[var(--surface)] px-3 text-sm font-black outline-none focus:border-[var(--signal)] disabled:opacity-50"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => void submitRefund(purchase, item.transactionItemId as number, refundable, deposit)}
+                                    disabled={refundBusy === key}
+                                    className="inline-flex min-h-9 items-center justify-center rounded-full border border-[var(--confirm)] bg-[var(--confirm)] px-4 text-xs font-black text-white hover:bg-[var(--ink)] disabled:opacity-50"
+                                  >
+                                    {refundBusy === key ? "Requesting..." : "Request returnable"}
+                                  </button>
+                                </div>
+                              ) : null}
+                            </div>
+                            <p className="money font-black text-[var(--ink)]">{money(item.lineTotal)}</p>
                           </div>
-                          <p className="money font-black text-[var(--ink)]">{money(item.lineTotal)}</p>
-                        </div>
-                      ))}
+                        );
+                      })}
 
                       <div className="flex flex-col gap-3 border-t border-[var(--line)] pt-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>

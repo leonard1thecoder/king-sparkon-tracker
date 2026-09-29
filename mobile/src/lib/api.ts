@@ -4,6 +4,7 @@ import type {
   FavoriteBusiness,
   PageResponse,
   Product,
+  ReturnableRefund,
   TicketEvent,
   TicketVerificationResult,
   Tip,
@@ -95,13 +96,21 @@ export function listTuckShopProducts(params: { page?: number; size?: number; sea
 export function createTuckShopPurchase(payload: {
   paymentEmail?: string;
   paymentContact?: string;
-  items: { productId: number; quantity: number }[];
+  items: { productId: number; quantity: number; emptiesReturned?: number }[];
 }) {
   return apiPostIdempotent<TuckShopPurchase, typeof payload>("/v1/tuck-shop/purchases", payload);
 }
 
 export function listMyPurchases() {
   return apiGet<TuckShopPurchase[]>("/v1/tuck-shop/my-purchases");
+}
+
+export function listMyReturnableRefunds() {
+  return apiGet<ReturnableRefund[]>("/v1/tuck-shop/returnable-refunds/me");
+}
+
+export function createReturnableRefund(payload: { transactionId: number; transactionItemId: number; quantity: number }) {
+  return apiPost<ReturnableRefund>("/v1/tuck-shop/returnable-refunds", payload);
 }
 
 // User dashboard — tickets.
@@ -350,7 +359,7 @@ export function workerCheckout(payload: TransactionPayload) {
 
 export function workerBarcodeCheckout(payload: {
   paymentType: "CASH" | "SWIPE_MACHINE";
-  items: { productId: number; quantity: number }[];
+  items: { productId: number; quantity: number; emptiesReturned?: number }[];
 }) {
   return apiPostIdempotent("/v1/tuck-shop/workers/automatic-purchases", payload);
 }
