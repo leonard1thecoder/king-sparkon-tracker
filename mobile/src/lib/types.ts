@@ -68,6 +68,7 @@ export type TuckShopPurchaseItem = {
   depositUnitPrice?: number;
   emptiesCreditTotal?: number;
   netLineTotal?: number;
+  refunded?: boolean;
 };
 
 export type TuckShopPurchase = {
@@ -90,6 +91,26 @@ export type TipPayload = {
   tipAmount: number;
   callbackUrl: string;
   clientContact?: string;
+};
+
+export type RefundRequest = {
+  id: number;
+  kind: "PRODUCT_ITEM" | "TICKET";
+  transactionId?: number | null;
+  transactionItemId?: number | null;
+  userTicketId?: string | null;
+  eventId?: string | null;
+  productName?: string | null;
+  quantity?: number | null;
+  grossAmount: number;
+  feeAmount: number;
+  netAmount: number;
+  status: "REQUESTED" | "APPROVED" | "REJECTED";
+  requestedAt?: string | null;
+  requestedByUsername?: string | null;
+  decidedAt?: string | null;
+  decidedByUsername?: string | null;
+  rejectReason?: string | null;
 };
 
 export type ReturnableRefund = {
@@ -148,6 +169,7 @@ export type UserTicket = {
   purchasedAt: string;
   usedAt?: string;
   coolerboxAdded?: boolean | null;
+  status?: string | null;
 };
 
 export type FavoriteBusiness = { key: string; businessName: string; businessId?: number | null };

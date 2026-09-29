@@ -4,6 +4,7 @@ import type {
   FavoriteBusiness,
   PageResponse,
   Product,
+  RefundRequest,
   ReturnableRefund,
   TicketEvent,
   TicketVerificationResult,
@@ -111,6 +112,18 @@ export function listMyReturnableRefunds() {
 
 export function createReturnableRefund(payload: { transactionId: number; transactionItemId: number; quantity: number }) {
   return apiPost<ReturnableRefund>("/v1/tuck-shop/returnable-refunds", payload);
+}
+
+export function listMyRefunds() {
+  return apiGet<RefundRequest[]>("/v1/refunds/me");
+}
+
+export function requestProductRefund(payload: { transactionId: number; transactionItemId: number }) {
+  return apiPost<RefundRequest>("/v1/refunds/products", payload);
+}
+
+export function requestTicketRefund(payload: { userTicketId: string }) {
+  return apiPost<RefundRequest>("/v1/refunds/tickets", payload);
 }
 
 // User dashboard — tickets.

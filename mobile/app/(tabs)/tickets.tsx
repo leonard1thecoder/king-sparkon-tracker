@@ -1,17 +1,27 @@
 import { useCallback, useEffect, useState } from "react";
 import { FlatList, RefreshControl, Text, View } from "react-native";
 import { Link, router } from "expo-router";
-import { addTicketCoolerbox, listMyTickets, listTicketEvents } from "@/lib/api";
-import type { TicketEvent, UserTicket } from "@/lib/types";
+import { addTicketCoolerbox, listMyRefunds, listMyTickets, listTicketEvents, requestTicketRefund } from "@/lib/api";
+import type { RefundRequest, TicketEvent, UserTicket } from "@/lib/types";
 import { useCart } from "@/store/cart-context";
 import { Card, ErrorText, PrimaryButton, Screen, StatusPill, Subtitle, Title } from "@/components/ui";
+
+function hoursUntilEvent(event: TicketEvent | undefined) {
+  if (!event) return NaN;
+  const startsAt = new Date(`${event.eventDate}T${event.eventTime || "00:00"}`).getTime();
+  if (!Number.isFinite(startsAt)) return NaN;
+  return (startsAt - Date.now()) / 3_600_000;
+}
 
 export default function TicketsScreen() {
   const { addService } = useCart();
   const [events, setEvents] = useState<TicketEvent[]>([]);
   const [mine, setMine] = useState<UserTicket[]>([]);
+  const [refunds, setRefunds] = useState<RefundRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refundBusy, setRefundBusy] = useState<string | null>(null);
+  const [refundConfirm, setRefundConfirm] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -20,6 +30,12 @@ export default function TicketsScreen() {
       const [live, owned] = await Promise.all([listTicketEvents(), listMyTickets().catch(() => [])]);
       setEvents(Array.isArray(live) ? live : []);
       setMine(Array.isArray(owned) ? owned : []);
+      try {
+        const refundRows = await listMyRefunds();
+        setRefunds(Array.isArray(refundRows) ? refundRows.filter((refund) => refund.kind === "TICKET") : []);
+      } catch {
+        setRefunds([]);
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not load tickets.");
     } finally {
@@ -30,6 +46,29 @@ export default function TicketsScreen() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  function refundForTicket(ticketId: string) {
+    return (
+      refunds.find(
+        (refund) => refund.userTicketId === ticketId && (refund.status === "REQUESTED" || refund.status === "APPROVED"),
+      ) ?? refunds.find((refund) => refund.userTicketId === ticketId)
+    );
+  }
+
+  async function submitTicketRefund(ticketId: string) {
+    setRefundBusy(ticketId);
+    setError(null);
+    try {
+      await requestTicketRefund({ userTicketId: ticketId });
+      setRefundConfirm(null);
+      const refundRows = await listMyRefunds().catch(() => []);
+      setRefunds(Array.isArray(refundRows) ? refundRows.filter((refund) => refund.kind === "TICKET") : []);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Refund request failed.");
+    } finally {
+      setRefundBusy(null);
+    }
+  }
 
   async function addFreeCoolerbox(ticketId: string) {
     setError(null);
@@ -67,6 +106,11 @@ export default function TicketsScreen() {
           const event = events.find((candidate) => candidate.id === ticket.eventId);
           const offered = event != null && (event.coolerboxFree === true || event.coolerboxPrice != null);
           const added = ticket.coolerboxAdded === true;
+          const existingRefund = refundForTicket(ticket.id);
+          const hoursLeft = hoursUntilEvent(event);
+          const withinCutoff = Number.isFinite(hoursLeft) && hoursLeft < 48;
+          const price = Number(ticket.pricePaid ?? 0);
+          const fee = Math.round(price * 7) / 100;
           return (
             <View key={ticket.id} style={{ gap: 4 }}>
               <Text style={{ fontSize: 12 }}>
@@ -82,6 +126,36 @@ export default function TicketsScreen() {
                     onPress={() => event && addPricedCoolerbox(ticket, event)}
                   />
                 )
+              ) : null}
+              {ticket.status === "CANCELLED" ? (
+                <Text style={{ fontSize: 12, fontWeight: "800" }}>Refunded — ticket cancelled</Text>
+              ) : existingRefund ? (
+                <Text style={{ fontSize: 12 }}>
+                  Refund #{existingRefund.id} · R{existingRefund.netAmount.toFixed(2)} ·{" "}
+                  {existingRefund.status === "REQUESTED" ? "awaiting staff approval" : null}
+                  {existingRefund.status === "APPROVED" ? "approved · cash paid out" : null}
+                  {existingRefund.status === "REJECTED" ? `rejected${existingRefund.rejectReason ? ` · ${existingRefund.rejectReason}` : ""}` : null}
+                </Text>
+              ) : ticket.status === "ACTIVE" && !withinCutoff ? (
+                <View style={{ gap: 4 }}>
+                  <Text style={{ fontSize: 12 }}>
+                    Refund ticket · get R{(price - fee).toFixed(2)} after R{fee.toFixed(2)} fee
+                  </Text>
+                  {refundConfirm === ticket.id ? (
+                    <View style={{ flexDirection: "row", gap: 8 }}>
+                      <PrimaryButton
+                        title={refundBusy === ticket.id ? "…" : "Confirm"}
+                        onPress={() => void submitTicketRefund(ticket.id)}
+                        disabled={refundBusy === ticket.id}
+                      />
+                      <PrimaryButton title="Cancel" onPress={() => setRefundConfirm(null)} />
+                    </View>
+                  ) : (
+                    <PrimaryButton title="Request refund" onPress={() => setRefundConfirm(ticket.id)} />
+                  )}
+                </View>
+              ) : ticket.status === "ACTIVE" && withinCutoff ? (
+                <Text style={{ fontSize: 12 }}>Refunds closed — less than 48 hours before the event</Text>
               ) : null}
             </View>
           );

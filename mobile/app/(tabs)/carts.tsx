@@ -1,17 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
 import { FlatList, RefreshControl, Text, View } from "react-native";
-import { createReturnableRefund, listMyPurchases, listMyReturnableRefunds } from "@/lib/api";
-import type { ReturnableRefund, TuckShopPurchase } from "@/lib/types";
+import { createReturnableRefund, listMyPurchases, listMyRefunds, listMyReturnableRefunds, requestProductRefund } from "@/lib/api";
+import type { RefundRequest, ReturnableRefund, TuckShopPurchase } from "@/lib/types";
 import { Card, ErrorText, PrimaryButton, Screen, StatusPill, Subtitle, Title } from "@/components/ui";
 
 export default function MyCartsScreen() {
   const [purchases, setPurchases] = useState<TuckShopPurchase[]>([]);
   const [refunds, setRefunds] = useState<ReturnableRefund[]>([]);
+  const [purchaseRefunds, setPurchaseRefunds] = useState<RefundRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refundQty, setRefundQty] = useState<Record<string, number>>({});
   const [refundBusy, setRefundBusy] = useState<string | null>(null);
   const [refundNote, setRefundNote] = useState<string | null>(null);
+  const [purchaseRefundBusy, setPurchaseRefundBusy] = useState<string | null>(null);
+  const [purchaseRefundConfirm, setPurchaseRefundConfirm] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -25,6 +28,12 @@ export default function MyCartsScreen() {
       } catch {
         setRefunds([]);
       }
+      try {
+        const purchaseRefundRows = await listMyRefunds();
+        setPurchaseRefunds(Array.isArray(purchaseRefundRows) ? purchaseRefundRows.filter((refund) => refund.kind === "PRODUCT_ITEM") : []);
+      } catch {
+        setPurchaseRefunds([]);
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not load purchase history.");
     } finally {
@@ -35,6 +44,32 @@ export default function MyCartsScreen() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  function purchaseRefundForItem(transactionId: number, itemId?: number) {
+    return purchaseRefunds.find(
+      (refund) =>
+        refund.transactionId === transactionId &&
+        refund.transactionItemId === itemId &&
+        (refund.status === "REQUESTED" || refund.status === "APPROVED"),
+    );
+  }
+
+  async function submitPurchaseRefund(transactionId: number, itemId: number) {
+    const key = `${transactionId}:${itemId}`;
+    setPurchaseRefundBusy(key);
+    setRefundNote(null);
+    try {
+      await requestProductRefund({ transactionId, transactionItemId: itemId });
+      setPurchaseRefundConfirm(null);
+      const refundRows = await listMyRefunds().catch(() => []);
+      setPurchaseRefunds(Array.isArray(refundRows) ? refundRows.filter((refund) => refund.kind === "PRODUCT_ITEM") : []);
+      setRefundNote("Purchase refund requested — the counter pays out after staff approval.");
+    } catch (e) {
+      setRefundNote(e instanceof Error ? e.message : "Refund request failed.");
+    } finally {
+      setPurchaseRefundBusy(null);
+    }
+  }
 
   function refundsForItem(transactionId: number, itemId?: number) {
     return refunds.filter((refund) => refund.transactionId === transactionId && refund.transactionItemId === itemId);
@@ -95,6 +130,17 @@ export default function MyCartsScreen() {
                   : 0;
               const key = `${item.transactionId}:${line.transactionItemId ?? 0}`;
               const wanted = Math.min(Math.max(refundQty[key] ?? refundable, 1), Math.max(refundable, 1));
+              const existingRefund = purchaseRefundForItem(item.transactionId, line.transactionItemId);
+              const netPaid = Number(line.netLineTotal ?? line.lineTotal ?? 0);
+              const fee = Math.round(netPaid * 7) / 100;
+              const payout = netPaid - fee;
+              const canRequestRefund =
+                line.transactionItemId != null &&
+                !line.refunded &&
+                item.fulfilmentStatus !== "COLLECTED" &&
+                item.paymentStatus !== "PENDING" &&
+                item.paymentStatus !== "FAILED" &&
+                !existingRefund;
               return (
                 <View key={line.transactionItemId ?? line.productId}>
                   <Text style={{ fontSize: 12 }}>
@@ -126,6 +172,34 @@ export default function MyCartsScreen() {
                         onPress={() => void submitRefund(item.transactionId, line.transactionItemId as number, refundable, deposit)}
                         disabled={refundBusy === key}
                       />
+                    </View>
+                  ) : null}
+                  {line.refunded ? (
+                    <Text style={{ fontSize: 12, fontWeight: "800" }}>Refunded in full</Text>
+                  ) : existingRefund ? (
+                    <Text style={{ fontSize: 12 }}>
+                      Purchase refund #{existingRefund.id} · R{existingRefund.netAmount.toFixed(2)} ·{" "}
+                      {existingRefund.status === "REQUESTED" ? "awaiting staff approval" : null}
+                      {existingRefund.status === "APPROVED" ? "approved · cash paid out" : null}
+                      {existingRefund.status === "REJECTED" ? `rejected${existingRefund.rejectReason ? ` · ${existingRefund.rejectReason}` : ""}` : null}
+                    </Text>
+                  ) : canRequestRefund ? (
+                    <View style={{ flexDirection: "row", gap: 8, alignItems: "center", marginTop: 4 }}>
+                      <Text style={{ fontSize: 12 }}>
+                        Refund full line · get R{payout.toFixed(2)} after R{fee.toFixed(2)} fee
+                      </Text>
+                      {purchaseRefundConfirm === key ? (
+                        <>
+                          <PrimaryButton
+                            title={purchaseRefundBusy === key ? "…" : "Confirm"}
+                            onPress={() => void submitPurchaseRefund(item.transactionId, line.transactionItemId as number)}
+                            disabled={purchaseRefundBusy === key}
+                          />
+                          <PrimaryButton title="Cancel" onPress={() => setPurchaseRefundConfirm(null)} />
+                        </>
+                      ) : (
+                        <PrimaryButton title="Request refund" onPress={() => setPurchaseRefundConfirm(key)} />
+                      )}
                     </View>
                   ) : null}
                 </View>

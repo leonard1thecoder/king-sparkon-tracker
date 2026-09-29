@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Camera, CheckCircle2, Copy, Download, LockKeyhole, QrCode, Share2, Upload, UserCheck, X } from "lucide-react";
-import type { UserTicket } from "@/types/tickets";
+import type { RefundRequest, UserTicket } from "@/types/tickets";
 import { getTicketTypeLabel } from "@/services/ticketService";
 import { TicketStatusBadge } from "./TicketStatusBadge";
 
@@ -10,6 +10,7 @@ type TicketQrCardProps = {
   ticket: UserTicket;
   eventName: string;
   eventDate: string;
+  eventTime?: string;
   eventLocation: string;
   onCapturePhoto?: (file: File) => Promise<void>;
   onShare?: (username: string) => Promise<void>;
@@ -18,6 +19,8 @@ type TicketQrCardProps = {
   coolerboxAdded?: boolean;
   onAddFreeCoolerbox?: () => Promise<void>;
   onAddPricedCoolerbox?: () => void;
+  ticketRefund?: RefundRequest | null;
+  onRequestTicketRefund?: (ticketId: string) => Promise<void>;
 };
 
 function formatDate(eventDate: string) {
@@ -32,6 +35,7 @@ export function TicketQrCard({
   ticket,
   eventName,
   eventDate,
+  eventTime,
   eventLocation,
   onCapturePhoto,
   onShare,
@@ -40,6 +44,8 @@ export function TicketQrCard({
   coolerboxAdded,
   onAddFreeCoolerbox,
   onAddPricedCoolerbox,
+  ticketRefund,
+  onRequestTicketRefund,
 }: TicketQrCardProps) {
   const [copied, setCopied] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
@@ -48,6 +54,8 @@ export function TicketQrCard({
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [refundConfirm, setRefundConfirm] = useState(false);
+  const [refundBusy, setRefundBusy] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -58,6 +66,14 @@ export function TicketQrCard({
   const canChangePhoto = active && ticket.canChangeVerificationPhoto !== false;
   const coolerboxOffered = Boolean(coolerboxFree) || coolerboxPrice != null;
   const coolerboxIsAdded = Boolean(coolerboxAdded ?? ticket.coolerboxAdded);
+
+  const eventStart = eventTime ? new Date(`${eventDate}T${eventTime}`).getTime() : NaN;
+  const hoursLeft = Number.isFinite(eventStart) ? (eventStart - Date.now()) / 3_600_000 : NaN;
+  const withinCutoff = Number.isFinite(hoursLeft) && hoursLeft < 48;
+  const pricePaid = Number(ticket.pricePaid ?? 0);
+  const refundFee = Math.round(pricePaid * 7) / 100;
+  const refundPayout = pricePaid - refundFee;
+  const canRequestRefund = active && !ticketRefund && !withinCutoff && onRequestTicketRefund != null;
 
   useEffect(() => () => stopStream(streamRef.current), []);
 
@@ -163,6 +179,22 @@ export function TicketQrCard({
       setError(exception instanceof Error ? exception.message : "Coolerbox could not be added.");
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function submitRefund() {
+    if (!onRequestTicketRefund) return;
+    setRefundBusy(true);
+    setError(null);
+    setMessage(null);
+    try {
+      await onRequestTicketRefund(ticket.id);
+      setMessage(`Refund requested — R${refundPayout.toFixed(2)} cash after staff approval (7% service fee).`);
+      setRefundConfirm(false);
+    } catch (exception) {
+      setError(exception instanceof Error ? exception.message : "Refund could not be requested.");
+    } finally {
+      setRefundBusy(false);
     }
   }
 
@@ -275,6 +307,44 @@ export function TicketQrCard({
             <div className="rounded-[1.1rem] border border-[var(--line)] bg-[var(--surface)] p-3"><dt className="text-[0.65rem] uppercase tracking-[0.12em] text-[var(--muted)]">Date</dt><dd className="mt-1 font-black text-[var(--ink)]">{formatDate(eventDate)}</dd></div>
             <div className="rounded-[1.1rem] border border-[var(--line)] bg-[var(--surface)] p-3"><dt className="text-[0.65rem] uppercase tracking-[0.12em] text-[var(--muted)]">Location</dt><dd className="mt-1 font-black text-[var(--ink)]">{eventLocation}</dd></div>
           </dl>
+
+          {ticket.status === "CANCELLED" ? (
+            <div className="mt-4 rounded-[1.3rem] border border-[var(--line)] bg-[var(--surface)] p-4">
+              <p className="text-sm font-black text-[var(--steel)]">This ticket was refunded and can no longer be used.</p>
+            </div>
+          ) : ticketRefund ? (
+            <div className="mt-4 rounded-[1.3rem] border border-[var(--line)] bg-[var(--surface)] p-4">
+              <p className="text-sm font-black text-[var(--ink)]">
+                Refund #{ticketRefund.id} · R{ticketRefund.netAmount.toFixed(2)} ·{" "}
+                {ticketRefund.status === "REQUESTED" ? <span className="text-[var(--signal)]">awaiting staff approval</span> : null}
+                {ticketRefund.status === "APPROVED" ? <span className="text-[var(--confirm)]">approved · cash paid out</span> : null}
+                {ticketRefund.status === "REJECTED" ? <span className="text-[var(--danger)]">rejected{ticketRefund.rejectReason ? ` · ${ticketRefund.rejectReason}` : ""}</span> : null}
+              </p>
+            </div>
+          ) : canRequestRefund ? (
+            <div className="mt-4 rounded-[1.3rem] border border-[var(--gold)] bg-[var(--gold)]/10 p-4">
+              <p className="text-sm font-black text-[var(--ink)]">Refund this ticket · get R{refundPayout.toFixed(2)} after R{refundFee.toFixed(2)} service fee</p>
+              <p className="mt-1 text-xs font-semibold leading-5 text-[var(--steel)]">Refunds close 48 hours before the event. The ticket is cancelled on approval.</p>
+              {refundConfirm ? (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button type="button" onClick={submitRefund} disabled={refundBusy} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--danger)] bg-[var(--danger)] px-5 text-xs font-black uppercase tracking-[0.08em] text-white disabled:opacity-50">
+                    {refundBusy ? "Requesting..." : "Confirm refund"}
+                  </button>
+                  <button type="button" onClick={() => setRefundConfirm(false)} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-xs font-black uppercase tracking-[0.08em] text-[var(--steel)]">
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button type="button" onClick={() => setRefundConfirm(true)} className="mt-3 inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--danger)]/40 bg-white px-5 text-xs font-black uppercase tracking-[0.08em] text-[var(--danger)] hover:border-[var(--danger)]">
+                  Request refund
+                </button>
+              )}
+            </div>
+          ) : active && withinCutoff ? (
+            <div className="mt-4 rounded-[1.3rem] border border-[var(--line)] bg-[var(--surface)] p-4">
+              <p className="text-sm font-black text-[var(--steel)]">Refunds closed — less than 48 hours before the event.</p>
+            </div>
+          ) : null}
 
           {coolerboxOffered && active ? (
             <div className="mt-4 rounded-[1.3rem] border border-[var(--gold)] bg-[var(--gold)]/10 p-4">
