@@ -161,6 +161,17 @@ export async function createTuckShopPurchase(
   );
 }
 
+export async function createStaffTuckShopPurchase(
+  payload: CreateTuckShopPurchasePayload,
+  idempotencyKey = createIdempotencyKey("tuck-shop-staff-purchase"),
+) {
+  return apiPostIdempotent<TuckShopPurchase, CreateTuckShopPurchasePayload>(
+    "/v1/tuck-shop/staff-purchases",
+    payload,
+    idempotencyKey,
+  );
+}
+
 export async function createPayFastCartPayment(payload: CreateEmbeddedCartPaymentPayload) {
   const tickets = await validateLiveTicketItems(payload.tickets ?? []);
   return apiPostIdempotent<PayFastCartPayment, CreateEmbeddedCartPaymentPayload>(

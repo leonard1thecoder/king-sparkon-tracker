@@ -6,6 +6,8 @@ import { tokens } from "@/theme/tokens";
 type Entry = { label: string; detail: string; href: string };
 
 const workerEntries: Entry[] = [
+  { label: "Staff Mall", detail: "Buy mall products at your staff price.", href: "/(tabs)/staff-mall" },
+  { label: "Browse Tickets", detail: "Events and your tickets.", href: "/(tabs)/worker-tickets" },
   { label: "Product Sales", detail: "Paid counter checkouts and collected online carts.", href: "/(tabs)/sales" },
   { label: "Tips & QR", detail: "Owner-controlled tips workspace.", href: "/(tabs)/tips" },
   { label: "My Carts", detail: "Your own purchase history.", href: "/(tabs)/carts" },

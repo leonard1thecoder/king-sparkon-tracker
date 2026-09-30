@@ -6,7 +6,7 @@ function dashboardHomeHref(role: string) {
   const v = role.toLowerCase();
   if (v.includes("admin")) return "/dashboard/admin/capacity";
   if (v.includes("owner")) return "/dashboard/owner/products";
-  if (v.includes("worker")) return "/dashboard/worker/scan";
+  if (v.includes("worker")) return "/dashboard/worker";
   if (v.includes("affiliate")) return "/dashboard/affiliate/referrals";
   if (v.includes("artist")) return "/dashboard/artist";
   return "/dashboard/user/shop";

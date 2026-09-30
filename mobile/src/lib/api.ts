@@ -403,6 +403,64 @@ export function listMyJobApplications() {
   return apiGet<PageResponse<MobileJobApplication> | MobileJobApplication[]>("/opportunities/applications");
 }
 
+// Worker dashboard — mall at staff price + tickets (mirrors web
+// worker dashboard). Backend: GET /api/worker/dashboard,
+// /api/worker/mall/*, /api/worker/tickets/*.
+export function getWorkerDashboard() {
+  return apiGet<
+    import("./types").WorkerDashboardStats
+  >("/worker/dashboard");
+}
+
+export function listWorkerMallProducts(params: { page?: number; size?: number; search?: string; businessId?: number } = {}) {
+  return apiGet<PageResponse<Product> | Product[]>("/worker/mall/products", {
+    page: params.page,
+    size: params.size,
+    q: params.search ?? undefined,
+    businessId: params.businessId ?? undefined,
+  });
+}
+
+export function createWorkerStaffPurchase(payload: {
+  items: { productId: number; quantity: number; emptiesReturned?: number }[];
+}) {
+  return apiPostIdempotent<TuckShopPurchase, typeof payload>("/worker/mall/staff-purchases", payload);
+}
+
+export function listWorkerMallPurchases() {
+  return apiGet<TuckShopPurchase[]>("/worker/mall/my-purchases");
+}
+
+export function listWorkerTicketEvents() {
+  return apiGet<TicketEvent[]>("/worker/tickets/events");
+}
+
+export function listWorkerMyTickets() {
+  return apiGet<UserTicket[]>("/worker/tickets/my-tickets");
+}
+
+export type WorkerTicketPurchaseResponse = {
+  payment?: {
+    totalAmount?: number;
+    paymentUrl?: string | null;
+    qrCodeUrl?: string | null;
+    paymentReference?: string | null;
+    status?: string | null;
+  } | null;
+  tickets?: unknown[];
+};
+
+export function createWorkerTicketPurchase(payload: {
+  eventId: string;
+  userId: string;
+  buyerName: string;
+  buyerEmail: string;
+  ticketType: string;
+  quantity: number;
+}) {
+  return apiPostIdempotent<WorkerTicketPurchaseResponse, typeof payload>("/worker/tickets/purchase", payload);
+}
+
 // Worker dashboard — counter checkout + orders + barcodes.
 export function workerCheckout(payload: TransactionPayload) {
   return apiPost("/transactions", payload);

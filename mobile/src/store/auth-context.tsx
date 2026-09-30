@@ -7,6 +7,7 @@ import { backendBaseUrl } from "@/lib/api-client";
 import { oauthAuthorizeUrl, oauthErrorMessage, oauthRedirectUri, parseOAuthCallbackUrl } from "@/lib/oauth";
 import type { OAuthProviderId } from "@/lib/oauth";
 import type { TrackerUser } from "@/lib/types";
+import { isWorkerLike } from "@/lib/types";
 
 type AuthState = {
   user: TrackerUser | null;
@@ -55,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await saveTokens({ accessToken: response.accessToken, refreshToken: response.refreshToken });
       const me = response.user ?? (response.accessToken ? await getMe() : null);
       setUser(me);
-      router.replace("/(tabs)/shop");
+      router.replace(isWorkerLike(me) ? "/(tabs)/staff-mall" : "/(tabs)/shop");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Sign in failed.");
       throw e;
@@ -80,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await saveTokens({ accessToken: response.accessToken, refreshToken: response.refreshToken });
       const me = response.user ?? (response.accessToken ? await getMe() : null);
       setUser(me);
-      router.replace("/(tabs)/shop");
+      router.replace(isWorkerLike(me) ? "/(tabs)/staff-mall" : "/(tabs)/shop");
     } catch (e) {
       const message = e instanceof Error ? e.message : "The sign-in could not be completed.";
       setError(message);

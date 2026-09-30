@@ -2,7 +2,7 @@
 
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { Loader2, Plus, RefreshCw, ShieldCheck, Trash2, UserRound, WalletCards } from "lucide-react";
-import { apiDelete, apiGet, apiPost, normalizeApiError } from "@/lib/api/client";
+import { apiDelete, apiGet, apiPatch, apiPost, normalizeApiError } from "@/lib/api/client";
 import type { PageResponse } from "@/lib/types/backend";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -20,6 +20,7 @@ type WorkerUser = {
   tipQrCodeEnabled?: boolean;
   tipQrCodeUrl?: string | null;
   onboardingCompleted?: boolean;
+  staffDiscountPercentage?: number | null;
 };
 
 type CreateWorkerPayload = {
@@ -30,6 +31,7 @@ type CreateWorkerPayload = {
   jobTitle: string;
   tipQrCodeEnabled: boolean;
   profilePictureUrl?: string | null;
+  staffDiscountPercentage?: string;
 };
 
 const emptyForm: CreateWorkerPayload = {
@@ -40,6 +42,7 @@ const emptyForm: CreateWorkerPayload = {
   jobTitle: "",
   tipQrCodeEnabled: false,
   profilePictureUrl: "",
+  staffDiscountPercentage: "",
 };
 
 const inputClass = "min-h-11 w-full rounded-[1rem] border border-[var(--line)] bg-white px-4 text-sm font-semibold text-[var(--ink)] outline-none focus:border-[var(--signal)]";
@@ -50,6 +53,8 @@ export function OwnerWorkerManager() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [staffSavingId, setStaffSavingId] = useState<number | null>(null);
+  const [staffEdits, setStaffEdits] = useState<Record<number, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -78,6 +83,11 @@ export function OwnerWorkerManager() {
     setError(null);
     setNotice(null);
     try {
+      const staffRaw = form.staffDiscountPercentage?.trim() ?? "";
+      const staffPercent = staffRaw === "" ? null : Number(staffRaw);
+      if (staffPercent !== null && (!Number.isFinite(staffPercent) || staffPercent < 0 || staffPercent > 90)) {
+        throw new Error("Staff discount percent must be between 0 and 90.");
+      }
       await apiPost<WorkerUser, CreateWorkerPayload>("/users/workers", {
         ...form,
         username: form.username.trim(),
@@ -85,14 +95,39 @@ export function OwnerWorkerManager() {
         cellphoneNumber: form.cellphoneNumber.trim(),
         jobTitle: form.jobTitle.trim(),
         profilePictureUrl: form.profilePictureUrl?.trim() || null,
+        staffDiscountPercentage: staffPercent,
       });
       setForm(emptyForm);
-      setNotice("Worker created. The tips privilege was saved with the worker account.");
+      setNotice("Worker created. Tips privilege and staff discount were saved with the worker account.");
       await loadWorkers();
     } catch (exception) {
       setError(normalizeApiError(exception).message);
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function saveStaffDiscount(worker: WorkerUser) {
+    const raw = (staffEdits[worker.id] ?? String(worker.staffDiscountPercentage ?? "")).trim();
+    const percent = raw === "" ? 0 : Number(raw);
+    if (!Number.isFinite(percent) || percent < 0 || percent > 90) {
+      setError("Staff discount percent must be between 0 and 90.");
+      return;
+    }
+    setStaffSavingId(worker.id);
+    setError(null);
+    setNotice(null);
+    try {
+      await apiPatch<WorkerUser, { staffDiscountPercentage: number }>(
+        `/users/workers/${worker.id}/staff-discount`,
+        { staffDiscountPercentage: percent },
+      );
+      setNotice(`${worker.username} staff price set to ${percent}%.`);
+      await loadWorkers();
+    } catch (exception) {
+      setError(normalizeApiError(exception).message);
+    } finally {
+      setStaffSavingId(null);
     }
   }
 
@@ -136,6 +171,7 @@ export function OwnerWorkerManager() {
               <label className="grid gap-1.5 text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">Cellphone number<input required value={form.cellphoneNumber} onChange={(event) => setForm((current) => ({ ...current, cellphoneNumber: event.target.value }))} className={inputClass} placeholder="+27..." /></label>
               <label className="grid gap-1.5 text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">Job title<input required value={form.jobTitle} onChange={(event) => setForm((current) => ({ ...current, jobTitle: event.target.value }))} className={inputClass} placeholder="Cashier" /></label>
               <label className="grid gap-1.5 text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">Profile picture URL · optional<input value={form.profilePictureUrl ?? ""} onChange={(event) => setForm((current) => ({ ...current, profilePictureUrl: event.target.value }))} className={inputClass} placeholder="https://..." /></label>
+              <label className="grid gap-1.5 text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">Staff discount % · 0-90 (staff price)<input type="number" min={0} max={90} step={0.5} value={form.staffDiscountPercentage ?? ""} onChange={(event) => setForm((current) => ({ ...current, staffDiscountPercentage: event.target.value }))} className={inputClass} placeholder="e.g. 10" /><span className="text-[0.65rem] font-bold normal-case tracking-normal text-[var(--muted)]">Set at creation. Workers above 0% buy mall products at staff price.</span></label>
             </div>
 
             <label className="flex items-start gap-3 rounded-[1.2rem] border border-[var(--gold)]/45 bg-[var(--gold)]/10 p-4">
@@ -149,15 +185,25 @@ export function OwnerWorkerManager() {
       </Card>
 
       <Card>
-        <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><CardTitle>Business workers</CardTitle><p className="mt-2 text-sm text-[var(--steel)]">Review each worker and the tips permission saved at creation.</p></div><Button type="button" variant="quiet" onClick={() => void loadWorkers()} disabled={loading}><RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} /> Refresh</Button></CardHeader>
+        <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><CardTitle>Business workers</CardTitle><p className="mt-2 text-sm text-[var(--steel)]">Review each worker, the tips permission, and the staff discount that unlocks staff price in the mall.</p></div><Button type="button" variant="quiet" onClick={() => void loadWorkers()} disabled={loading}><RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} /> Refresh</Button></CardHeader>
         <CardContent>
           {loading ? <div className="flex min-h-40 items-center justify-center gap-2 text-sm font-black text-[var(--steel)]"><Loader2 className="h-5 w-5 animate-spin" /> Loading workers</div> : workers.length === 0 ? <p className="rounded-[1.4rem] border border-dashed border-[var(--line)] bg-[var(--surface)] p-8 text-center text-sm font-bold text-[var(--steel)]">No workers have been created yet.</p> : (
             <div className="grid gap-3">
-              {workers.map((worker) => <article key={worker.id} className="grid gap-4 rounded-[1.4rem] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)] md:grid-cols-[auto_1fr_auto] md:items-center">
+              {workers.map((worker) => {
+                const staffValue = staffEdits[worker.id] ?? String(worker.staffDiscountPercentage ?? 0);
+                const staffNum = Number(worker.staffDiscountPercentage ?? 0);
+                return (
+                <article key={worker.id} className="grid gap-4 rounded-[1.4rem] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)] md:grid-cols-[auto_1fr_auto] md:items-center">
                 <div className="grid h-12 w-12 place-items-center overflow-hidden rounded-[1rem] border border-[var(--line)] bg-[var(--surface)]">{worker.profilePictureUrl ? <img src={worker.profilePictureUrl} alt={worker.username} className="h-full w-full object-cover" /> : <UserRound className="h-5 w-5 text-[var(--signal)]" />}</div>
-                <div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><h3 className="font-black text-[var(--ink)]">{worker.username}</h3><StatusPill label={worker.tipQrCodeEnabled ? "TIPS ENABLED" : "NO TIP PRIVILEGE"} tone={worker.tipQrCodeEnabled ? "confirm" : "neutral"} /></div><p className="mt-1 text-sm font-semibold text-[var(--steel)]">{worker.jobTitle || "Worker"} · {worker.emailAddress}</p><p className="mt-1 text-xs font-bold text-[var(--muted)]">{worker.cellphoneNumber || "No cellphone"}</p></div>
+                <div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><h3 className="font-black text-[var(--ink)]">{worker.username}</h3><StatusPill label={worker.tipQrCodeEnabled ? "TIPS ENABLED" : "NO TIP PRIVILEGE"} tone={worker.tipQrCodeEnabled ? "confirm" : "neutral"} /><StatusPill label={staffNum > 0 ? `STAFF ${staffNum}%` : "NO STAFF PRICE"} tone={staffNum > 0 ? "signal" : "neutral"} /></div><p className="mt-1 text-sm font-semibold text-[var(--steel)]">{worker.jobTitle || "Worker"} · {worker.emailAddress}</p><p className="mt-1 text-xs font-bold text-[var(--muted)]">{worker.cellphoneNumber || "No cellphone"}</p>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <label className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.08em] text-[var(--steel)]">Staff %<input type="number" min={0} max={90} step={0.5} value={staffValue} onChange={(event) => setStaffEdits((current) => ({ ...current, [worker.id]: event.target.value }))} className="h-10 w-24 rounded-xl border border-[var(--line)] bg-white px-3 text-sm font-bold text-[var(--ink)] outline-none focus:border-[var(--signal)]" /></label>
+                  <Button type="button" variant="quiet" disabled={staffSavingId === worker.id} onClick={() => void saveStaffDiscount(worker)}>{staffSavingId === worker.id ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Save staff %</Button>
+                </div>
+                </div>
                 <Button type="button" variant="quiet" disabled={deletingId === worker.id} onClick={() => void deleteWorker(worker)}>{deletingId === worker.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />} Remove</Button>
-              </article>)}
+              </article>);
+              })}
             </div>
           )}
         </CardContent>

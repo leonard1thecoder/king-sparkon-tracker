@@ -51,6 +51,9 @@ export function ProductCard({
   const salePrice = productPrice(product);
   const hasDiscount =
     product.salePrice !== undefined && product.salePrice < product.price;
+  const staffPrice = product.staffPrice ?? null;
+  const staffPercent = product.staffDiscountPercent ?? null;
+  const hasStaffPrice = staffPrice !== null && staffPercent !== null && staffPercent > 0 && staffPrice < salePrice;
   const inStock = product.stockQuantity > 0;
   const localization = useLocalization();
   const displayPrice = (zarValue: number) =>
@@ -95,6 +98,11 @@ export function ProductCard({
               Sale
             </span>
           )}
+          {hasStaffPrice && (
+            <span className="inline-flex items-center rounded-full border border-[var(--signal)]/40 bg-[var(--signal-soft)] px-2 py-0.5 text-[0.6rem] font-black uppercase tracking-[0.12em] text-[var(--signal-strong)] backdrop-blur-sm">
+              Staff {staffPercent}%
+            </span>
+          )}
           {product.returnableEnabled && (
             <span className="inline-flex items-center rounded-full border border-[var(--confirm)]/30 bg-white/90 px-2 py-0.5 text-[0.6rem] font-black uppercase tracking-[0.12em] text-[var(--confirm)] backdrop-blur-sm">
               Returnable
@@ -130,13 +138,17 @@ export function ProductCard({
         <div className="flex items-end justify-between gap-2">
           <div>
             <p className="money text-xl font-black text-[var(--ink)]">
-              {formatMoney(displayPrice(salePrice), localization.currency)}
+              {formatMoney(displayPrice(hasStaffPrice && staffPrice ? staffPrice : salePrice), localization.currency)}
             </p>
-            {hasDiscount && (
+            {hasStaffPrice ? (
+              <p className="money text-xs font-semibold text-[var(--muted)] line-through">
+                {formatMoney(displayPrice(salePrice), localization.currency)}
+              </p>
+            ) : hasDiscount ? (
               <p className="money text-xs font-semibold text-[var(--muted)] line-through">
                 {formatMoney(displayPrice(product.price), localization.currency)}
               </p>
-            )}
+            ) : null}
             {product.returnableEnabled && (
               <p className="mt-1 text-[0.65rem] font-black uppercase tracking-[0.08em] text-[var(--confirm)]">
                 +{formatMoney(displayPrice(returnableDeposit(product)), localization.currency)} returnable deposit

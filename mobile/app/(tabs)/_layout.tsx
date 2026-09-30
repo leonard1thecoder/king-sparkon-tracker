@@ -13,8 +13,9 @@ function tabIcon(name: keyof typeof Ionicons.glyphMap) {
 
 // Mirrors web `MobileBottomNav` + `navByRole`:
 // - User primary: Shop, Cart, Tickets, Tip; Favorites, Cart, Profile and Logout stay in the header.
-// - Worker primary: Checkout, Products, Orders, Ticket Entry.
+// - Worker primary: Checkout, Staff Mall, Products, Orders, Ticket Entry.
 // - `More` holds worker overflow only; User shortcuts live on Profile.
+// - `worker-tickets` is worker-only event browsing (hidden tab, via More/Profile/Staff Mall).
 export default function TabsLayout() {
   const { user } = useAuth();
   const worker = isWorkerLike(user);
@@ -39,6 +40,18 @@ export default function TabsLayout() {
           tabBarIcon: tabIcon("scan"),
           href: worker ? undefined : null,
         }}
+      />
+      <Tabs.Screen
+        name="staff-mall"
+        options={{
+          title: "Mall",
+          tabBarIcon: tabIcon("storefront"),
+          href: worker ? undefined : null,
+        }}
+      />
+      <Tabs.Screen
+        name="worker-tickets"
+        options={{ title: "Tickets", tabBarIcon: tabIcon("ticket"), href: null }}
       />
       <Tabs.Screen
         name="products"

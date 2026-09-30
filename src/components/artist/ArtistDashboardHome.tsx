@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Clock, MapPin, Music, Wallet } from "lucide-react";
+import { ArrowRight, Clock, MapPin, Music, ShoppingBag, Ticket, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Card } from "@/components/ui/Card";
@@ -9,7 +9,12 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { EventCard, EventCardSkeleton } from "./EventCard";
 import { ArtistStatusBadge } from "./ArtistStatusBadge";
 import type { ArtistProfile, DraftedEvent } from "@/types/artist";
+import type { ArtistDashboardStats } from "@/lib/types/backend";
+import type { Product } from "@/lib/types/backend";
+import type { TicketEvent } from "@/types/tickets";
 import { formatZAR, getArtistDashboardStats, getArtistProfile, getDraftedEvents, getUpcomingPerformances } from "@/services/artistService";
+import { getArtistDashboard, listArtistMallProductsFallback, listArtistTicketEventsFallback } from "@/lib/api/artist-dashboard";
+import { productPrice } from "@/lib/tuck-shop/cart";
 
 function Greeting() {
   const hour = new Date().getHours();
@@ -21,19 +26,55 @@ export function ArtistDashboardHome() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ArtistProfile | null>(() => getArtistProfile());
   const [stats, setStats] = useState(() => getArtistDashboardStats());
+  const [liveStats, setLiveStats] = useState<ArtistDashboardStats | null>(null);
   const [upcoming, setUpcoming] = useState<Array<DraftedEvent & { booking: import("@/types/artist").ArtistBooking }>>([]);
   const [opportunities, setOpportunities] = useState<DraftedEvent[]>([]);
+  const [mallProducts, setMallProducts] = useState<Product[]>([]);
+  const [ticketEvents, setTicketEvents] = useState<TicketEvent[]>([]);
 
   useEffect(() => {
+    let cancelled = false;
     const t = setTimeout(() => {
+      if (cancelled) return;
       setProfile(getArtistProfile());
       setStats(getArtistDashboardStats());
       setUpcoming(getUpcomingPerformances());
       setOpportunities(getDraftedEvents().slice(0, 6));
       setLoading(false);
     }, 600);
-    return () => clearTimeout(t);
+    getArtistDashboard()
+      .then((dashboard) => {
+        if (cancelled) return;
+        setLiveStats(dashboard);
+        setStats((current) => ({
+          ...current,
+          upcomingBookings: Number(dashboard.upcomingBookings ?? current.upcomingBookings),
+          pendingRequests: Number(dashboard.pendingRequests ?? current.pendingRequests),
+          thisMonthPerformances: Number(dashboard.thisMonthPerformances ?? current.thisMonthPerformances),
+          minimumFee: Number(dashboard.minimumFee ?? current.minimumFee),
+        }));
+      })
+      .catch(() => undefined);
+    listArtistMallProductsFallback({ page: 0, size: 6 })
+      .then((page) => {
+        if (!cancelled) setMallProducts(page.content ?? []);
+      })
+      .catch(() => undefined);
+    listArtistTicketEventsFallback()
+      .then((events) => {
+        if (!cancelled) setTicketEvents((events ?? []).slice(0, 6));
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
   }, []);
+
+  const mallCount = liveStats?.mallProductsAvailable ?? 0;
+  const mallPurchases = liveStats?.mallMyPurchases ?? 0;
+  const ticketsUpcoming = liveStats?.ticketsUpcomingEvents ?? ticketEvents.length;
+  const ticketsMine = liveStats?.ticketsMyTickets ?? 0;
 
   if (loading) {
     return (
@@ -134,6 +175,64 @@ export function ArtistDashboardHome() {
             <EventCard key={ev.id} event={ev} href={`/dashboard/artist/events/${ev.id}`} />
           ))}
         </div>
+      </section>
+
+      {/* King Sparkon Mall */}
+      <section className="grid gap-4">
+        <SectionHeader
+          title="King Sparkon Mall"
+          description={mallCount > 0 ? `${mallCount} products available${mallPurchases > 0 ? ` · ${mallPurchases} of your purchases` : ""}` : "Browse mall products without leaving the artist dashboard"}
+          eyebrow="MALL"
+          actions={<Link href="/dashboard/artist/mall" className="text-sm font-black text-[var(--signal)] hover:text-[var(--signal-strong)]">Shop mall →</Link>}
+        />
+        {mallProducts.length ? (
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {mallProducts.map((product) => (
+              <Link key={product.id} href="/dashboard/artist/mall" className="group rounded-[var(--radius-2xl)] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] transition hover:shadow-[var(--shadow-ledger)]">
+                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-[var(--signal)]"><ShoppingBag className="h-4 w-4" /> {product.businessName ?? "King Sparkon Mall"}</div>
+                <h3 className="mt-2 text-base font-black leading-5 group-hover:text-[var(--signal-strong)]">{product.name}</h3>
+                <p className="mt-1 text-sm font-black text-[var(--ink)]">{formatZAR(productPrice(product))}</p>
+                <p className="mt-2 text-xs font-bold text-[var(--signal)]">Shop this product →</p>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <Card className="p-10 text-center">
+            <ShoppingBag className="mx-auto h-10 w-10 text-[var(--signal)]" />
+            <p className="mt-3 font-black">Mall lives inside your dashboard</p>
+            <p className="mt-1 text-sm text-[var(--steel)]">Browse products, checkout, and track your purchases.</p>
+            <Link href="/dashboard/artist/mall" className="mt-4 inline-flex min-h-11 rounded-full bg-[var(--signal)] px-6 py-2.5 text-sm font-black text-white">Open mall</Link>
+          </Card>
+        )}
+      </section>
+
+      {/* King Sparkon Tickets */}
+      <section className="grid gap-4">
+        <SectionHeader
+          title="King Sparkon Tickets"
+          description={ticketsUpcoming > 0 ? `${ticketsUpcoming} upcoming events${ticketsMine > 0 ? ` · ${ticketsMine} of your tickets` : ""}` : "Browse ticket events without leaving the artist dashboard"}
+          eyebrow="TICKETS"
+          actions={<Link href="/dashboard/artist/tickets" className="text-sm font-black text-[var(--signal)] hover:text-[var(--signal-strong)]">Browse tickets →</Link>}
+        />
+        {ticketEvents.length ? (
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {ticketEvents.map((event) => (
+              <Link key={event.id} href="/dashboard/artist/tickets" className="group rounded-[var(--radius-2xl)] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] transition hover:shadow-[var(--shadow-ledger)]">
+                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-[var(--signal)]"><Ticket className="h-4 w-4" /> {event.status}</div>
+                <h3 className="mt-2 text-base font-black leading-5 group-hover:text-[var(--signal-strong)]">{event.name}</h3>
+                <p className="mt-1 text-xs font-semibold text-[var(--steel)]">{String(event.eventDate)} · {event.location}</p>
+                <p className="mt-2 text-xs font-bold text-[var(--signal)]">View event →</p>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <Card className="p-10 text-center">
+            <Ticket className="mx-auto h-10 w-10 text-[var(--signal)]" />
+            <p className="mt-3 font-black">Tickets live inside your dashboard</p>
+            <p className="mt-1 text-sm text-[var(--steel)]">Browse events, buy tickets, and keep them in My Tickets.</p>
+            <Link href="/dashboard/artist/tickets" className="mt-4 inline-flex min-h-11 rounded-full bg-[var(--signal)] px-6 py-2.5 text-sm font-black text-white">Open tickets</Link>
+          </Card>
+        )}
       </section>
     </div>
   );

@@ -84,10 +84,13 @@ export const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Profile", href: "/dashboard/owner/profile", icon: UserRound, description: "Identity and session", shortLabel: "Profile" },
   ],
   Worker: [
+    { label: "Dashboard", href: "/dashboard/worker", icon: LayoutDashboard, description: "Mall, tickets and shift overview", shortLabel: "Home" },
     { label: "Counter Checkout", href: "/dashboard/worker/scan", icon: ScanLine, description: "Cash or card checkout", shortLabel: "Checkout" },
+    { label: "Staff Mall", href: "/dashboard/worker/mall", icon: ShoppingCart, description: "Buy at staff price", shortLabel: "Mall" },
+    { label: "Tickets", href: "/dashboard/worker/tickets", icon: Ticket, description: "Browse events and my tickets", shortLabel: "Tickets" },
     { label: "Products & Barcodes", href: "/dashboard/worker/products", icon: Boxes, description: "Stock and automatic codes", shortLabel: "Products" },
     { label: "Online Orders", href: "/dashboard/worker/orders", icon: PackageSearch, description: "Prepare paid carts", shortLabel: "Orders" },
-    { label: "Ticket Entry", href: "/dashboard/worker/tickets/scan", icon: QrCode, description: "Face and QR verification", shortLabel: "Tickets" },
+    { label: "Ticket Entry", href: "/dashboard/worker/tickets/scan", icon: QrCode, description: "Face and QR verification", shortLabel: "Scan" },
     { label: "Product Sales", href: "/dashboard/worker/transactions", icon: CreditCard, description: "Completed carts", shortLabel: "Sales" },
     { label: "Refund Requests", href: "/dashboard/worker/refunds", icon: Banknote, description: "Approve cash refunds", shortLabel: "Refunds" },
     { label: "Returnable Refunds", href: "/dashboard/worker/returnable-refunds", icon: Banknote, description: "Approve empties cash-back", shortLabel: "Refunds" },
@@ -112,6 +115,8 @@ export const navByRole: Record<UserRole, NavItem[]> = {
   ],
   Artist: [
     { label: "Dashboard", href: "/dashboard/artist", icon: LayoutDashboard, description: "Overview and opportunities", shortLabel: "Home" },
+    { label: "King Sparkon Mall", href: "/dashboard/artist/mall", icon: ShoppingCart, description: "Browse products and my purchases", shortLabel: "Mall" },
+    { label: "King Sparkon Tickets", href: "/dashboard/artist/tickets", icon: Ticket, description: "Browse events and my tickets", shortLabel: "Tickets" },
     { label: "Drafted Events", href: "/dashboard/artist/drafted", icon: ClipboardList, description: "Discover events looking for artists", shortLabel: "Drafted" },
     { label: "Performance Sets", href: "/dashboard/artist/sets", icon: Mic2, description: "Apply for open sets and offers", shortLabel: "Sets" },
     { label: "Booked Events", href: "/dashboard/artist/booked", icon: Ticket, description: "Your confirmed performances", shortLabel: "Booked" },
@@ -141,6 +146,10 @@ export function isActive(pathname: string, searchParams: URLSearchParams, href: 
   }
   if (cleanHref === "/dashboard/user/shop") return pathname === cleanHref || pathname.startsWith("/dashboard/user/shop/products");
   if (cleanHref === "/dashboard/user/shop/cart") return pathname === cleanHref;
+  if (cleanHref === "/dashboard/artist/mall") return pathname === cleanHref || pathname.startsWith("/dashboard/artist/mall/");
+  if (cleanHref === "/dashboard/artist/tickets") return pathname === cleanHref || pathname.startsWith("/dashboard/artist/tickets/");
+  if (cleanHref === "/dashboard/worker/mall") return pathname === cleanHref || pathname.startsWith("/dashboard/worker/mall/");
+  if (cleanHref === "/dashboard/worker/tickets" && href === "/dashboard/worker/tickets") return pathname === cleanHref || pathname.startsWith("/dashboard/worker/tickets/") && !pathname.startsWith("/dashboard/worker/tickets/scan");
   if (cleanHref === "/dashboard/user/tickets/buy") return pathname === cleanHref || pathname.startsWith("/dashboard/user/tickets/events") || pathname.startsWith("/dashboard/user/tickets/checkout");
   if (cleanHref === "/dashboard/user/tickets") return pathname === cleanHref;
   if (cleanHref === "/dashboard/user/tips") return pathname === cleanHref || pathname.startsWith("/dashboard/user/tips/");

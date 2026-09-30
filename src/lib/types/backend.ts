@@ -33,6 +33,9 @@ export type TrackerUser = {
   affiliatePromotionUrl?: string | null;
   affiliateQrCodeUrl?: string | null;
   tipQrCodeUrl?: string | null;
+  jobTitle?: string | null;
+  cellphoneNumber?: string | null;
+  staffDiscountPercentage?: number | null;
 };
 
 export type ProductBarcode = {
@@ -57,11 +60,14 @@ export type Product = {
   status?: string;
   price: number;
   salePrice?: number;
+  staffPrice?: number | null;
+  staffDiscountPercent?: number | null;
   discountPercent?: number | null;
   saleStartsAt?: string | null;
   saleEndsAt?: string | null;
   localizedPrice?: MoneyResponse | null;
   localizedSalePrice?: MoneyResponse | null;
+  localizedStaffPrice?: MoneyResponse | null;
   stockQuantity: number;
   barcodes?: Array<string | ProductBarcode>;
   barcodeCount?: number;
@@ -434,5 +440,45 @@ export type SubscriberImportResponse = {
   duplicates: number;
   failed: number;
   errors: SubscriberImportError[];
+};
+
+// ─── Artist & Worker dashboards (mall + tickets) ─────────────────────────────
+
+export type ArtistDashboardStats = {
+  upcomingBookings: number;
+  pendingRequests: number;
+  thisMonthPerformances: number;
+  minimumFee: number;
+  mallProductsAvailable: number;
+  mallMyPurchases: number;
+  ticketsUpcomingEvents: number;
+  ticketsMyTickets: number;
+};
+
+export type WorkerDashboardStats = {
+  workerId: number;
+  username: string;
+  jobTitle?: string | null;
+  businessId?: number | null;
+  businessName?: string | null;
+  staffDiscountPercentage: number;
+  staffPriceEnabled: boolean;
+  mallProductsAvailable: number;
+  mallMyPurchases: number;
+  ticketsUpcomingEvents: number;
+  ticketsMyTickets: number;
+  transactionsHandled: number;
+  tipsReceived: number;
+};
+
+export type CreateWorkerPayload = {
+  username: string;
+  emailAddress: string;
+  password: string;
+  cellphoneNumber: string;
+  jobTitle: string;
+  tipQrCodeEnabled: boolean;
+  profilePictureUrl?: string | null;
+  staffDiscountPercentage?: number | null;
 };
 

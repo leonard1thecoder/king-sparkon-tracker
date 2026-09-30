@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { Redirect } from "expo-router";
 import { useAuth } from "@/store/auth-context";
+import { isWorkerLike } from "@/lib/types";
 import { tokens } from "@/theme/tokens";
 
 export default function Index() {
@@ -20,5 +21,5 @@ export default function Index() {
   }
 
   if (!user) return <Redirect href="/(public)/products" />;
-  return <Redirect href="/(tabs)/shop" />;
+  return <Redirect href={isWorkerLike(user) ? "/(tabs)/staff-mall" : "/(tabs)/shop"} />;
 }

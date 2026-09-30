@@ -24,6 +24,9 @@ export type TrackerUser = {
   businessName?: string | null;
   emailVerified?: boolean;
   localizationCountry?: "SOUTH_AFRICA" | "REST_OF_WORLD" | string | null;
+  jobTitle?: string | null;
+  cellphoneNumber?: string | null;
+  staffDiscountPercentage?: number | null;
 };
 
 export type Product = {
@@ -36,10 +39,30 @@ export type Product = {
   status?: string;
   price: number;
   salePrice?: number;
+  staffPrice?: number | null;
+  staffDiscountPercent?: number | null;
   stockQuantity: number;
   productImageUrl?: string | null;
   returnableEnabled?: boolean;
   returnablePrice?: number;
+};
+
+// Worker dashboard with King Sparkon Mall (staff price) + King Sparkon
+// Tickets — mirrors backend GET /api/worker/dashboard.
+export type WorkerDashboardStats = {
+  workerId: number;
+  username: string;
+  jobTitle?: string | null;
+  businessId?: number | null;
+  businessName?: string | null;
+  staffDiscountPercentage: number;
+  staffPriceEnabled: boolean;
+  mallProductsAvailable: number;
+  mallMyPurchases: number;
+  ticketsUpcomingEvents: number;
+  ticketsMyTickets: number;
+  transactionsHandled: number;
+  tipsReceived: number;
 };
 
 export type TransactionItemPayload = {

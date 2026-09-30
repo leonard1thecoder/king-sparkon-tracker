@@ -27,6 +27,8 @@ const userSecondaryShortcuts = [
 ];
 
 const workerShortcuts = [
+  { label: "Staff Mall", detail: "Buy at your staff price.", href: "/(tabs)/staff-mall" },
+  { label: "Browse Tickets", detail: "Events and your tickets.", href: "/(tabs)/worker-tickets" },
   { label: "Products & Barcodes", detail: "Manage workplace product stock codes.", href: "/(tabs)/products" },
   { label: "Counter Checkout", detail: "Complete cash or card product sales.", href: "/(tabs)/scan" },
   { label: "Online Orders", detail: "Prepare paid carts for collection.", href: "/(tabs)/orders" },
@@ -57,6 +59,14 @@ export default function ProfileScreen() {
           ))}
         </View>
         {user?.businessName ? <Text>Business: {user.businessName}</Text> : null}
+        {worker ? (
+          <Text>
+            Staff discount:{" "}
+            {Number(user?.staffDiscountPercentage ?? 0) > 0
+              ? `${Number(user?.staffDiscountPercentage ?? 0)}% — staff price unlocked in Staff Mall`
+              : "none — ask your owner for a staff %"}
+          </Text>
+        ) : null}
         <Text style={{ fontSize: 12 }}>Backend: {backendBaseUrl()}</Text>
       </Card>
 
