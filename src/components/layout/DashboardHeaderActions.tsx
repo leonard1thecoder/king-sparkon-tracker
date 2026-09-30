@@ -22,6 +22,7 @@ import { LogoutButton } from "@/components/auth/LogoutButton";
 import { FavoriteHeaderAction } from "@/components/layout/FavoriteHeaderAction";
 import { apiGet } from "@/lib/api/client";
 import { getOwnerWallet } from "@/lib/api/owner-finance";
+import { useLocalization } from "@/lib/localization";
 import { readTuckShopCart } from "@/lib/tuck-shop/cart";
 import type { TrackerUser } from "@/lib/types/backend";
 
@@ -263,7 +264,11 @@ function ProfileDropdown({ role }: { role: string }) {
   const emailAddress = source.emailAddress || source.email || "Email address not available";
   const accountRole = String(source.roles?.[0] ?? source.privilege ?? source.role ?? normalizedRole(role));
   const verified = source.emailVerified !== false;
-  const shortcuts = userRole(role) ? userProfileShortcuts : ownerRole(role) ? ownerProfileShortcuts : [];
+  const localization = useLocalization();
+  const southAfrica = localization.localizationCountry === "SOUTH_AFRICA";
+  const shortcuts = (userRole(role) ? userProfileShortcuts : ownerRole(role) ? ownerProfileShortcuts : []).filter(
+    (shortcut) => southAfrica || shortcut.href !== "/dashboard/user/computer-care" && shortcut.href !== "/dashboard/owner/computer-care",
+  );
   const href = profileRoute(role);
 
   return (
@@ -325,7 +330,7 @@ function ProfileDropdown({ role }: { role: string }) {
               <Link href={shortcutHref} onClick={() => setOpen(false)} className="inline-flex min-h-11 w-full items-center gap-3 rounded-[1rem] px-3 text-sm font-black text-[var(--ink)] transition hover:bg-[var(--surface)]" role="menuitem">
                 <Icon className="h-4 w-4 text-[var(--signal)]" /> {label}
               </Link>
-              {label === "My Tickets" ? (
+              {label === "My Tickets" && southAfrica ? (
                 <>
                   <div className="rounded-[1rem] border border-transparent transition data-[open=true]:border-[var(--line)] data-[open=true]:bg-[var(--surface)]/60" data-open={uifOpen}>
                     <button

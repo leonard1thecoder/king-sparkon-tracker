@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Ticket } from "lucide-react";
 import type { EventTicketType } from "@/types/tickets";
 import { getTicketTypeLabel } from "@/services/ticketService";
+import { convertZarToUsd, formatMoney, useLocalization } from "@/lib/localization";
 
 type TicketTypeCardProps = {
   ticketType: EventTicketType;
@@ -10,20 +11,18 @@ type TicketTypeCardProps = {
   checkoutHref?: string;
 };
 
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(value);
-}
-
 export function TicketTypeCard({ ticketType, eventId, showBuyAction = true, checkoutHref }: TicketTypeCardProps) {
   const soldOut = ticketType.sold >= ticketType.capacity || ticketType.available <= 0;
   const buyHref = checkoutHref ?? `/dashboard/user/tickets/checkout/${eventId}?type=${ticketType.type}`;
+  const localization = useLocalization();
+  const price = localization.currency === "USD" ? convertZarToUsd(ticketType.price, localization.usdToZarRate) : ticketType.price;
 
   return (
     <article className={`rounded-[1.9rem] border bg-white p-5 shadow-[var(--shadow-soft)] ${soldOut ? "border-[var(--danger)]/20 opacity-75" : "border-[var(--line)]"}`}>
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="font-mono text-[0.68rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">{getTicketTypeLabel(ticketType.type)}</p>
-          <p className="money mt-3 text-3xl font-black tracking-[-0.05em] text-[var(--ink)]">{formatCurrency(ticketType.price)}</p>
+          <p className="money mt-3 text-3xl font-black tracking-[-0.05em] text-[var(--ink)]">{formatMoney(price, localization.currency)}</p>
         </div>
         <div className="grid h-12 w-12 place-items-center rounded-[1.2rem] bg-[var(--surface)] text-[var(--signal)]">
           <Ticket className="h-5 w-5" />

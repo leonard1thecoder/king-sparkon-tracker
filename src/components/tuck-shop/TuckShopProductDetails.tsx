@@ -21,10 +21,10 @@ import { normalizeApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/Button";
 import {
   addTuckShopProductToCart,
-  money,
   productImage,
   productPrice,
 } from "@/lib/tuck-shop/cart";
+import { convertZarToUsd, formatMoney, useLocalization } from "@/lib/localization";
 import { ProductCard } from "./ProductCard";
 
 type ProductListResponse = Product[] | {
@@ -69,11 +69,13 @@ function ProductDetailSkeleton() {
 function StickyMobileCta({
   product,
   lineTotal,
+  totalDisplay,
   onAddToCart,
   visible,
 }: {
   product: Product;
   lineTotal: number;
+  totalDisplay: string;
   onAddToCart: () => void;
   visible: boolean;
 }) {
@@ -88,7 +90,7 @@ function StickyMobileCta({
           Total
         </p>
         <p className="money text-xl font-black text-[var(--ink)]">
-          {money(lineTotal)}
+          {totalDisplay}
         </p>
       </div>
       <Button
@@ -236,6 +238,14 @@ export function TuckShopProductDetails({ productId }: { productId: string }) {
     product?.salePrice !== undefined &&
     product.salePrice < product.price;
   const inStock = (product?.stockQuantity ?? 0) > 0;
+  const localization = useLocalization();
+  const showMoney = (zarValue: number | string | null | undefined) => {
+    const zar = Number(zarValue ?? 0);
+    return formatMoney(
+      localization.currency === "USD" ? convertZarToUsd(zar, localization.usdToZarRate) : zar,
+      localization.currency,
+    );
+  };
 
   return (
     <>
@@ -359,11 +369,11 @@ export function TuckShopProductDetails({ productId }: { productId: string }) {
                       Price
                     </p>
                     <p className="money mt-1 text-5xl font-black leading-none text-[var(--ink)]">
-                      {money(salePrice)}
+                      {showMoney(salePrice)}
                     </p>
                     {hasDiscount && (
                       <p className="money mt-1 text-sm font-semibold text-[var(--muted)] line-through">
-                        {money(product.price)}
+                        {showMoney(product.price)}
                       </p>
                     )}
                   </div>
@@ -435,7 +445,7 @@ export function TuckShopProductDetails({ productId }: { productId: string }) {
                         Total
                       </p>
                       <p className="money text-2xl font-black text-[var(--ink)]">
-                        {money(lineTotal)}
+                        {showMoney(lineTotal)}
                       </p>
                     </div>
                   </div>
@@ -487,17 +497,17 @@ export function TuckShopProductDetails({ productId }: { productId: string }) {
               </h2>
 
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                <Spec label="Price" value={<span className="money">{money(salePrice)}</span>} />
+                <Spec label="Price" value={<span className="money">{showMoney(salePrice)}</span>} />
                 <Spec label="Stock" value={product.stockQuantity} />
                 <Spec label="Category" value={product.category} />
                 {product.productBarcode && (
                   <Spec label="Barcode" value={<span className="font-mono text-sm">{product.productBarcode}</span>} />
                 )}
                 {product.returnableEnabled && product.returnablePrice !== undefined && (
-                  <Spec label="Returnable deposit" value={<span className="money">{money(product.returnablePrice)}</span>} />
+                  <Spec label="Returnable deposit" value={<span className="money">{showMoney(product.returnablePrice)}</span>} />
                 )}
                 {product.nightShiftEnabled && product.nightShiftPrice !== undefined && (
-                  <Spec label="Night shift price" value={<span className="money">{money(product.nightShiftPrice)}</span>} />
+                  <Spec label="Night shift price" value={<span className="money">{showMoney(product.nightShiftPrice)}</span>} />
                 )}
                 {product.businessId && (
                   <Spec label="Business" value={product.businessName ?? `#${product.businessId}`} />
@@ -546,6 +556,7 @@ export function TuckShopProductDetails({ productId }: { productId: string }) {
         <StickyMobileCta
           product={product}
           lineTotal={lineTotal}
+          totalDisplay={showMoney(lineTotal)}
           onAddToCart={addToCart}
           visible={stickyVisible}
         />

@@ -5,6 +5,7 @@ import { useAuth } from "@/store/auth-context";
 import { useCart } from "@/store/cart-context";
 import { useFavorites } from "@/store/favorites-context";
 import { getUserRoles, isWorkerLike } from "@/lib/types";
+import { isSouthAfrica } from "@/lib/localization";
 import { listWorkerOnlinePurchases } from "@/lib/api";
 import { tokens } from "@/theme/tokens";
 import LogoImage from "../../assets/icon.png";
@@ -33,6 +34,7 @@ export function AppHeader() {
   const worker = isWorkerLike(user);
   const buyer = !worker || roles.includes("User");
   const userWorkspace = !worker;
+  const southAfrica = isSouthAfrica(user?.localizationCountry);
 
   useEffect(() => {
     if (!worker) return;
@@ -126,9 +128,11 @@ export function AppHeader() {
               <MenuLink href="/(tabs)/applications" label="My Applications" onNavigate={() => setMenuOpen(false)} />
               <MenuLink href="/(tabs)/carts" label="My Carts" onNavigate={() => setMenuOpen(false)} />
               <MenuLink href="/(tabs)/favorites" label="Favorites" onNavigate={() => setMenuOpen(false)} />
-              <Pressable style={styles.menuItem} onPress={() => setUifOpen((v) => !v)} accessibilityState={{ expanded: uifOpen }}>
-                <Text style={styles.menuItemText}>UIF {uifOpen ? "▾" : "▸"}</Text>
-              </Pressable>
+              {southAfrica ? (
+                <Pressable style={styles.menuItem} onPress={() => setUifOpen((v) => !v)} accessibilityState={{ expanded: uifOpen }}>
+                  <Text style={styles.menuItemText}>UIF {uifOpen ? "▾" : "▸"}</Text>
+                </Pressable>
+              ) : null}
               {uifOpen ? (
                 <View style={styles.submenu}>
                   <MenuLink href="/uif/status" label="Check UIF Status" onNavigate={() => setMenuOpen(false)} />

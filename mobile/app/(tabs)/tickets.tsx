@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { FlatList, RefreshControl, Text, View } from "react-native";
 import { Link, router } from "expo-router";
 import { addTicketCoolerbox, listMyRefunds, listMyTickets, listTicketEvents, requestTicketRefund } from "@/lib/api";
+import { convertZarToUsd, formatMoney, useLocalization } from "@/lib/localization";
 import type { RefundRequest, TicketEvent, UserTicket } from "@/lib/types";
 import { useCart } from "@/store/cart-context";
 import { Card, ErrorText, PrimaryButton, Screen, StatusPill, Subtitle, Title } from "@/components/ui";
@@ -15,6 +16,9 @@ function hoursUntilEvent(event: TicketEvent | undefined) {
 
 export default function TicketsScreen() {
   const { addService } = useCart();
+  const localization = useLocalization();
+  const showMoney = (zar: number) =>
+    formatMoney(localization.currency === "USD" ? convertZarToUsd(zar, localization.usdToZarRate) : zar, localization.currency);
   const [events, setEvents] = useState<TicketEvent[]>([]);
   const [mine, setMine] = useState<UserTicket[]>([]);
   const [refunds, setRefunds] = useState<RefundRequest[]>([]);
@@ -180,7 +184,7 @@ export default function TicketsScreen() {
             </Text>
             {item.ticketTypes.map((type) => (
               <Text key={type.type} style={{ fontSize: 12 }}>
-                {type.type}: R{Number(type.price).toFixed(2)} · {type.available} left
+                {type.type}: {showMoney(Number(type.price))} · {type.available} left
               </Text>
             ))}
             {item.marketplaceHubEnabled ? (

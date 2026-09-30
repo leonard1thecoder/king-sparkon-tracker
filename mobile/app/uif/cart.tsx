@@ -4,9 +4,18 @@ import { StyleSheet, Text, TextInput } from "react-native";
 import { getUifResetCartStatus } from "@/lib/api";
 import type { UifResetCartResponse } from "@/lib/types";
 import { Card, ErrorText, PrimaryButton, Screen, StatusPill, Subtitle, Title } from "@/components/ui";
+import { RegionGate } from "@/components/region-gate";
 import { tokens } from "@/theme/tokens";
 
 export default function UifCartScreen() {
+  return (
+    <RegionGate serviceName="UIF services">
+      <UifCartContent />
+    </RegionGate>
+  );
+}
+
+function UifCartContent() {
   const [merchantPaymentId, setMerchantPaymentId] = useState("");
   const [status, setStatus] = useState<UifResetCartResponse | null>(null);
   const [busy, setBusy] = useState(false);

@@ -17,13 +17,13 @@ export type PageResponse<T> = {
 
 export type TrackerUser = {
   id: number;
-  username: string;
-  emailAddress: string;
+  username: string;  emailAddress: string;
   privilege?: UserRole | string;
   roles?: UserRole[] | string[];
   businessId?: number | null;
   businessName?: string | null;
   emailVerified?: boolean;
+  localizationCountry?: "SOUTH_AFRICA" | "REST_OF_WORLD" | string | null;
 };
 
 export type Product = {

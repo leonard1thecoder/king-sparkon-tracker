@@ -13,6 +13,8 @@ import {
   Wrench,
 } from "lucide-react";
 import { createPayFastCartPayment } from "@/lib/api/tuck-shop";
+import { createPayPalOrder } from "@/lib/api/payments";
+import { convertZarToUsd, formatMoney, useLocalization } from "@/lib/localization";
 import { normalizeApiError } from "@/lib/api/client";
 import { dashboardHref, type SharedDashboardRole } from "@/lib/dashboard-routes";
 import { submitPayFastForm } from "@/lib/payfast";
@@ -74,6 +76,8 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
   const [paymentStage, setPaymentStage] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const localization = useLocalization();
+  const payWithPayPal = localization.currency === "USD";
 
   useEffect(() => {
     setCart(readTuckShopCart());
@@ -136,7 +140,7 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
     try {
       setPaymentStage("Securing your cart total...");
       const user = await loadCheckoutUser();
-      const payment = await createPayFastCartPayment({
+      const payload = {
         idempotencyKey: checkoutIdempotencyKey(),
         buyerName: user.name,
         buyerEmail: user.emailAddress,
@@ -148,7 +152,19 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
           label: line.label,
           amount: line.unitPrice,
         })),
-      });
+      };
+
+      if (payWithPayPal) {
+        if (!localization.paypalCheckoutEnabled) {
+          throw new Error("PayPal checkout is not enabled. Contact support.");
+        }
+        const order = await createPayPalOrder(payload);
+        setPaymentStage("Redirecting to PayPal for secure payment...");
+        window.location.href = order.approveUrl;
+        return;
+      }
+
+      const payment = await createPayFastCartPayment(payload);
 
       setPaymentStage("Redirecting to PayFast for secure payment...");
       submitPayFastForm(payment.processUrl, payment.fields);
@@ -160,12 +176,20 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
     }
   }
 
+  const displayTotal = payWithPayPal
+    ? convertZarToUsd(cartNetTotal(cart), localization.usdToZarRate)
+    : cartNetTotal(cart);
+
   return (
     <section className="grid gap-5">
       <SectionHeader
-        eyebrow="Verified PayFast Cart"
+        eyebrow={payWithPayPal ? "Verified PayPal Cart" : "Verified PayFast Cart"}
         title="Pay for products, tickets and services securely in one cart."
-        description="PayFast processes the payment on its secure page. King Sparkon clears the cart only after the verified backend ITN confirms payment and completes fulfilment."
+        description={
+          payWithPayPal
+            ? "PayPal processes the payment in USD on its secure page. King Sparkon clears the cart only after capture confirms payment and completes fulfilment."
+            : "PayFast processes the payment on its secure page. King Sparkon clears the cart only after the verified backend ITN confirms payment and completes fulfilment."
+        }
       />
 
       <Card>
@@ -277,8 +301,8 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
                 <CreditCard className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-black text-[var(--ink)]">Secure PayFast payment</h3>
-                <p className="mt-1 text-xs leading-5 text-[var(--ink)]/65">PayFast checkout, ITN verification, then receipt.</p>
+                <h3 className="font-black text-[var(--ink)]">{payWithPayPal ? "Secure PayPal payment" : "Secure PayFast payment"}</h3>
+                <p className="mt-1 text-xs leading-5 text-[var(--ink)]/65">{payWithPayPal ? "PayPal checkout in USD, capture confirmation, then receipt." : "PayFast checkout, ITN verification, then receipt."}</p>
               </div>
             </div>
 
@@ -288,7 +312,9 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
 
               <div className="flex items-start gap-2 rounded-[1rem] bg-[var(--surface)] p-3 text-xs font-semibold leading-5 text-[var(--steel)]">
                 <LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-[var(--confirm)]" />
-                You pay on PayFast&apos;s secure page (card, Instant EFT and more). Card details are never stored by King Sparkon.
+                {payWithPayPal
+                  ? "You pay on PayPal's secure page in USD. Card details are never stored by King Sparkon."
+                  : "You pay on PayFast's secure page (card, Instant EFT and more). Card details are never stored by King Sparkon."}
               </div>
 
               <div className="grid gap-3 rounded-[1.35rem] bg-[var(--ink)] p-4 text-white">
@@ -304,13 +330,13 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
                     {cartEmptiesCreditTotal(cart) > 0 ? <div className="flex justify-between gap-3 text-sm font-bold text-[var(--confirm)]"><span>Empties credit</span><span className="money">−{money(cartEmptiesCreditTotal(cart))}</span></div> : null}
                   </>
                 ) : null}
-                <div className="flex justify-between gap-3 border-t border-white/10 pt-3 text-xl font-black"><span>To pay</span><span className="money text-[var(--gold)]">{money(cartNetTotal(cart))}</span></div>
-                <p className="text-xs leading-5 text-white/62">Return empties at the counter or declare them above to reduce the deposit. The backend recalculates the trusted amount before PayFast payment.</p>
+                <div className="flex justify-between gap-3 border-t border-white/10 pt-3 text-xl font-black"><span>To pay</span><span className="money text-[var(--gold)]">{formatMoney(displayTotal, localization.currency)}</span></div>
+                <p className="text-xs leading-5 text-white/62">Return empties at the counter or declare them above to reduce the deposit. The backend recalculates the trusted amount before {payWithPayPal ? "PayPal" : "PayFast"} payment.</p>
               </div>
 
               <Button onClick={checkout} disabled={saving || cart.length === 0} className="w-full">
                 {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
-                {saving ? "Processing secure payment..." : "Pay cart"}
+                {saving ? "Processing secure payment..." : payWithPayPal ? "Pay with PayPal" : "Pay cart"}
               </Button>
             </div>
           </aside>

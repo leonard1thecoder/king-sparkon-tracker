@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import type { Product } from "@/lib/types/backend";
 import { Button } from "@/components/ui/Button";
 import { money, productImage, productPrice, returnableDeposit } from "@/lib/tuck-shop/cart";
+import { convertZarToUsd, formatMoney, useLocalization } from "@/lib/localization";
 
 function SaleCountdown({ endsAt }: { endsAt: string }) {
   const [now, setNow] = useState(() => Date.now());
@@ -51,6 +52,9 @@ export function ProductCard({
   const hasDiscount =
     product.salePrice !== undefined && product.salePrice < product.price;
   const inStock = product.stockQuantity > 0;
+  const localization = useLocalization();
+  const displayPrice = (zarValue: number) =>
+    localization.currency === "USD" ? convertZarToUsd(zarValue, localization.usdToZarRate) : zarValue;
 
   const imageHeight = size === "sm" ? "h-44" : "h-52";
   const cardWidth =
@@ -126,16 +130,16 @@ export function ProductCard({
         <div className="flex items-end justify-between gap-2">
           <div>
             <p className="money text-xl font-black text-[var(--ink)]">
-              {money(salePrice)}
+              {formatMoney(displayPrice(salePrice), localization.currency)}
             </p>
             {hasDiscount && (
               <p className="money text-xs font-semibold text-[var(--muted)] line-through">
-                {money(product.price)}
+                {formatMoney(displayPrice(product.price), localization.currency)}
               </p>
             )}
             {product.returnableEnabled && (
               <p className="mt-1 text-[0.65rem] font-black uppercase tracking-[0.08em] text-[var(--confirm)]">
-                +{money(returnableDeposit(product))} returnable deposit
+                +{formatMoney(displayPrice(returnableDeposit(product)), localization.currency)} returnable deposit
               </p>
             )}
             {hasDiscount && product.saleEndsAt ? (

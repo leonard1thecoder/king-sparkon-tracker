@@ -1,14 +1,19 @@
 import { useState } from "react";
 import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 import * as WebBrowser from "expo-web-browser";
-import { createPayFastCartPayment, createTuckShopPurchase, getPayFastCartPaymentStatus, payPageUrl } from "@/lib/api";
+import { capturePayPalOrder, createPayFastCartPayment, createPayPalOrder, createTuckShopPurchase, getPayFastCartPaymentStatus, getPayPalOrderStatus, payPageUrl } from "@/lib/api";
 import { idempotencyKey } from "@/lib/api-client";
+import { convertZarToUsd, formatMoney, useLocalization } from "@/lib/localization";
 import { isServiceLine, lineCredit, lineDeposit, lineEmpties, lineNet, useCart, type ProductCartLine } from "@/store/cart-context";
 import { useAuth } from "@/store/auth-context";
 import { Card, ErrorText, PrimaryButton, Screen, StatusPill, Subtitle, Title } from "@/components/ui";
 
 export default function CartScreen() {
   const { lines, total, netTotal, depositTotal, creditTotal, returnableUnitCount, emptiesCount, setQuantity, setEmpties, remove } = useCart();
+  const { user } = useAuth();
+  const localization = useLocalization();
+  const payWithPayPal = localization.currency === "USD";
+  const showMoney = (zar: number) => formatMoney(payWithPayPal ? convertZarToUsd(zar, localization.usdToZarRate) : zar, localization.currency);
   const { user } = useAuth();
   const [email, setEmail] = useState("");
   const [contact, setContact] = useState("");
@@ -18,6 +23,7 @@ export default function CartScreen() {
   const [serviceBusy, setServiceBusy] = useState(false);
   const [serviceError, setServiceError] = useState<string | null>(null);
   const [serviceStage, setServiceStage] = useState<string | null>(null);
+  const [pendingPayPalOrder, setPendingPayPalOrder] = useState<string | null>(null);
 
   const serviceLines = lines.filter(isServiceLine);
   const serviceTotal = serviceLines.reduce((sum, line) => sum + line.price * line.quantity, 0);
@@ -55,7 +61,7 @@ export default function CartScreen() {
     setServiceError(null);
     try {
       setServiceStage("Securing your service total...");
-      const payment = await createPayFastCartPayment({
+      const payload = {
         idempotencyKey: idempotencyKey("service-cart"),
         buyerName: user?.username ?? "Registered user",
         buyerEmail: user?.emailAddress ?? email.trim() ?? "registered-user@king-sparkon.local",
@@ -68,7 +74,31 @@ export default function CartScreen() {
           label: line.label,
           amount: Number(line.price),
         })),
-      });
+      };
+      if (payWithPayPal) {
+        if (!localization.paypalCheckoutEnabled) {
+          throw new Error("PayPal checkout is not enabled. Contact support.");
+        }
+        const order = await createPayPalOrder(payload);
+        setPendingPayPalOrder(order.orderId);
+        setServiceStage(`Opening PayPal for ${formatMoney(order.amountUsd, "USD")}...`);
+        await WebBrowser.openBrowserAsync(order.approveUrl);
+        setServiceStage("Checking payment...");
+        try {
+          await capturePayPalOrder(order.orderId);
+        } catch {
+          // Capture may already have run — fall through to status check.
+        }
+        const status = await getPayPalOrderStatus(order.orderId).catch(() => null);
+        if (status && status.fulfilled) {
+          serviceLines.forEach((line) => remove(line.key));
+          setServiceStage("Payment verified — service lines cleared.");
+        } else {
+          setServiceStage("Browser closed. Tap Check payment after approving on PayPal.");
+        }
+        return;
+      }
+      const payment = await createPayFastCartPayment(payload);
       setServiceStage("Opening secure PayFast payout...");
       await WebBrowser.openBrowserAsync(payPageUrl(payment.merchantPaymentId));
       setServiceStage("Checking payment...");
@@ -87,6 +117,26 @@ export default function CartScreen() {
     }
   }
 
+  async function checkPayPalServices() {
+    setServiceBusy(true);
+    setServiceError(null);
+    try {
+      setServiceStage("Checking PayPal payment...");
+      const status = await getPayPalOrderStatus(pendingPayPalOrder).catch(() => null);
+      if (status && status.fulfilled) {
+        serviceLines.forEach((line) => remove(line.key));
+        setPendingPayPalOrder(null);
+        setServiceStage("Payment verified — service lines cleared.");
+      } else {
+        setServiceStage("Not captured yet. Approve on PayPal, then check again.");
+      }
+    } catch (e) {
+      setServiceError(e instanceof Error ? e.message : "Payment check failed.");
+    } finally {
+      setServiceBusy(false);
+    }
+  }
+
   return (
     <Screen>
       <Title>Cart</Title>
@@ -100,7 +150,7 @@ export default function CartScreen() {
             <Card>
               <Text style={styles.name}>{item.label}</Text>
               <Text style={styles.meta}>
-                {item.serviceKind} · R{item.price.toFixed(2)}
+                {item.serviceKind} · {showMoney(item.price)}
               </Text>
               <View style={styles.row}>
                 <PrimaryButton title="Remove" onPress={() => remove(item.key)} />
@@ -110,16 +160,16 @@ export default function CartScreen() {
             <Card>
               <Text style={styles.name}>{item.name}</Text>
               <Text style={styles.meta}>
-                R{item.price.toFixed(2)} × {item.quantity} = R{(item.price * item.quantity).toFixed(2)}
+                {showMoney(item.price)} × {item.quantity} = {showMoney(item.price * item.quantity)}
               </Text>
               {item.returnableEnabled ? (
                 <Text style={styles.returnable}>
-                  Returnable · R{lineDeposit(item).toFixed(2)} deposit each
+                  Returnable · {showMoney(lineDeposit(item))} deposit each
                 </Text>
               ) : null}
               {lineCredit(item) > 0 ? (
                 <Text style={styles.credit}>
-                  Empties credit −R{lineCredit(item).toFixed(2)} · to pay R{lineNet(item).toFixed(2)}
+                  Empties credit −{showMoney(lineCredit(item))} · to pay {showMoney(lineNet(item))}
                 </Text>
               ) : null}
               <View style={styles.row}>
@@ -148,14 +198,14 @@ export default function CartScreen() {
         ListEmptyComponent={<Text style={styles.meta}>Cart is empty. Add products from Shop.</Text>}
       />
       <Card>
-        <Text style={styles.total}>Total R{total.toFixed(2)}</Text>
+        <Text style={styles.total}>Total {showMoney(total)}</Text>
         {returnableUnitCount > 0 ? (
           <Text style={styles.meta}>
-            Returnables in cart: {emptiesCount} of {returnableUnitCount} empties back · deposits R{depositTotal.toFixed(2)}
-            {creditTotal > 0 ? ` · credit −R${creditTotal.toFixed(2)}` : ""}
+            Returnables in cart: {emptiesCount} of {returnableUnitCount} empties back · deposits {showMoney(depositTotal)}
+            {creditTotal > 0 ? ` · credit −${showMoney(creditTotal)}` : ""}
           </Text>
         ) : null}
-        {creditTotal > 0 ? <Text style={styles.total}>To pay R{netTotal.toFixed(2)}</Text> : null}
+        {creditTotal > 0 ? <Text style={styles.total}>To pay {showMoney(netTotal)}</Text> : null}
         <TextInput value={email} onChangeText={setEmail} placeholder="Payment email (website payment)" keyboardType="email-address" autoCapitalize="none" style={styles.input} />
         <TextInput value={contact} onChangeText={setContact} placeholder="Payment contact" keyboardType="phone-pad" style={styles.input} />
         <ErrorText message={error} />
@@ -164,15 +214,26 @@ export default function CartScreen() {
       </Card>
       {serviceLines.length > 0 ? (
         <Card>
-          <Text style={styles.total}>Services R{serviceTotal.toFixed(2)}</Text>
-          <Text style={styles.meta}>Care plans, hub access and dev builds pay through the shared PayFast payout.</Text>
+          <Text style={styles.total}>Services {showMoney(serviceTotal)}</Text>
+          <Text style={styles.meta}>
+            {payWithPayPal
+              ? "Care plans, hub access and dev builds pay through the shared PayPal payout in USD."
+              : "Care plans, hub access and dev builds pay through the shared PayFast payout."}
+          </Text>
           {serviceStage ? <StatusPill label={serviceStage} tone="action" /> : null}
           <ErrorText message={serviceError} />
           <PrimaryButton
-            title={serviceBusy ? "Securing payout..." : `Pay services R${serviceTotal.toFixed(2)} via PayFast`}
+            title={serviceBusy ? "Securing payout..." : payWithPayPal ? `Pay services ${showMoney(serviceTotal)} via PayPal` : `Pay services R${serviceTotal.toFixed(2)} via PayFast`}
             onPress={() => void checkoutServices()}
             disabled={serviceBusy}
           />
+          {payWithPayPal && pendingPayPalOrder ? (
+            <PrimaryButton
+              title={serviceBusy ? "Checking..." : "Check PayPal payment"}
+              onPress={() => void checkPayPalServices()}
+              disabled={serviceBusy}
+            />
+          ) : null}
         </Card>
       ) : null}
     </Screen>

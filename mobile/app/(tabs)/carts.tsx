@@ -1,10 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { FlatList, RefreshControl, Text, View } from "react-native";
 import { createReturnableRefund, listMyPurchases, listMyRefunds, listMyReturnableRefunds, requestProductRefund } from "@/lib/api";
+import { convertZarToUsd, formatMoney, useLocalization } from "@/lib/localization";
 import type { RefundRequest, ReturnableRefund, TuckShopPurchase } from "@/lib/types";
 import { Card, ErrorText, PrimaryButton, Screen, StatusPill, Subtitle, Title } from "@/components/ui";
 
 export default function MyCartsScreen() {
+  const localization = useLocalization();
+  const showMoney = (zar: number) =>
+    formatMoney(localization.currency === "USD" ? convertZarToUsd(zar, localization.usdToZarRate) : zar, localization.currency);
   const [purchases, setPurchases] = useState<TuckShopPurchase[]>([]);
   const [refunds, setRefunds] = useState<ReturnableRefund[]>([]);
   const [purchaseRefunds, setPurchaseRefunds] = useState<RefundRequest[]>([]);
@@ -113,11 +117,11 @@ export default function MyCartsScreen() {
         renderItem={({ item }) => (
           <Card>
             <Text style={{ fontWeight: "800" }}>
-              Order {item.transactionId} · R{(item.netTotal ?? item.productTotal).toFixed(2)}
+              Order {item.transactionId} · {showMoney(item.netTotal ?? item.productTotal)}
             </Text>
             {(item.emptiesCreditTotal ?? 0) > 0 ? (
               <Text style={{ fontSize: 12, fontWeight: "800", color: "#1C7C54" }}>
-                Empties credit −R{(item.emptiesCreditTotal ?? 0).toFixed(2)}
+                Empties credit −{showMoney(item.emptiesCreditTotal ?? 0)}
               </Text>
             ) : null}
             <StatusPill label={item.fulfilmentStatus ?? item.paymentStatus ?? "PENDING"} tone="action" />
@@ -144,12 +148,12 @@ export default function MyCartsScreen() {
               return (
                 <View key={line.transactionItemId ?? line.productId}>
                   <Text style={{ fontSize: 12 }}>
-                    {line.productName} × {line.quantity} — R{line.lineTotal.toFixed(2)}
+                    {line.productName} × {line.quantity} — {showMoney(line.lineTotal)}
                     {(line.emptiesReturned ?? 0) > 0 ? ` · ${line.emptiesReturned} empties back` : ""}
                   </Text>
                   {deposit > 0 ? (
                     <Text style={{ fontSize: 12, fontWeight: "800", color: "#1C7C54" }}>
-                      Returnable · R{deposit.toFixed(2)} deposit each
+                      Returnable · {showMoney(deposit)} deposit each
                     </Text>
                   ) : null}
                   {itemRefunds.map((refund) => (

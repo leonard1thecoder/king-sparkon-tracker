@@ -5,9 +5,18 @@ import { createUifResetCart } from "@/lib/api";
 import type { UifResetCartResponse } from "@/lib/types";
 import { Card, ErrorText, PrimaryButton, Screen, StatusPill, Subtitle, Title } from "@/components/ui";
 import { UifHint, UifIdInput, isValidUifId } from "@/components/uif";
+import { RegionGate } from "@/components/region-gate";
 import { tokens } from "@/theme/tokens";
 
 export default function UifPasswordScreen() {
+  return (
+    <RegionGate serviceName="UIF services">
+      <UifPasswordContent />
+    </RegionGate>
+  );
+}
+
+function UifPasswordContent() {
   const [idNumber, setIdNumber] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

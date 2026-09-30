@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, Text, TextInput, View } from "react-native";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { listTuckShopProducts } from "@/lib/api";
+import { convertZarToUsd, formatMoney, useLocalization } from "@/lib/localization";
 import { normalizeList, type Product } from "@/lib/types";
 import { useCart } from "@/store/cart-context";
 import { Card, ErrorText, PrimaryButton, Screen, StatusPill, Subtitle, Title } from "@/components/ui";
@@ -9,6 +10,9 @@ import { tokens } from "@/theme/tokens";
 
 export default function ShopScreen() {
   const { add } = useCart();
+  const localization = useLocalization();
+  const showMoney = (zar: number) =>
+    formatMoney(localization.currency === "USD" ? convertZarToUsd(zar, localization.usdToZarRate) : zar, localization.currency);
   const params = useLocalSearchParams<{ businessId?: string | string[] }>();
   const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState("");
@@ -77,11 +81,11 @@ export default function ShopScreen() {
               <View style={{ flex: 1 }}>
                 <Text style={styles.name}>{item.name}</Text>
                 <Text style={styles.meta}>
-                  {item.businessName ?? "Tuck shop"} · R{item.price.toFixed(2)} · {item.stockQuantity} in stock
+                  {item.businessName ?? "Tuck shop"} · {showMoney(item.price)} · {item.stockQuantity} in stock
                 </Text>
                 {item.returnableEnabled ? (
                   <Text style={styles.returnable}>
-                    Returnable · R{Number(item.returnablePrice ?? 0).toFixed(2)} deposit each
+                    Returnable · {showMoney(Number(item.returnablePrice ?? 0))} deposit each
                   </Text>
                 ) : null}
               </View>

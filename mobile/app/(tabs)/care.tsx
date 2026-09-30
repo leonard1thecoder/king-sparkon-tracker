@@ -9,6 +9,7 @@ import {
   type ServiceLineKind,
 } from "@/lib/api";
 import { useCart } from "@/store/cart-context";
+import { RegionGate } from "@/components/region-gate";
 import { Card, ErrorText, PrimaryButton, Screen, StatusPill, Subtitle, Title } from "@/components/ui";
 import { tokens } from "@/theme/tokens";
 
@@ -42,6 +43,14 @@ function detailFor(tab: CareTab["id"], plan: RawCarePlan): string {
 }
 
 export default function CareScreen() {
+  return (
+    <RegionGate serviceName="NM Computer Care">
+      <CareContent />
+    </RegionGate>
+  );
+}
+
+function CareContent() {
   const { addService } = useCart();
   const [tab, setTab] = useState<CareTab>(CARE_TABS[0]);
   const [plans, setPlans] = useState<RawCarePlan[]>([]);

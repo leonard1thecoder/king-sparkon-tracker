@@ -162,10 +162,10 @@ export function createPayFastCartPayment(payload: {
   idempotencyKey: string;
   buyerName: string;
   buyerEmail: string;
-  products: { productId: number; quantity: number }[];
+  products: { productId: number; quantity: number; emptiesReturned?: number }[];
   tickets: { eventId: string; ticketType: string; quantity: number }[];
-  tips: CartTipItem[];
-  services?: CartServiceItem[];
+  tips?: { workerId: number; tipAmount: number }[];
+  services?: { kind: string; referenceId: string; label: string; amount: number }[];
 }) {
   return apiPostIdempotent<{
     paymentId: number;
@@ -195,6 +195,44 @@ export function getPayFastCartPaymentStatus(merchantPaymentId: string) {
 export function payPageUrl(merchantPaymentId: string): string {
   const base = (process.env.EXPO_PUBLIC_APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
   return `${base}/pay/${encodeURIComponent(merchantPaymentId)}`;
+}
+
+export type PayPalOrder = {
+  orderId: string;
+  approveUrl: string;
+  amountUsd: number;
+  currency: string;
+  merchantReference: string;
+  status: string;
+};
+
+export type PayPalOrderStatus = {
+  orderId: string;
+  status: string;
+  fulfilled: boolean;
+  amountUsd: number;
+  currency: string;
+  merchantReference: string;
+};
+
+export function createPayPalOrder(payload: {
+  idempotencyKey: string;
+  buyerName: string;
+  buyerEmail: string;
+  products: { productId: number; quantity: number; emptiesReturned?: number }[];
+  tickets: { eventId: string; ticketType: string; quantity: number }[];
+  tips?: { workerId: number; tipAmount: number }[];
+  services?: { kind: string; referenceId: string; label: string; amount: number }[];
+}) {
+  return apiPost<PayPalOrder>("/payments/paypal/orders", payload);
+}
+
+export function capturePayPalOrder(orderId: string) {
+  return apiPost<PayPalOrderStatus>(`/payments/paypal/orders/${encodeURIComponent(orderId)}/capture`, {});
+}
+
+export function getPayPalOrderStatus(orderId: string) {
+  return apiGet<PayPalOrderStatus>(`/payments/paypal/orders/${encodeURIComponent(orderId)}`);
 }
 
 export function listSentTips(status?: string) {

@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { createPayFastCartPayment } from "@/lib/api/tuck-shop";
+import { createPayPalOrder } from "@/lib/api/payments";
+import { convertZarToUsd, formatMoney, useLocalization } from "@/lib/localization";
 import { submitPayFastForm } from "@/lib/payfast";
 import { normalizeApiError } from "@/lib/api/client";
 import {
@@ -16,10 +18,6 @@ import {
   TIP_TRAY_EVENT,
   type TipTrayLine,
 } from "@/lib/tips/cart";
-
-function money(value: number) {
-  return new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(Number(value || 0));
-}
 
 type CheckoutUser = { name: string; emailAddress: string };
 
@@ -47,6 +45,8 @@ export function TipCartWorkspace() {
   const [saving, setSaving] = useState(false);
   const [paymentStage, setPaymentStage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const localization = useLocalization();
+  const payWithPayPal = localization.currency === "USD";
 
   const refresh = useCallback(() => {
     setLines(readTipTray());
@@ -74,14 +74,26 @@ export function TipCartWorkspace() {
     try {
       setPaymentStage("Securing your tip total...");
       const user = await loadCheckoutUser();
-      const payment = await createPayFastCartPayment({
+      const payload = {
         idempotencyKey: checkoutIdempotencyKey(),
         buyerName: user.name,
         buyerEmail: user.emailAddress,
         products: [],
         tickets: [],
         tips: lines.map((line) => ({ workerId: line.workerId, tipAmount: Number(line.tipAmount) })),
-      });
+      };
+
+      if (payWithPayPal) {
+        if (!localization.paypalCheckoutEnabled) {
+          throw new Error("PayPal checkout is not enabled. Contact support.");
+        }
+        const order = await createPayPalOrder(payload);
+        setPaymentStage("Redirecting to PayPal for secure payment...");
+        window.location.href = order.approveUrl;
+        return;
+      }
+
+      const payment = await createPayFastCartPayment(payload);
 
       setPaymentStage("Redirecting to PayFast for secure payment...");
       submitPayFastForm(payment.processUrl, payment.fields);
@@ -94,6 +106,7 @@ export function TipCartWorkspace() {
   }
 
   const total = lines.reduce((sum, line) => sum + Number(line.tipAmount ?? 0), 0);
+  const displayTotal = payWithPayPal ? convertZarToUsd(total, localization.usdToZarRate) : total;
 
   return (
     <section className="grid gap-6">
@@ -104,7 +117,7 @@ export function TipCartWorkspace() {
             <p className="mt-2 text-sm leading-6 text-[var(--steel)]">
               {lines.length === 0
                 ? "No tips in the cart."
-                : `${lines.length} tip${lines.length === 1 ? "" : "s"} · ${money(total)} total — one shared PayFast payout, like products, tickets and UIF carts.`}
+                : `${lines.length} tip${lines.length === 1 ? "" : "s"} · ${formatMoney(displayTotal, localization.currency)} total — one shared payout, like products, tickets and UIF carts.`}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -133,7 +146,7 @@ export function TipCartWorkspace() {
                 <div key={`${line.workerId}-${line.tipAmount}-${index}`} className="grid gap-3 rounded-[1.35rem] border border-[var(--line)] bg-white p-4 sm:grid-cols-[1fr_auto] sm:items-center">
                   <div>
                     <p className="font-black text-[var(--ink)]">{line.workerLabel}</p>
-                    <p className="money mt-1 text-xl font-black">{money(line.tipAmount)}</p>
+                    <p className="money mt-1 text-xl font-black">{formatMoney(payWithPayPal ? convertZarToUsd(Number(line.tipAmount), localization.usdToZarRate) : Number(line.tipAmount), localization.currency)}</p>
                     <p className="mt-1 text-xs font-semibold text-[var(--muted)]">Worker #{line.workerId}</p>
                   </div>
                   <Button type="button" variant="quiet" onClick={() => setLines(removeTipFromTray(line.workerId, Number(line.tipAmount)))}>
@@ -142,12 +155,12 @@ export function TipCartWorkspace() {
                 </div>
               ))}
               <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.35rem] border border-[var(--line)] bg-[var(--surface)] p-4">
-                <p className="flex items-center gap-2 text-sm font-black text-[var(--ink)]"><ShoppingCart className="h-4 w-4 text-[var(--signal)]" /> Total {money(total)}</p>
+                <p className="flex items-center gap-2 text-sm font-black text-[var(--ink)]"><ShoppingCart className="h-4 w-4 text-[var(--signal)]" /> Total {formatMoney(displayTotal, localization.currency)}</p>
                 <div className="flex flex-wrap gap-2">
                   <Button type="button" variant="quiet" onClick={() => setLines(clearTipTray())}>Clear cart</Button>
                   <Button type="button" disabled={saving} onClick={() => void checkout()}>
                     {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
-                    {saving ? "Securing payout..." : `Pay ${money(total)} via PayFast`}
+                    {saving ? "Securing payout..." : payWithPayPal ? `Pay ${formatMoney(displayTotal, localization.currency)} via PayPal` : `Pay ${money(total)} via PayFast`}
                   </Button>
                 </div>
               </div>

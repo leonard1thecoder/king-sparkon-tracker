@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ShoppingCart } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { RegionGate } from "@/components/region/RegionGate";
 import { UifCartWorkspace } from "@/components/uif/UifCartWorkspace";
 
 export const metadata: Metadata = {
@@ -23,7 +24,9 @@ export default function UifCartPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <UifCartWorkspace />
+          <RegionGate serviceName="UIF services">
+            <UifCartWorkspace />
+          </RegionGate>
         </CardContent>
       </Card>
     </div>

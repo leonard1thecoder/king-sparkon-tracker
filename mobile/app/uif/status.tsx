@@ -3,9 +3,18 @@ import { Text } from "react-native";
 import { fetchUifBenefits } from "@/lib/api";
 import { uifRowSummary, type UifBenefitRow } from "@/lib/types";
 import { Card, ErrorText, PrimaryButton, Screen, StatusPill, Subtitle, Title } from "@/components/ui";
+import { RegionGate } from "@/components/region-gate";
 import { UifHint, UifIdInput, isValidUifId } from "@/components/uif";
 
 export default function UifStatusScreen() {
+  return (
+    <RegionGate serviceName="UIF services">
+      <UifStatusContent />
+    </RegionGate>
+  );
+}
+
+function UifStatusContent() {
   const [idNumber, setIdNumber] = useState("");
   const [rows, setRows] = useState<UifBenefitRow[] | null>(null);
   const [busy, setBusy] = useState(false);

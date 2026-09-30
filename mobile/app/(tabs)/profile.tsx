@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useAuth } from "@/store/auth-context";
 import { getUserRoles, isWorkerLike } from "@/lib/types";
+import { isSouthAfrica } from "@/lib/localization";
 import { Card, PrimaryButton, Screen, StatusPill, Subtitle, Title } from "@/components/ui";
 import { backendBaseUrl } from "@/lib/api-client";
 import { tokens } from "@/theme/tokens";
@@ -37,6 +38,11 @@ export default function ProfileScreen() {
   const { user, signOut } = useAuth();
   const roles = getUserRoles(user);
   const worker = isWorkerLike(user);
+  const southAfrica = isSouthAfrica(user?.localizationCountry);
+  const visibleSecondary = userSecondaryShortcuts.filter((item) => {
+    if (!southAfrica && (item.href === "/(tabs)/care" || item.href.startsWith("/uif/"))) return false;
+    return true;
+  });
 
   return (
     <Screen>
@@ -73,7 +79,7 @@ export default function ProfileScreen() {
       {!worker ? (
         <Card>
           <Text style={styles.section}>More shortcuts</Text>
-          {userSecondaryShortcuts.map((item) => (
+          {visibleSecondary.map((item) => (
             <Link key={item.href} href={item.href} asChild>
               <Pressable style={styles.row}>
                 <View style={{ flex: 1 }}>

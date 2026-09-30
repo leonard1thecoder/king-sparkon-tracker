@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { RouteSectionPage } from "@/components/layout/RouteSectionPage";
+import { RegionGate } from "@/components/region/RegionGate";
 import { ComputerCareTabs } from "@/components/computer-care/ComputerCareTabs";
 
 export const metadata: Metadata = {
@@ -15,7 +16,9 @@ export default function OwnerComputerCarePage() {
       description="Service plans for computers and business devices. Pick a care type to list live plans, filter by lifecycle status, and review quoted totals."
       endpoint="GET /api/v1/basic-care-plans · /api/v1/performance-care-plans · /api/v1/business-care-plans"
     >
-      <ComputerCareTabs />
+      <RegionGate serviceName="NM Computer Care">
+        <ComputerCareTabs />
+      </RegionGate>
     </RouteSectionPage>
   );
 }

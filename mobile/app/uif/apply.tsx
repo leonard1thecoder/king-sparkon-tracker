@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Card, Screen, StatusPill, Subtitle, Title } from "@/components/ui";
+import { RegionGate } from "@/components/region-gate";
 import { tokens } from "@/theme/tokens";
 
 const documents = [
@@ -12,6 +13,14 @@ const documents = [
 ];
 
 export default function UifApplyScreen() {
+  return (
+    <RegionGate serviceName="UIF services">
+      <UifApplyContent />
+    </RegionGate>
+  );
+}
+
+function UifApplyContent() {
   const [ready, setReady] = useState<Set<string>>(new Set());
 
   function toggle(type: string) {
