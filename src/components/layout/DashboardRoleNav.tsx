@@ -73,6 +73,7 @@ export const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Workers", href: "/dashboard/owner/workers", icon: UsersRound, description: "Accounts and privileges", shortLabel: "Workers" },
     { label: "Product Transactions", href: "/dashboard/owner/transactions", icon: ReceiptText, description: "Cash, card and app purchases", shortLabel: "Sales" },
     { label: "Withdrawals", href: "/dashboard/owner/withdrawals", icon: Landmark, description: "Unified balance and payout history", shortLabel: "Payouts" },
+    { label: "KSC Wallet", href: "/dashboard/owner/wallet", icon: Landmark, description: "Coin balance, top-ups and mandates", shortLabel: "KSC" },
     { label: "Artist Payouts", href: "/dashboard/owner/artist-payouts", icon: Mic2, description: "Approve artist withdrawals", shortLabel: "Artists" },
     { label: "Artist Events", href: "/dashboard/owner/artist-events", icon: CalendarDays, description: "Drafts, riders and publishing", shortLabel: "Events" },
     { label: "Tips", href: "/dashboard/owner/tips", icon: WalletCards, description: "Worker tip activity", shortLabel: "Tips" },
@@ -113,6 +114,7 @@ export const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Cart", href: "/dashboard/user/shop/cart", icon: ShoppingCart, description: "Review and pay", shortLabel: "Cart" },
     { label: "Buy Tickets", href: "/dashboard/user/tickets/buy", icon: Ticket, description: "Browse live events", shortLabel: "Tickets" },
     { label: "Tip Worker", href: "/dashboard/user/tips", icon: WalletCards, description: "Support workers directly", shortLabel: "Tip" },
+    { label: "KSC Wallet", href: "/dashboard/user/wallet", icon: Landmark, description: "Coin balance, top-ups and mandates", shortLabel: "KSC" },
   ],
   Artist: [
     { label: "Dashboard", href: "/dashboard/artist", icon: LayoutDashboard, description: "Overview and opportunities", shortLabel: "Home" },

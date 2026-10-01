@@ -14,6 +14,7 @@ import type { Product } from "@/lib/types/backend";
 import type { TicketEvent } from "@/types/tickets";
 import { formatZAR, getArtistDashboardStats, getArtistProfile, getDraftedEvents, getUpcomingPerformances } from "@/services/artistService";
 import { getArtistDashboard, listArtistMallProductsFallback, listArtistTicketEventsFallback } from "@/lib/api/artist-dashboard";
+import { KscWalletSection } from "@/components/ksc/KscWalletSection";
 import { productPrice } from "@/lib/tuck-shop/cart";
 
 function Greeting() {
@@ -234,6 +235,12 @@ export function ArtistDashboardHome() {
           </Card>
         )}
       </section>
+
+      {/* KSC Wallet — separate from booking earnings */}
+      <KscWalletSection
+        title="Artist KSC Wallet"
+        description="Coin for AI/MCP payments and King Sparkon services. Your booking earnings stay untouched in Payouts."
+      />
     </div>
   );
 }

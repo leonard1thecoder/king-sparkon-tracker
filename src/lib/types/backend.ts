@@ -487,6 +487,113 @@ export type ArtistBookingStatusResponse = {
   eventId?: string | null;
 } | null;
 
+// ─── King Sparkon Coin (KSC) wallet ────────────────────────────────────────
+// Separate financial domain from ZAR earnings. 1 KSC = R1.00 (configurable).
+
+export type KscWallet = {
+  id: number;
+  currency: string;
+  availableBalance: number;
+  reservedBalance: number;
+  totalBalance: number;
+  zarEquivalent: number;
+  status: string;
+};
+
+export type KscTransaction = {
+  id: number;
+  entryType: string;
+  status: string;
+  amount: number;
+  balanceAfter: number;
+  reservedAfter: number;
+  provider?: string | null;
+  providerReference?: string | null;
+  description?: string | null;
+  createdBy?: string | null;
+  createdAt?: string | null;
+};
+
+export type CreateKscTopUpPayload = {
+  amountZar: number;
+  idempotencyKey?: string | null;
+};
+
+export type KscTopUp = {
+  id: number;
+  amountZar: number;
+  amountKsc: number;
+  exchangeRate: number;
+  merchantPaymentId?: string | null;
+  paymentUrl?: string | null;
+  paymentQrCodeUrl?: string | null;
+  status: string;
+  createdAt?: string | null;
+  completedAt?: string | null;
+};
+
+export type AuthorizeKscPaymentPayload = {
+  amountKsc: number;
+  description?: string | null;
+  agentId?: string | null;
+  mandateId?: number | null;
+  tool?: string | null;
+  merchantId?: string | null;
+  idempotencyKey?: string | null;
+};
+
+export type KscPayment = {
+  id: string;
+  amountKsc: number;
+  status: string;
+  agentId?: string | null;
+  mandateId?: number | null;
+  merchantId?: string | null;
+  tool?: string | null;
+  description?: string | null;
+  expiresAt?: string | null;
+  createdAt?: string | null;
+  capturedAt?: string | null;
+  cancelledAt?: string | null;
+  refundedAt?: string | null;
+};
+
+export type CreateKscMandatePayload = {
+  agentId: string;
+  maxPerTransaction: number;
+  dailyLimit: number;
+  monthlyLimit: number;
+  allowedTools?: string[];
+  allowedMerchants?: string[];
+  expiresAt?: string | null;
+};
+
+export type KscMandate = {
+  id: number;
+  agentId: string;
+  maxPerTransaction: number;
+  dailyLimit: number;
+  monthlyLimit: number;
+  allowedTools: string[];
+  allowedMerchants: string[];
+  status: string;
+  expiresAt?: string | null;
+  createdAt?: string | null;
+  revokedAt?: string | null;
+};
+
+export type KscAdminOverview = {
+  totalIssued: number;
+  totalCaptured: number;
+  totalOutstanding: number;
+  totalReserved: number;
+  walletCount: number;
+  pendingTopUps: number;
+  failedTopUps: number;
+  authorizedPayments: number;
+  refundCount: number;
+};
+
 // ─── Artist events + hospitality rider ─────────────────────────────────────
 
 export type BackendArtistEvent = {

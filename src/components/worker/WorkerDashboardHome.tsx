@@ -9,6 +9,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { normalizeApiError } from "@/lib/api/client";
 import { getWorkerDashboard } from "@/lib/api/worker-dashboard";
+import { KscWalletSection } from "@/components/ksc/KscWalletSection";
 import type { WorkerDashboardStats } from "@/lib/types/backend";
 
 export function WorkerDashboardHome() {
@@ -111,6 +112,11 @@ export function WorkerDashboardHome() {
           </div>
         </Card>
       </section>
+
+      <KscWalletSection
+        title="Worker KSC Wallet"
+        description="Coin for AI/MCP payments and King Sparkon services. Your tip earnings stay untouched in Tips & QR."
+      />
     </div>
   );
 }
