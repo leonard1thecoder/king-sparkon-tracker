@@ -482,3 +482,104 @@ export type CreateWorkerPayload = {
   staffDiscountPercentage?: number | null;
 };
 
+export type ArtistBookingStatusResponse = {
+  status: string;
+  eventId?: string | null;
+} | null;
+
+// ─── Artist events + hospitality rider ─────────────────────────────────────
+
+export type BackendArtistEvent = {
+  id: string;
+  businessId?: number | null;
+  ownerId?: string | null;
+  title: string;
+  description: string;
+  eventDate: string;
+  startTime: string;
+  endTime: string;
+  location: string;
+  venue: string;
+  imageUrl?: string | null;
+  artistType?: string | null;
+  bookingFee: number;
+  performanceDuration?: number | null;
+  status: string;
+  aboutHost?: string | null;
+  businessName?: string | null;
+  businessLogoUrl?: string | null;
+  riderAvailable: boolean;
+  riderAmount: number;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+};
+
+export type CreateArtistEventPayload = {
+  title: string;
+  description: string;
+  eventDate: string;
+  startTime: string;
+  endTime: string;
+  location: string;
+  venue: string;
+  imageUrl?: string | null;
+  artistType?: string | null;
+  bookingFee?: number | null;
+  performanceDuration?: number | null;
+  aboutHost?: string | null;
+  riderAvailable?: boolean;
+  riderAmount?: number | null;
+};
+
+export type UpdateArtistEventPayload = Partial<CreateArtistEventPayload> & {
+  status?: string | null;
+};
+
+export type RiderItem = {
+  id: number;
+  productId?: number | null;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  totalAmount: number;
+  transactionId?: number | null;
+  createdAt?: string | null;
+};
+
+export type RiderStatus = {
+  eventId: string;
+  riderAvailable: boolean;
+  riderAmount: number;
+  spentAmount: number;
+  remainingAmount: number;
+  items: RiderItem[];
+};
+
+export type RiderRedemption = {
+  id: number;
+  eventId: string;
+  productId?: number | null;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  totalAmount: number;
+  transactionId?: number | null;
+  remainingAmount: number;
+  createdAt?: string | null;
+};
+
+export type ArtistRiderSpend = {
+  artistId: number;
+  artistName: string;
+  spentAmount: number;
+  itemCount: number;
+};
+
+export type EventRiderSummary = {
+  eventId: string;
+  riderAvailable: boolean;
+  riderAmount: number;
+  totalSpent: number;
+  perArtist: ArtistRiderSpend[];
+};
+

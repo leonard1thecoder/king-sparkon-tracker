@@ -74,6 +74,7 @@ export const navByRole: Record<UserRole, NavItem[]> = {
     { label: "Product Transactions", href: "/dashboard/owner/transactions", icon: ReceiptText, description: "Cash, card and app purchases", shortLabel: "Sales" },
     { label: "Withdrawals", href: "/dashboard/owner/withdrawals", icon: Landmark, description: "Unified balance and payout history", shortLabel: "Payouts" },
     { label: "Artist Payouts", href: "/dashboard/owner/artist-payouts", icon: Mic2, description: "Approve artist withdrawals", shortLabel: "Artists" },
+    { label: "Artist Events", href: "/dashboard/owner/artist-events", icon: CalendarDays, description: "Drafts, riders and publishing", shortLabel: "Events" },
     { label: "Tips", href: "/dashboard/owner/tips", icon: WalletCards, description: "Worker tip activity", shortLabel: "Tips" },
     { label: "Tickets", href: "/dashboard/owner/tickets", icon: Ticket, description: "Events and ticket sales", shortLabel: "Tickets" },
     { label: "Jobs", href: "/dashboard/owner/jobs", icon: BriefcaseBusiness, description: "Business opportunities", shortLabel: "Jobs" },

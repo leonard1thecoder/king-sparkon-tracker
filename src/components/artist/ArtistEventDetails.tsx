@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Modal } from "@/components/ui/Modal";
 import { Toast } from "@/components/ui/Toast";
 import { ArtistStatusBadge } from "./ArtistStatusBadge";
+import { ArtistEventRider } from "./ArtistEventRider";
 import type { ArtistBookingStatus, DraftedEvent } from "@/types/artist";
 import { formatZAR, getArtistProfile, getDraftedEventById, getRequestStatus, requestToPerform } from "@/services/artistService";
 
@@ -135,7 +136,7 @@ export function ArtistEventDetails({ eventId }: { eventId: string }) {
           </div>
 
           {/* Sticky CTA */}
-          <div className="lg:sticky lg:top-6 h-fit">
+          <div className="lg:sticky lg:top-6 h-fit grid gap-6">
             <Card className="overflow-hidden">
               <CardHeader>
                 <CardTitle>Performance Details</CardTitle>
@@ -158,6 +159,8 @@ export function ArtistEventDetails({ eventId }: { eventId: string }) {
                 <p className="text-center text-xs font-semibold text-[var(--muted)]">{status ? "You will be notified when host responds." : "Secure your slot — hosts review quickly."}</p>
               </CardContent>
             </Card>
+
+            <ArtistEventRider eventId={event.id} />
           </div>
         </div>
       </div>

@@ -31,7 +31,7 @@ type CreateWorkerPayload = {
   jobTitle: string;
   tipQrCodeEnabled: boolean;
   profilePictureUrl?: string | null;
-  staffDiscountPercentage?: string;
+  staffDiscountPercentage?: number | null;
 };
 
 const emptyForm: CreateWorkerPayload = {
@@ -42,7 +42,7 @@ const emptyForm: CreateWorkerPayload = {
   jobTitle: "",
   tipQrCodeEnabled: false,
   profilePictureUrl: "",
-  staffDiscountPercentage: "",
+  staffDiscountPercentage: null,
 };
 
 const inputClass = "min-h-11 w-full rounded-[1rem] border border-[var(--line)] bg-white px-4 text-sm font-semibold text-[var(--ink)] outline-none focus:border-[var(--signal)]";
@@ -83,9 +83,8 @@ export function OwnerWorkerManager() {
     setError(null);
     setNotice(null);
     try {
-      const staffRaw = form.staffDiscountPercentage?.trim() ?? "";
-      const staffPercent = staffRaw === "" ? null : Number(staffRaw);
-      if (staffPercent !== null && (!Number.isFinite(staffPercent) || staffPercent < 0 || staffPercent > 90)) {
+      const staffPercent = form.staffDiscountPercentage;
+      if (staffPercent !== null && staffPercent !== undefined && (!Number.isFinite(staffPercent) || staffPercent < 0 || staffPercent > 90)) {
         throw new Error("Staff discount percent must be between 0 and 90.");
       }
       await apiPost<WorkerUser, CreateWorkerPayload>("/users/workers", {
@@ -171,7 +170,7 @@ export function OwnerWorkerManager() {
               <label className="grid gap-1.5 text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">Cellphone number<input required value={form.cellphoneNumber} onChange={(event) => setForm((current) => ({ ...current, cellphoneNumber: event.target.value }))} className={inputClass} placeholder="+27..." /></label>
               <label className="grid gap-1.5 text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">Job title<input required value={form.jobTitle} onChange={(event) => setForm((current) => ({ ...current, jobTitle: event.target.value }))} className={inputClass} placeholder="Cashier" /></label>
               <label className="grid gap-1.5 text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">Profile picture URL · optional<input value={form.profilePictureUrl ?? ""} onChange={(event) => setForm((current) => ({ ...current, profilePictureUrl: event.target.value }))} className={inputClass} placeholder="https://..." /></label>
-              <label className="grid gap-1.5 text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">Staff discount % · 0-90 (staff price)<input type="number" min={0} max={90} step={0.5} value={form.staffDiscountPercentage ?? ""} onChange={(event) => setForm((current) => ({ ...current, staffDiscountPercentage: event.target.value }))} className={inputClass} placeholder="e.g. 10" /><span className="text-[0.65rem] font-bold normal-case tracking-normal text-[var(--muted)]">Set at creation. Workers above 0% buy mall products at staff price.</span></label>
+              <label className="grid gap-1.5 text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">Staff discount % · 0-90 (staff price)<input type="number" min={0} max={90} step={0.5} value={form.staffDiscountPercentage ?? ""} onChange={(event) => setForm((current) => ({ ...current, staffDiscountPercentage: event.target.value === "" ? null : Number(event.target.value) }))} className={inputClass} placeholder="e.g. 10" /><span className="text-[0.65rem] font-bold normal-case tracking-normal text-[var(--muted)]">Set at creation. Workers above 0% buy mall products at staff price.</span></label>
             </div>
 
             <label className="flex items-start gap-3 rounded-[1.2rem] border border-[var(--gold)]/45 bg-[var(--gold)]/10 p-4">
