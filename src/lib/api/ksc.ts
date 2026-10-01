@@ -83,6 +83,17 @@ export function getKscPayment(paymentId: string) {
   return apiGet<KscPayment>(`/ksc/payments/${encodeURIComponent(paymentId)}`);
 }
 
+export function settleKscPayment(
+  paymentId: string,
+  idempotencyKey = createIdempotencyKey("ksc-settle"),
+) {
+  return apiPostIdempotent<KscPayment, Record<string, never>>(
+    `/ksc/payments/${encodeURIComponent(paymentId)}/settle`,
+    {},
+    idempotencyKey,
+  );
+}
+
 export function createKscMandate(payload: CreateKscMandatePayload) {
   return apiPost<KscMandate, CreateKscMandatePayload>("/ksc/mandates", payload);
 }

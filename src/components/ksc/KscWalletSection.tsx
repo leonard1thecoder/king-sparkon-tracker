@@ -269,6 +269,8 @@ function PaymentDialog({ open, wallet, onClose, onDone }: { open: boolean; walle
   const [amount, setAmount] = useState("250");
   const [description, setDescription] = useState("");
   const [agentId, setAgentId] = useState("");
+  const [sellerUsername, setSellerUsername] = useState("");
+  const [settlementKind, setSettlementKind] = useState("SERVICE");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [payment, setPayment] = useState<KscPayment | null>(null);
@@ -292,6 +294,8 @@ function PaymentDialog({ open, wallet, onClose, onDone }: { open: boolean; walle
         amountKsc: value,
         description: description.trim() || null,
         agentId: agentId.trim() || null,
+        sellerUsername: sellerUsername.trim() || null,
+        settlementKind: sellerUsername.trim() ? settlementKind : null,
       });
       setPayment(created);
     } catch (exception) {
@@ -329,6 +333,14 @@ function PaymentDialog({ open, wallet, onClose, onDone }: { open: boolean; walle
           <label className={labelClass}>Amount (KSC)<input type="number" min={0.01} step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} className={inputClass} /></label>
           <label className={labelClass}>Description · optional<input value={description} onChange={(e) => setDescription(e.target.value)} className={inputClass} maxLength={1000} placeholder="Summer Festival VIP ticket" /></label>
           <label className={labelClass}>Agent id · optional (needs a mandate)<input value={agentId} onChange={(e) => setAgentId(e.target.value)} className={inputClass} maxLength={120} placeholder="chatgpt-01" /></label>
+          <label className={labelClass}>Seller username · optional (Artist/Worker/Owner — proceeds settle to their ZAR earnings)<input value={sellerUsername} onChange={(e) => setSellerUsername(e.target.value)} className={inputClass} maxLength={120} placeholder="artist username" /></label>
+          {sellerUsername.trim() ? (
+            <label className={labelClass}>Selling
+              <select value={settlementKind} onChange={(e) => setSettlementKind(e.target.value)} className={inputClass}>
+                {["PRODUCT", "TICKET", "SERVICE", "BOOKING", "TIP", "OTHER"].map((kind) => <option key={kind} value={kind}>{kind}</option>)}
+              </select>
+            </label>
+          ) : null}
           <p className="rounded-[1rem] border border-[var(--line)] bg-[var(--surface)] p-3 text-xs font-bold text-[var(--steel)]">
             Authorizing moves {formatKsc(Number(amount) || 0)} from Available to Reserved. Capture finalizes it; cancel releases it. Remaining balance afterwards: {formatKsc((wallet?.availableBalance ?? 0) - (Number(amount) || 0))}.
           </p>
@@ -343,6 +355,13 @@ function PaymentDialog({ open, wallet, onClose, onDone }: { open: boolean; walle
           <p className="text-sm font-semibold text-[var(--steel)]">
             <span className="font-black text-[var(--ink)]">{formatKsc(payment.amountKsc)}</span> {payment.description ? `· ${payment.description}` : ""} — status <span className="font-black">{payment.status}</span>
           </p>
+          {payment.settlement ? (
+            <div className="grid gap-1 rounded-[1rem] border border-[var(--line)] bg-[var(--surface)] p-3 text-xs font-bold text-[var(--steel)]">
+              <p className="font-black text-[var(--ink)]">Seller settlement · {payment.settlement.status}</p>
+              <p>Platform fee: {formatKsc(payment.settlement.feeKsc)} · Seller proceeds: {formatKsc(payment.settlement.netKsc)} → {formatKscZar(payment.settlement.netZar)} {payment.settlement.sellerRole ? `${payment.settlement.sellerRole} earnings` : ""}</p>
+              <p className="font-semibold text-[var(--muted)]">Sellers withdraw through their existing ZAR earnings — no manual conversion.</p>
+            </div>
+          ) : null}
           {error ? <p className="text-sm font-black text-[var(--danger)]">{error}</p> : null}
           <div className="flex justify-end gap-3">
             <Button type="button" variant="quiet" disabled={acting} onClick={() => void act("cancel")}>Cancel hold</Button>

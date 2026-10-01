@@ -539,7 +539,20 @@ export type AuthorizeKscPaymentPayload = {
   mandateId?: number | null;
   tool?: string | null;
   merchantId?: string | null;
+  sellerUsername?: string | null;
+  businessId?: number | null;
+  settlementKind?: string | null;
+  subjectReference?: string | null;
   idempotencyKey?: string | null;
+};
+
+export type KscSettlementInfo = {
+  status: string;
+  feeKsc: number;
+  netKsc: number;
+  netZar: number;
+  sellerRole?: string | null;
+  earningsReference?: string | null;
 };
 
 export type KscPayment = {
@@ -556,6 +569,7 @@ export type KscPayment = {
   capturedAt?: string | null;
   cancelledAt?: string | null;
   refundedAt?: string | null;
+  settlement?: KscSettlementInfo | null;
 };
 
 export type CreateKscMandatePayload = {
@@ -592,6 +606,10 @@ export type KscAdminOverview = {
   failedTopUps: number;
   authorizedPayments: number;
   refundCount: number;
+  totalSettledZar: number;
+  totalPlatformFeesKsc: number;
+  pendingSettlements: number;
+  failedSettlements: number;
 };
 
 // ─── Artist events + hospitality rider ─────────────────────────────────────
