@@ -10,13 +10,9 @@ import {
   UsersRound,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { AffiliateProgramSection } from "@/components/marketing/AffiliateProgramSection";
-import { DevHubSection } from
-"@/components/marketing/DevHubSection";
 import { DownloadAppSection } from
 "@/components/marketing/DownloadAppButtons";
 import { FounderVerificationCard } from "@/components/marketing/FounderVerificationCard";
-import { JobOpportunitiesSection } from "@/components/marketing/JobOpportunitiesSection";
 import {
   ActivityExample,
   CommerceChain,
@@ -42,9 +38,6 @@ const navLinks = [
   ["Commerce", "#commerce"],
   ["Money", "#money"],
   ["World", "#world"],
-  ["Jobs", "#jobs"],
-  ["Affiliate", "#affiliate"],
-  ["Dev Hub", "#dev-hub"],
 ] as const;
 
 const ORIGINAL_COMPLAINT_LINK = "https://www.facebook.com/share/1CaAzEGBJb/";
@@ -301,11 +294,7 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
       <WorldMoment />
       <ScenarioWindows />
 
-      <JobOpportunitiesSection />
-      <AffiliateProgramSection />
-      <DevHubSection />
-
-      <section id="capacity" className="scroll-mt-24 bg-white px-5 py-10 md:px-8 lg:py-14">
+      <section id="capacity" className="scroll-mt-24 border-t border-[var(--line)] bg-white px-5 py-10 md:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:items-center">
             <div><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Capacity</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-5xl">Know what is available before operations become a problem.</h2><p className="mt-5 text-base leading-8 text-[var(--steel)]">Capacity views turn activity into clear, actionable totals.</p><Link href="/dashboard/owner/capacity" className="mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[var(--line-strong)] bg-white px-5 text-sm font-extrabold text-[var(--ink)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]">View owner capacity <ArrowRight className="h-4 w-4" /></Link></div>
