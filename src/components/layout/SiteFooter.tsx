@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Barcode, Mail, MapPin, ShieldCheck } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { CookieSettingsButton } from "@/components/cookie-consent/CookieSettingsButton";
 import { SocialLinks } from "@/components/social/SocialLinks";
 import { SOCIAL_LINKS } from "@/lib/config/social-links";
@@ -54,13 +54,7 @@ export function SiteFooter({ marketingOnly = false }: SiteFooterProps) {
           </div>
         </div>
 
-        <div className="mt-8 grid gap-4 border-y border-[var(--line)] py-5 md:grid-cols-3">
-          <div className="flex gap-3"><div className="grid h-10 w-10 shrink-0 place-items-center rounded-[var(--radius-md)] border border-[var(--line)] text-[var(--signal)]"><Barcode className="h-5 w-5" /></div><div><p className="text-sm font-extrabold">Scan-first tracking</p><p className="mt-1 text-xs leading-5 text-[var(--steel)]">Barcode and QR flows for every platform role.</p></div></div>
-          <div className="flex gap-3"><div className="grid h-10 w-10 shrink-0 place-items-center rounded-[var(--radius-md)] border border-[var(--line)] text-[var(--signal)]"><ShieldCheck className="h-5 w-5" /></div><div><p className="text-sm font-extrabold">Production discipline</p><p className="mt-1 text-xs leading-5 text-[var(--steel)]">Software delivery, QA, cloud maintenance and support.</p></div></div>
-          <div className="flex gap-3"><div className="grid h-10 w-10 shrink-0 place-items-center rounded-[var(--radius-md)] border border-[var(--line)] text-[var(--signal)]"><Mail className="h-5 w-5" /></div><div><p className="text-sm font-extrabold">Planning a rollout?</p><Link href="/#contact" className="mt-1 inline-flex text-xs font-bold text-[var(--signal-strong)] hover:text-[var(--accent-hover)] transition-colors duration-200">Send an implementation inquiry</Link></div></div>
-        </div>
-
-        <div className="mt-6 flex flex-col gap-4 text-xs font-semibold text-[var(--muted)] md:flex-row md:items-center md:justify-between">
+        <div className="mt-8 flex flex-col gap-4 border-t border-[var(--line)] pt-6 text-xs font-semibold text-[var(--muted)] md:flex-row md:items-center md:justify-between">
           <p>&copy; {year} King Sparkon. Trademark platform of Sizolwakhe Leonard Mthimunye.</p>
           <div className="flex flex-wrap items-center gap-3"><span className="inline-flex items-center gap-2"><MapPin className="h-3.5 w-3.5" /> South Africa ready</span><CookieSettingsButton variant="footer" /><Link href={SOCIAL_LINKS.find((social) => social.platform === "GitHub")?.href ?? "https://github.com/leonard1thecoder"} target="_blank" rel="noreferrer" className="hover:text-[var(--accent-hover)] transition-colors duration-200">GitHub profile</Link></div>
         </div>
