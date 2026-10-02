@@ -5,7 +5,6 @@ import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
-  BadgeCheck,
   BriefcaseBusiness,
   Crown,
   Megaphone,
@@ -39,7 +38,7 @@ import {
   SystemChains,
   WorldMoment,
 } from "@/components/marketing/LandingJourney";
-import { Capacity3DVisual, Engineering3DVisual, Role3DVisual, Sponsor3DVisual } from "@/components/marketing/Landing3DVisuals";
+import { Capacity3DVisual, Engineering3DVisual, Role3DVisual } from "@/components/marketing/Landing3DVisuals";
 import { SubscriptionSection } from "@/components/marketing/SubscriptionSection";
 
 const navLinks = [
@@ -81,13 +80,6 @@ const capacityRows = [
   ["Stock", "Products, barcode units, low stock and movement history."],
   ["Promotions", "Audience, channel, referral assets and campaign results."],
   ["Platform", "Users, businesses, reports, audit logs and configuration."],
-] as const;
-
-const sponsorMaintains = [
-  "Cloud hosting, storage, backups and uptime.",
-  "QR and barcode scanning reliability.",
-  "Security, QA, audits and transaction safety.",
-  "New features for every platform role.",
 ] as const;
 
 const engineeringPrinciples = [
@@ -341,19 +333,6 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
             <Capacity3DVisual />
           </div>
           <div className="mt-10 divide-y divide-[var(--line)] border-y border-[var(--line)]">{capacityRows.map(([title, copy], index) => <div key={title} className="grid gap-3 py-5 sm:grid-cols-[3rem_0.35fr_1fr] sm:items-start"><span className="text-sm font-black text-[var(--signal-strong)]">0{index + 1}</span><h3 className="font-black">{title}</h3><p className="text-sm leading-6 text-[var(--steel)]">{copy}</p></div>)}</div>
-        </div>
-      </section>
-
-      <section id="sponsor" className="scroll-mt-24 border-y border-[var(--line)] bg-white px-5 py-10 md:px-8 lg:py-14">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-          <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Support King Sparkon</p>
-            <h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-5xl">Help maintain a reliable platform.</h2>
-            <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--steel)]">Sponsorship helps cover the production work that users rarely see but always depend on.</p>
-            <div className="mt-7 grid gap-3 sm:grid-cols-2">{sponsorMaintains.map((item) => <div key={item} className="flex items-start gap-3 border-l-2 border-[var(--line-strong)] py-2 pl-4 text-sm font-semibold leading-6 text-[var(--steel)]"><BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[var(--signal)]" />{item}</div>)}</div>
-            <Link data-orange-hover="true" href="/#contact" className="mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-extrabold text-white hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]">Discuss sponsorship <ArrowRight className="h-4 w-4" /></Link>
-          </div>
-          <Sponsor3DVisual />
         </div>
       </section>
 
