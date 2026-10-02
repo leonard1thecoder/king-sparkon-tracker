@@ -31,7 +31,6 @@ import {
   CommerceChain,
   ExampleEvent,
   FlowSequence,
-  HeroStill,
   JourneyStyles,
   LandingEnding,
   MoneyFlow,
@@ -300,14 +299,7 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
             <FounderVerificationCard />
           </div>
         </div>
-        <div className="relative mx-auto max-w-5xl px-5 md:px-8">
-          <div className="pointer-events-none absolute -inset-4 rounded-[3rem] bg-gradient-to-br from-[var(--premium-cyan)]/10 via-transparent to-[var(--premium-gold)]/10 blur-2xl" aria-hidden="true" />
-          <div className="relative">
-            <HeroStill />
-            <p className="mt-3 text-center font-mono text-[0.625rem] font-bold uppercase tracking-[0.2em] text-white/40">The brand, still and verified</p>
-          </div>
-        </div>
-        <div className="relative mt-10">
+        <div className="relative mt-2">
           <SignalTicker />
         </div>
       </section>
