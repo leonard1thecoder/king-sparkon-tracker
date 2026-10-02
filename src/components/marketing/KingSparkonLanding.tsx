@@ -37,6 +37,7 @@ import {
   MoneyFlow,
   PeopleWorld,
   ScenarioWindows,
+  SignalTicker,
   SystemChains,
   WorldMoment,
 } from "@/components/marketing/LandingJourney";
@@ -272,28 +273,42 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
           </header>
         ) : null}
 
-        <div className="enterprise-grid pointer-events-none absolute inset-0 opacity-60" aria-hidden="true" />
-        <div className="relative mx-auto grid max-w-7xl gap-8 px-5 pb-10 pt-8 md:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:pb-14 lg:pt-12">
-          <div>
-            <p className="font-mono text-[0.6875rem] font-bold uppercase tracking-[0.2em] text-[var(--premium-gold)]">King Sparkon — something is moving</p>
-            <h1 className="mt-3 max-w-3xl text-5xl font-black leading-[0.98] tracking-[-0.05em] text-white md:text-6xl">Make your move.</h1>
-            <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-[0.9375rem] font-bold">
-              <Link href="/users" className="text-white/70 hover:text-[var(--premium-gold)]">Users.</Link>
-              <Link href="/artists" className="text-white/70 hover:text-[var(--premium-gold)]">Artists.</Link>
-              <Link href="/businesses" className="text-white/70 hover:text-[var(--premium-gold)]">Businesses.</Link>
-              <Link href="/workers" className="text-white/70 hover:text-[var(--premium-gold)]">Workers.</Link>
-            </p>
-            <p className="mt-4 max-w-2xl text-[0.9375rem] leading-7 text-white/60">Everything is moving — events, people, commerce, opportunity. Step into the world and find where you belong.</p>
+        <div className="arrival-grid pointer-events-none absolute inset-0" aria-hidden="true" />
+        <div className="arrival-beam pointer-events-none absolute inset-x-0 top-0 h-[28rem]" aria-hidden="true" />
+        <div className="relative mx-auto max-w-7xl px-5 pb-10 pt-12 text-center md:px-8 lg:pb-14 lg:pt-16">
+          <p className="font-mono text-[0.6875rem] font-bold uppercase tracking-[0.24em] text-[var(--premium-gold)]">King Sparkon — something is moving</p>
+          <h1 className="display-shine mx-auto mt-4 max-w-5xl text-6xl font-black leading-[0.95] tracking-[-0.05em] md:text-7xl lg:text-8xl">Make your move.</h1>
+          <nav className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2" aria-label="Worlds">
+            {[
+              ["/users", "Users"],
+              ["/artists", "Artists"],
+              ["/businesses", "Businesses"],
+              ["/workers", "Workers"],
+            ].map(([href, label]) => (
+              <Link key={href} href={href} className="group inline-flex items-center gap-1.5 text-lg font-black tracking-tight text-white/70 transition-colors hover:text-white md:text-xl motion-reduce:transition-none">
+                {label}
+                <ArrowRight className="h-4 w-4 text-[var(--premium-gold)] opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100 motion-reduce:transition-none" />
+              </Link>
+            ))}
+          </nav>
+          <p className="mx-auto mt-5 max-w-2xl text-[0.9375rem] leading-7 text-white/60">Everything is moving — events, people, commerce, opportunity. Step into the world and find where you belong.</p>
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-2.5">
+            <Link href="/register" className="inline-flex h-11 items-center justify-center gap-1.5 rounded-lg border border-[var(--premium-gold)]/50 bg-[var(--premium-gold)]/10 px-6 text-[0.8125rem] font-extrabold text-[var(--premium-gold)] transition-colors duration-200 hover:bg-[var(--premium-gold)] hover:text-black motion-reduce:transition-none">Enter Sparkon <ArrowRight className="h-4 w-4" /></Link>
+            <Link href="/#flow" className="inline-flex h-11 items-center justify-center rounded-lg px-4 text-[0.8125rem] font-bold text-white/70 hover:text-white">See how it moves</Link>
+          </div>
+          <div className="mx-auto mt-8 max-w-2xl text-left">
             <FounderVerificationCard />
-            <div className="mt-7 flex flex-wrap items-center gap-2.5">
-              <Link href="/register" className="inline-flex h-11 items-center justify-center gap-1.5 rounded-lg border border-[var(--premium-gold)]/50 bg-[var(--premium-gold)]/10 px-5 text-[0.8125rem] font-extrabold text-[var(--premium-gold)] transition-colors duration-200 hover:bg-[var(--premium-gold)] hover:text-black motion-reduce:transition-none">Enter Sparkon <ArrowRight className="h-4 w-4" /></Link>
-              <Link href="/#flow" className="inline-flex h-11 items-center justify-center rounded-lg px-4 text-[0.8125rem] font-bold text-white/70 hover:text-white">See how it moves</Link>
-            </div>
           </div>
-
-          <div className="min-w-0 lg:w-full lg:max-w-[28rem] lg:justify-self-end">
+        </div>
+        <div className="relative mx-auto max-w-5xl px-5 md:px-8">
+          <div className="pointer-events-none absolute -inset-4 rounded-[3rem] bg-gradient-to-br from-[var(--premium-cyan)]/10 via-transparent to-[var(--premium-gold)]/10 blur-2xl" aria-hidden="true" />
+          <div className="relative">
             <ScanLoop />
+            <p className="mt-3 text-center font-mono text-[0.625rem] font-bold uppercase tracking-[0.2em] text-white/40">The living terminal — brand in motion</p>
           </div>
+        </div>
+        <div className="relative mt-10">
+          <SignalTicker />
         </div>
       </section>
 

@@ -493,6 +493,42 @@ export function LandingEnding() {
   );
 }
 
+const tickerWords = [
+  "Barcode verified",
+  "QR tickets live",
+  "Artists performing",
+  "Workers scanning",
+  "Tips settling",
+  "Payments recorded",
+  "Jobs open",
+  "Stock moving",
+  "Events filling",
+  "Riders agreed",
+];
+
+export function SignalTicker() {
+  const row = (hidden: boolean) => (
+    <div className="flex shrink-0 items-center" aria-hidden={hidden}>
+      {tickerWords.map((word) => (
+        <span key={`${hidden}-${word}`} className="flex items-center">
+          <span className="whitespace-nowrap px-5 font-mono text-[0.6875rem] font-black uppercase tracking-[0.22em] text-white/55">{word}</span>
+          <span className="h-1 w-1 rounded-full bg-[var(--premium-gold)]/70" aria-hidden="true" />
+        </span>
+      ))}
+    </div>
+  );
+  return (
+    <div className="signal-ticker relative overflow-hidden border-y border-white/10 bg-black/60 py-3" aria-label="What moves through King Sparkon">
+      <div className="signal-ticker-track flex w-max">
+        {row(false)}
+        {row(true)}
+      </div>
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-black to-transparent" aria-hidden="true" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-black to-transparent" aria-hidden="true" />
+    </div>
+  );
+}
+
 export function JourneyStyles() {
   return (
     <style jsx global>{`
@@ -526,6 +562,30 @@ export function JourneyStyles() {
         75% { opacity: 1; }
         100% { left: 100%; opacity: 0; }
       }
+      .signal-ticker-track { animation: signalTickerSlide 36s linear infinite; }
+      @keyframes signalTickerSlide {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+      }
+      .signal-ticker:hover .signal-ticker-track { animation-play-state: paused; }
+      .arrival-grid {
+        background-image:
+          linear-gradient(rgba(34, 211, 238, 0.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(139, 92, 246, 0.06) 1px, transparent 1px);
+        background-size: 44px 44px;
+        -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 20%, black 30%, transparent 75%);
+        mask-image: radial-gradient(ellipse 90% 80% at 50% 20%, black 30%, transparent 75%);
+      }
+      .arrival-beam {
+        background: conic-gradient(from 180deg at 50% 0%, transparent 0deg, rgba(34, 211, 238, 0.12) 40deg, transparent 80deg, transparent 180deg, rgba(250, 204, 21, 0.1) 220deg, transparent 260deg);
+        filter: blur(10px);
+      }
+      .display-shine {
+        background: linear-gradient(180deg, #ffffff 30%, rgba(255, 255, 255, 0.55) 75%, rgba(34, 211, 238, 0.65) 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
       .activity-row { animation: activityRowGlow 7s ease-in-out infinite; }
       @keyframes activityRowGlow {
         0%, 100% { background: transparent; }
@@ -540,7 +600,7 @@ export function JourneyStyles() {
         50% { border-color: rgba(250, 204, 21, 0.35); }
       }
       @media (prefers-reduced-motion: reduce) {
-        .journey-signal, .activity-row, .world-map > div:nth-child(-n+3) { animation: none !important; }
+        .journey-signal, .activity-row, .world-map > div:nth-child(-n+3), .signal-ticker-track { animation: none !important; }
       }
     `}</style>
   );
