@@ -11,7 +11,7 @@ export default function OwnerTransactionsPage() {
   return (
     <>
       <DashboardHeader role="OWNER" title="Product Transactions" description="Review products as a sales catalogue, open each product’s purchases, and confirm whether every transaction was paid by cash, card machine or King Sparkon App." />
-      <main className="grid gap-6 p-5 md:p-8">
+      <main className="page-main">
         <OwnerProductTransactions />
       </main>
     </>

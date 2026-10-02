@@ -226,7 +226,7 @@ export function AiBarcodeVerify() {
               type="button"
               onClick={() => void startCameraScan()}
               disabled={isScanning || isVerifying}
-              className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full bg-[var(--gold)] px-5 text-sm font-black text-[var(--ink)] shadow-[var(--shadow-soft)] disabled:opacity-60"
+              className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-[var(--radius-md)] bg-[var(--gold)] px-4 text-[0.8125rem] font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] disabled:opacity-60"
             >
               {isScanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
               {isScanning ? "Scanning..." : "Open camera scan"}
@@ -235,7 +235,7 @@ export function AiBarcodeVerify() {
               type="button"
               onClick={stopCameraScan}
               disabled={!isScanning}
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--line-strong)] bg-white px-5 text-sm font-black text-[var(--ink)] disabled:opacity-50"
+              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--line-strong)] bg-white px-4 text-[0.8125rem] font-bold text-[var(--ink)] disabled:opacity-50"
             >
               Stop camera
             </button>
@@ -260,18 +260,18 @@ export function AiBarcodeVerify() {
 
           <div className="mt-5 space-y-2">
             <label className="text-xs font-black uppercase tracking-[0.18em] text-[var(--steel)]">Manual barcode / unit code</label>
-            <div className="flex gap-2 rounded-full border border-[var(--line-strong)] bg-white p-1.5 shadow-[var(--shadow-soft)]">
+            <div className="flex gap-1.5 rounded-[var(--radius-md)] border border-[var(--line-strong)] bg-white p-1 shadow-[var(--shadow-soft)]">
               <input
                 value={manualValue}
                 onChange={(event) => setManualValue(event.target.value)}
                 placeholder="5449000000996 or KST-UNIT-000001"
-                className="min-h-10 flex-1 rounded-full border-0 bg-transparent px-4 text-sm font-bold text-[var(--ink)] outline-none placeholder:text-[var(--muted)]"
+                className="h-8 flex-1 rounded-[var(--radius-sm)] border-0 bg-transparent px-3 text-[0.8125rem] font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--muted)]"
               />
               <button
                 type="button"
                 onClick={() => void verifyValue(manualValue)}
                 disabled={isVerifying || !manualValue.trim()}
-                className="inline-flex min-h-10 items-center justify-center rounded-full bg-[var(--ink)] px-4 text-sm font-black text-white disabled:opacity-60"
+                className="inline-flex h-8 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--ink)] px-3.5 text-[0.8125rem] font-bold text-white disabled:opacity-60"
               >
                 {isVerifying ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verify"}
               </button>
@@ -284,7 +284,7 @@ export function AiBarcodeVerify() {
               value={authToken}
               onChange={(event) => setAuthToken(event.target.value)}
               placeholder="Paste JWT token if the app has not stored it"
-              className="min-h-11 w-full rounded-full border border-[var(--line-strong)] bg-white px-4 text-sm font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--muted)]"
+              className="h-9 w-full rounded-[var(--radius-md)] border border-[var(--line-strong)] bg-white px-3 text-[0.8125rem] font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--muted)]"
             />
           </div>
         </div>

@@ -80,14 +80,14 @@ export function DashboardOwnerTickets() {
   return (
     <>
       <DashboardHeader role="OWNER WORKSPACE" title="Owner ticket management" description="Manage events, ticket classes, capacity, sales, and status inside the owner dashboard." />
-      <main className="bg-[var(--surface)] p-5 md:p-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <main className="bg-[var(--surface)] p-4 md:p-5">
+        <div className="flex flex-col gap-2.5 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Ticket owner dashboard</p>
-            <h1 className="mt-3 text-5xl font-black tracking-[-0.06em] md:text-6xl">Manage events, capacity and sales</h1>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--steel)]">Owners see class-level sales, capacity, availability, revenue, and event controls without leaving the dashboard shell.</p>
+            <p className="font-mono text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-[var(--signal)]">Ticket owner dashboard</p>
+            <h1 className="mt-1 text-[1.25rem] font-bold tracking-[-0.02em]">Manage events, capacity and sales</h1>
+            <p className="mt-1 max-w-2xl text-[0.8125rem] leading-5 text-[var(--steel)]">Owners see class-level sales, capacity, availability, revenue, and event controls without leaving the dashboard shell.</p>
           </div>
-          <Link href="/dashboard/owner/tickets/create" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]"><Plus className="h-4 w-4" /> Create event</Link>
+          <Link href="/dashboard/owner/tickets/create" className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-4 text-[0.8125rem] font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]"><Plus className="h-4 w-4" /> Create event</Link>
         </div>
 
         {isLoading ? <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">{[0, 1, 2, 3].map((item) => <div key={item} className="h-44 animate-pulse rounded-[1.75rem] border border-[var(--line)] bg-white" />)}</div> : null}
@@ -95,11 +95,11 @@ export function DashboardOwnerTickets() {
         {!isLoading && dashboard ? <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">{stats.map((stat) => <TicketStatsCard key={stat.title} {...stat} />)}</div> : null}
 
         <section className="mt-10">
-          <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between"><div><p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Event cards</p><h2 className="mt-2 text-3xl font-black tracking-[-0.05em]">Manage ticket types and status</h2></div><p className="text-sm font-semibold text-[var(--steel)]">Cards match the customer view — publish or cancel directly.</p></div>
+          <div className="mb-3.5 flex flex-col gap-2 md:flex-row md:items-end md:justify-between"><div><p className="font-mono text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-[var(--signal)]">Event cards</p><h2 className="mt-1 text-[1.125rem] font-bold tracking-[-0.015em]">Manage ticket types and status</h2></div><p className="text-[0.8125rem] font-medium text-[var(--steel)]">Cards match the customer view — publish or cancel directly.</p></div>
           {isLoading ? (
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{[0, 1, 2].map((i) => <div key={i} className="h-[28rem] animate-pulse rounded-[2rem] border border-[var(--line)] bg-white" />)}</div>
           ) : events.length === 0 ? (
-            <div className="rounded-[2rem] border border-dashed border-[var(--line)] bg-white p-10 text-center">No events yet. Create the first ticketed event.</div>
+            <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-white p-5 text-center text-[0.8125rem] font-medium text-[var(--steel)]">No events yet. Create the first ticketed event.</div>
           ) : (
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
               {events.map((event) => {

@@ -177,16 +177,16 @@ export function CreateEventForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-6 rounded-[2.35rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-8">
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+    <form onSubmit={handleSubmit} className="grid gap-4 rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-ledger)] md:p-5">
+      <div className="flex flex-col gap-2.5 md:flex-row md:items-start md:justify-between">
         <div>
-          <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Create event</p>
-          <h1 className="mt-3 text-4xl font-black tracking-[-0.05em] md:text-5xl">Event details and ticket capacity</h1>
-          <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--steel)]">Build events with Regular, VIP, and VVIP classes. Capacity and availability are calculated from the ticket rules.</p>
+          <p className="font-mono text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-[var(--signal)]">Create event</p>
+          <h1 className="mt-1 text-[1.25rem] font-bold tracking-[-0.02em]">Event details and ticket capacity</h1>
+          <p className="mt-1 max-w-3xl text-[0.8125rem] leading-5 text-[var(--steel)]">Build events with Regular, VIP, and VVIP classes. Capacity and availability are calculated from the ticket rules.</p>
         </div>
-        <div className="rounded-[1.45rem] border border-[var(--line)] bg-[var(--surface)] px-5 py-4 text-center">
-          <p className="font-mono text-[0.66rem] font-black uppercase tracking-[0.16em] text-[var(--muted)]">Total capacity</p>
-          <p className="money mt-1 text-3xl font-black text-[var(--ink)]">{totalCapacity}</p>
+        <div className="rounded-[var(--radius-md)] border border-[var(--line)] bg-[var(--surface)] px-4 py-2.5 text-center">
+          <p className="font-mono text-[0.625rem] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">Total capacity</p>
+          <p className="money mt-0.5 text-[1.375rem] font-bold text-[var(--ink)]">{totalCapacity}</p>
         </div>
       </div>
 

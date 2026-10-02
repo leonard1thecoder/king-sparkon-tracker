@@ -93,47 +93,47 @@ export function BusinessWorkspace({ businessKeyParam }: { businessKeyParam: stri
   }
 
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-4">
       <Link href="/dashboard/user/shop" className="inline-flex items-center gap-2 text-sm font-bold text-[var(--steel)] hover:text-[var(--ink)]">
         <ArrowLeft className="h-4 w-4" /> Back to shop
       </Link>
 
       {/* Business header */}
       <Card className="overflow-hidden">
-        <div className="bg-gradient-to-br from-[var(--signal-soft)] to-[var(--surface)] p-6 md:p-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-            <div className="flex gap-4">
-              <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-[var(--line)] bg-white text-[var(--signal)] shadow-sm">
-                <Store className="h-7 w-7" />
+        <div className="bg-gradient-to-br from-[var(--signal-soft)] to-[var(--surface)] p-4">
+          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <div className="flex gap-2.5">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[var(--radius-md)] border border-[var(--line)] bg-white text-[var(--signal)] shadow-sm">
+                <Store className="h-5 w-5" />
               </span>
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--signal)]">Business</p>
-                <h1 className="mt-1 text-3xl font-black tracking-[-0.04em]">{businessName}</h1>
-                <p className="mt-1 text-sm font-semibold text-[var(--muted)]">{businessId ? `Business ID ${businessId} · ` : ""}{businessProducts.length} products · {businessEvents.length} tickets · {businessJobs.length} job posts</p>
+                <p className="text-[0.6875rem] font-bold uppercase tracking-[0.1em] text-[var(--signal)]">Business</p>
+                <h1 className="mt-0.5 text-[1.25rem] font-bold tracking-[-0.02em]">{businessName}</h1>
+                <p className="mt-0.5 text-[0.8125rem] font-medium text-[var(--muted)]">{businessId ? `Business ID ${businessId} · ` : ""}{businessProducts.length} products · {businessEvents.length} tickets · {businessJobs.length} job posts</p>
               </div>
             </div>
             <button
               type="button"
               onClick={toggleFavorite}
-              className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full border px-6 text-sm font-black transition ${isFavorited ? "border-rose-200 bg-rose-500 text-white hover:bg-rose-600" : "border-[var(--line)] bg-white text-[var(--ink)] hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"}`}
+              className={`inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-[var(--radius-md)] border px-4 text-[0.8125rem] font-bold transition ${isFavorited ? "border-rose-200 bg-rose-500 text-white hover:bg-rose-600" : "border-[var(--line)] bg-white text-[var(--ink)] hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"}`}
             >
               <Heart className={`h-4 w-4 ${isFavorited ? "fill-white" : isFavorited ? "fill-rose-500" : ""}`} />
               {isFavorited ? "Favorited" : "Favorite"}
             </button>
           </div>
         </div>
-        <CardContent className="grid grid-cols-3 gap-3 bg-white p-4 text-center">
-          <div className="rounded-xl border border-[var(--line)] bg-[var(--surface)] p-3">
-            <p className="text-lg font-black">{businessProducts.length}</p>
-            <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--muted)]">Products</p>
+        <CardContent className="grid grid-cols-3 gap-2.5 bg-white p-3.5 text-center">
+          <div className="rounded-[var(--radius-md)] border border-[var(--line)] bg-[var(--surface)] p-2.5">
+            <p className="text-base font-bold">{businessProducts.length}</p>
+            <p className="text-[0.6875rem] font-bold uppercase tracking-[0.06em] text-[var(--muted)]">Products</p>
           </div>
-          <div className="rounded-xl border border-[var(--line)] bg-[var(--surface)] p-3">
-            <p className="text-lg font-black">{businessEvents.length}</p>
-            <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--muted)]">Tickets</p>
+          <div className="rounded-[var(--radius-md)] border border-[var(--line)] bg-[var(--surface)] p-2.5">
+            <p className="text-base font-bold">{businessEvents.length}</p>
+            <p className="text-[0.6875rem] font-bold uppercase tracking-[0.06em] text-[var(--muted)]">Tickets</p>
           </div>
-          <div className="rounded-xl border border-[var(--line)] bg-[var(--surface)] p-3">
-            <p className="text-lg font-black">{businessJobs.length}</p>
-            <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--muted)]">Jobs</p>
+          <div className="rounded-[var(--radius-md)] border border-[var(--line)] bg-[var(--surface)] p-2.5">
+            <p className="text-base font-bold">{businessJobs.length}</p>
+            <p className="text-[0.6875rem] font-bold uppercase tracking-[0.06em] text-[var(--muted)]">Jobs</p>
           </div>
         </CardContent>
       </Card>
@@ -141,13 +141,13 @@ export function BusinessWorkspace({ businessKeyParam }: { businessKeyParam: stri
       {/* Products */}
       <section className="grid gap-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-black tracking-[-0.04em]">Products</h2>
+          <h2 className="text-[0.9375rem] font-bold tracking-[-0.01em]">Products</h2>
           <Link href="/dashboard/user/shop" className="text-xs font-black text-[var(--signal)] hover:underline">View all products</Link>
         </div>
         {loading ? (
           <div className="grid gap-4 md:grid-cols-3">{[0, 1, 2].map((i) => <div key={i} className="h-64 animate-pulse rounded-[var(--radius-2xl)] border border-[var(--line)] bg-white" />)}</div>
         ) : businessProducts.length === 0 ? (
-          <Card className="p-8 text-center"><p className="text-sm font-semibold text-[var(--muted)]">No products found for this business.</p></Card>
+          <Card className="p-5 text-center"><p className="text-[0.8125rem] font-medium text-[var(--muted)]">No products found for this business.</p></Card>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {businessProducts.slice(0, 6).map((p) => (
@@ -160,11 +160,11 @@ export function BusinessWorkspace({ businessKeyParam }: { businessKeyParam: stri
       {/* Tickets */}
       <section className="grid gap-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-black tracking-[-0.04em]">Tickets</h2>
+          <h2 className="text-[0.9375rem] font-bold tracking-[-0.01em]">Tickets</h2>
           <Link href="/dashboard/user/tickets/buy" className="text-xs font-black text-[var(--signal)] hover:underline">View tickets</Link>
         </div>
         {businessEvents.length === 0 ? (
-          <Card className="p-8 text-center"><p className="text-sm font-semibold text-[var(--muted)]">No tickets for this business yet.</p></Card>
+          <Card className="p-5 text-center"><p className="text-[0.8125rem] font-medium text-[var(--muted)]">No tickets for this business yet.</p></Card>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {businessEvents.slice(0, 6).map((e) => (
@@ -188,11 +188,11 @@ export function BusinessWorkspace({ businessKeyParam }: { businessKeyParam: stri
       {/* Jobs */}
       <section className="grid gap-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-black tracking-[-0.04em]">Job posts</h2>
+          <h2 className="text-[0.9375rem] font-bold tracking-[-0.01em]">Job posts</h2>
           <Link href="/dashboard/user/jobs" className="text-xs font-black text-[var(--signal)] hover:underline">View jobs</Link>
         </div>
         {businessJobs.length === 0 ? (
-          <Card className="p-8 text-center"><p className="text-sm font-semibold text-[var(--muted)]">No job posts from this business.</p></Card>
+          <Card className="p-5 text-center"><p className="text-[0.8125rem] font-medium text-[var(--muted)]">No job posts from this business.</p></Card>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {businessJobs.slice(0, 6).map((job) => (

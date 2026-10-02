@@ -11,7 +11,7 @@ export default function WorkerOnlineOrdersPage() {
   return (
     <>
       <DashboardHeader role="WORKER" title="Online orders" description="Assign scanned or automatic stock-unit codes, then display the collection QR when the cart is ready." />
-      <main className="p-5 md:p-8">
+      <main className="page-main">
         <WorkerOnlinePurchaseCheckout />
       </main>
     </>

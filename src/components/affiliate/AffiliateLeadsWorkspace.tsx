@@ -83,13 +83,13 @@ export function AffiliateLeadsWorkspace() {
           </CardHeader>
           <CardContent>
             <div className="grid gap-3 lg:grid-cols-[1fr_16rem]">
-              <label className="flex min-h-12 items-center gap-3 rounded-[1.1rem] border border-[var(--line)] bg-white px-4 focus-within:border-[var(--signal)]">
-                <Search className="h-4 w-4 text-[var(--signal)]" />
-                <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search contact, niche, source or opportunity" className="w-full bg-transparent text-sm font-bold outline-none" />
+              <label className="flex h-9 items-center gap-2.5 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3 focus-within:border-[var(--signal)]">
+                <Search className="h-3.5 w-3.5 text-[var(--signal)]" />
+                <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search contact, niche, source or opportunity" className="w-full bg-transparent text-[0.8125rem] font-semibold outline-none" />
               </label>
-              <label className="flex min-h-12 items-center gap-3 rounded-[1.1rem] border border-[var(--line)] bg-white px-4">
-                <Filter className="h-4 w-4 text-[var(--signal)]" />
-                <select value={channel} onChange={(event) => setChannel(event.target.value)} className="w-full bg-transparent text-sm font-black outline-none">
+              <label className="flex h-9 items-center gap-2.5 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3">
+                <Filter className="h-3.5 w-3.5 text-[var(--signal)]" />
+                <select value={channel} onChange={(event) => setChannel(event.target.value)} className="w-full bg-transparent text-[0.8125rem] font-bold outline-none">
                   <option value="ALL">All channels</option>
                   <option value="EMAIL">Email</option>
                   <option value="WHATSAPP">WhatsApp</option>

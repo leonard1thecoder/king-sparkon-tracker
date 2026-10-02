@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function UserTicketsPage() {
-  return <DashboardMyTickets />;
+  return <main className="page-main bg-[var(--surface)]"><DashboardMyTickets /></main>;
 }

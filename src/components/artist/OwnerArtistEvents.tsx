@@ -193,7 +193,7 @@ export function OwnerArtistEvents() {
         </CardHeader>
         <CardContent>
           {loading ? <div className="flex min-h-40 items-center justify-center gap-2 text-sm font-black text-[var(--steel)]"><Loader2 className="h-5 w-5 animate-spin" /> Loading events</div>
-          : events.length === 0 ? <p className="rounded-[1.4rem] border border-dashed border-[var(--line)] bg-[var(--surface)] p-8 text-center text-sm font-bold text-[var(--steel)]">No drafted events yet.</p>
+          : events.length === 0 ? <p className="rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-[var(--surface)] p-5 text-center text-[0.8125rem] font-semibold text-[var(--steel)]">No drafted events yet.</p>
           : (
             <div className="grid gap-3">
               {events.map((item) => (

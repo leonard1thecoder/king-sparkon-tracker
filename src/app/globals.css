@@ -32,6 +32,8 @@ body {
   background-attachment: fixed;
   color: var(--ink);
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  font-size: var(--font-size-lg);
+  line-height: 1.55;
   text-rendering: geometricPrecision;
 }
 
@@ -136,9 +138,15 @@ textarea {
 .table-ledger th,
 .table-ledger td {
   border-bottom: 1px solid var(--line);
-  padding: 1rem;
+  min-height: var(--table-row-height);
+  padding: 0.5625rem 0.75rem;
   text-align: left;
   vertical-align: middle;
+}
+
+.table-ledger td {
+  font-size: var(--font-size-md);
+  line-height: 1.45;
 }
 
 .table-ledger th {
@@ -726,7 +734,7 @@ ul li a:hover {
   [class~="rounded-[2.75rem]"],
   [class~="rounded-[3rem]"]
 ) {
-  border-radius: var(--radius-2xl) !important;
+  border-radius: var(--radius-lg) !important;
 }
 
 /* Preserve white labels only on deliberate solid action/status surfaces. */
@@ -777,7 +785,7 @@ ul li a:hover {
   backdrop-filter: blur(12px);
   border: 1px solid rgba(139, 92, 246, 0.28);
   border-radius: var(--radius-xl);
-  padding: 1.5rem;
+  padding: var(--space-4);
   color: var(--ink);
 }
 
@@ -830,5 +838,38 @@ ul li a:hover {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* Ops workspace container — one centered content column for dashboard
+   shells. Gutters and type live in markup and shared components; this rule
+   only constrains width. No utility overrides, no !important. */
+.ops-main {
+  width: 100%;
+  max-width: var(--content-max);
+  margin-inline: auto;
+}
+
+/* Page scaffold primitive — the single standard gutter for dashboard
+   route content. Pages opt in with `className="page-main …"` plus any
+   surface modifier (e.g. bg-[var(--surface)]). Exactly one padded level
+   per route: nested workspace sections carry gaps, never outer padding. */
+.page-main {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .page-main {
+    padding: var(--space-5);
+  }
+}
+
+/* Compact controls keep usable touch targets on small screens even though
+   the desktop scale is dense. Scoped to dashboard shells only. */
+@media (max-width: 639px) {
+  .ops-density :where(button, a, input, select, textarea) {
+    min-height: 2.5rem;
   }
 }

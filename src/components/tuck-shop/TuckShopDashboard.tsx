@@ -289,7 +289,7 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
   const lastVisibleBusiness = Math.min((businessPage + 1) * BUSINESSES_PER_PAGE, businessGroups.length);
 
   return (
-    <section className="grid gap-6">
+    <section className="grid gap-4">
       <div className="-mx-5 -mt-5 overflow-hidden border-b border-[var(--line)] bg-white md:-mx-8 md:-mt-8">
         <Image
           src="https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/products_picture.png"
@@ -344,16 +344,16 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
           ) : null}
 
           {loading ? (
-            <div className="flex min-h-64 items-center justify-center gap-3 rounded-[1.5rem] border border-dashed border-[var(--line)] bg-[var(--surface)] text-sm font-black text-[var(--steel)]"><Loader2 className="h-5 w-5 animate-spin" /> Loading the complete catalogue</div>
+            <div className="flex min-h-40 items-center justify-center gap-2.5 rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-[var(--surface)] text-[0.8125rem] font-bold text-[var(--steel)]"><Loader2 className="h-4 w-4 animate-spin" /> Loading the complete catalogue</div>
           ) : products.length === 0 ? (
-            <div className="rounded-[1.5rem] border border-dashed border-[var(--line)] bg-white p-10 text-center">
-              <PackageCheck className="mx-auto h-10 w-10 text-[var(--signal)]" />
-              <p className="mt-3 font-black text-[var(--ink)]">No products match these filters</p>
-              <p className="mt-2 text-sm text-[var(--steel)]">Reset the filters to display the complete catalogue again.</p>
-              <Button type="button" variant="quiet" className="mt-5" onClick={resetFilters}><RotateCcw className="h-4 w-4" /> Show all products</Button>
+            <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-white p-5 text-center">
+              <PackageCheck className="mx-auto h-7 w-7 text-[var(--signal)]" />
+              <p className="mt-2 text-[0.8125rem] font-bold text-[var(--ink)]">No products match these filters</p>
+              <p className="mt-1 text-xs text-[var(--steel)]">Reset the filters to display the complete catalogue again.</p>
+              <Button type="button" variant="quiet" className="mt-3" onClick={resetFilters}><RotateCcw className="h-4 w-4" /> Show all products</Button>
             </div>
           ) : (
-            <div className="grid gap-8">
+            <div className="grid gap-4">
               {visibleBusinessGroups.map((group) => (
                 <BusinessProductSection
                   key={group.key}
@@ -365,14 +365,14 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
                 />
               ))}
 
-              <div className="flex flex-col items-center justify-between gap-4 rounded-[1.5rem] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)] sm:flex-row">
+              <div className="flex flex-col items-center justify-between gap-3 rounded-[var(--radius-lg)] border border-[var(--line)] bg-white p-3.5 shadow-[var(--shadow-soft)] sm:flex-row">
                 <button
                   type="button"
                   onClick={() => openBusinessPage(businessPage - 1)}
                   disabled={businessPage === 0}
-                  className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)] transition hover:border-[var(--gold)] hover:bg-[var(--gold)] disabled:cursor-not-allowed disabled:opacity-35 sm:w-auto"
+                  className="inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-[0.8125rem] font-bold text-[var(--ink)] transition hover:border-[var(--gold)] hover:bg-[var(--gold)] disabled:cursor-not-allowed disabled:opacity-35 sm:w-auto"
                 >
-                  <ChevronLeft className="h-5 w-5" /> Previous 4 businesses
+                  <ChevronLeft className="h-4 w-4" /> Previous 4 businesses
                 </button>
 
                 <div className="text-center">
@@ -396,9 +396,9 @@ export function TuckShopDashboard({ compact = false }: { compact?: boolean }) {
                   type="button"
                   onClick={() => openBusinessPage(businessPage + 1)}
                   disabled={businessPage >= businessPageCount - 1}
-                  className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--ink)] bg-[var(--ink)] px-5 text-sm font-black text-white transition hover:border-[var(--signal)] hover:bg-[var(--signal)] disabled:cursor-not-allowed disabled:opacity-35 sm:w-auto"
+                  className="inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--ink)] bg-[var(--ink)] px-4 text-[0.8125rem] font-bold text-white transition hover:border-[var(--signal)] hover:bg-[var(--signal)] disabled:cursor-not-allowed disabled:opacity-35 sm:w-auto"
                 >
-                  Next 4 businesses <ChevronRight className="h-5 w-5" />
+                  Next 4 businesses <ChevronRight className="h-4 w-4" />
                 </button>
               </div>
             </div>

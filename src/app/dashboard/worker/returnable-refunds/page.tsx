@@ -11,7 +11,7 @@ export default function WorkerReturnableRefundsPage() {
   return (
     <>
       <DashboardHeader role="WORKER" title="Returnable refunds" description="Confirm handed-back empties and approve the deposit cash payout." />
-      <main className="p-5 md:p-8">
+      <main className="page-main">
         <WorkerReturnableRefunds />
       </main>
     </>

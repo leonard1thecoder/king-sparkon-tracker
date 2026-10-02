@@ -146,7 +146,7 @@ export function OwnerWorkerManager() {
   }
 
   return (
-    <section className="grid gap-6">
+    <section className="grid gap-4">
       <div className="grid gap-4 sm:grid-cols-3">
         <MetricCard label="Workers" value={loading ? "..." : String(workers.length)} detail="Business worker accounts" tone="confirm" icon={<UserRound className="h-5 w-5" />} />
         <MetricCard label="Tips enabled" value={loading ? "..." : String(tipsEnabled)} detail="Workers privileged to receive tips" tone="signal" icon={<WalletCards className="h-5 w-5" />} />
@@ -186,7 +186,7 @@ export function OwnerWorkerManager() {
       <Card>
         <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><CardTitle>Business workers</CardTitle><p className="mt-2 text-sm text-[var(--steel)]">Review each worker, the tips permission, and the staff discount that unlocks staff price in the mall.</p></div><Button type="button" variant="quiet" onClick={() => void loadWorkers()} disabled={loading}><RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} /> Refresh</Button></CardHeader>
         <CardContent>
-          {loading ? <div className="flex min-h-40 items-center justify-center gap-2 text-sm font-black text-[var(--steel)]"><Loader2 className="h-5 w-5 animate-spin" /> Loading workers</div> : workers.length === 0 ? <p className="rounded-[1.4rem] border border-dashed border-[var(--line)] bg-[var(--surface)] p-8 text-center text-sm font-bold text-[var(--steel)]">No workers have been created yet.</p> : (
+          {loading ? <div className="flex min-h-40 items-center justify-center gap-2 text-[0.8125rem] font-bold text-[var(--steel)]"><Loader2 className="h-4 w-4 animate-spin" /> Loading workers</div> : workers.length === 0 ? <p className="rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-[var(--surface)] p-5 text-center text-[0.8125rem] font-semibold text-[var(--steel)]">No workers have been created yet.</p> : (
             <div className="grid gap-3">
               {workers.map((worker) => {
                 const staffValue = staffEdits[worker.id] ?? String(worker.staffDiscountPercentage ?? 0);

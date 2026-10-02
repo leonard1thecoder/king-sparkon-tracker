@@ -11,7 +11,7 @@ export default function WorkerTransactionsPage() {
   return (
     <>
       <DashboardHeader role="WORKER" title="Product sales" description="Review every paid counter checkout and completed online product collection." />
-      <main className="p-5 md:p-8">
+      <main className="page-main">
         <WorkerCompletedProductSales />
       </main>
     </>

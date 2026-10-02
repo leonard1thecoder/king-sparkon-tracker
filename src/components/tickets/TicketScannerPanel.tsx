@@ -165,10 +165,10 @@ export function TicketScannerPanel() {
           {cameraError ? <p className="mt-4 rounded-[1.2rem] border border-[var(--danger)]/20 bg-[var(--danger)]/10 px-4 py-3 text-sm font-bold text-[var(--danger)]">{cameraError}</p> : null}
 
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <button type="button" onClick={startCamera} disabled={cameraActive || isVerifying} className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] disabled:opacity-50">
+            <button type="button" onClick={startCamera} disabled={cameraActive || isVerifying} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-4 text-[0.8125rem] font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] disabled:opacity-50">
               <Camera className="h-4 w-4" /> Start camera scan
             </button>
-            <button type="button" onClick={stopCamera} disabled={!cameraActive} className="inline-flex min-h-12 items-center justify-center rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--signal)] disabled:opacity-40">
+            <button type="button" onClick={stopCamera} disabled={!cameraActive} className="inline-flex h-9 items-center justify-center rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-[0.8125rem] font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--signal)] disabled:opacity-40">
               Stop camera
             </button>
           </div>
@@ -184,11 +184,11 @@ export function TicketScannerPanel() {
               <p className="mt-1 text-sm leading-6 text-[var(--steel)]">Use this when the QR is damaged. It follows the same photo comparison and worker decision.</p>
             </div>
           </div>
-          <label className="mt-5 grid gap-2">
-            <span className="text-sm font-black text-[var(--ink)]">Ticket reference</span>
-            <input value={manualReference} onChange={(event) => setManualReference(event.target.value)} placeholder="Example: KST-00001" className="min-h-13 rounded-[1.35rem] border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none placeholder:text-[var(--muted)] focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]" />
+          <label className="mt-4 grid gap-1.5">
+            <span className="text-xs font-bold text-[var(--ink)]">Ticket reference</span>
+            <input value={manualReference} onChange={(event) => setManualReference(event.target.value)} placeholder="Example: KST-00001" className="h-9 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3 text-[0.8125rem] font-semibold outline-none placeholder:text-[var(--muted)] focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]" />
           </label>
-          <button type="button" onClick={verifyReference} disabled={isVerifying} className="mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] disabled:opacity-50">
+          <button type="button" onClick={verifyReference} disabled={isVerifying} className="mt-3 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-4 text-[0.8125rem] font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] disabled:opacity-50">
             <ShieldCheck className="h-4 w-4" /> {isVerifying ? "Checking..." : "Load ticket for face check"}
           </button>
         </div>
@@ -216,8 +216,8 @@ export function TicketScannerPanel() {
                   )}
                   <p className="mt-3 text-sm font-semibold leading-6 text-[var(--steel)]">Look at the person standing in front of you and compare them manually with this image. Do not approve based only on the QR.</p>
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                    <button type="button" onClick={() => decideFace("MATCH")} disabled={isVerifying} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--confirm)] bg-[var(--confirm)] px-5 text-sm font-black text-white disabled:opacity-50"><UserCheck className="h-4 w-4" /> {isVerifying ? "Saving..." : "Face matches — admit"}</button>
-                    <button type="button" onClick={() => decideFace("NO_MATCH")} disabled={isVerifying} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--danger)] bg-white px-5 text-sm font-black text-[var(--danger)] disabled:opacity-50"><UserX className="h-4 w-4" /> Face does not match</button>
+                    <button type="button" onClick={() => decideFace("MATCH")} disabled={isVerifying} className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--confirm)] bg-[var(--confirm)] px-4 text-[0.8125rem] font-bold text-white disabled:opacity-50"><UserCheck className="h-4 w-4" /> {isVerifying ? "Saving..." : "Face matches — admit"}</button>
+                    <button type="button" onClick={() => decideFace("NO_MATCH")} disabled={isVerifying} className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--danger)] bg-white px-4 text-[0.8125rem] font-bold text-[var(--danger)] disabled:opacity-50"><UserX className="h-4 w-4" /> Face does not match</button>
                   </div>
                 </div>
               ) : null}

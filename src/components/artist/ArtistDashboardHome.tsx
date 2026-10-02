@@ -79,8 +79,8 @@ export function ArtistDashboardHome() {
 
   if (loading) {
     return (
-      <div className="grid gap-6 p-5 md:p-8">
-        <div className="h-28 rounded-[var(--radius-2xl)] bg-slate-50 animate-pulse" />
+      <div className="grid gap-4 p-4 md:p-5">
+        <div className="h-20 rounded-[var(--radius-lg)] bg-slate-50 animate-pulse" />
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
             <Skeleton key={i} className="h-32" />
@@ -96,19 +96,19 @@ export function ArtistDashboardHome() {
   }
 
   return (
-    <div className="grid gap-8 p-5 md:p-8 pb-10">
+    <div className="grid gap-4 p-4 md:p-5">
       {/* Header */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div className="flex flex-col gap-2.5 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="text-3xl font-black tracking-[-0.04em] md:text-4xl">
+          <h1 className="text-[1.25rem] font-bold tracking-[-0.02em]">
             {Greeting()}, {profile?.displayName ?? "Artist"} 👋
           </h1>
-          <p className="mt-2 text-sm leading-6 text-[var(--steel)] md:text-base">Manage your performances and discover new opportunities.</p>
-          {!profile ? <p className="mt-2 text-sm font-bold text-[var(--danger)]">API MISSING: no artist profile endpoint yet — create your profile to get started.</p> : null}
+          <p className="mt-1 text-[0.8125rem] leading-5 text-[var(--steel)]">Manage your performances and discover new opportunities.</p>
+          {!profile ? <p className="mt-1.5 text-xs font-bold text-[var(--danger)]">API MISSING: no artist profile endpoint yet — create your profile to get started.</p> : null}
         </div>
         <Link
           href="/dashboard/artist/drafted"
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 py-2.5 text-sm font-black text-white shadow-[0_8px_20px_rgba(14,165,233,0.18)] hover:bg-[var(--signal-strong)]"
+          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-4 text-[0.8125rem] font-bold text-white shadow-[0_8px_20px_rgba(14,165,233,0.18)] hover:bg-[var(--signal-strong)]"
         >
           Browse Events <ArrowRight className="h-4 w-4" />
         </Link>

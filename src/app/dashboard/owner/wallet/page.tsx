@@ -15,7 +15,7 @@ export default function OwnerWalletPage() {
   return (
     <>
       <DashboardHeader role="OWNER WORKSPACE" title="KSC Wallet" description="Business coin balance alongside — never mixed with — ZAR earnings." />
-      <main className="grid gap-6 p-5 md:p-8">
+      <main className="page-main">
         <KscWalletSection
           title="Business KSC Wallet"
           description="Coin for AI/MCP payments and King Sparkon services. Your ZAR business earnings stay untouched in Withdrawals."

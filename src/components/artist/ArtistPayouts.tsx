@@ -81,21 +81,21 @@ export function ArtistPayouts() {
         <Card>
           <CardHeader><CardTitle>Available balance</CardTitle></CardHeader>
           <CardContent>
-            <p className="money text-3xl font-black text-[var(--ink)]">{loading ? "..." : money(balance?.totalAvailable ?? 0)}</p>
+            <p className="money text-[1.375rem] font-bold tracking-tight text-[var(--ink)]">{loading ? "..." : money(balance?.totalAvailable ?? 0)}</p>
             <p className="mt-1 text-xs font-bold text-[var(--steel)]">Paid bookings minus requested withdrawals</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle>Awaiting approval</CardTitle></CardHeader>
           <CardContent>
-            <p className="money text-3xl font-black text-[var(--ink)]">{loading ? "..." : money(balance?.totalPending ?? 0)}</p>
+            <p className="money text-[1.375rem] font-bold tracking-tight text-[var(--ink)]">{loading ? "..." : money(balance?.totalPending ?? 0)}</p>
             <p className="mt-1 text-xs font-bold text-[var(--steel)]">Requested, not yet paid out</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle>Minimum withdrawal</CardTitle></CardHeader>
           <CardContent>
-            <p className="money text-3xl font-black text-[var(--ink)]">{loading ? "..." : money(balance?.minimumWithdrawal ?? 0)}</p>
+            <p className="money text-[1.375rem] font-bold tracking-tight text-[var(--ink)]">{loading ? "..." : money(balance?.minimumWithdrawal ?? 0)}</p>
             <p className="mt-1 text-xs font-bold text-[var(--steel)]">Per request, per business balance</p>
           </CardContent>
         </Card>
@@ -114,7 +114,7 @@ export function ArtistPayouts() {
         <CardContent className="grid gap-3 md:grid-cols-2">
           <label className="grid gap-1.5 text-xs font-black uppercase tracking-[0.08em] text-[var(--steel)]">
             Business balance
-            <select value={businessId} onChange={(event) => setBusinessId(event.target.value)} className="min-h-11 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-sm font-black text-[var(--ink)] outline-none focus:border-[var(--signal)]">
+            <select value={businessId} onChange={(event) => setBusinessId(event.target.value)} className="h-9 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3 text-[0.8125rem] font-bold text-[var(--ink)] outline-none focus:border-[var(--signal)]">
               <option value="">Choose business</option>
               {(balance?.businesses ?? []).map((row) => (
                 <option key={row.businessId} value={row.businessId}>{row.businessName ?? `Business #${row.businessId}`} · {money(row.available)}</option>
@@ -123,11 +123,11 @@ export function ArtistPayouts() {
           </label>
           <label className="grid gap-1.5 text-xs font-black uppercase tracking-[0.08em] text-[var(--steel)]">
             Amount (R)
-            <input type="number" min="0" step="0.01" value={amount} onChange={(event) => setAmount(event.target.value)} placeholder="Example: 500" className="min-h-11 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-sm font-black text-[var(--ink)] outline-none focus:border-[var(--signal)]" />
+            <input type="number" min="0" step="0.01" value={amount} onChange={(event) => setAmount(event.target.value)} placeholder="Example: 500" className="h-9 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3 text-[0.8125rem] font-bold text-[var(--ink)] outline-none focus:border-[var(--signal)]" />
           </label>
           <label className="grid gap-1.5 text-xs font-black uppercase tracking-[0.08em] text-[var(--steel)] md:col-span-2">
             PayPal email
-            <input type="email" value={paypalEmail} onChange={(event) => setPaypalEmail(event.target.value)} placeholder="you@example.com" className="min-h-11 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-sm font-bold text-[var(--ink)] outline-none focus:border-[var(--signal)]" />
+            <input type="email" value={paypalEmail} onChange={(event) => setPaypalEmail(event.target.value)} placeholder="you@example.com" className="h-9 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3 text-[0.8125rem] font-semibold outline-none focus:border-[var(--signal)]" />
           </label>
           <div className="md:col-span-2">
             <Button type="button" disabled={saving} onClick={() => void submit()} className="w-full sm:w-auto">
@@ -143,10 +143,10 @@ export function ArtistPayouts() {
         </CardHeader>
         <CardContent className="grid gap-2">
           {withdrawals.length === 0 ? (
-            <div className="rounded-[1.25rem] border border-dashed border-[var(--line)] bg-white p-8 text-center">
-              <Banknote className="mx-auto h-10 w-10 text-[var(--signal)]" />
-              <p className="mt-3 text-xl font-black text-[var(--ink)]">No withdrawals yet.</p>
-              <p className="mt-2 text-sm leading-6 text-[var(--steel)]">Paid event bookings build the balance above.</p>
+            <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-white p-5 text-center">
+              <Banknote className="mx-auto h-7 w-7 text-[var(--signal)]" />
+              <p className="mt-2 text-[0.9375rem] font-bold text-[var(--ink)]">No withdrawals yet.</p>
+              <p className="mt-1 text-[0.8125rem] leading-5 text-[var(--steel)]">Paid event bookings build the balance above.</p>
             </div>
           ) : (
             withdrawals.map((withdrawal) => (

@@ -159,7 +159,7 @@ export function OwnerWithdrawalsWorkspace() {
   }
 
   return (
-    <section className="grid gap-6">
+    <section className="grid gap-4">
       {/* Overview Cards */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
         <MetricCard
@@ -477,11 +477,11 @@ export function OwnerWithdrawalsWorkspace() {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="flex min-h-48 items-center justify-center gap-3 text-sm font-black text-[var(--steel)]">
-              <Loader2 className="h-5 w-5 animate-spin" /> Loading payout records...
+            <div className="flex min-h-40 items-center justify-center gap-2.5 text-[0.8125rem] font-bold text-[var(--steel)]">
+              <Loader2 className="h-4 w-4 animate-spin" /> Loading payout records...
             </div>
           ) : withdrawals.length === 0 ? (
-            <div className="rounded-[var(--radius-xl)] border border-dashed border-[var(--line)] bg-[var(--surface)] p-8 text-center text-sm font-bold text-[var(--steel)]">
+            <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-[var(--surface)] p-5 text-center text-[0.8125rem] font-semibold text-[var(--steel)]">
               No bank payouts have been requested yet.
             </div>
           ) : (

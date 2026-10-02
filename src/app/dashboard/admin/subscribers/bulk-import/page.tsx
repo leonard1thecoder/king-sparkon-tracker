@@ -15,7 +15,7 @@ export default function AdminBulkImportPage() {
         title="Bulk Subscriber Import"
         description="Import multiple subscribers from a CSV file."
       />
-      <main className="grid gap-6 bg-[var(--surface)] p-5 md:p-8">
+      <main className="page-main bg-[var(--surface)]">
         <BulkSubscriberImport />
       </main>
     </>

@@ -11,7 +11,7 @@ export default async function OwnerJobsPage({ searchParams }: { searchParams: Pr
   const { tab } = await searchParams;
 
   return (
-    <main className="grid gap-6 bg-[var(--surface)] p-5 md:p-8">
+    <main className="page-main bg-[var(--surface)]">
       {tab === "applications" ? <JobApplicationsPanel scope="manage" /> : <JobOpportunityBoard audience="owner" />}
     </main>
   );

@@ -5,7 +5,7 @@ export default function UserTuckShopCartPage() {
   return (
     <>
       <DashboardHeader role="USER WORKSPACE" title="Cart" description="Review product and ticket cart items, confirm quantities, and checkout with PayFast from the user dashboard." />
-      <main className="grid gap-6 p-5 md:p-8">
+      <main className="page-main">
         <TuckShopCartDashboard />
       </main>
     </>

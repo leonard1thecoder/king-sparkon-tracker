@@ -71,7 +71,7 @@ export function OwnerArtistPayouts() {
           {loading ? (
             <div className="flex min-h-32 items-center justify-center gap-3 rounded-[1.25rem] border border-dashed border-[var(--line)] bg-[var(--surface)] text-sm font-black text-[var(--steel)]"><Loader2 className="h-5 w-5 animate-spin" /> Loading payout requests</div>
           ) : withdrawals.length === 0 ? (
-            <div className="rounded-[1.25rem] border border-dashed border-[var(--line)] bg-white p-8 text-center">
+            <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-white p-5 text-center">
               <Banknote className="mx-auto h-10 w-10 text-[var(--signal)]" />
               <p className="mt-3 text-xl font-black text-[var(--ink)]">No pending artist payouts.</p>
               <p className="mt-2 text-sm leading-6 text-[var(--steel)]">Artist withdrawal requests for your business will appear here.</p>

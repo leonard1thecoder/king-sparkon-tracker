@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function AdminCreateJobPage() {
   return (
     <DashboardFrame role="Admin" nav={<DashboardRoleNav role="Admin" />}>
-      <main className="grid gap-6 bg-[var(--surface)] p-5 md:p-8">
+      <main className="page-main bg-[var(--surface)]">
         <JobOpportunityForm audience="admin" />
       </main>
     </DashboardFrame>

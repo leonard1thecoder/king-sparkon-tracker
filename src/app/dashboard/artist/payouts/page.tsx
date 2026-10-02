@@ -15,7 +15,7 @@ export default function ArtistPayoutsPage() {
   return (
     <>
       <DashboardHeader role="ARTIST STUDIO" title="Payouts" description="Withdraw booking earnings and track payout history." />
-      <main className="p-5 md:p-8">
+      <main className="page-main">
         <ArtistPayouts />
       </main>
     </>

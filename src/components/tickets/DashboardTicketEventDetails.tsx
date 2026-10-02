@@ -69,7 +69,7 @@ export function DashboardTicketEventDetails({ eventId }: DashboardTicketEventDet
     return (
       <>
         <DashboardHeader role="USER WORKSPACE" title="Event details" description="Loading live dashboard event details and ticket capacity." />
-        <main className="bg-[var(--surface)] p-5 md:p-8"><div className="h-[32rem] animate-pulse rounded-[2.4rem] border border-[var(--line)] bg-white" /></main>
+        <main className="bg-[var(--surface)] p-4 md:p-5"><div className="h-[24rem] animate-pulse rounded-[var(--radius-xl)] border border-[var(--line)] bg-white" /></main>
       </>
     );
   }
@@ -78,8 +78,8 @@ export function DashboardTicketEventDetails({ eventId }: DashboardTicketEventDet
     return (
       <>
         <DashboardHeader role="USER WORKSPACE" title="Event not found" description="The selected live ticket event could not be found." />
-        <main className="bg-[var(--surface)] p-5 md:p-8">
-          <div className="rounded-[2rem] border border-dashed border-[var(--line-strong)] bg-white p-10 text-center shadow-[var(--shadow-soft)]"><Ticket className="mx-auto h-10 w-10 text-[var(--signal)]" /><h1 className="mt-4 text-3xl font-black tracking-[-0.04em]">Event not found</h1><p className="mt-2 text-sm font-semibold text-[var(--steel)]">This event may have been removed, unpublished, or the ID is incorrect.</p><Link href="/dashboard/user/tickets/buy" className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white">Back to buy tickets</Link></div>
+        <main className="bg-[var(--surface)] p-4 md:p-5">
+          <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--line-strong)] bg-white p-5 text-center shadow-[var(--shadow-soft)]"><Ticket className="mx-auto h-7 w-7 text-[var(--signal)]" /><h1 className="mt-2.5 text-[1.125rem] font-bold tracking-[-0.015em]">Event not found</h1><p className="mt-1 text-[0.8125rem] font-medium text-[var(--steel)]">This event may have been removed, unpublished, or the ID is incorrect.</p><Link href="/dashboard/user/tickets/buy" className="mt-3 inline-flex h-9 items-center justify-center rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-4 text-[0.8125rem] font-bold text-white">Back to buy tickets</Link></div>
         </main>
       </>
     );
@@ -92,8 +92,8 @@ export function DashboardTicketEventDetails({ eventId }: DashboardTicketEventDet
   return (
     <>
       <DashboardHeader role="USER WORKSPACE" title={event.name} description="Review live event details, ticket classes, comments, and verified checkout from inside the user dashboard." />
-      <main className="grid gap-7 bg-[var(--surface)] p-5 md:p-8">
-        <section className="overflow-hidden rounded-[2.5rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-8">
+      <main className="grid gap-4 bg-[var(--surface)] p-4 md:p-5">
+        <section className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-ledger)]">
           {/* Large Hero Poster Image Banner */}
           <div className="w-full overflow-hidden rounded-[2.4rem] border border-[var(--line)] bg-slate-950 p-4 sm:p-6 shadow-[var(--shadow-depth)]">
             <div className="relative flex min-h-[26rem] sm:min-h-[34rem] lg:min-h-[40rem] flex-col items-center justify-center">
@@ -180,7 +180,7 @@ export function DashboardTicketEventDetails({ eventId }: DashboardTicketEventDet
 
         <EventSetVows eventId={event.id} eventStatus={event.status} />
 
-        <section className="rounded-[2.25rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-7"><div className="flex items-center gap-3"><MessageCircle className="h-5 w-5 text-[var(--signal)]" /><div><p className="font-mono text-xs font-black uppercase tracking-[0.16em] text-[var(--signal)]">Event comments</p><h2 className="text-2xl font-black tracking-[-0.04em]">Ask questions before buying</h2></div></div>{commentsError ? <p className="mt-4 rounded-2xl border border-[var(--danger)]/25 bg-[var(--danger)]/10 p-4 text-sm font-bold text-[var(--danger)]">{commentsError}</p> : null}<div className="mt-6 grid gap-3 md:grid-cols-[0.35fr_1fr_auto]"><input value={displayName} onChange={(changeEvent) => setDisplayName(changeEvent.target.value)} placeholder="Display name" className="min-h-12 rounded-2xl border border-[var(--line)] bg-[var(--surface)] px-4 text-sm font-bold outline-none focus:border-[var(--signal)]" /><input value={comment} onChange={(changeEvent) => setComment(changeEvent.target.value)} placeholder="Write a comment about this event" className="min-h-12 rounded-2xl border border-[var(--line)] bg-[var(--surface)] px-4 text-sm font-bold outline-none focus:border-[var(--signal)]" /><button type="button" onClick={submitComment} className="min-h-12 rounded-2xl border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)]">Comment</button></div>{commentError ? <p className="mt-3 text-sm font-bold text-[var(--danger)]">{commentError}</p> : null}<div className="mt-6 grid gap-3">{comments.length === 0 ? <p className="rounded-2xl border border-dashed border-[var(--line-strong)] bg-[var(--surface)] p-4 text-sm font-bold text-[var(--steel)]">No comments yet.</p> : comments.map((item) => <article key={item.id} className="rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-4"><p className="font-black text-[var(--ink)]">{item.displayName}</p><p className="mt-2 text-sm leading-6 text-[var(--steel)]">{item.comment}</p></article>)}</div></section>
+        <section className="rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-ledger)]"><div className="flex items-center gap-2.5"><MessageCircle className="h-4 w-4 text-[var(--signal)]" /><div><p className="font-mono text-[0.6875rem] font-bold uppercase tracking-[0.12em] text-[var(--signal)]">Event comments</p><h2 className="text-[0.9375rem] font-bold tracking-[-0.01em]">Ask questions before buying</h2></div></div>{commentsError ? <p className="mt-3 rounded-[var(--radius-md)] border border-[var(--danger)]/25 bg-[var(--danger)]/10 p-3 text-[0.8125rem] font-semibold text-[var(--danger)]">{commentsError}</p> : null}<div className="mt-4 grid gap-2.5 md:grid-cols-[0.35fr_1fr_auto]"><input value={displayName} onChange={(changeEvent) => setDisplayName(changeEvent.target.value)} placeholder="Display name" className="h-9 rounded-[var(--radius-md)] border border-[var(--line)] bg-[var(--surface)] px-3 text-[0.8125rem] font-semibold outline-none focus:border-[var(--signal)]" /><input value={comment} onChange={(changeEvent) => setComment(changeEvent.target.value)} placeholder="Write a comment about this event" className="h-9 rounded-[var(--radius-md)] border border-[var(--line)] bg-[var(--surface)] px-3 text-[0.8125rem] font-semibold outline-none focus:border-[var(--signal)]" /><button type="button" onClick={submitComment} className="h-9 rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-4 text-[0.8125rem] font-bold text-white shadow-[var(--shadow-soft)]">Comment</button></div>{commentError ? <p className="mt-3 text-sm font-bold text-[var(--danger)]">{commentError}</p> : null}<div className="mt-6 grid gap-3">{comments.length === 0 ? <p className="rounded-2xl border border-dashed border-[var(--line-strong)] bg-[var(--surface)] p-4 text-sm font-bold text-[var(--steel)]">No comments yet.</p> : comments.map((item) => <article key={item.id} className="rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-4"><p className="font-black text-[var(--ink)]">{item.displayName}</p><p className="mt-2 text-sm leading-6 text-[var(--steel)]">{item.comment}</p></article>)}</div></section>
       </main>
     </>
   );

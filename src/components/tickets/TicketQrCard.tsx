@@ -380,10 +380,10 @@ export function TicketQrCard({
         {message ? <p className="rounded-[1rem] border border-[var(--confirm)]/25 bg-[var(--confirm)]/10 p-3 text-sm font-bold text-[var(--confirm)]">{message}</p> : null}
 
         <div className="flex flex-col gap-3 sm:flex-row">
-          <button type="button" onClick={copyReference} className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]">
+          <button type="button" onClick={copyReference} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-4 text-[0.8125rem] font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]">
             {copied ? <CheckCircle2 className="h-4 w-4" /> : <Copy className="h-4 w-4" />} {copied ? "Copied" : "Copy reference"}
           </button>
-          <button type="button" className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--signal)]">
+          <button type="button" className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-[0.8125rem] font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] hover:border-[var(--signal)]">
             <Download className="h-4 w-4" /> View / Download
           </button>
         </div>

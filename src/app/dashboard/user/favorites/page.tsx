@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function FavoritesPage() {
   return (
-    <main className="grid gap-6 bg-[var(--surface)] p-5 md:p-8">
+    <main className="page-main bg-[var(--surface)]">
       <div className="mx-auto w-full max-w-6xl">
         <h1 className="text-3xl font-black tracking-[-0.04em]">Favorites</h1>
         <p className="mt-2 text-sm leading-6 text-[var(--steel)]">Businesses you favorited. Tap the heart in the shop to add or remove. Backend will sync via /api/user/favorites.</p>

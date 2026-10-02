@@ -18,7 +18,11 @@ export function RouteSectionPage({
   return (
     <>
       <DashboardHeader role={role} title={title} description={description} />
-      <main className="grid gap-6 p-5 md:p-8">
+      <main className="ops-main grid gap-4 p-4 md:p-5">
+        <div className="grid gap-1.5">
+          <h1 className="text-[1.25rem] font-bold leading-tight tracking-[-0.02em] text-[var(--ink)]">{title}</h1>
+          <p className="max-w-3xl text-[0.8125rem] leading-5 text-[var(--steel)]">{description}</p>
+        </div>
         {children ? children : null}
         {endpoint ? <DomainDataWorkspace endpoint={endpoint} title={title} /> : null}
       </main>

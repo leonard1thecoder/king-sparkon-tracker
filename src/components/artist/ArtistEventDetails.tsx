@@ -35,9 +35,9 @@ export function ArtistEventDetails({ eventId }: { eventId: string }) {
 
   if (!event) {
     return (
-      <div className="p-8 text-center">
-        <p className="font-black">Event not found</p>
-        <Link href="/dashboard/artist/drafted" className="mt-4 inline-flex text-sm font-black text-[var(--signal)]">
+      <div className="p-5 text-center">
+        <p className="text-[0.8125rem] font-bold">Event not found</p>
+        <Link href="/dashboard/artist/drafted" className="mt-3 inline-flex text-[0.8125rem] font-bold text-[var(--signal)]">
           Back to drafted events
         </Link>
       </div>
@@ -72,13 +72,13 @@ export function ArtistEventDetails({ eventId }: { eventId: string }) {
   return (
     <div className="pb-10">
       {/* Hero */}
-      <div className="relative h-64 w-full overflow-hidden bg-slate-900 sm:h-80 md:h-[360px]">
+      <div className="relative h-52 w-full overflow-hidden bg-slate-900 sm:h-64 md:h-72">
         <Image src={event.imageUrl} alt={event.title} fill className="object-cover" priority />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-5 md:p-8">
+        <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5">
           <div className="mx-auto max-w-6xl">
-            <span className="inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-white backdrop-blur">Drafted Event</span>
-            <h1 className="mt-3 max-w-3xl text-3xl font-black leading-none tracking-[-0.04em] text-white md:text-5xl">{event.title}</h1>
+            <span className="inline-flex rounded-full bg-white/15 px-2.5 py-0.5 text-[0.6875rem] font-bold uppercase tracking-[0.1em] text-white backdrop-blur">Drafted Event</span>
+            <h1 className="mt-2 max-w-3xl text-2xl font-black leading-none tracking-[-0.03em] text-white md:text-4xl">{event.title}</h1>
             <div className="mt-3 flex flex-wrap gap-3 text-sm font-bold text-white/90">
               <span className="flex items-center gap-1.5"><Calendar className="h-4 w-4" /> {formatDateLong(event.eventDate)}</span>
               <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> {event.startTime} – {event.endTime}</span>
@@ -88,9 +88,9 @@ export function ArtistEventDetails({ eventId }: { eventId: string }) {
         </div>
       </div>
 
-      <div className="mx-auto max-w-6xl p-5 md:p-8">
-        <div className="grid gap-8 lg:grid-cols-[1.7fr_0.9fr]">
-          <div className="grid gap-6">
+      <div className="mx-auto max-w-6xl p-4 md:p-5">
+        <div className="grid gap-4 lg:grid-cols-[1.7fr_0.9fr]">
+          <div className="grid gap-4">
             {/* Host */}
             <Card className="p-5">
               <p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--muted)]">Hosted by</p>

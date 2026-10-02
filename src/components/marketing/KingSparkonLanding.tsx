@@ -27,22 +27,36 @@ import { DownloadAppSection } from
 "@/components/marketing/DownloadAppButtons";
 import { FounderVerificationCard } from "@/components/marketing/FounderVerificationCard";
 import { JobOpportunitiesSection } from "@/components/marketing/JobOpportunitiesSection";
+import {
+  ActivityExample,
+  CommerceChain,
+  ExampleEvent,
+  FlowSequence,
+  JourneyStyles,
+  LandingEnding,
+  MoneyFlow,
+  PeopleWorld,
+  ScenarioWindows,
+  SystemChains,
+  WorldMoment,
+} from "@/components/marketing/LandingJourney";
 import { Capacity3DVisual, Contact3DVisual, Engineering3DVisual, Role3DVisual, Sponsor3DVisual } from "@/components/marketing/Landing3DVisuals";
 import { SubscriptionSection } from "@/components/marketing/SubscriptionSection";
 import { VisionBubbleField } from "@/components/marketing/VisionBubbleField";
 
 const navLinks = [
-  ["Vision", "#vision"],
+  ["Flow", "#flow"],
+  ["People", "#people"],
+  ["Events", "#events"],
+  ["Activity", "#activity"],
+  ["Commerce", "#commerce"],
+  ["Money", "#money"],
+  ["World", "#world"],
   ["Features", "#features"],
   ["Jobs", "#jobs"],
   ["Affiliate", "#affiliate"],
   ["Dev Hub", "#dev-hub"],
-  ["Roles", "#roles"],
-  ["Capacity", "#capacity"],
-  ["Engineering", "#complaints"],
-  ["Download", "#download"],
   ["Contact", "#contact"],
-  ["Subscribe", "#subscribe"],
 ] as const;
 
 const ORIGINAL_COMPLAINT_LINK = "https://www.facebook.com/share/1CaAzEGBJb/";
@@ -92,7 +106,7 @@ const engineeringPrinciples = [
 ] as const;
 
 export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolean }) {
-  const [activeSection, setActiveSection] = useState("#vision");
+  const [activeSection, setActiveSection] = useState("#flow");
 
   useEffect(() => {
     const sections = navLinks.map(([, href]) => document.querySelector(href)).filter((section): section is Element => Boolean(section));
@@ -234,7 +248,9 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
 
   return (
     <main className="bg-white text-[var(--ink)]">
-      <section className={`relative bg-white ${hideHeader ? "" : "pt-32"}`}>
+      <JourneyStyles />
+      {/* ARRIVAL */}
+      <section className={`relative overflow-hidden bg-[#050508] text-white ${hideHeader ? "" : "pt-32"}`}>
         {!hideHeader ? (
           <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--line)] bg-white pt-[env(safe-area-inset-top)] shadow-[var(--shadow-soft)]">
             <div className="border-b border-[var(--line)] bg-[var(--signal-soft)] px-5 py-2 text-center text-xs font-bold text-[var(--signal-strong)]">
@@ -256,19 +272,22 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
           </header>
         ) : null}
 
-        <div className="mx-auto grid max-w-7xl gap-8 px-5 pb-8 pt-8 md:px-8 lg:grid-cols-[1.12fr_0.88fr] lg:items-center lg:pb-12 lg:pt-10">
+        <div className="enterprise-grid pointer-events-none absolute inset-0 opacity-60" aria-hidden="true" />
+        <div className="relative mx-auto grid max-w-7xl gap-8 px-5 pb-10 pt-8 md:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:pb-14 lg:pt-12">
           <div>
-            <div className="flex justify-center">
-              <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={420} height={185} className="h-auto w-full max-w-[26rem] object-contain" priority />
-            </div>
-            <p className="mt-6 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Operations without the spreadsheet chaos</p>
-            <h1 className="mt-5 max-w-4xl text-5xl font-black leading-[0.98] tracking-[-0.06em] md:text-7xl">Scan it. Sell it. Track it. Prove it.</h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--steel)]">King Sparkon connects inventory, tickets, carts, jobs, worker tips, affiliates and transactions through focused dashboards for each role.</p>
+            <p className="font-mono text-[0.6875rem] font-bold uppercase tracking-[0.2em] text-[var(--premium-gold)]">King Sparkon — something is moving</p>
+            <h1 className="mt-3 max-w-3xl text-5xl font-black leading-[0.98] tracking-[-0.05em] text-white md:text-6xl">Make your move.</h1>
+            <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-[0.9375rem] font-bold">
+              <Link href="/users" className="text-white/70 hover:text-[var(--premium-gold)]">Users.</Link>
+              <Link href="/artists" className="text-white/70 hover:text-[var(--premium-gold)]">Artists.</Link>
+              <Link href="/businesses" className="text-white/70 hover:text-[var(--premium-gold)]">Businesses.</Link>
+              <Link href="/workers" className="text-white/70 hover:text-[var(--premium-gold)]">Workers.</Link>
+            </p>
+            <p className="mt-4 max-w-2xl text-[0.9375rem] leading-7 text-white/60">Everything is moving — events, people, commerce, opportunity. Step into the world and find where you belong.</p>
             <FounderVerificationCard />
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link data-orange-hover="true" href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-extrabold text-white hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]">Create business account <ArrowRight className="h-4 w-4" /></Link>
-              <Link href="/#download" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-[var(--signal)] bg-[var(--signal)]/10 px-6 text-sm font-extrabold text-[var(--signal-strong)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]">Download app</Link>
-              <Link href="/#features" className="inline-flex min-h-12 items-center justify-center rounded-lg border border-[var(--line-strong)] bg-white px-6 text-sm font-extrabold text-[var(--ink)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]">See platform features</Link>
+            <div className="mt-7 flex flex-wrap items-center gap-2.5">
+              <Link href="/register" className="inline-flex h-11 items-center justify-center gap-1.5 rounded-lg border border-[var(--premium-gold)]/50 bg-[var(--premium-gold)]/10 px-5 text-[0.8125rem] font-extrabold text-[var(--premium-gold)] transition-colors duration-200 hover:bg-[var(--premium-gold)] hover:text-black motion-reduce:transition-none">Enter Sparkon <ArrowRight className="h-4 w-4" /></Link>
+              <Link href="/#flow" className="inline-flex h-11 items-center justify-center rounded-lg px-4 text-[0.8125rem] font-bold text-white/70 hover:text-white">See how it moves</Link>
             </div>
           </div>
 
@@ -278,10 +297,59 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
         </div>
       </section>
 
+      <FlowSequence />
+
+      <PeopleWorld
+        roleRail={
+          <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+            <Role3DVisual />
+            <div className="grid gap-2.5 sm:grid-cols-2">
+              {roleCards.map(({ icon: Icon, title, price, href, copy }) => (
+                <Link key={title} href={href} className="group rounded-xl border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--premium-cyan)]/50">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="grid h-8 w-8 place-items-center rounded-lg border border-[var(--line)] text-[var(--signal)]"><Icon className="h-4 w-4" /></span>
+                    <span className="rounded-md border border-[var(--line)] bg-[var(--surface)] px-2 py-0.5 text-[0.6875rem] font-bold text-[var(--steel)]">{price}</span>
+                  </div>
+                  <h3 className="mt-3 text-[0.9375rem] font-bold text-[var(--ink)]">{title}</h3>
+                  <p className="mt-1 text-[0.8125rem] leading-5 text-[var(--steel)]">{copy}</p>
+                  <span className="mt-3 inline-flex items-center gap-1.5 text-[0.8125rem] font-bold text-[var(--signal-strong)] group-hover:text-[var(--premium-cyan)]">Open access path <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" /></span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        }
+      />
+
+      <ExampleEvent />
+      <SystemChains />
+      <ActivityExample />
+      <CommerceChain />
+      <MoneyFlow />
+      <WorldMoment />
+      <ScenarioWindows />
+
       <section id="vision" className="scroll-mt-24 border-t border-[var(--line)] bg-white px-5 py-10 md:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end"><div><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Vision</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Control real-world operations from one trusted record.</h2></div><p className="text-base leading-8 text-[var(--steel)] lg:text-lg">Every scan, sale, ticket, transaction and role action should be understandable without searching through disconnected systems.</p></div>
           <VisionBubbleField items={visionPillars} />
+        </div>
+      </section>
+
+      <section id="features" className="scroll-mt-24 bg-white px-5 py-10 md:px-8 lg:py-14">
+        <div className="mx-auto max-w-7xl"><div className="max-w-3xl"><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Features</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Built around the work, not the dashboard decoration.</h2><p className="mt-5 text-base leading-8 text-[var(--steel)]">Each feature supports a real operational task and a clearly defined role.</p></div><div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">{features.map(({ icon: Icon, title, copy, tags }) => <article key={title} className="rounded-xl border border-[var(--line)] bg-white p-6 transition hover:border-[var(--line-strong)]"><div className="grid h-11 w-11 place-items-center rounded-lg border border-[var(--line)] text-[var(--signal)]"><Icon className="h-5 w-5" /></div><h3 className="mt-5 text-xl font-black tracking-[-0.03em]">{title}</h3><p className="mt-3 text-sm leading-7 text-[var(--steel)]">{copy}</p><div className="mt-5 flex flex-wrap gap-2">{tags.map((tag) => <span key={tag} className="rounded-md border border-[var(--line)] bg-[var(--signal-soft)] px-2.5 py-1 text-xs font-bold text-[var(--signal-strong)]">{tag}</span>)}</div></article>)}</div></div>
+      </section>
+
+      <JobOpportunitiesSection />
+      <AffiliateProgramSection />
+      <DevHubSection />
+
+      <section id="capacity" className="scroll-mt-24 bg-white px-5 py-10 md:px-8 lg:py-14">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:items-center">
+            <div><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Capacity</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-5xl">Know what is available before operations become a problem.</h2><p className="mt-5 text-base leading-8 text-[var(--steel)]">Capacity views turn activity into clear, actionable totals.</p><Link href="/dashboard/owner/capacity" className="mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[var(--line-strong)] bg-white px-5 text-sm font-extrabold text-[var(--ink)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]">View owner capacity <ArrowRight className="h-4 w-4" /></Link></div>
+            <Capacity3DVisual />
+          </div>
+          <div className="mt-10 divide-y divide-[var(--line)] border-y border-[var(--line)]">{capacityRows.map(([title, copy], index) => <div key={title} className="grid gap-3 py-5 sm:grid-cols-[3rem_0.35fr_1fr] sm:items-start"><span className="text-sm font-black text-[var(--signal-strong)]">0{index + 1}</span><h3 className="font-black">{title}</h3><p className="text-sm leading-6 text-[var(--steel)]">{copy}</p></div>)}</div>
         </div>
       </section>
 
@@ -295,34 +363,6 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
             <Link data-orange-hover="true" href="/#contact" className="mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-extrabold text-white hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]">Discuss sponsorship <ArrowRight className="h-4 w-4" /></Link>
           </div>
           <Sponsor3DVisual />
-        </div>
-      </section>
-
-      <section id="features" className="scroll-mt-24 bg-white px-5 py-10 md:px-8 lg:py-14">
-        <div className="mx-auto max-w-7xl"><div className="max-w-3xl"><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Features</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Built around the work, not the dashboard decoration.</h2><p className="mt-5 text-base leading-8 text-[var(--steel)]">Each feature supports a real operational task and a clearly defined role.</p></div><div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">{features.map(({ icon: Icon, title, copy, tags }) => <article key={title} className="rounded-xl border border-[var(--line)] bg-white p-6 transition hover:border-[var(--line-strong)]"><div className="grid h-11 w-11 place-items-center rounded-lg border border-[var(--line)] text-[var(--signal)]"><Icon className="h-5 w-5" /></div><h3 className="mt-5 text-xl font-black tracking-[-0.03em]">{title}</h3><p className="mt-3 text-sm leading-7 text-[var(--steel)]">{copy}</p><div className="mt-5 flex flex-wrap gap-2">{tags.map((tag) => <span key={tag} className="rounded-md border border-[var(--line)] bg-[var(--signal-soft)] px-2.5 py-1 text-xs font-bold text-[var(--signal-strong)]">{tag}</span>)}</div></article>)}</div></div>
-      </section>
-
-      <JobOpportunitiesSection />
-      <AffiliateProgramSection />
-      <DevHubSection />
-
-      <section id="roles" className="scroll-mt-24 border-y border-[var(--line)] bg-white px-5 py-10 md:px-8 lg:py-14">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
-            <div><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Choose your role</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">See only the tools you need.</h2><p className="mt-5 text-base leading-8 text-[var(--steel)]">Registration and navigation change according to the selected responsibility.</p></div>
-            <Role3DVisual />
-          </div>
-          <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">{roleCards.map(({ icon: Icon, title, price, href, copy }) => <Link key={title} href={href} className="group rounded-xl border border-[var(--line)] bg-white p-5 transition hover:border-[var(--accent-hover)]"><div className="flex items-center justify-between gap-3"><div className="grid h-10 w-10 place-items-center rounded-lg border border-[var(--line)] text-[var(--signal)]"><Icon className="h-5 w-5" /></div><span className="rounded-md border border-[var(--line)] bg-[var(--signal-soft)] px-2.5 py-1 text-xs font-extrabold text-[var(--signal-strong)]">{price}</span></div><h3 className="mt-5 text-xl font-black">{title}</h3><p className="mt-3 text-sm leading-6 text-[var(--steel)]">{copy}</p><span className="mt-5 inline-flex items-center gap-2 text-sm font-extrabold text-[var(--signal-strong)] group-hover:text-[var(--accent-hover)]">Open access path <ArrowRight className="h-4 w-4" /></span></Link>)}</div>
-        </div>
-      </section>
-
-      <section id="capacity" className="scroll-mt-24 bg-white px-5 py-10 md:px-8 lg:py-14">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:items-center">
-            <div><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Capacity</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-5xl">Know what is available before operations become a problem.</h2><p className="mt-5 text-base leading-8 text-[var(--steel)]">Capacity views turn activity into clear, actionable totals.</p><Link href="/dashboard/owner/capacity" className="mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[var(--line-strong)] bg-white px-5 text-sm font-extrabold text-[var(--ink)] hover:border-[var(--accent-hover)] hover:text-[var(--accent-hover)]">View owner capacity <ArrowRight className="h-4 w-4" /></Link></div>
-            <Capacity3DVisual />
-          </div>
-          <div className="mt-10 divide-y divide-[var(--line)] border-y border-[var(--line)]">{capacityRows.map(([title, copy], index) => <div key={title} className="grid gap-3 py-5 sm:grid-cols-[3rem_0.35fr_1fr] sm:items-start"><span className="text-sm font-black text-[var(--signal-strong)]">0{index + 1}</span><h3 className="font-black">{title}</h3><p className="text-sm leading-6 text-[var(--steel)]">{copy}</p></div>)}</div>
         </div>
       </section>
 
@@ -364,6 +404,7 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
       </section>
 
       <SubscriptionSection />
+      <LandingEnding />
     </main>
   );
 }

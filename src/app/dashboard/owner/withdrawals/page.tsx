@@ -11,7 +11,7 @@ export default function OwnerWithdrawalsPage() {
   return (
     <>
       <DashboardHeader role="OWNER" title="Balance & withdrawals" description="Online product payments, successful ticket sales and paid tips increase one King Sparkon balance. Request withdrawals from R100 and review every historical payout." />
-      <main className="grid gap-6 p-5 md:p-8">
+      <main className="page-main">
         <OwnerWithdrawalsWorkspace />
       </main>
     </>

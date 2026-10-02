@@ -12,7 +12,7 @@ export default function UserAIPage() {
   return (
     <>
       <DashboardHeader role="User" title="King Sparkon AI" description="Dashboard AI assistant — now in the left sidebar so it never hides information." />
-      <main className="grid gap-6 p-5 md:p-8">
+      <main className="page-main">
         <KingSparkonAIWorkspace />
       </main>
     </>

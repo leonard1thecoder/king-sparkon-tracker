@@ -18,8 +18,8 @@ export function ConfirmDialog({
 }) {
   return (
     <Modal open={open} title={title} onClose={onClose}>
-      <p className="text-sm leading-6 text-[var(--steel)]">{description}</p>
-      <div className="mt-6 flex justify-end gap-3">
+      <p className="text-[0.8125rem] leading-5 text-[var(--steel)]">{description}</p>
+      <div className="mt-4 flex justify-end gap-2">
         <Button variant="quiet" onClick={onClose}>Cancel</Button>
         <Button variant="danger" onClick={onConfirm}>{confirmLabel}</Button>
       </div>

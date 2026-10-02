@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default async function UserDashboardTicketCheckoutPage({ params }: PageProps) {
   const { eventId } = await params;
   return (
-    <Suspense fallback={<div className="bg-[var(--surface)] p-5 md:p-8"><div className="h-[34rem] animate-pulse rounded-[2.4rem] border border-[var(--line)] bg-white" /></div>}>
+    <Suspense fallback={<div className="page-main bg-[var(--surface)]"><div className="h-[24rem] animate-pulse rounded-[var(--radius-xl)] border border-[var(--line)] bg-white" /></div>}>
       <DashboardTicketCheckout eventId={eventId} />
     </Suspense>
   );

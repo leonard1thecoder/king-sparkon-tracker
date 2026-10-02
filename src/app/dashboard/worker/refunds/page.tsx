@@ -15,7 +15,7 @@ export default function WorkerRefundsPage() {
   return (
     <>
       <DashboardHeader role="WORKER TERMINAL" title="Refund requests" description="Confirm product and ticket refunds and approve the cash payout." />
-      <main className="p-5 md:p-8">
+      <main className="page-main">
         <WorkerRefundRequests />
       </main>
     </>

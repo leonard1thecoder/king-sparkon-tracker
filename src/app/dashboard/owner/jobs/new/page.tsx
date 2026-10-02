@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function OwnerCreateJobPage() {
   return (
-    <main className="grid gap-6 bg-[var(--surface)] p-5 md:p-8">
+    <main className="page-main bg-[var(--surface)]">
       <JobOpportunityForm audience="owner" />
     </main>
   );

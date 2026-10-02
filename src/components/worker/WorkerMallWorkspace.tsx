@@ -81,7 +81,7 @@ export function WorkerMallWorkspace() {
   }
 
   return (
-    <div className="grid gap-8 p-5 md:p-8 pb-10">
+    <div className="grid gap-4 p-4 md:p-5">
       {staffEnabled ? (
         <p className="inline-flex w-fit items-center gap-1.5 rounded-full border border-[var(--signal)]/30 bg-[var(--signal-soft)] px-4 py-1.5 text-xs font-black text-[var(--signal-strong)]"><BadgePercent className="h-4 w-4" /> Staff price active · {staffPercent}% off sale prices · applies automatically at checkout</p>
       ) : (
@@ -116,7 +116,7 @@ export function WorkerMallWorkspace() {
         <form onSubmit={(event) => { event.preventDefault(); setAppliedSearch(search.trim()); }} className="flex flex-col gap-2 sm:flex-row">
           <label className="relative flex-1">
             <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
-            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search products, barcodes, businesses…" className="min-h-12 w-full rounded-[1.2rem] border border-[var(--line)] bg-white pl-11 pr-4 text-sm font-semibold outline-none focus:border-[var(--signal)]" />
+            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search products, barcodes, businesses…" className="h-9 w-full rounded-[var(--radius-md)] border border-[var(--line)] bg-white pl-10 pr-3 text-[0.8125rem] font-semibold outline-none focus:border-[var(--signal)]" />
           </label>
           <Button type="submit">Search</Button>
         </form>
@@ -124,10 +124,10 @@ export function WorkerMallWorkspace() {
         {loading ? (
           <p className="inline-flex items-center gap-2 text-sm font-bold text-[var(--steel)]"><Loader2 className="h-4 w-4 animate-spin" /> Loading staff mall…</p>
         ) : products.length === 0 ? (
-          <Card className="p-10 text-center">
-            <ShoppingBag className="mx-auto h-10 w-10 text-[var(--signal)]" />
-            <p className="mt-3 font-black">No products found</p>
-            <p className="mt-1 text-sm text-[var(--steel)]">Try a different search.</p>
+          <Card className="p-5 text-center">
+            <ShoppingBag className="mx-auto h-7 w-7 text-[var(--signal)]" />
+            <p className="mt-2 text-[0.8125rem] font-bold">No products found</p>
+            <p className="mt-1 text-xs text-[var(--steel)]">Try a different search.</p>
           </Card>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">

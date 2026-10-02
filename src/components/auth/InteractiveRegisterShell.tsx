@@ -127,7 +127,7 @@ function Field({ field, onRoleChange }: { field: RegisterField; onRoleChange?: (
       }`}
     >
       <span className="flex min-w-0 flex-wrap items-center justify-between gap-2">
-        <label htmlFor={field.name} className="min-w-0 text-sm font-black text-[var(--ink)]">
+        <label htmlFor={field.name} className="min-w-0 text-xs font-bold text-[var(--ink)]">
           {field.label}
         </label>
         {!required ? (
@@ -137,7 +137,7 @@ function Field({ field, onRoleChange }: { field: RegisterField; onRoleChange?: (
         ) : null}
       </span>
 
-      <span className="flex min-h-12 min-w-0 items-center gap-3 overflow-hidden rounded-[1.35rem] border border-[var(--line)] bg-white px-4 shadow-[var(--shadow-soft)] transition focus-within:border-[var(--gold)] focus-within:shadow-[var(--focus-ring)]">
+      <span className="flex min-h-10 min-w-0 items-center gap-2.5 overflow-hidden rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3 shadow-[var(--shadow-soft)] transition focus-within:border-[var(--gold)] focus-within:shadow-[var(--focus-ring)]">
         {iconFor(field)}
         {field.options ? (
           <select
@@ -147,7 +147,7 @@ function Field({ field, onRoleChange }: { field: RegisterField; onRoleChange?: (
             required={required}
             aria-describedby={helperId}
             onChange={(event) => onRoleChange?.(event.target.value)}
-            className="min-h-12 min-w-0 w-full bg-transparent text-sm font-semibold text-[var(--ink)] outline-none"
+            className="min-h-10 min-w-0 w-full bg-transparent text-[0.8125rem] font-semibold text-[var(--ink)] outline-none"
           >
             {field.options.map((option) => (
               <option key={option.value} value={option.value}>
@@ -166,14 +166,14 @@ function Field({ field, onRoleChange }: { field: RegisterField; onRoleChange?: (
             required={required}
             readOnly={field.readOnly}
             aria-describedby={helperId}
-            className="min-h-12 min-w-0 w-full bg-transparent text-sm font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--muted)] read-only:text-[var(--steel)]"
+            className="min-h-10 min-w-0 w-full bg-transparent text-[0.8125rem] font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--muted)] read-only:text-[var(--steel)]"
           />
         )}
         {isPassword ? (
           <button
             type="button"
             onClick={() => setShowPassword((current) => !current)}
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[var(--muted)] transition hover:bg-[var(--surface)] hover:text-[var(--signal)]"
+            className="grid h-8 w-8 shrink-0 place-items-center rounded-[var(--radius-md)] text-[var(--muted)] transition hover:bg-[var(--surface)] hover:text-[var(--signal)]"
             aria-label={showPassword ? "Hide password" : "Show password"}
             aria-pressed={showPassword}
           >
@@ -634,7 +634,7 @@ export function InteractiveRegisterShell({
               <button
                 type="submit"
                 disabled={submitting}
-                className="inline-flex min-h-11 w-full max-w-xs items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 py-2.5 text-sm font-black text-white shadow-[0_12px_28px_rgba(29,92,131,0.18)] transition duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--gold)] hover:bg-[var(--ink)] disabled:opacity-55 sm:w-auto"
+                className="inline-flex h-10 w-full max-w-xs items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-5 text-[0.8125rem] font-bold text-white shadow-[0_12px_28px_rgba(29,92,131,0.18)] transition duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--gold)] hover:bg-[var(--ink)] disabled:opacity-55 sm:w-auto"
               >
                 {submitting ? "Submitting..." : "Create account"} <ArrowRight className="h-4 w-4" />
               </button>

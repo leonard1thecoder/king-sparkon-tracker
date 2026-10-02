@@ -115,7 +115,7 @@ export function OwnerProductTransactions() {
   }
 
   return (
-    <section className="grid gap-6">
+    <section className="grid gap-4">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Products purchased" value={loading ? "..." : String(productGroups.length)} detail="Products with recorded sales" tone="confirm" icon={<ShoppingBag className="h-5 w-5" />} />
         <MetricCard label="Product units sold" value={loading ? "..." : String(totalUnits)} detail="Cash, card and app quantities" icon={<ShoppingBag className="h-5 w-5" />} />
@@ -131,7 +131,7 @@ export function OwnerProductTransactions() {
           <Button type="button" variant="quiet" disabled={loading} onClick={() => void load()}><RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} /> Refresh</Button>
         </CardHeader>
         <CardContent>
-          {loading ? <div className="flex min-h-64 items-center justify-center gap-3 text-sm font-black text-[var(--steel)]"><Loader2 className="h-5 w-5 animate-spin" /> Loading product transactions</div> : productGroups.length === 0 ? <p className="rounded-[1.5rem] border border-dashed border-[var(--line)] bg-[var(--surface)] p-10 text-center text-sm font-bold text-[var(--steel)]">No product sales have been recorded yet.</p> : (
+          {loading ? <div className="flex min-h-40 items-center justify-center gap-2.5 text-[0.8125rem] font-bold text-[var(--steel)]"><Loader2 className="h-4 w-4 animate-spin" /> Loading product transactions</div> : productGroups.length === 0 ? <p className="rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-[var(--surface)] p-5 text-center text-[0.8125rem] font-semibold text-[var(--steel)]">No product sales have been recorded yet.</p> : (
             <div className="grid gap-5 lg:grid-cols-2 2xl:grid-cols-3">
               {productGroups.map((group) => {
                 const open = expanded.has(group.productId);

@@ -70,11 +70,11 @@ function productImage(product: Product) {
 }
 
 function fieldClass() {
-  return "min-h-11 w-full rounded-[1rem] border border-[var(--line)] bg-white px-4 text-sm font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]";
+  return "h-9 w-full rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3 text-[0.8125rem] font-semibold text-[var(--ink)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]";
 }
 
 function fileInputClass() {
-  return "block min-h-11 w-full cursor-pointer rounded-[1rem] border border-[var(--line)] bg-white text-sm font-semibold text-[var(--steel)] file:mr-3 file:min-h-11 file:border-0 file:border-r file:border-[var(--line)] file:bg-[var(--gold)] file:px-4 file:text-xs file:font-black file:uppercase file:tracking-[0.08em] file:text-[var(--ink)] hover:border-[var(--signal)]";
+  return "block h-9 w-full cursor-pointer rounded-[var(--radius-md)] border border-[var(--line)] bg-white text-[0.8125rem] font-semibold text-[var(--steel)] file:mr-3 file:h-9 file:border-0 file:border-r file:border-[var(--line)] file:bg-[var(--gold)] file:px-3 file:text-[0.6875rem] file:font-bold file:uppercase file:tracking-[0.06em] file:text-[var(--ink)] hover:border-[var(--signal)]";
 }
 
 function FieldLabel({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
@@ -340,8 +340,8 @@ export function OwnerTuckShopProductManager() {
   }
 
   return (
-    <section className="grid gap-6">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+    <section className="grid gap-4">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <MetricCard label="Owner products" value={loading ? "..." : String(activeProducts.length)} detail="Active customer catalogue" tone="confirm" icon={<Store className="h-5 w-5" />} />
         <MetricCard label="Tuck Shop ready" value={loading ? "..." : String(inTuckShop.length)} detail="Visible with available stock" tone="signal" icon={<Boxes className="h-5 w-5" />} />
         <MetricCard label="Discount sales" value={loading ? "..." : String(activePromotionByProduct.size)} detail="Active percent-off sales" icon={<BadgePercent className="h-5 w-5" />} />
@@ -352,7 +352,7 @@ export function OwnerTuckShopProductManager() {
       <Card>
         <CardHeader>
           <CardTitle>Create inventory product</CardTitle>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--steel)]">Choose whether customers and workers scan a manufacturer barcode or King Sparkon creates private stock-unit codes automatically.</p>
+          <p className="mt-1 max-w-3xl text-[0.8125rem] leading-5 text-[var(--steel)]">Choose whether customers and workers scan a manufacturer barcode or King Sparkon creates private stock-unit codes automatically.</p>
         </CardHeader>
         <CardContent>
           {error ? <p role="alert" className="mb-5 rounded-[var(--radius-lg)] border border-[var(--danger)]/30 bg-white p-4 text-sm font-bold text-[var(--danger)]">Product could not be created: {error}</p> : null}
@@ -385,8 +385,8 @@ export function OwnerTuckShopProductManager() {
           <Button type="button" variant="quiet" disabled={loading} onClick={() => void loadProducts()}><RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} /> Refresh</Button>
         </CardHeader>
         <CardContent>
-          {loading ? <div className="flex min-h-56 items-center justify-center gap-3 rounded-[1.5rem] border border-dashed border-[var(--line)] bg-[var(--surface)] text-sm font-black text-[var(--steel)]"><Loader2 className="h-5 w-5 animate-spin" /> Loading products</div> : filteredProducts.length === 0 ? <p className="rounded-[1.5rem] border border-dashed border-[var(--line)] bg-white p-8 text-center text-sm font-bold text-[var(--steel)]">No products match the current search.</p> : (
-            <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
+          {loading ? <div className="flex min-h-40 items-center justify-center gap-2.5 rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-[var(--surface)] text-[0.8125rem] font-bold text-[var(--steel)]"><Loader2 className="h-4 w-4 animate-spin" /> Loading products</div> : filteredProducts.length === 0 ? <p className="rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-white p-5 text-center text-[0.8125rem] font-semibold text-[var(--steel)]">No products match the current search.</p> : (
+            <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
               {filteredProducts.map((product) => {
                 const configuration = configByProduct.get(product.id);
                 const mode = configuration?.barcodeMode ?? (product.productBarcode ? "BRANDED" : "AUTO_GENERATED");
@@ -398,14 +398,14 @@ export function OwnerTuckShopProductManager() {
                 const barcodesRequired = configuration?.barcodesRequired ?? product.remainingBarcodeSlots ?? 0;
                 const barcodesAssigned = configuration?.barcodeCount ?? product.barcodeCount ?? (product.barcodes?.length ?? 0);
                 return (
-                  <article key={product.id} className="overflow-hidden rounded-[1.6rem] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
+                  <article key={product.id} className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
                     <div className="relative aspect-[16/10] overflow-hidden bg-[var(--surface)]">
                       <img src={imagePreviews[product.id] || productImage(product)} alt={product.name} className="h-full w-full object-cover" />
                       <div className="absolute left-3 top-3 flex flex-wrap gap-2"><StatusPill label={mode === "BRANDED" ? "BARCODED BRAND" : "AUTO GENERATED"} tone={mode === "BRANDED" ? "signal" : "confirm"} />{promotion ? <StatusPill label={promotion.discountPercent ? `SALE -${Number(promotion.discountPercent).toFixed(0)}%` : "PROMOTED"} tone="signal" /> : null}{product.salePrice != null && product.salePrice < product.price ? <StatusPill label="SALE" tone="signal" /> : null}</div>
                     </div>
-                    <div className="grid gap-4 p-5">
-                      <div><p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.12em] text-[var(--muted)]">Product #{product.id} · {product.category}</p><h2 className="mt-1 text-2xl font-black tracking-[-0.04em] text-[var(--ink)]">{product.name}</h2>{product.salePrice != null && product.salePrice < product.price ? <><p className="money mt-2 text-2xl font-black text-[var(--signal)]">{money(product.salePrice)}</p><p className="money text-sm font-bold text-[var(--muted)] line-through">{money(product.price)}</p></> : <p className="money mt-2 text-2xl font-black text-[var(--signal)]">{money(product.salePrice ?? product.price)}</p>}{promotion ? <p className="mt-1 text-xs font-black text-[var(--signal)]">{promotion.discountPercent ? `${Number(promotion.discountPercent).toFixed(0)}% off` : "Promoted"} {promotion.startsAt ? `from ${date(promotion.startsAt)}` : ""} until {date(promotion.endsAt)}</p> : null}</div>
-                      <div className="grid grid-cols-2 gap-3"><div className="rounded-[1rem] bg-[var(--surface)] p-3"><p className="text-[0.62rem] font-black uppercase tracking-[0.1em] text-[var(--muted)]">Stock</p><p className="mt-1 text-xl font-black text-[var(--ink)]">{product.stockQuantity}</p></div><div className="rounded-[1rem] bg-[var(--surface)] p-3"><p className="text-[0.62rem] font-black uppercase tracking-[0.1em] text-[var(--muted)]">Barcodes required</p><p className="mt-1 text-xl font-black text-[var(--ink)]">{configuration?.barcodesRequired ?? product.remainingBarcodeSlots ?? 0}</p></div></div>
+                    <div className="grid gap-3 p-4">
+                      <div><p className="font-mono text-[0.625rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">Product #{product.id} · {product.category}</p><h2 className="mt-0.5 text-[1.125rem] font-bold tracking-[-0.015em] text-[var(--ink)]">{product.name}</h2>{product.salePrice != null && product.salePrice < product.price ? <><p className="money mt-1.5 text-[1.25rem] font-bold text-[var(--signal)]">{money(product.salePrice)}</p><p className="money text-[0.8125rem] font-semibold text-[var(--muted)] line-through">{money(product.price)}</p></> : <p className="money mt-1.5 text-[1.25rem] font-bold text-[var(--signal)]">{money(product.salePrice ?? product.price)}</p>}{promotion ? <p className="mt-1 text-[0.6875rem] font-bold text-[var(--signal)]">{promotion.discountPercent ? `${Number(promotion.discountPercent).toFixed(0)}% off` : "Promoted"} {promotion.startsAt ? `from ${date(promotion.startsAt)}` : ""} until {date(promotion.endsAt)}</p> : null}</div>
+                      <div className="grid grid-cols-2 gap-2.5"><div className="rounded-[var(--radius-md)] bg-[var(--surface)] p-2.5"><p className="text-[0.625rem] font-bold uppercase tracking-[0.08em] text-[var(--muted)]">Stock</p><p className="mt-0.5 text-[1.125rem] font-bold text-[var(--ink)]">{product.stockQuantity}</p></div><div className="rounded-[var(--radius-md)] bg-[var(--surface)] p-2.5"><p className="text-[0.625rem] font-bold uppercase tracking-[0.08em] text-[var(--muted)]">Barcodes required</p><p className="mt-0.5 text-[1.125rem] font-bold text-[var(--ink)]">{configuration?.barcodesRequired ?? product.remainingBarcodeSlots ?? 0}</p></div></div>
                       {mode === "BRANDED" ? (
                         <div className="rounded-[1rem] border border-[var(--line)] bg-[var(--surface)] p-3 text-xs font-semibold leading-5 text-[var(--steel)]">
                           Stock is fulfilled by barcodes. <span className="font-black text-[var(--signal)]">Required: {barcodesRequired}</span> • Assigned: {barcodesAssigned} • Workers add barcodes at <span className="font-black text-[var(--ink)]">/dashboard/worker/products</span> to make stock sellable.

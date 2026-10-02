@@ -12,7 +12,7 @@ export default function OwnerAIPage() {
   return (
     <>
       <DashboardHeader role="Owner" title="King Sparkon AI" description="AI assistant for products, workers, tickets and operations." />
-      <main className="grid gap-6 p-5 md:p-8">
+      <main className="page-main">
         <KingSparkonAIWorkspace />
       </main>
     </>

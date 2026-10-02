@@ -45,9 +45,9 @@ function isPagedProductResponse(value: unknown): value is { content?: Product[] 
 
 function ProductDetailSkeleton() {
   return (
-    <div className="grid gap-8 lg:grid-cols-[1fr_0.85fr]">
+    <div className="grid gap-4 lg:grid-cols-[1fr_0.85fr]">
       <div className="space-y-4">
-        <div className="h-[26rem] animate-pulse rounded-[var(--radius-2xl)] bg-[var(--surface)] md:h-[36rem]" />
+        <div className="h-[20rem] animate-pulse rounded-[var(--radius-xl)] bg-[var(--surface)] md:h-[28rem]" />
       </div>
       <div className="space-y-5">
         <div className="h-3 w-24 animate-pulse rounded-full bg-[var(--surface)]" />
@@ -300,9 +300,9 @@ export function TuckShopProductDetails({ productId }: { productId: string }) {
 
         {/* ─ Main product view ─ */}
         {!loading && !error && product ? (
-          <div className="grid gap-12">
+          <div className="grid gap-4">
             {/* Two-column hero */}
-            <section className="grid gap-8 lg:grid-cols-[1fr_0.85fr]">
+            <section className="grid gap-4 lg:grid-cols-[1fr_0.85fr]">
               {/* LEFT — Image */}
               <div className="flex flex-col gap-4">
                 <div
@@ -355,7 +355,7 @@ export function TuckShopProductDetails({ productId }: { productId: string }) {
                     {product.businessName ?? "Product details"}
                   </p>
 
-                  <h1 className="mt-2 text-4xl font-black leading-[1.08] tracking-[-0.04em] text-[var(--ink)] md:text-5xl">
+                  <h1 className="mt-1.5 text-2xl font-black leading-[1.1] tracking-[-0.03em] text-[var(--ink)] md:text-3xl">
                     {product.name}
                   </h1>
                 </div>
@@ -368,7 +368,7 @@ export function TuckShopProductDetails({ productId }: { productId: string }) {
                     <p className="text-[0.6rem] font-black uppercase tracking-[0.14em] text-[var(--muted)]">
                       Price
                     </p>
-                    <p className="money mt-1 text-5xl font-black leading-none text-[var(--ink)]">
+                    <p className="money mt-1 text-3xl font-black leading-none text-[var(--ink)]">
                       {showMoney(salePrice)}
                     </p>
                     {hasDiscount && (
@@ -418,12 +418,12 @@ export function TuckShopProductDetails({ productId }: { productId: string }) {
                       onClick={() =>
                         setQuantity((q) => Math.max(q - 1, 1))
                       }
-                      className="grid h-11 w-11 place-items-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] shadow-[var(--shadow-xs)] transition active:scale-95 hover:border-[var(--line-strong)] hover:shadow-[var(--shadow-soft)]"
+                      className="grid h-9 w-9 place-items-center rounded-[var(--radius-md)] border border-[var(--line)] bg-white text-[var(--ink)] shadow-[var(--shadow-xs)] transition active:scale-95 hover:border-[var(--line-strong)] hover:shadow-[var(--shadow-soft)]"
                     >
                       <Minus className="h-4 w-4" />
                     </button>
 
-                    <strong className="money min-w-[2.5rem] text-center text-3xl font-black text-[var(--ink)]">
+                    <strong className="money min-w-[2.5rem] text-center text-[1.375rem] font-bold text-[var(--ink)]">
                       {quantity}
                     </strong>
 

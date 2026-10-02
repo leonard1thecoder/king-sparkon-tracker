@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default async function BusinessPage({ params }: { params: Promise<{ businessKey: string }> }) {
   const { businessKey } = await params;
   return (
-    <main className="min-h-dvh bg-[var(--surface)] p-5 md:p-8">
+    <main className="page-main min-h-dvh bg-[var(--surface)]">
       <div className="mx-auto w-full max-w-6xl">
         <BusinessWorkspace businessKeyParam={businessKey} />
       </div>

@@ -15,7 +15,7 @@ export default function UserApplicationsPage() {
         title="My applications"
         description="Track every submitted job application, review the current status, and keep your career activity inside the user dashboard."
       />
-      <main className="grid gap-6 bg-[var(--surface)] p-5 md:p-8">
+      <main className="page-main bg-[var(--surface)]">
         <JobApplicationsPanel scope="mine" />
       </main>
     </>

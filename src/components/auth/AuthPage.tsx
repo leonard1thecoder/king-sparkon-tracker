@@ -25,10 +25,10 @@ type AuthPageProps = {
 
 const authCopy = {
   login: {
-    eyebrow: "Secure access",
-    title: "Login to your scan command center.",
+    eyebrow: "Back in Sparkon",
+    title: "Everything is still moving.",
     description:
-      "Access barcode scanning, inventory dashboards, worker activity, tip payouts, affiliate reports, and audit-ready business operations from one premium terminal.",
+      "Sign in to return to your world — barcode scanning, inventory dashboards, worker activity, tip payouts, affiliate reports, and audit-ready business operations.",
     badge: "Protected owner, worker, affiliate and admin routes",
     primaryAction: "Open dashboard",
     alternateText: "New to King Sparkon?",
@@ -38,10 +38,10 @@ const authCopy = {
     schemaPath: "/login",
   },
   register: {
-    eyebrow: "Business onboarding",
-    title: "Create your barcode tracking workspace.",
+    eyebrow: "Step into King Sparkon",
+    title: "Who are you here as?",
     description:
-      "Register your business for inventory scanning, QR verification, product movement, worker tip visibility, affiliate growth, promotions, and reporting.",
+      "Register your business for inventory scanning, QR verification, product movement, worker tip visibility, affiliate growth, promotions, and reporting — then open your workspace.",
     badge: "Free trial ready with scalable billing plans",
     primaryAction: "Create workspace",
     alternateText: "Already running operations here?",
@@ -103,10 +103,10 @@ function AuthStructuredData({ mode }: { mode: AuthMode }) {
 function EmailField({ mode }: { mode: AuthMode }) {
   return (
     <div>
-      <label htmlFor={`${mode}-email`} className="text-sm font-black text-[var(--ink)]">
+      <label htmlFor={`${mode}-email`} className="text-xs font-bold text-[var(--ink)]">
         Work email
       </label>
-      <div className="mt-2 flex min-h-13 items-center gap-3 rounded-full border border-[var(--line)] bg-white px-4 shadow-[var(--shadow-soft)] focus-within:border-[var(--signal)] focus-within:shadow-[var(--focus-ring)]">
+      <div className="mt-1.5 flex min-h-10 items-center gap-2.5 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3 shadow-[var(--shadow-soft)] focus-within:border-[var(--signal)] focus-within:shadow-[var(--focus-ring)]">
         <Mail className="h-4 w-4 shrink-0 text-[var(--signal)]" />
         <input
           id={`${mode}-email`}
@@ -115,7 +115,7 @@ function EmailField({ mode }: { mode: AuthMode }) {
           autoComplete="email"
           required
           placeholder="you@company.com"
-          className="min-h-12 w-full bg-transparent text-sm font-semibold outline-none placeholder:text-[var(--muted)]"
+          className="min-h-10 w-full bg-transparent text-[0.8125rem] font-semibold outline-none placeholder:text-[var(--muted)]"
         />
       </div>
     </div>
@@ -125,10 +125,10 @@ function EmailField({ mode }: { mode: AuthMode }) {
 function PasswordField({ mode, label = "Password", autoComplete = "current-password" }: { mode: AuthMode; label?: string; autoComplete?: string }) {
   return (
     <div>
-      <label htmlFor={`${mode}-${label.toLowerCase().replaceAll(" ", "-")}`} className="text-sm font-black text-[var(--ink)]">
+      <label htmlFor={`${mode}-${label.toLowerCase().replaceAll(" ", "-")}`} className="text-xs font-bold text-[var(--ink)]">
         {label}
       </label>
-      <div className="mt-2 flex min-h-13 items-center gap-3 rounded-full border border-[var(--line)] bg-white px-4 shadow-[var(--shadow-soft)] focus-within:border-[var(--signal)] focus-within:shadow-[var(--focus-ring)]">
+      <div className="mt-1.5 flex min-h-10 items-center gap-2.5 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3 shadow-[var(--shadow-soft)] focus-within:border-[var(--signal)] focus-within:shadow-[var(--focus-ring)]">
         <LockKeyhole className="h-4 w-4 shrink-0 text-[var(--signal)]" />
         <input
           id={`${mode}-${label.toLowerCase().replaceAll(" ", "-")}`}
@@ -137,7 +137,7 @@ function PasswordField({ mode, label = "Password", autoComplete = "current-passw
           autoComplete={autoComplete}
           required
           placeholder="••••••••••"
-          className="min-h-12 w-full bg-transparent text-sm font-semibold outline-none placeholder:text-[var(--muted)]"
+          className="min-h-10 w-full bg-transparent text-[0.8125rem] font-semibold outline-none placeholder:text-[var(--muted)]"
         />
         <Eye className="h-4 w-4 shrink-0 text-[var(--muted)]" aria-hidden="true" />
       </div>
@@ -151,10 +151,10 @@ function NameField({ mode, business = false }: { mode: AuthMode; business?: bool
 
   return (
     <div>
-      <label htmlFor={fieldId} className="text-sm font-black text-[var(--ink)]">
+      <label htmlFor={fieldId} className="text-xs font-bold text-[var(--ink)]">
         {fieldLabel}
       </label>
-      <div className="mt-2 flex min-h-13 items-center gap-3 rounded-full border border-[var(--line)] bg-white px-4 shadow-[var(--shadow-soft)] focus-within:border-[var(--signal)] focus-within:shadow-[var(--focus-ring)]">
+      <div className="mt-1.5 flex min-h-10 items-center gap-2.5 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3 shadow-[var(--shadow-soft)] focus-within:border-[var(--signal)] focus-within:shadow-[var(--focus-ring)]">
         {business ? <Building2 className="h-4 w-4 shrink-0 text-[var(--signal)]" /> : <UserRound className="h-4 w-4 shrink-0 text-[var(--signal)]" />}
         <input
           id={fieldId}
@@ -163,7 +163,7 @@ function NameField({ mode, business = false }: { mode: AuthMode; business?: bool
           autoComplete={business ? "organization" : "name"}
           required
           placeholder={business ? "Example Retail Group" : "Leonard The Coder"}
-          className="min-h-12 w-full bg-transparent text-sm font-semibold outline-none placeholder:text-[var(--muted)]"
+          className="min-h-10 w-full bg-transparent text-[0.8125rem] font-semibold outline-none placeholder:text-[var(--muted)]"
         />
       </div>
     </div>
@@ -172,18 +172,18 @@ function NameField({ mode, business = false }: { mode: AuthMode; business?: bool
 
 function RegisterFields({ mode }: { mode: Extract<AuthMode, "register" | "affiliate"> }) {
   return (
-    <div className="grid gap-5">
-      <div className="grid gap-5 md:grid-cols-2">
+    <div className="grid gap-3.5">
+      <div className="grid gap-3.5 md:grid-cols-2">
         <NameField mode={mode} />
         <NameField mode={mode} business={mode === "register"} />
       </div>
       <EmailField mode={mode} />
-      <div className="grid gap-5 md:grid-cols-2">
+      <div className="grid gap-3.5 md:grid-cols-2">
         <div>
-          <label htmlFor={`${mode}-phone`} className="text-sm font-black text-[var(--ink)]">
+          <label htmlFor={`${mode}-phone`} className="text-xs font-bold text-[var(--ink)]">
             WhatsApp or phone
           </label>
-          <div className="mt-2 flex min-h-13 items-center gap-3 rounded-full border border-[var(--line)] bg-white px-4 shadow-[var(--shadow-soft)] focus-within:border-[var(--signal)] focus-within:shadow-[var(--focus-ring)]">
+          <div className="mt-1.5 flex min-h-10 items-center gap-2.5 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3 shadow-[var(--shadow-soft)] focus-within:border-[var(--signal)] focus-within:shadow-[var(--focus-ring)]">
             <UsersRound className="h-4 w-4 shrink-0 text-[var(--signal)]" />
             <input
               id={`${mode}-phone`}
@@ -192,17 +192,17 @@ function RegisterFields({ mode }: { mode: Extract<AuthMode, "register" | "affili
               autoComplete="tel"
               required
               placeholder="+27 00 000 0000"
-              className="min-h-12 w-full bg-transparent text-sm font-semibold outline-none placeholder:text-[var(--muted)]"
+              className="min-h-10 w-full bg-transparent text-[0.8125rem] font-semibold outline-none placeholder:text-[var(--muted)]"
             />
           </div>
         </div>
         <div>
-          <label htmlFor={`${mode}-role`} className="text-sm font-black text-[var(--ink)]">
+          <label htmlFor={`${mode}-role`} className="text-xs font-bold text-[var(--ink)]">
             {mode === "register" ? "Workspace type" : "Promotion channel"}
           </label>
-          <div className="mt-2 flex min-h-13 items-center gap-3 rounded-full border border-[var(--line)] bg-white px-4 shadow-[var(--shadow-soft)] focus-within:border-[var(--signal)] focus-within:shadow-[var(--focus-ring)]">
+          <div className="mt-1.5 flex min-h-10 items-center gap-2.5 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3 shadow-[var(--shadow-soft)] focus-within:border-[var(--signal)] focus-within:shadow-[var(--focus-ring)]">
             <Fingerprint className="h-4 w-4 shrink-0 text-[var(--signal)]" />
-            <select id={`${mode}-role`} name="role" required className="min-h-12 w-full bg-transparent text-sm font-semibold outline-none">
+            <select id={`${mode}-role`} name="role" required className="min-h-10 w-full bg-transparent text-[0.8125rem] font-semibold outline-none">
               {mode === "register" ? (
                 <>
                   <option>Retail business</option>
@@ -293,7 +293,7 @@ export function AuthPage({ mode }: AuthPageProps) {
                 </div>
               </div>
 
-              <form action={isLogin ? "/dashboard/owner" : "/dashboard/owner"} className="mt-6 grid gap-5">
+              <form action={isLogin ? "/dashboard/owner" : "/dashboard/owner"} className="mt-5 grid gap-3.5">
                 {isLogin ? (
                   <>
                     <EmailField mode={mode} />
@@ -315,7 +315,7 @@ export function AuthPage({ mode }: AuthPageProps) {
                 <div className="mt-2 flex w-full justify-center">
                   <button
                     type="submit"
-                    className="inline-flex min-h-13 w-full max-w-xs items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] sm:w-auto"
+                    className="inline-flex h-10 w-full max-w-xs items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-5 text-[0.8125rem] font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] sm:w-auto"
                   >
                     {copy.primaryAction} <ArrowRight className="h-4 w-4" />
                   </button>

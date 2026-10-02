@@ -30,8 +30,8 @@ export function ArtistMallWorkspace() {
   }, []);
 
   return (
-    <div className="grid gap-8 p-5 md:p-8 pb-10">
-      <section className="grid gap-4">
+    <div className="grid gap-4 p-4 md:p-5">
+      <section className="grid gap-3">
         <SectionHeader
           title="My mall purchases"
           description={loading ? "Loading your purchases…" : purchases.length > 0 ? `${purchases.length} purchase${purchases.length === 1 ? "" : "s"} on this artist account` : "Your artist mall checkouts will appear here"}
@@ -42,17 +42,17 @@ export function ArtistMallWorkspace() {
         ) : purchases.length ? (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {purchases.slice(0, 6).map((purchase) => (
-              <Card key={purchase.transactionId} className="p-5">
-                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-[var(--signal)]"><PackageCheck className="h-4 w-4" /> Order #{purchase.transactionId}</div>
-                <p className="mt-2 text-base font-black">{purchase.businessName ?? "King Sparkon Mall"}</p>
-                <p className="mt-1 text-sm font-bold text-[var(--steel)]">{purchase.items?.length ?? 0} items · R{(purchase.netTotal ?? purchase.productTotal ?? 0).toFixed(2)}</p>
+              <Card key={purchase.transactionId} className="p-4">
+                <div className="flex items-center gap-1.5 text-[0.6875rem] font-bold uppercase tracking-[0.08em] text-[var(--signal)]"><PackageCheck className="h-3.5 w-3.5" /> Order #{purchase.transactionId}</div>
+                <p className="mt-1.5 text-[0.8125rem] font-bold">{purchase.businessName ?? "King Sparkon Mall"}</p>
+                <p className="mt-0.5 text-xs font-semibold text-[var(--steel)]">{purchase.items?.length ?? 0} items · R{(purchase.netTotal ?? purchase.productTotal ?? 0).toFixed(2)}</p>
               </Card>
             ))}
           </div>
         ) : (
-          <Card className="p-6 text-center">
-            <ShoppingBag className="mx-auto h-8 w-8 text-[var(--signal)]" />
-            <p className="mt-2 text-sm font-bold text-[var(--steel)]">No mall purchases yet. Checkout below and they will show up here.</p>
+          <Card className="p-5 text-center">
+            <ShoppingBag className="mx-auto h-7 w-7 text-[var(--signal)]" />
+            <p className="mt-2 text-[0.8125rem] font-semibold text-[var(--steel)]">No mall purchases yet. Checkout below and they will show up here.</p>
           </Card>
         )}
       </section>

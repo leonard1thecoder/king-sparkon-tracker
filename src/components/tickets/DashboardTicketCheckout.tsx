@@ -99,40 +99,40 @@ export function DashboardTicketCheckout({ eventId }: DashboardTicketCheckoutProp
   return (
     <>
       <DashboardHeader role="USER WORKSPACE" title="Ticket checkout" description="Select a live ticket class and quantity, then add it to the shared PayFast-verified user cart." />
-      <main className="bg-[var(--surface)] p-5 md:p-8">
-        {isLoading ? <div className="h-[34rem] animate-pulse rounded-[2.4rem] border border-[var(--line)] bg-white" /> : null}
+      <main className="bg-[var(--surface)] p-4 md:p-5">
+        {isLoading ? <div className="h-[24rem] animate-pulse rounded-[var(--radius-xl)] border border-[var(--line)] bg-white" /> : null}
         {!isLoading && !event ? (
-          <div className="rounded-[2rem] border border-dashed border-[var(--line-strong)] bg-white p-10 text-center shadow-[var(--shadow-soft)]">
-            <h1 className="text-3xl font-black">Event not found</h1>
-            {error ? <p className="mt-3 text-sm font-bold text-[var(--danger)]">{error}</p> : null}
-            <Link href="/dashboard/user/tickets/buy" className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white">Back to buy tickets</Link>
+          <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--line-strong)] bg-white p-5 text-center shadow-[var(--shadow-soft)]">
+            <h1 className="text-[1.125rem] font-bold">Event not found</h1>
+            {error ? <p className="mt-2 text-[0.8125rem] font-bold text-[var(--danger)]">{error}</p> : null}
+            <Link href="/dashboard/user/tickets/buy" className="mt-3 inline-flex h-9 items-center justify-center rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-4 text-[0.8125rem] font-bold text-white">Back to buy tickets</Link>
           </div>
         ) : null}
         {event && selectedTicketType ? (
-          <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-[1fr_0.78fr]">
-            <section className="rounded-[2.35rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-8">
-              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+          <form onSubmit={handleSubmit} className="grid gap-4 lg:grid-cols-[1fr_0.78fr]">
+            <section className="rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-ledger)]">
+              <div className="flex flex-col gap-2.5 md:flex-row md:items-start md:justify-between">
                 <div>
-                  <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Live dashboard ticket checkout</p>
-                  <h1 className="mt-3 text-4xl font-black tracking-[-0.05em] md:text-5xl">Buy tickets for {event.name}</h1>
-                  <p className="mt-3 text-sm leading-7 text-[var(--steel)]">Choose the ticket class and quantity. The backend checks price and capacity again before PayFast creates the payment.</p>
+                  <p className="font-mono text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-[var(--signal)]">Live dashboard ticket checkout</p>
+                  <h1 className="mt-1 text-[1.25rem] font-bold tracking-[-0.02em]">Buy tickets for {event.name}</h1>
+                  <p className="mt-1 text-[0.8125rem] leading-5 text-[var(--steel)]">Choose the ticket class and quantity. The backend checks price and capacity again before PayFast creates the payment.</p>
                 </div>
                 <TicketStatusBadge status={event.status} />
               </div>
 
-              <div className="mt-8 grid gap-5">
-                <label className="grid gap-2">
-                  <span className="text-sm font-black">Ticket type</span>
-                  <select value={ticketType} onChange={(changeEvent) => { setTicketType(changeEvent.target.value as TicketType); setQuantity(1); }} className="min-h-13 rounded-[1.35rem] border border-[var(--line)] bg-white px-4 text-sm font-black outline-none focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]">
+              <div className="mt-5 grid gap-4">
+                <label className="grid gap-1.5">
+                  <span className="text-xs font-bold">Ticket type</span>
+                  <select value={ticketType} onChange={(changeEvent) => { setTicketType(changeEvent.target.value as TicketType); setQuantity(1); }} className="h-9 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3 text-[0.8125rem] font-bold outline-none focus:border-[var(--signal)] focus:shadow-[var(--focus-ring)]">
                     {event.ticketTypes.map((candidate) => <option key={candidate.type} value={candidate.type}>{getTicketTypeLabel(candidate.type)} · {formatCurrency(candidate.price)} · {candidate.available} left</option>)}
                   </select>
                 </label>
-                <div className="grid gap-2">
-                  <span className="text-sm font-black">Quantity</span>
-                  <div className="flex min-h-13 items-center justify-between rounded-[1.35rem] border border-[var(--line)] bg-white px-3 shadow-[var(--shadow-soft)]">
-                    <button type="button" onClick={() => setQuantity((current) => Math.max(current - 1, 1))} className="grid h-9 w-9 place-items-center rounded-full border border-[var(--line)] text-[var(--ink)]"><Minus className="h-4 w-4" /></button>
-                    <strong className="money text-2xl">{quantity}</strong>
-                    <button type="button" onClick={() => setQuantity((current) => Math.min(current + 1, selectedTicketType.available))} className="grid h-9 w-9 place-items-center rounded-full border border-[var(--line)] text-[var(--ink)]"><Plus className="h-4 w-4" /></button>
+                <div className="grid gap-1.5">
+                  <span className="text-xs font-bold">Quantity</span>
+                  <div className="flex h-10 items-center justify-between rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-2 shadow-[var(--shadow-soft)]">
+                    <button type="button" onClick={() => setQuantity((current) => Math.max(current - 1, 1))} className="grid h-8 w-8 place-items-center rounded-[var(--radius-sm)] border border-[var(--line)] text-[var(--ink)]"><Minus className="h-4 w-4" /></button>
+                    <strong className="money text-[1.125rem]">{quantity}</strong>
+                    <button type="button" onClick={() => setQuantity((current) => Math.min(current + 1, selectedTicketType.available))} className="grid h-8 w-8 place-items-center rounded-[var(--radius-sm)] border border-[var(--line)] text-[var(--ink)]"><Plus className="h-4 w-4" /></button>
                   </div>
                 </div>
                 <div className="rounded-[1.4rem] border border-[var(--line)] bg-[var(--surface)] p-4">
@@ -143,10 +143,10 @@ export function DashboardTicketCheckout({ eventId }: DashboardTicketCheckoutProp
               {error ? <div className="mt-5 flex gap-3 rounded-[1.4rem] border border-[var(--danger)]/25 bg-[var(--danger)]/10 px-4 py-3 text-sm font-bold text-[var(--danger)]"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />{error}</div> : null}
             </section>
 
-            <aside className="h-fit rounded-[2.35rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-8">
-              <div className="grid h-14 w-14 place-items-center rounded-[1.25rem] bg-[var(--ink)] text-[var(--gold)]"><CreditCard className="h-6 w-6" /></div>
-              <h2 className="mt-5 text-3xl font-black tracking-[-0.05em]">Cart summary</h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--steel)]">{getTicketTypeLabel(selectedTicketType.type)} · {quantity} ticket{quantity === 1 ? "" : "s"}</p>
+            <aside className="h-fit rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-ledger)]">
+              <div className="grid h-10 w-10 place-items-center rounded-[var(--radius-md)] bg-[var(--ink)] text-[var(--gold)]"><CreditCard className="h-5 w-5" /></div>
+              <h2 className="mt-3 text-[1.125rem] font-bold tracking-[-0.015em]">Cart summary</h2>
+              <p className="mt-1 text-[0.8125rem] leading-5 text-[var(--steel)]">{getTicketTypeLabel(selectedTicketType.type)} · {quantity} ticket{quantity === 1 ? "" : "s"}</p>
               <dl className="mt-6 grid gap-3 text-sm font-bold">
                 <div className="flex justify-between rounded-[1.15rem] border border-[var(--line)] bg-[var(--surface)] p-3"><dt>Ticket price</dt><dd className="money">{formatCurrency(selectedTicketType.price)}</dd></div>
                 <div className="flex justify-between rounded-[1.15rem] border border-[var(--line)] bg-[var(--surface)] p-3"><dt>Subtotal</dt><dd className="money">{formatCurrency(quote.subtotal)}</dd></div>
@@ -154,8 +154,8 @@ export function DashboardTicketCheckout({ eventId }: DashboardTicketCheckoutProp
                 {hubFee > 0 ? <div className="flex justify-between rounded-[1.15rem] border border-[var(--gold)] bg-[var(--gold)]/10 p-3"><dt>Marketplace Hub access</dt><dd className="money">{formatCurrency(hubFee)}</dd></div> : null}
                 <div className="flex justify-between rounded-[1.25rem] border border-[var(--signal)] bg-white p-4 text-lg"><dt>Total preview</dt><dd className="money font-black">{formatCurrency(quote.total)}</dd></div>
               </dl>
-              <button type="submit" disabled={isSubmitting || soldOut} className="mt-6 inline-flex min-h-13 w-full items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] disabled:opacity-50">{soldOut ? "Sold out" : isSubmitting ? "Adding to cart..." : "Add to cart"} <ShoppingCart className="h-4 w-4" /></button>
-              <Link href="/dashboard/user/shop/cart" className="mt-3 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-6 text-sm font-black text-[var(--ink)] hover:border-[var(--gold)]">
+              <button type="submit" disabled={isSubmitting || soldOut} className="mt-4 inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-5 text-[0.8125rem] font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)] disabled:opacity-50">{soldOut ? "Sold out" : isSubmitting ? "Adding to cart..." : "Add to cart"} <ShoppingCart className="h-4 w-4" /></button>
+              <Link href="/dashboard/user/shop/cart" className="mt-2.5 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-5 text-[0.8125rem] font-bold text-[var(--ink)] hover:border-[var(--gold)]">
                 Open cart <ArrowRight className="h-4 w-4" />
               </Link>
             </aside>

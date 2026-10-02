@@ -329,7 +329,7 @@ export function WorkerProductWorkspace() {
   }
 
   return (
-    <section className="grid gap-6">
+    <section className="grid gap-4">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Business products" value={loading ? "..." : String(products.length)} detail="Products assigned to your workplace" tone="confirm" icon={<Boxes className="h-5 w-5" />} />
         <MetricCard label="Ready to sell" value={loading ? "..." : String(readyProducts.length)} detail="Stock with every required unit code" tone="signal" icon={<CheckCircle2 className="h-5 w-5" />} />
@@ -355,7 +355,7 @@ export function WorkerProductWorkspace() {
           <Button type="button" variant="quiet" disabled={loading} onClick={() => void loadProducts()}><RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} /> Refresh</Button>
         </CardHeader>
         <CardContent>
-          {loading ? <div className="flex min-h-48 items-center justify-center gap-3 rounded-[1.5rem] border border-dashed border-[var(--line)] bg-[var(--surface)] text-sm font-black text-[var(--steel)]"><Loader2 className="h-5 w-5 animate-spin" /> Loading business products</div> : filteredProducts.length === 0 ? <p className="rounded-[1.5rem] border border-dashed border-[var(--line)] bg-white p-8 text-center text-sm font-bold text-[var(--steel)]">No products match the current search.</p> : (
+          {loading ? <div className="flex min-h-40 items-center justify-center gap-2.5 rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-[var(--surface)] text-[0.8125rem] font-bold text-[var(--steel)]"><Loader2 className="h-4 w-4 animate-spin" /> Loading business products</div> : filteredProducts.length === 0 ? <p className="rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-white p-5 text-center text-[0.8125rem] font-semibold text-[var(--steel)]">No products match the current search.</p> : (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {filteredProducts.map((product) => {
                 const configuration = configurationByProduct.get(product.id);

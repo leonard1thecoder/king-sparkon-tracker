@@ -397,7 +397,7 @@ export function WorkerTuckShopBarcodeCheckout({ scannedProduct }: WorkerTuckShop
           </div>
         </form>
 
-        {purchase ? <div className="mt-5 grid gap-4 rounded-[1.5rem] border border-[var(--confirm)]/30 bg-[var(--confirm)]/5 p-5 md:grid-cols-[1fr_auto] md:items-center"><div><p className="font-mono text-xs font-black uppercase tracking-[0.16em] text-[var(--signal)]">Transaction #{purchase.transactionId}</p><p className="money mt-2 text-3xl font-black text-[var(--ink)]">{money(purchase.netTotal ?? purchase.productTotal)}</p><p className="mt-2 text-sm font-semibold text-[var(--steel)]">{purchase.paymentType ?? paymentType} · {purchase.paymentStatus ?? "PAID"}{(purchase.emptiesCreditTotal ?? 0) > 0 ? ` · empties credit ${money(purchase.emptiesCreditTotal)}` : ""}</p></div><CreditCard className="h-12 w-12 text-[var(--confirm)]" /></div> : null}
+        {purchase ? <div className="mt-4 grid gap-3 rounded-[var(--radius-lg)] border border-[var(--confirm)]/30 bg-[var(--confirm)]/5 p-4 md:grid-cols-[1fr_auto] md:items-center"><div><p className="font-mono text-[0.6875rem] font-bold uppercase tracking-[0.12em] text-[var(--signal)]">Transaction #{purchase.transactionId}</p><p className="money mt-1.5 text-[1.375rem] font-bold text-[var(--ink)]">{money(purchase.netTotal ?? purchase.productTotal)}</p><p className="mt-1 text-[0.8125rem] font-semibold text-[var(--steel)]">{purchase.paymentType ?? paymentType} · {purchase.paymentStatus ?? "PAID"}{(purchase.emptiesCreditTotal ?? 0) > 0 ? ` · empties credit ${money(purchase.emptiesCreditTotal)}` : ""}</p></div><CreditCard className="h-8 w-8 text-[var(--confirm)]" /></div> : null}
       </CardContent>
     </Card>
   );

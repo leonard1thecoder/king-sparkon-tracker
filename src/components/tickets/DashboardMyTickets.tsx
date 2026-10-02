@@ -147,27 +147,27 @@ export function DashboardMyTickets() {
         title="My purchased tickets"
         description="Capture the current owner photo, share ACTIVE tickets by username, and present the QR for a worker's manual identity check at entry."
       />
-      <main className="bg-[var(--surface)] p-5 md:p-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <section className="bg-[var(--surface)]">
+        <div className="flex flex-col gap-2.5 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">My tickets</p>
-            <h1 className="mt-3 text-5xl font-black tracking-[-0.06em] md:text-6xl">Verified ticket wallet</h1>
-            <p className="mt-4 max-w-3xl text-sm leading-7 text-[var(--steel)]">
+            <p className="font-mono text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-[var(--signal)]">My tickets</p>
+            <h1 className="mt-1 text-[1.25rem] font-bold tracking-[-0.02em]">Verified ticket wallet</h1>
+            <p className="mt-1 max-w-3xl text-[0.8125rem] leading-5 text-[var(--steel)]">
               Every ACTIVE ticket needs a clear owner photo before entry. Workers compare the person manually against the stored photo. No automated facial recognition is used.
             </p>
           </div>
           <Link
             href="/dashboard/user/tickets/buy"
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]"
+            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-4 text-[0.8125rem] font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]"
           >
             <ShoppingCart className="h-4 w-4" /> Buy more tickets
           </Link>
         </div>
 
-        <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          <div className="rounded-[1.4rem] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)]"><p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--muted)]">Wallet total</p><p className="mt-2 text-3xl font-black text-[var(--ink)]">{items.length}</p></div>
-          <div className="rounded-[1.4rem] border border-[var(--signal)]/25 bg-[var(--signal)]/10 p-4 shadow-[var(--shadow-soft)]"><p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--signal)]">Live tickets</p><p className="mt-2 text-3xl font-black text-[var(--ink)]">{items.length}</p></div>
-          <div className="rounded-[1.4rem] border border-[var(--confirm)]/30 bg-[var(--confirm)]/10 p-4 shadow-[var(--shadow-soft)]"><p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--confirm)]">Photo ready</p><p className="mt-2 text-3xl font-black text-[var(--ink)]">{photoReadyCount}</p></div>
+        <div className="mt-4 grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="rounded-[var(--radius-lg)] border border-[var(--line)] bg-white p-3.5 shadow-[var(--shadow-soft)]"><p className="text-[0.6875rem] font-bold uppercase tracking-[0.08em] text-[var(--muted)]">Wallet total</p><p className="mt-1 text-[1.375rem] font-bold text-[var(--ink)]">{items.length}</p></div>
+          <div className="rounded-[var(--radius-lg)] border border-[var(--signal)]/25 bg-[var(--signal)]/10 p-3.5 shadow-[var(--shadow-soft)]"><p className="text-[0.6875rem] font-bold uppercase tracking-[0.08em] text-[var(--signal)]">Live tickets</p><p className="mt-1 text-[1.375rem] font-bold text-[var(--ink)]">{items.length}</p></div>
+          <div className="rounded-[var(--radius-lg)] border border-[var(--confirm)]/30 bg-[var(--confirm)]/10 p-3.5 shadow-[var(--shadow-soft)]"><p className="text-[0.6875rem] font-bold uppercase tracking-[0.08em] text-[var(--confirm)]">Photo ready</p><p className="mt-1 text-[1.375rem] font-bold text-[var(--ink)]">{photoReadyCount}</p></div>
         </div>
 
         <div className="mt-5 flex items-start gap-3 rounded-[1.4rem] border border-[var(--gold)] bg-[var(--gold)]/15 p-4 text-sm font-semibold leading-6 text-[var(--steel)]">
@@ -176,19 +176,19 @@ export function DashboardMyTickets() {
         </div>
 
         {error ? <p className="mt-6 rounded-[1.4rem] border border-[var(--danger)]/25 bg-[var(--danger)]/10 p-4 text-sm font-bold text-[var(--danger)]">{error}</p> : null}
-        {isLoading ? <div className="mt-8 grid gap-5">{[0, 1].map((item) => <div key={item} className="h-80 animate-pulse rounded-[2rem] border border-[var(--line)] bg-white" />)}</div> : null}
+        {isLoading ? <div className="mt-5 grid gap-4">{[0, 1].map((item) => <div key={item} className="h-80 animate-pulse rounded-[2rem] border border-[var(--line)] bg-white" />)}</div> : null}
 
         {!isLoading && items.length === 0 ? (
-          <div className="mt-8 rounded-[2rem] border border-dashed border-[var(--line-strong)] bg-white p-10 text-center shadow-[var(--shadow-soft)]">
-            <Ticket className="mx-auto h-10 w-10 text-[var(--signal)]" />
-            <h2 className="mt-4 text-3xl font-black tracking-[-0.04em]">You have no tickets yet</h2>
-            <p className="mt-2 text-sm font-semibold leading-6 text-[var(--steel)]">Browse available events and add a ticket to your shared cart.</p>
-            <Link href="/dashboard/user/tickets/buy" className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)]">Browse events</Link>
+          <div className="mt-5 rounded-[var(--radius-lg)] border border-dashed border-[var(--line-strong)] bg-white p-5 text-center shadow-[var(--shadow-soft)]">
+            <Ticket className="mx-auto h-7 w-7 text-[var(--signal)]" />
+            <h2 className="mt-2.5 text-[0.9375rem] font-bold tracking-[-0.01em]">You have no tickets yet</h2>
+            <p className="mt-1 text-[0.8125rem] font-medium leading-5 text-[var(--steel)]">Browse available events and add a ticket to your shared cart.</p>
+            <Link href="/dashboard/user/tickets/buy" className="mt-3 inline-flex h-9 items-center justify-center rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-4 text-[0.8125rem] font-bold text-white shadow-[var(--shadow-soft)]">Browse events</Link>
           </div>
         ) : null}
 
         {!isLoading && items.length > 0 ? (
-          <div className="mt-8 grid gap-5">
+          <div className="mt-5 grid gap-4">
             <div className="flex flex-col gap-3 rounded-[1.5rem] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)] sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm font-black text-[var(--steel)]">Showing ticket page {page + 1} of {totalPages} · {visibleItems.length} of {items.length} tickets</p>
               <div className="flex gap-2">
@@ -218,7 +218,7 @@ export function DashboardMyTickets() {
             ) : null)}
           </div>
         ) : null}
-      </main>
+      </section>
     </>
   );
 }

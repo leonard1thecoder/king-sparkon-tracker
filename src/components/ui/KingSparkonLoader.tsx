@@ -26,13 +26,13 @@ export function KingSparkonLoader({
       aria-label={label}
     >
       <div className={compact
-        ? "relative w-full max-w-sm overflow-hidden rounded-[var(--radius-2xl)] border border-white/10 bg-white/[0.06] p-6 shadow-[0_28px_90px_rgba(0,0,0,0.26)] backdrop-blur-xl"
-        : "relative w-full max-w-lg overflow-hidden rounded-[var(--radius-2xl)] border border-[var(--line)] bg-white/92 p-8 text-center shadow-[var(--shadow-depth)] backdrop-blur-xl"}
+        ? "relative w-full max-w-sm overflow-hidden rounded-[var(--radius-xl)] border border-white/10 bg-white/[0.06] p-5 shadow-[0_28px_90px_rgba(0,0,0,0.26)] backdrop-blur-xl"
+        : "relative w-full max-w-md overflow-hidden rounded-[var(--radius-xl)] border border-[var(--line)] bg-white/92 p-6 text-center shadow-[var(--shadow-depth)] backdrop-blur-xl"}
       >
         <div className="king-loader-aura pointer-events-none absolute left-1/2 top-20 h-44 w-44 -translate-x-1/2 rounded-full bg-[var(--gold)]/24 blur-3xl" aria-hidden="true" />
 
-        <div className="relative mx-auto grid h-24 w-24 place-items-center rounded-[var(--radius-2xl)] border border-[var(--gold)]/70 bg-[#8e3f68] text-[var(--gold)] shadow-[0_24px_70px_rgba(7,19,31,0.24)]">
-          <Crown className="king-loader-crown h-12 w-12" strokeWidth={1.8} />
+        <div className="relative mx-auto grid h-16 w-16 place-items-center rounded-[var(--radius-xl)] border border-[var(--gold)]/70 bg-[#8e3f68] text-[var(--gold)] shadow-[0_24px_70px_rgba(7,19,31,0.24)]">
+          <Crown className="king-loader-crown h-8 w-8" strokeWidth={1.8} />
           <span className="king-loader-orbit absolute inset-2 rounded-[var(--radius-xl)] border border-[var(--gold)]/40" aria-hidden="true" />
         </div>
 
@@ -52,13 +52,13 @@ export function KingSparkonLoader({
           <span className="king-loader-scan absolute inset-x-3 top-2 h-0.5 rounded-full bg-[var(--signal)] shadow-[0_0_14px_var(--signal),0_0_32px_var(--signal)]" aria-hidden="true" />
         </div>
 
-        <p className={`mt-6 font-mono text-xs font-black uppercase tracking-[0.18em] ${compact ? "text-[var(--gold)]" : "text-[var(--signal)]"}`}>
+        <p className={`mt-4 font-mono text-[0.6875rem] font-bold uppercase tracking-[0.14em] ${compact ? "text-[var(--gold)]" : "text-[var(--signal)]"}`}>
           {label}
         </p>
-        <p className={`mt-3 text-xl font-black tracking-[-0.04em] ${compact ? "text-white" : "text-[var(--ink)]"}`}>
+        <p className={`mt-2 text-base font-bold tracking-[-0.02em] ${compact ? "text-white" : "text-[var(--ink)]"}`}>
           {message}
         </p>
-        <p className={`mx-auto mt-3 max-w-sm text-sm leading-6 ${compact ? "text-white/55" : "text-[var(--steel)]"}`}>
+        <p className={`mx-auto mt-2 max-w-sm text-[0.8125rem] leading-5 ${compact ? "text-white/55" : "text-[var(--steel)]"}`}>
           Loading the next workspace, secure data, and responsive controls.
         </p>
       </div>

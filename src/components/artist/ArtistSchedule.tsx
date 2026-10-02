@@ -42,10 +42,10 @@ export function ArtistSchedule() {
   };
 
   return (
-    <div className="grid gap-6 p-5 md:p-8">
+    <div className="grid gap-4 p-4 md:p-5">
       <div>
-        <h1 className="text-3xl font-black tracking-[-0.04em]">My Schedule</h1>
-        <p className="mt-1 text-sm text-[var(--steel)]">Keep track of your upcoming performances.</p>
+        <h1 className="text-[1.25rem] font-bold tracking-[-0.02em]">My Schedule</h1>
+        <p className="mt-1 text-[0.8125rem] text-[var(--steel)]">Keep track of your upcoming performances.</p>
       </div>
 
       {/* Desktop layout */}
@@ -93,14 +93,14 @@ export function ArtistSchedule() {
                       <p className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-[var(--steel)]"><Clock className="h-3.5 w-3.5" /> {ev.startTime} – {ev.endTime}</p>
                       <p className="flex items-center gap-1.5 text-xs font-semibold text-[var(--steel)]"><MapPin className="h-3.5 w-3.5" /> {ev.location}</p>
                       <p className="mt-1 text-xs font-black text-[var(--signal-strong)]">{formatZAR(ev.bookingFee)}</p>
-                      <Link href={`/dashboard/artist/events/${ev.id}`} className="mt-3 inline-flex min-h-9 items-center justify-center rounded-full border border-[var(--signal)] bg-white px-4 text-xs font-black hover:bg-[var(--signal)] hover:text-white">View Event</Link>
+                      <Link href={`/dashboard/artist/events/${ev.id}`} className="mt-2.5 inline-flex h-8 items-center justify-center rounded-[var(--radius-md)] border border-[var(--signal)] bg-white px-3 text-xs font-bold hover:bg-[var(--signal)] hover:text-white">View Event</Link>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="mt-6 rounded-xl border border-dashed border-[var(--line)] bg-[var(--surface)] p-8 text-center">
-                  <span className="text-2xl">📅</span>
-                  <p className="mt-2 text-sm font-black">No events</p>
+                <div className="mt-4 rounded-[var(--radius-md)] border border-dashed border-[var(--line)] bg-[var(--surface)] p-5 text-center">
+                  <span className="text-lg">📅</span>
+                  <p className="mt-1.5 text-[0.8125rem] font-bold">No events</p>
                   <p className="text-xs text-[var(--steel)]">No performances on this day.</p>
                 </div>
               )}

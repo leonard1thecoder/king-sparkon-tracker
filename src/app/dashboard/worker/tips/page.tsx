@@ -11,7 +11,7 @@ export default function WorkerTipsPage() {
   return (
     <>
       <DashboardHeader role="WORKER" title="Tips & QR" description="Show your personal tip QR to customers, then review every tip record below it." />
-      <main className="p-5 md:p-8">
+      <main className="page-main">
         <WorkerTipsWorkspace />
       </main>
     </>

@@ -12,11 +12,11 @@ export const metadata: Metadata = {
 
 export default function UifApplyGenericPage() {
   return (
-    <div className="mx-auto grid max-w-4xl gap-6 p-5 md:p-8">
-      <Link href="/dashboard" className="inline-flex w-fit items-center gap-2 text-sm font-bold text-[var(--steel)] hover:text-[var(--signal-strong)]">
-        <ArrowLeft className="h-4 w-4" /> Back to dashboard
+    <div className="page-main mx-auto max-w-4xl">
+      <Link href="/dashboard" className="inline-flex w-fit items-center gap-1.5 text-[0.8125rem] font-bold text-[var(--steel)] hover:text-[var(--signal-strong)]">
+        <ArrowLeft className="h-3.5 w-3.5" /> Back to dashboard
       </Link>
-      <div className="rounded-[var(--radius-2xl)] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] md:p-8">
+      <div className="rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)]">
         <RegionGate serviceName="UIF services">
           <UIFBenefitsApplyClient />
         </RegionGate>

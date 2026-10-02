@@ -27,39 +27,39 @@ export function ArtistDraftedEvents({ initialEvents }: { initialEvents?: Drafted
   }, [allEvents, query, artistFilter, locationFilter, dateFilter]);
 
   return (
-    <div className="grid gap-6 p-5 md:p-8">
+    <div className="grid gap-4 p-4 md:p-5">
       <div>
-        <p className="font-mono text-xs font-black uppercase tracking-[0.16em] text-[var(--signal)]">Opportunities</p>
-        <h1 className="mt-2 text-3xl font-black tracking-[-0.04em] md:text-4xl">Drafted Events</h1>
-        <p className="mt-2 text-sm leading-6 text-[var(--steel)]">Discover events looking for artists.</p>
+        <p className="font-mono text-[0.6875rem] font-bold uppercase tracking-[0.12em] text-[var(--signal)]">Opportunities</p>
+        <h1 className="mt-1 text-[1.25rem] font-bold tracking-[-0.02em]">Drafted Events</h1>
+        <p className="mt-1 text-[0.8125rem] leading-5 text-[var(--steel)]">Discover events looking for artists.</p>
       </div>
 
       {/* Search and filters */}
-      <div className="rounded-[var(--radius-2xl)] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-soft)] md:p-5">
-        <div className="grid gap-4 md:grid-cols-[1.2fr_0.8fr_0.6fr]">
-          <label className="flex items-center gap-3 rounded-full border border-[var(--line)] bg-[var(--surface)] px-4 py-2 shadow-[var(--shadow-soft)] focus-within:border-[var(--signal)] focus-within:ring-4 focus-within:ring-[var(--signal)]/10">
-            <Search className="h-4 w-4 shrink-0 text-[var(--signal)]" />
+      <div className="rounded-[var(--radius-lg)] border border-[var(--line)] bg-white p-3.5 shadow-[var(--shadow-soft)]">
+        <div className="grid gap-2.5 md:grid-cols-[1.2fr_0.8fr_0.6fr]">
+          <label className="flex h-9 items-center gap-2.5 rounded-[var(--radius-md)] border border-[var(--line)] bg-[var(--surface)] px-3 shadow-[var(--shadow-soft)] focus-within:border-[var(--signal)] focus-within:ring-4 focus-within:ring-[var(--signal)]/10">
+            <Search className="h-3.5 w-3.5 shrink-0 text-[var(--signal)]" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search events, venues..."
-              className="w-full bg-transparent text-sm font-semibold outline-none placeholder:text-[var(--muted)]"
+              className="w-full bg-transparent text-[0.8125rem] font-semibold outline-none placeholder:text-[var(--muted)]"
             />
           </label>
-          <label className="flex items-center gap-3 rounded-full border border-[var(--line)] bg-white px-4 py-2">
-            <SlidersHorizontal className="h-4 w-4 text-[var(--signal)]" />
+          <label className="flex h-9 items-center gap-2.5 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3">
+            <SlidersHorizontal className="h-3.5 w-3.5 text-[var(--signal)]" />
             <input
               value={locationFilter}
               onChange={(e) => setLocationFilter(e.target.value)}
               placeholder="Location"
-              className="w-full bg-transparent text-sm font-semibold outline-none placeholder:text-[var(--muted)]"
+              className="w-full bg-transparent text-[0.8125rem] font-semibold outline-none placeholder:text-[var(--muted)]"
             />
           </label>
           <input
             type="date"
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
-            className="rounded-full border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold outline-none focus:border-[var(--signal)]"
+            className="h-9 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3 text-[0.8125rem] font-semibold outline-none focus:border-[var(--signal)]"
           />
         </div>
 

@@ -15,7 +15,7 @@ export default function UserJobsPage() {
         title="Job opportunities"
         description="Browse roles from King Sparkon businesses, review the requirements, apply, and continue tracking your applications inside the user dashboard."
       />
-      <main className="grid gap-6 bg-[var(--surface)] p-5 md:p-8">
+      <main className="page-main bg-[var(--surface)]">
         <JobOpportunityBoard audience="user" title="Job opportunities for users" description="Browse roles, apply, and track your applications without losing the dashboard navigation." />
       </main>
     </>

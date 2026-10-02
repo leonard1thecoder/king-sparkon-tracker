@@ -17,7 +17,7 @@ export default function PaymentResultPage() {
 
 function PaymentResultFallback() {
   return (
-    <main className="bg-[var(--surface)] p-5 md:p-8">
+    <main className="page-main bg-[var(--surface)]">
       <div className="mx-auto max-w-3xl rounded-[2rem] border border-[var(--line)] bg-white p-10 text-center shadow-[var(--shadow-soft)]">
         <p className="text-sm font-black text-[var(--steel)]">Loading payment result...</p>
       </div>

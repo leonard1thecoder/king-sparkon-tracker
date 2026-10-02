@@ -116,13 +116,13 @@ export function FavoritesWorkspace({ role = "user" }: { role?: SharedDashboardRo
     return (
       <div className="mx-auto max-w-4xl">
         <Card>
-          <CardContent className="grid place-items-center p-10 text-center">
-            <div className="grid h-16 w-16 place-items-center rounded-2xl border border-rose-200 bg-rose-50 text-rose-500">
-              <Heart className="h-8 w-8" />
+          <CardContent className="grid place-items-center p-6 text-center">
+            <div className="grid h-11 w-11 place-items-center rounded-[var(--radius-md)] border border-rose-200 bg-rose-50 text-rose-500">
+              <Heart className="h-5 w-5" />
             </div>
-            <h2 className="mt-4 text-2xl font-black tracking-[-0.04em]">No favorites yet</h2>
-            <p className="mt-2 max-w-md text-sm leading-6 text-[var(--steel)]">Tap the heart on any business in the shop to favorite it. Your favorites will appear here with quick access to their products, tickets and job posts.</p>
-            <Link href={dashboardHref(role, "/dashboard/user/shop")} className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-rose-200 bg-rose-500 px-6 text-sm font-black text-white hover:bg-rose-600">
+            <h2 className="mt-3 text-[0.9375rem] font-bold tracking-[-0.01em]">No favorites yet</h2>
+            <p className="mt-1.5 max-w-md text-[0.8125rem] leading-5 text-[var(--steel)]">Tap the heart on any business in the shop to favorite it. Your favorites will appear here with quick access to their products, tickets and job posts.</p>
+            <Link href={dashboardHref(role, "/dashboard/user/shop")} className="mt-4 inline-flex h-9 items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-rose-200 bg-rose-500 px-4 text-[0.8125rem] font-bold text-white hover:bg-rose-600">
               <Store className="h-4 w-4" /> Browse shop
             </Link>
           </CardContent>
@@ -132,7 +132,7 @@ export function FavoritesWorkspace({ role = "user" }: { role?: SharedDashboardRo
   }
 
   return (
-    <div className="grid gap-8">
+    <div className="grid gap-4">
       {/* Header stats */}
       <div className="grid gap-4 sm:grid-cols-3">
         <Card className="p-5">

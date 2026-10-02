@@ -11,7 +11,7 @@ export default function OwnerWorkersPage() {
   return (
     <>
       <DashboardHeader role="OWNER" title="Workers" description="Create worker accounts, choose whether each worker may receive tips, and manage the people assigned to your business." />
-      <main className="p-5 md:p-8">
+      <main className="page-main">
         <OwnerWorkerManager />
       </main>
     </>

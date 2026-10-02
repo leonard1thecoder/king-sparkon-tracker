@@ -28,19 +28,19 @@ export function ArtistProfileView({ artistId, editable = false }: { artistId?: s
 
   if (loading) {
     return (
-      <div className="grid gap-6 p-5 md:p-8">
-        <Skeleton className="h-64" />
-        <Skeleton className="h-40" />
+      <div className="grid gap-4 p-4 md:p-5">
+        <Skeleton className="h-48" />
+        <Skeleton className="h-32" />
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="grid gap-6 p-5 md:p-8">
-        <Card><CardContent className="p-10 text-center">
-          <h1 className="text-2xl font-black tracking-[-0.02em]">No artist profile yet</h1>
-          <p className="mt-2 text-sm font-semibold leading-6 text-[var(--steel)]">API MISSING: the backend does not expose artist profiles yet. Your profile will appear here once the endpoint exists.</p>
+      <div className="grid gap-4 p-4 md:p-5">
+        <Card><CardContent className="p-5 text-center">
+          <h1 className="text-[0.9375rem] font-bold tracking-[-0.01em]">No artist profile yet</h1>
+          <p className="mt-1.5 text-[0.8125rem] font-medium leading-5 text-[var(--steel)]">API MISSING: the backend does not expose artist profiles yet. Your profile will appear here once the endpoint exists.</p>
         </CardContent></Card>
       </div>
     );
@@ -56,22 +56,22 @@ export function ArtistProfileView({ artistId, editable = false }: { artistId?: s
     <div className="grid gap-6 pb-10">
       {/* Hero */}
       <div className="relative overflow-hidden">
-        <div className="relative h-56 w-full md:h-72">
+        <div className="relative h-40 w-full md:h-52">
           <Image src={profile.coverUrl} alt="Cover" fill className="object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
         </div>
-        <div className="mx-auto max-w-6xl px-5 md:px-8">
-          <div className="relative -mt-16 flex flex-col items-center gap-4 rounded-[var(--radius-2xl)] border border-[var(--line)] bg-white p-6 shadow-[var(--shadow-ledger)] md:flex-row md:items-end md:p-8">
-            <Image src={profile.avatarUrl} alt={profile.displayName} width={96} height={96} className="h-24 w-24 rounded-[var(--radius-2xl)] border-4 border-white object-cover shadow-[var(--shadow-soft)]" />
+        <div className="mx-auto max-w-6xl px-4 md:px-5">
+          <div className="relative -mt-12 flex flex-col items-center gap-3 rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-ledger)] md:flex-row md:items-end">
+            <Image src={profile.avatarUrl} alt={profile.displayName} width={64} height={64} className="h-16 w-16 rounded-[var(--radius-lg)] border-4 border-white object-cover shadow-[var(--shadow-soft)]" />
             <div className="flex-1 text-center md:text-left">
-              <h1 className="text-2xl font-black tracking-[-0.02em]">{profile.displayName}</h1>
+              <h1 className="text-[1.25rem] font-bold tracking-[-0.02em]">{profile.displayName}</h1>
               <p className="mt-1 inline-flex rounded-full border border-[var(--line-strong)] bg-[var(--signal-soft)] px-3 py-1 text-xs font-black uppercase tracking-[0.1em] text-[var(--signal-strong)]">{profile.artistType}</p>
               <p className="mt-2 flex items-center justify-center gap-1.5 text-xs font-semibold text-[var(--steel)] md:justify-start"><MapPin className="h-3.5 w-3.5" /> {profile.location}</p>
             </div>
             <div className="flex gap-2">
-              <a href={profile.socialLinks.instagram} target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full border border-[var(--line)] bg-white hover:bg-[var(--surface)]" aria-label="Instagram"><Globe2 className="h-4 w-4" /></a>
-              <a href={profile.socialLinks.facebook} target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full border border-[var(--line)] bg-white hover:bg-[var(--surface)]" aria-label="Facebook"><Share2 className="h-4 w-4" /></a>
-              <a href={profile.socialLinks.tiktok} target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full border border-[var(--line)] bg-white hover:bg-[var(--surface)]" aria-label="TikTok"><Music className="h-4 w-4" /></a>
+              <a href={profile.socialLinks.instagram} target="_blank" rel="noreferrer" className="grid h-8 w-8 place-items-center rounded-[var(--radius-md)] border border-[var(--line)] bg-white hover:bg-[var(--surface)]" aria-label="Instagram"><Globe2 className="h-4 w-4" /></a>
+              <a href={profile.socialLinks.facebook} target="_blank" rel="noreferrer" className="grid h-8 w-8 place-items-center rounded-[var(--radius-md)] border border-[var(--line)] bg-white hover:bg-[var(--surface)]" aria-label="Facebook"><Share2 className="h-4 w-4" /></a>
+              <a href={profile.socialLinks.tiktok} target="_blank" rel="noreferrer" className="grid h-8 w-8 place-items-center rounded-[var(--radius-md)] border border-[var(--line)] bg-white hover:bg-[var(--surface)]" aria-label="TikTok"><Music className="h-4 w-4" /></a>
             </div>
             {editable ? (
               <Button variant={editing ? "primary" : "secondary"} onClick={() => (editing ? handleSave() : setEditing(true))}>

@@ -11,7 +11,7 @@ export default function OwnerFavoritesPage() {
   return (
     <>
       <DashboardHeader role="OWNER WORKSPACE" title="Favorites" description="Businesses you favorited. Tap the heart on any business to add or remove it." />
-      <main className="grid gap-6 p-5 md:p-8">
+      <main className="page-main">
         <FavoritesWorkspace role="owner" />
       </main>
     </>

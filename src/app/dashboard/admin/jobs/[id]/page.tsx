@@ -14,7 +14,7 @@ export default async function AdminJobDetailPage({ params }: { params: Promise<{
 
   return (
     <DashboardFrame role="Admin" nav={<DashboardRoleNav role="Admin" />}>
-      <main className="grid gap-6 bg-[var(--surface)] p-5 md:p-8">
+      <main className="page-main bg-[var(--surface)]">
         <JobOpportunityDetail id={id} canApply={false} />
         <JobApplicationsPanel jobId={id} scope="manage" />
       </main>

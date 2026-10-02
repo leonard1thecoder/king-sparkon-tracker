@@ -15,13 +15,13 @@ export function MetricCard({
   icon?: ReactNode;
 }) {
   return (
-    <div className="group relative overflow-hidden rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-soft)] transition-all duration-200 ease-out hover:shadow-[var(--shadow-ledger)] hover:border-[var(--line-strong)]">
-      <div className="flex items-start justify-between gap-4">
-        <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-[var(--steel)]">{label}</p>
-        {icon ? <div className="grid h-10 w-10 place-items-center rounded-[var(--radius-md)] border border-[var(--line)] bg-white text-[var(--signal)] transition-colors duration-200 group-hover:border-[var(--line-strong)] group-hover:bg-[var(--signal-soft)]">{icon}</div> : null}
+    <div className="group relative overflow-hidden rounded-[var(--radius-lg)] border border-[var(--line)] bg-white p-3.5 shadow-[var(--shadow-soft)] transition-all duration-200 ease-out hover:shadow-[var(--shadow-ledger)] hover:border-[var(--line-strong)]">
+      <div className="flex items-start justify-between gap-2.5">
+        <p className="text-[0.6875rem] font-bold uppercase tracking-[0.08em] text-[var(--steel)]">{label}</p>
+        {icon ? <div className="grid h-8 w-8 place-items-center rounded-[var(--radius-md)] border border-[var(--line)] bg-white text-[var(--signal)] transition-colors duration-200 group-hover:border-[var(--line-strong)] group-hover:bg-[var(--signal-soft)] [&_svg]:h-4 [&_svg]:w-4">{icon}</div> : null}
       </div>
-      <p className={cn("money mt-4 text-3xl font-black tracking-tight md:text-4xl", tone === "signal" && "text-[var(--signal-strong)]", tone === "confirm" && "text-[var(--signal-strong)]")}>{value}</p>
-      {detail ? <p className="mt-3 text-sm leading-6 text-[var(--steel)]">{detail}</p> : null}
+      <p className={cn("money mt-2 text-[1.375rem] font-bold leading-none tracking-tight", tone === "signal" && "text-[var(--signal-strong)]", tone === "confirm" && "text-[var(--signal-strong)]")}>{value}</p>
+      {detail ? <p className="mt-1 text-xs leading-5 text-[var(--steel)]">{detail}</p> : null}
     </div>
   );
 }

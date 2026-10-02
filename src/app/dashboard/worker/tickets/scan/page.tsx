@@ -11,7 +11,7 @@ export default function WorkerTicketScanRoute() {
   return (
     <>
       <DashboardHeader role="WORKER WORKSPACE" title="Ticket identity check" description="Scan the ticket, compare the guest with the stored owner photo, then explicitly admit or deny entry." />
-      <main className="bg-[var(--surface)] p-5 md:p-8">
+      <main className="page-main bg-[var(--surface)]">
         <div className="mb-8 max-w-3xl">
           <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--signal)]">Staff gate tool</p>
           <h1 className="mt-3 text-5xl font-black tracking-[-0.06em] md:text-6xl">QR scan plus owner photo verification</h1>

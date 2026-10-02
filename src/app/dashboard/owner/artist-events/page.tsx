@@ -15,7 +15,7 @@ export default function OwnerArtistEventsPage() {
   return (
     <>
       <DashboardHeader role="OWNER WORKSPACE" title="Artist events" description="Draft events, toggle the rider, publish, and track company-paid redemptions." />
-      <main className="p-5 md:p-8">
+      <main className="page-main">
         <OwnerArtistEvents />
       </main>
     </>

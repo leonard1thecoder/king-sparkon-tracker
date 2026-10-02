@@ -144,7 +144,7 @@ function mergeAffiliateProfile(base: EditableProfile, affiliate: AffiliateProfil
   };
 }
 
-const inputClass = "min-h-12 min-w-0 w-full rounded-[1.1rem] border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none focus:border-[var(--signal)]";
+const inputClass = "h-9 min-w-0 w-full rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3 text-[0.8125rem] font-semibold outline-none focus:border-[var(--signal)]";
 
 export function ProfileWorkspace({ role }: { role: UserRole }) {
   const affiliateRole = role === "Affiliate";
@@ -290,19 +290,19 @@ export function ProfileWorkspace({ role }: { role: UserRole }) {
         title="Profile"
         description={affiliateRole ? "Manage affiliate identity, contact details, uploaded profile photo, tracked link, PayPal payout account and password." : workerRole ? "Update your worker account details, address, uploaded profile photo and password. Tips access is controlled by the business owner." : "View and update your account contact, address, uploaded profile photo and password."}
       />
-      <main className="grid gap-6 bg-[var(--surface)] p-5 md:p-8">
+      <main className="grid gap-4 bg-[var(--surface)] p-4 md:p-5">
         {error ? <p className="rounded-[var(--radius-lg)] border border-[var(--danger)]/30 bg-white p-4 text-sm font-bold text-[var(--danger)]">{error}</p> : null}
         {notice ? <p className="rounded-[var(--radius-lg)] border border-[var(--confirm)]/30 bg-[var(--confirm)]/10 p-4 text-sm font-bold text-[var(--ink)]">{notice}</p> : null}
 
         <section className="grid gap-5 xl:grid-cols-[0.8fr_1.2fr]">
           <Card className="overflow-hidden bg-white">
-            <div className="bg-[var(--ink)] p-6 text-white enterprise-grid">
-              <div className="grid h-24 w-24 place-items-center overflow-hidden rounded-[1.35rem] border border-white/15 bg-white/10 text-[var(--gold)]">
-                {displayedPhoto ? <img src={displayedPhoto} alt={user?.username ?? "Profile"} className="h-full w-full object-cover" /> : <UserRound className="h-9 w-9" />}
+            <div className="bg-[var(--ink)] p-4 text-white enterprise-grid">
+              <div className="grid h-16 w-16 place-items-center overflow-hidden rounded-[var(--radius-lg)] border border-white/15 bg-white/10 text-[var(--gold)]">
+                {displayedPhoto ? <img src={displayedPhoto} alt={user?.username ?? "Profile"} className="h-full w-full object-cover" /> : <UserRound className="h-7 w-7" />}
               </div>
-              <p className="mt-5 font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--gold)]">Account details</p>
-              <h1 className="mt-2 text-3xl font-black tracking-[-0.05em]">{loading ? "Loading profile" : displayValue(user?.username)}</h1>
-              <p className="mt-2 break-all text-sm font-semibold text-white/70">{loading ? "Checking account details" : displayValue(user?.emailAddress)}</p>
+              <p className="mt-3 font-mono text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-[var(--gold)]">Account details</p>
+              <h1 className="mt-1 text-[1.25rem] font-bold tracking-[-0.02em]">{loading ? "Loading profile" : displayValue(user?.username)}</h1>
+              <p className="mt-1 break-all text-[0.8125rem] font-medium text-white/70">{loading ? "Checking account details" : displayValue(user?.emailAddress)}</p>
             </div>
             <CardContent className="grid gap-3">
               {[

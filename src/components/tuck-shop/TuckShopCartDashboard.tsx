@@ -202,7 +202,7 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
             <Link href={dashboardHref(role, "/dashboard/user/shop")} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black uppercase tracking-[0.08em] text-[var(--ink)] hover:border-[var(--gold)]">
               Buy products <ShoppingBag className="h-4 w-4" />
             </Link>
-            <Link href={dashboardHref(role, "/dashboard/user/tickets/buy")} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--gold)] bg-[var(--gold)] px-5 text-sm font-black uppercase tracking-[0.08em] text-[var(--ink)] hover:bg-white">
+            <Link href={dashboardHref(role, "/dashboard/user/tickets/buy")} className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--gold)] bg-[var(--gold)] px-4 text-[0.8125rem] font-bold uppercase tracking-[0.06em] text-[var(--ink)] hover:bg-white">
               Buy tickets <Ticket className="h-4 w-4" />
             </Link>
           </div>
@@ -210,10 +210,10 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
         <CardContent className="grid gap-5 lg:grid-cols-[1fr_0.9fr] lg:items-start">
           <div className="grid gap-3">
             {cart.length === 0 ? (
-              <div className="rounded-[2rem] border border-dashed border-[var(--line)] bg-white p-8 text-center">
-                <ShoppingCart className="mx-auto h-11 w-11 text-[var(--signal)]" />
-                <p className="mt-4 text-xl font-black text-[var(--ink)]">Cart is empty.</p>
-                <p className="mt-2 text-sm leading-6 text-[var(--steel)]">Go to Buy Products or Buy Tickets and add items to this cart.</p>
+              <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-white p-5 text-center">
+                <ShoppingCart className="mx-auto h-7 w-7 text-[var(--signal)]" />
+                <p className="mt-2 text-[0.9375rem] font-bold text-[var(--ink)]">Cart is empty.</p>
+                <p className="mt-1 text-[0.8125rem] leading-5 text-[var(--steel)]">Go to Buy Products or Buy Tickets and add items to this cart.</p>
               </div>
             ) : (
               cart.map((line) => {

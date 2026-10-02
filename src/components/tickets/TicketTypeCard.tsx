@@ -46,9 +46,9 @@ export function TicketTypeCard({ ticketType, eventId, showBuyAction = true, chec
 
       {showBuyAction ? (
         soldOut ? (
-          <div className="mt-5 rounded-full border border-[var(--danger)]/20 bg-[var(--danger)]/10 px-4 py-3 text-center text-sm font-black text-[var(--danger)]">Sold out</div>
+          <div className="mt-4 rounded-[var(--radius-md)] border border-[var(--danger)]/20 bg-[var(--danger)]/10 px-4 py-2 text-center text-[0.8125rem] font-bold text-[var(--danger)]">Sold out</div>
         ) : (
-          <Link href={buyHref} className="mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]">
+          <Link href={buyHref} className="mt-4 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-4 text-[0.8125rem] font-bold text-white shadow-[var(--shadow-soft)] hover:bg-[var(--ember)]">
             Buy {getTicketTypeLabel(ticketType.type)} <ArrowRight className="h-4 w-4" />
           </Link>
         )

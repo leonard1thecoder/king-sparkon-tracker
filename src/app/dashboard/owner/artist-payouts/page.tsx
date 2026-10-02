@@ -15,7 +15,7 @@ export default function OwnerArtistPayoutsPage() {
   return (
     <>
       <DashboardHeader role="OWNER WORKSPACE" title="Artist payouts" description="Approve artist withdrawals and mark payouts paid." />
-      <main className="p-5 md:p-8">
+      <main className="page-main">
         <OwnerArtistPayouts />
       </main>
     </>

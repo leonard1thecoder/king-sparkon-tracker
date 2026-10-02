@@ -68,10 +68,6 @@ export async function cancelEventSet(setId: string) {
   return updateEventSet(setId, { status: "CANCELLED" });
 }
 
-export async function cancelEventSet(setId: string) {
-  return updateEventSet(setId, { status: "CANCELLED" });
-}
-
 export async function applyToSet(setId: string) {
   const { data } = await apiClient.post<SetApplication>(`/v1/tickets/sets/${setId}/apply`);
   return data;

@@ -25,9 +25,9 @@ type GlassCardProps = HTMLAttributes<HTMLDivElement> & {
 
 const paddings = {
   none: "",
-  sm: "p-4",
-  md: "p-5 md:p-6",
-  lg: "p-6 md:p-8",
+  sm: "p-3",
+  md: "p-4",
+  lg: "p-4 md:p-5",
 } as const;
 
 export function GlassCard({

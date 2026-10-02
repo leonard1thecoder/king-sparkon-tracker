@@ -200,7 +200,7 @@ export function ComputerCareTabs() {
             <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[var(--signal)]">
               {activeTab.label}
             </p>
-            <h3 className="mt-2 text-2xl font-black tracking-[-0.04em] text-[var(--ink)]">
+            <h3 className="mt-1.5 text-[1.125rem] font-bold tracking-[-0.015em] text-[var(--ink)]">
               {totalItems} plan{totalItems === 1 ? "" : "s"}
             </h3>
           </div>
@@ -209,7 +209,7 @@ export function ComputerCareTabs() {
             <select
               value={status}
               onChange={(event) => setStatus(event.target.value)}
-              className="min-h-11 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-bold normal-case tracking-normal text-[var(--ink)] outline-none focus:border-[var(--signal)]"
+              className="h-9 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3 text-[0.8125rem] font-semibold normal-case tracking-normal text-[var(--ink)] outline-none focus:border-[var(--signal)]"
             >
               {STATUS_OPTIONS.map((option) => (
                 <option key={option.code || "all"} value={option.code}>
@@ -232,10 +232,10 @@ export function ComputerCareTabs() {
               <Loader2 className="h-5 w-5 animate-spin" /> Loading {activeTab.label.toLowerCase()} plans
             </div>
           ) : cards.length === 0 ? (
-            <div className="rounded-[1.25rem] border border-[var(--line)] bg-[var(--surface)] p-10 text-center">
-              <Wrench className="mx-auto h-10 w-10 text-[var(--signal)]" />
-              <p className="mt-3 text-lg font-black text-[var(--ink)]">No plans found</p>
-              <p className="mt-2 text-sm text-[var(--steel)]">Try a different status filter.</p>
+            <div className="rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--surface)] p-5 text-center">
+              <Wrench className="mx-auto h-7 w-7 text-[var(--signal)]" />
+              <p className="mt-2 text-[0.9375rem] font-bold text-[var(--ink)]">No plans found</p>
+              <p className="mt-1 text-[0.8125rem] text-[var(--steel)]">Try a different status filter.</p>
             </div>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -256,7 +256,7 @@ export function ComputerCareTabs() {
                     <button
                       type="button"
                       onClick={() => addQuoteToCart(card)}
-                      className={`inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-full border px-4 text-xs font-black transition ${
+                      className={`inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-[var(--radius-md)] border px-3.5 text-xs font-bold transition ${
                         addedId === card.id
                           ? "border-[var(--confirm)] bg-[var(--confirm)] text-white"
                           : "border-[var(--signal)] bg-[var(--signal)] text-white hover:bg-[var(--ink)]"
@@ -272,7 +272,7 @@ export function ComputerCareTabs() {
                       href="/dashboard/user/shop/cart"
                       aria-label="Open shared cart"
                       title="Open shared cart"
-                      className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--signal)]"
+                      className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] border border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--signal)]"
                     >
                       <ShoppingCart className="h-4 w-4" />
                     </Link>

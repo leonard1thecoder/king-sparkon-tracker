@@ -9,7 +9,7 @@ export default function UserCartsPage() {
         title="My carts"
         description="Review completed product carts and purchases. Open the active cart separately when you are ready to continue shopping or checkout."
       />
-      <main className="grid gap-6 bg-[var(--surface)] p-5 md:p-8">
+      <main className="page-main bg-[var(--surface)]">
         <UserCartPurchaseHistory />
       </main>
     </>

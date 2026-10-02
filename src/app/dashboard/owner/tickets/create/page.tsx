@@ -11,7 +11,7 @@ export default function OwnerCreateTicketEventPage() {
   return (
     <>
       <DashboardHeader role="OWNER WORKSPACE" title="Create ticket event" description="Create Regular, VIP, and VVIP ticket events from the owner dashboard." />
-      <main className="bg-[var(--surface)] p-5 md:p-8">
+      <main className="page-main bg-[var(--surface)]">
         <CreateEventForm />
       </main>
     </>

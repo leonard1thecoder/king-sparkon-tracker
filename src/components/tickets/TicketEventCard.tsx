@@ -78,10 +78,10 @@ export function TicketEventCard({ event, detailsHref, checkoutHref }: TicketEven
         {earlyBirdActive && event.earlyBirdEndsAt ? <div className="mt-3 flex items-center justify-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-3 py-2 text-xs font-black text-orange-700"><Clock className="h-3.5 w-3.5" /> Early bird ends in <EarlyBirdCountdown endsAt={event.earlyBirdEndsAt} /></div> : null}
 
         <div className="mt-auto flex flex-col gap-3 pt-5 sm:flex-row">
-          <Link href={eventDetailsHref} className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-black text-white shadow-[var(--shadow-soft)] transition hover:bg-[var(--ember)]">
+          <Link href={eventDetailsHref} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-4 text-[0.8125rem] font-bold text-white shadow-[var(--shadow-soft)] transition hover:bg-[var(--ember)]">
             View Event <ArrowRight className="h-4 w-4" />
           </Link>
-          <Link href={eventCheckoutHref} className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)] shadow-[var(--shadow-soft)] transition hover:border-[var(--signal)]">
+          <Link href={eventCheckoutHref} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-[0.8125rem] font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] transition hover:border-[var(--signal)]">
             <ShieldCheck className="h-4 w-4" /> Buy Ticket
           </Link>
         </div>

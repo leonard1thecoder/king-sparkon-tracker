@@ -12,7 +12,7 @@ export default function WorkerAIPage() {
   return (
     <>
       <DashboardHeader role="Worker" title="King Sparkon AI" description="AI assistant for scanning and operations." />
-      <main className="grid gap-6 p-5 md:p-8">
+      <main className="page-main">
         <KingSparkonAIWorkspace />
       </main>
     </>

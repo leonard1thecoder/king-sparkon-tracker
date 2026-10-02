@@ -6,13 +6,13 @@ export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
 }
 
 export function CardHeader({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("border-b border-[var(--line)] bg-[#0d0d1c] px-6 py-4", className)} {...props} />;
+  return <div className={cn("border-b border-[var(--line)] bg-[#0d0d1c] px-4 py-2.5", className)} {...props} />;
 }
 
 export function CardTitle({ children, className }: { children: ReactNode; className?: string }) {
-  return <h2 className={cn("text-base font-extrabold tracking-[-0.02em] text-[var(--ink)]", className)}>{children}</h2>;
+  return <h2 className={cn("text-[0.8125rem] font-semibold tracking-[-0.01em] text-[var(--ink)]", className)}>{children}</h2>;
 }
 
 export function CardContent({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("bg-[#0a0a14] p-6 text-[var(--ink)]", className)} {...props} />;
+  return <div className={cn("bg-[#0a0a14] p-4 text-[var(--ink)]", className)} {...props} />;
 }

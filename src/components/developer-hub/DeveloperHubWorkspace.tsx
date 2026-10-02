@@ -201,14 +201,14 @@ export function DeveloperHubWorkspace({ scope }: { scope: DeveloperHubScope }) {
   }
 
   return (
-    <main className="grid gap-7 bg-[var(--surface)] p-5 md:p-8">
-      <section className="grid gap-6 rounded-[2.5rem] border border-[var(--line)] bg-white p-5 shadow-[var(--shadow-ledger)] md:p-7 xl:grid-cols-[1.05fr_0.95fr]">
-        <div className="rounded-[2rem] bg-[var(--ink)] p-6 text-white shadow-[var(--shadow-depth)] enterprise-grid md:p-8">
-          <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[var(--gold)]">King Sparkon Dev Hub</p>
-          <h1 className="mt-4 max-w-3xl text-3xl font-black tracking-[-0.05em] md:text-5xl">
+    <main className="grid gap-4 bg-[var(--surface)] p-4 md:p-5">
+      <section className="grid gap-4 rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-ledger)] xl:grid-cols-[1.05fr_0.95fr]">
+        <div className="rounded-[var(--radius-lg)] bg-[var(--ink)] p-4 text-white shadow-[var(--shadow-depth)] enterprise-grid">
+          <p className="font-mono text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-[var(--gold)]">King Sparkon Dev Hub</p>
+          <h1 className="mt-2 max-w-3xl text-[1.25rem] font-bold tracking-[-0.02em]">
             {scope === "admin" ? "Admin delivery cockpit for software development requests." : "Request software development from King-Sparkon-Strengths."}
           </h1>
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-white/68 md:text-base">
+          <p className="mt-2 max-w-3xl text-[0.8125rem] leading-5 text-white/68">
             {scope === "admin"
               ? "Admin can view requested software, start discovery, move work through CI/CD, QA regression, cloud maintenance, UAT, and lifetime support stages."
               : "Business owners provide the software name, describe how the software must work, and request cloud maintenance or Quality Assurance regression support before a free quote."}

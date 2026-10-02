@@ -12,7 +12,7 @@ export default function AffiliateAIPage() {
   return (
     <>
       <DashboardHeader role="Affiliate" title="King Sparkon AI" description="AI assistant for referrals and campaigns." />
-      <main className="grid gap-6 p-5 md:p-8">
+      <main className="page-main">
         <KingSparkonAIWorkspace />
       </main>
     </>

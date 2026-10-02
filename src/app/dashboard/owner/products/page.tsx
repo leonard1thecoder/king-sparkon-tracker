@@ -11,7 +11,7 @@ export default function OwnerProductsPage() {
   return (
     <>
       <DashboardHeader role="OWNER" title="Inventory products & Tuck Shop" description="Create products on the existing inventory model, choose product photos from your device, review barcode capacity, and make stock visible in King Sparkon Tuck Shop." />
-      <main className="grid gap-6 p-5 md:p-8">
+      <main className="page-main">
         <OwnerTuckShopProductManager />
       </main>
     </>

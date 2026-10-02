@@ -15,7 +15,7 @@ export default function ArtistSetsPage() {
   return (
     <>
       <DashboardHeader role="ARTIST STUDIO" title="Performance sets" description="Apply for open sets, collect user vows, and answer booking offers." />
-      <main className="p-5 md:p-8">
+      <main className="page-main">
         <ArtistSets />
       </main>
     </>

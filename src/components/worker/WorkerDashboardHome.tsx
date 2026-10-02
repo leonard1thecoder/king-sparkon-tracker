@@ -39,8 +39,8 @@ export function WorkerDashboardHome() {
 
   if (loading) {
     return (
-      <div className="grid gap-6 p-5 md:p-8">
-        <div className="h-28 animate-pulse rounded-[var(--radius-2xl)] bg-slate-50" />
+      <div className="grid gap-4 p-4 md:p-5">
+        <div className="h-20 animate-pulse rounded-[var(--radius-lg)] bg-slate-50" />
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
             <Skeleton key={i} className="h-32" />
@@ -52,11 +52,11 @@ export function WorkerDashboardHome() {
 
   if (error && !stats) {
     return (
-      <div className="grid gap-6 p-5 md:p-8">
-        <Card className="p-10 text-center">
-          <p className="font-black">Worker dashboard unavailable</p>
-          <p className="mt-1 text-sm text-[var(--steel)]">{error}</p>
-          <Link href="/dashboard/worker/scan" className="mt-4 inline-flex min-h-11 rounded-full bg-[var(--signal)] px-6 py-2.5 text-sm font-black text-white">Open counter checkout</Link>
+      <div className="grid gap-4 p-4 md:p-5">
+        <Card className="p-5 text-center">
+          <p className="text-[0.8125rem] font-bold">Worker dashboard unavailable</p>
+          <p className="mt-1 text-xs text-[var(--steel)]">{error}</p>
+          <Link href="/dashboard/worker/scan" className="mt-4 inline-flex h-9 items-center justify-center rounded-[var(--radius-md)] bg-[var(--signal)] px-4 text-[0.8125rem] font-bold text-white">Open counter checkout</Link>
         </Card>
       </div>
     );
@@ -66,13 +66,13 @@ export function WorkerDashboardHome() {
   const staffEnabled = Boolean(stats?.staffPriceEnabled) || staffPercent > 0;
 
   return (
-    <div className="grid gap-8 p-5 md:p-8 pb-10">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div className="grid gap-4 p-4 md:p-5">
+      <div className="flex flex-col gap-2.5 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="text-3xl font-black tracking-[-0.04em] md:text-4xl">
+          <h1 className="text-[1.25rem] font-bold tracking-[-0.02em]">
             Hello, {stats?.username ?? "Worker"} 👋
           </h1>
-          <p className="mt-2 text-sm leading-6 text-[var(--steel)] md:text-base">
+          <p className="mt-1 text-[0.8125rem] leading-5 text-[var(--steel)]">
             {stats?.jobTitle ? `${stats.jobTitle} · ` : ""}{stats?.businessName ?? "Worker terminal"} — mall, tickets, counter and tips in one place.
           </p>
           {staffEnabled ? (
@@ -81,7 +81,7 @@ export function WorkerDashboardHome() {
             <p className="mt-2 text-xs font-bold text-[var(--muted)]">No staff discount set. Ask your owner to add a staff % to unlock staff price.</p>
           )}
         </div>
-        <Link href="/dashboard/worker/scan" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--signal)] bg-[var(--signal)] px-6 py-2.5 text-sm font-black text-white shadow-[0_8px_20px_rgba(14,165,233,0.18)] hover:bg-[var(--signal-strong)]">
+        <Link href="/dashboard/worker/scan" className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--signal)] bg-[var(--signal)] px-4 text-[0.8125rem] font-bold text-white shadow-[0_8px_20px_rgba(14,165,233,0.18)] hover:bg-[var(--signal-strong)]">
           Counter checkout <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
@@ -98,17 +98,17 @@ export function WorkerDashboardHome() {
           <SectionHeader title="King Sparkon Mall" description={staffEnabled ? `Shop with ${staffPercent}% staff price` : "Shop the mall catalogue"} eyebrow="MALL" />
           <p className="mt-2 text-sm leading-6 text-[var(--steel)]">Browse the same catalogue as customers. {staffEnabled ? "Your staff discount applies automatically at checkout and on every staff price tag." : "When your owner sets a staff %, your prices drop automatically."}</p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <Link href="/dashboard/worker/mall" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[var(--signal)] px-5 text-sm font-black text-white"><ShoppingBag className="h-4 w-4" /> Open staff mall</Link>
-            <Link href="/dashboard/worker/orders" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)]"><PackageCheck className="h-4 w-4" /> Online orders</Link>
+            <Link href="/dashboard/worker/mall" className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[var(--radius-md)] bg-[var(--signal)] px-4 text-[0.8125rem] font-bold text-white"><ShoppingBag className="h-4 w-4" /> Open staff mall</Link>
+            <Link href="/dashboard/worker/orders" className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-[0.8125rem] font-bold text-[var(--ink)]"><PackageCheck className="h-4 w-4" /> Online orders</Link>
           </div>
         </Card>
         <Card className="p-6">
           <SectionHeader title="King Sparkon Tickets" description="Events, gate scan and your tickets" eyebrow="TICKETS" />
           <p className="mt-2 text-sm leading-6 text-[var(--steel)]">Browse events, keep your own tickets, and verify buyers at the gate.</p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <Link href="/dashboard/worker/tickets" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[var(--signal)] px-5 text-sm font-black text-white"><Ticket className="h-4 w-4" /> Browse tickets</Link>
-            <Link href="/dashboard/worker/tickets/scan" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)]"><QrCode className="h-4 w-4" /> Gate scan</Link>
-            <Link href="/dashboard/worker/tips" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--ink)]"><WalletCards className="h-4 w-4" /> Tips</Link>
+            <Link href="/dashboard/worker/tickets" className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[var(--radius-md)] bg-[var(--signal)] px-4 text-[0.8125rem] font-bold text-white"><Ticket className="h-4 w-4" /> Browse tickets</Link>
+            <Link href="/dashboard/worker/tickets/scan" className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-[0.8125rem] font-bold text-[var(--ink)]"><QrCode className="h-4 w-4" /> Gate scan</Link>
+            <Link href="/dashboard/worker/tips" className="inline-flex h-9 items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-4 text-[0.8125rem] font-bold text-[var(--ink)]"><WalletCards className="h-4 w-4" /> Tips</Link>
           </div>
         </Card>
       </section>

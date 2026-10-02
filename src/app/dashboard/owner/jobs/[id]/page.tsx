@@ -11,7 +11,7 @@ export default async function OwnerJobDetailPage({ params }: { params: Promise<{
   const { id } = await params;
 
   return (
-    <main className="grid gap-6 bg-[var(--surface)] p-5 md:p-8">
+    <main className="page-main bg-[var(--surface)]">
       <JobOpportunityDetail id={id} canApply={false} />
       <JobApplicationsPanel jobId={id} scope="manage" />
     </main>

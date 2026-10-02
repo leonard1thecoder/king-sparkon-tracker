@@ -12,6 +12,15 @@ type SiteFooterProps = { marketingOnly?: boolean };
 
 const footerGroups = [
   {
+    title: "Worlds",
+    links: [
+      { label: "Users", href: "/users" },
+      { label: "Artists", href: "/artists" },
+      { label: "Businesses", href: "/businesses" },
+      { label: "Workers", href: "/workers" },
+    ],
+  },
+  {
     title: "Platform",
     links: [
       { label: "How it works", href: "/how-it-works" },
@@ -19,6 +28,7 @@ const footerGroups = [
       { label: "Guides", href: "/guides" },
       { label: "Articles", href: "/articles" },
       { label: "Jobs", href: "/jobs" },
+      { label: "UIF", href: "/uif" },
       { label: "About", href: "/about" },
       { label: "Contact", href: "/contact" },
     ],
@@ -68,7 +78,7 @@ export function SiteFooter({ marketingOnly = false }: SiteFooterProps) {
             <div className="mt-8"><p className="mb-3 text-[0.68rem] font-extrabold uppercase tracking-[0.12em] text-[var(--steel)]">Social profiles</p><SocialLinks variant="light" /></div>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
             {footerGroups.map((group) => <div key={group.title} className="border-l-2 border-[var(--premium-violet)]/50 pl-5"><h2 className="text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-[var(--premium-gold)]">{group.title}</h2><ul className="mt-5 space-y-3">{group.links.map((link) => <li key={link.href}><Link href={link.href} className="text-sm font-semibold text-[var(--steel)] transition-colors duration-200 hover:text-[var(--premium-cyan)]">{link.label}</Link></li>)}</ul></div>)}
           </div>
         </div>

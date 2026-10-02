@@ -121,12 +121,12 @@ export function ArtistSets() {
         </CardHeader>
         <CardContent className="grid gap-4">
           {loading ? (
-            <div className="flex min-h-32 items-center justify-center gap-3 rounded-[1.25rem] border border-dashed border-[var(--line)] bg-[var(--surface)] text-sm font-black text-[var(--steel)]"><Loader2 className="h-5 w-5 animate-spin" /> Loading open sets</div>
+            <div className="flex min-h-32 items-center justify-center gap-2.5 rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-[var(--surface)] text-[0.8125rem] font-bold text-[var(--steel)]"><Loader2 className="h-4 w-4 animate-spin" /> Loading open sets</div>
           ) : sets.length === 0 ? (
-            <div className="rounded-[1.25rem] border border-dashed border-[var(--line)] bg-white p-8 text-center">
-              <Mic2 className="mx-auto h-10 w-10 text-[var(--signal)]" />
-              <p className="mt-3 text-xl font-black text-[var(--ink)]">No open sets right now.</p>
-              <p className="mt-2 text-sm leading-6 text-[var(--steel)]">New performance sets from drafted events will appear here.</p>
+            <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-white p-5 text-center">
+              <Mic2 className="mx-auto h-7 w-7 text-[var(--signal)]" />
+              <p className="mt-2 text-[0.9375rem] font-bold text-[var(--ink)]">No open sets right now.</p>
+              <p className="mt-1 text-[0.8125rem] leading-5 text-[var(--steel)]">New performance sets from drafted events will appear here.</p>
             </div>
           ) : (
             sets.map((set) => {

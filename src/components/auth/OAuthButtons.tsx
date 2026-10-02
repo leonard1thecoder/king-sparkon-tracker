@@ -116,7 +116,7 @@ export function OAuthButtons({ errorCode }: { errorCode?: string }) {
             type="button"
             onClick={() => startOAuth(provider.id)}
             disabled={pendingProvider !== null}
-            className="inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-[var(--radius-xl)] border border-[var(--line)] bg-white px-6 py-2.5 text-sm font-black text-[var(--ink)] shadow-[var(--shadow-soft)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--signal)] disabled:cursor-wait disabled:opacity-60"
+            className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-[var(--radius-lg)] border border-[var(--line)] bg-white px-4 text-[0.8125rem] font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--signal)] disabled:cursor-wait disabled:opacity-60"
           >
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Icon />}
             {pending ? "Redirecting..." : `Continue with ${provider.displayName}`}

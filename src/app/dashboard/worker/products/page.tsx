@@ -12,7 +12,7 @@ export default function WorkerProductsPage() {
   return (
     <>
       <DashboardHeader role="WORKER" title="Products & stock" description="View your business products, stock quantities, required barcodes, paid online preparation and the correct routes for scanning and product sales." />
-      <main className="grid gap-6 p-5 md:p-8">
+      <main className="page-main">
         <WorkerProductMetrics />
         <div className="[&>section>div:first-child]:hidden">
           <WorkerProductWorkspace />

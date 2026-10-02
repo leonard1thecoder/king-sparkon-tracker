@@ -24,7 +24,7 @@ export function ArtistBookedEvents() {
   const list = tab === "UPCOMING" ? upcoming : past;
 
   return (
-    <div className="grid gap-6 p-5 md:p-8">
+    <div className="grid gap-4 p-4 md:p-5">
       <div>
         <h1 className="text-3xl font-black tracking-[-0.04em]">Booked Events</h1>
         <p className="mt-1 text-sm text-[var(--steel)]">Your confirmed performances.</p>

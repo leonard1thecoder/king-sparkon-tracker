@@ -32,7 +32,7 @@ function CategoryIcon({ category }: { category: AffiliatePosterCategory }) {
   return <BriefcaseBusiness className="h-4 w-4" />;
 }
 
-const inputClass = "min-h-12 w-full rounded-[1.1rem] border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none focus:border-[var(--signal)]";
+const inputClass = "h-9 w-full rounded-[var(--radius-md)] border border-[var(--line)] bg-white px-3 text-[0.8125rem] font-semibold outline-none focus:border-[var(--signal)]";
 
 export function AdminAffiliatePosterWorkspace() {
   const [posters, setPosters] = useState<AffiliatePoster[]>([]);
