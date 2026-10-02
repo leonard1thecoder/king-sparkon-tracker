@@ -42,7 +42,6 @@ import {
 } from "@/components/marketing/LandingJourney";
 import { Capacity3DVisual, Contact3DVisual, Engineering3DVisual, Role3DVisual, Sponsor3DVisual } from "@/components/marketing/Landing3DVisuals";
 import { SubscriptionSection } from "@/components/marketing/SubscriptionSection";
-import { VisionBubbleField } from "@/components/marketing/VisionBubbleField";
 
 const navLinks = [
   ["Flow", "#flow"],
@@ -68,12 +67,6 @@ const features: Array<{ icon: LucideIcon; title: string; copy: string; tags: str
   { icon: BriefcaseBusiness, title: "Job opportunities", copy: "Businesses publish roles, users apply and owners review every application.", tags: ["Jobs", "Applications", "Roles"] },
   { icon: WalletCards, title: "Worker tips", copy: "Workers receive QR tip flows while owners review gross, fees, net amount and payout status.", tags: ["Tips", "QR", "Payouts"] },
   { icon: Megaphone, title: "Affiliate growth", copy: "Affiliates receive referral links, campaign assets and clear commission visibility.", tags: ["Referral", "Campaigns", "Commission"] },
-];
-
-const visionPillars: Array<{ icon: LucideIcon; title: string; copy: string }> = [
-  { icon: ScanLine, title: "Trace every action", copy: "Products, tickets, tips, promotions and purchases should always have a clear record." },
-  { icon: Crown, title: "One owner workspace", copy: "Owners run stock, events, jobs, workers, affiliates, tips and reports from one place." },
-  { icon: WalletCards, title: "Transparent money", copy: "Sales, tips, withdrawals and platform fees remain visible and reviewable." },
 ];
 
 const roleCards = [
@@ -335,14 +328,7 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
       <WorldMoment />
       <ScenarioWindows />
 
-      <section id="vision" className="scroll-mt-24 border-t border-[var(--line)] bg-white px-5 py-10 md:px-8 lg:py-14">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end"><div><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Vision</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Control real-world operations from one trusted record.</h2></div><p className="text-base leading-8 text-[var(--steel)] lg:text-lg">Every scan, sale, ticket, transaction and role action should be understandable without searching through disconnected systems.</p></div>
-          <VisionBubbleField items={visionPillars} />
-        </div>
-      </section>
-
-      <section id="features" className="scroll-mt-24 bg-white px-5 py-10 md:px-8 lg:py-14">
+      <section id="features" className="scroll-mt-24 border-t border-[var(--line)] bg-white px-5 py-10 md:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl"><div className="max-w-3xl"><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Features</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Built around the work, not the dashboard decoration.</h2><p className="mt-5 text-base leading-8 text-[var(--steel)]">Each feature supports a real operational task and a clearly defined role.</p></div><div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">{features.map(({ icon: Icon, title, copy, tags }) => <article key={title} className="rounded-xl border border-[var(--line)] bg-white p-6 transition hover:border-[var(--line-strong)]"><div className="grid h-11 w-11 place-items-center rounded-lg border border-[var(--line)] text-[var(--signal)]"><Icon className="h-5 w-5" /></div><h3 className="mt-5 text-xl font-black tracking-[-0.03em]">{title}</h3><p className="mt-3 text-sm leading-7 text-[var(--steel)]">{copy}</p><div className="mt-5 flex flex-wrap gap-2">{tags.map((tag) => <span key={tag} className="rounded-md border border-[var(--line)] bg-[var(--signal-soft)] px-2.5 py-1 text-xs font-bold text-[var(--signal-strong)]">{tag}</span>)}</div></article>)}</div></div>
       </section>
 
