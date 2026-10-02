@@ -42,15 +42,15 @@ export function PremiumHeader() {
   return (
     <header className="sticky top-0 z-50 pt-[env(safe-area-inset-top)]">
       {/* Top notice */}
-      <div className="hidden border-b border-[rgba(139,92,246,0.3)] bg-black px-4 py-1.5 text-center text-xs font-bold text-[var(--premium-gold)] md:block">
+      <div className="hidden border-b border-[rgba(139,92,246,0.3)] bg-black px-4 py-1 text-center text-[0.6875rem] font-bold text-[var(--premium-gold)] md:block">
         Barcode operations, QR tickets, jobs and role-safe dashboards — one verified platform.
       </div>
 
       {/* Glass nav shell */}
       <div className={`border-b transition-all ${scrolled ? "border-[rgba(139,92,246,0.35)] bg-[rgba(5,5,12,0.88)] backdrop-blur-[20px] shadow-[0_8px_32px_rgba(0,0,0,0.6)]" : "border-[var(--line)] bg-black/90 backdrop-blur-[8px]"}`}>
-        <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3 md:px-8" aria-label="Primary">
+        <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-2 md:px-8" aria-label="Primary">
           <Link href="/" className="flex min-w-0 items-center gap-3" onClick={() => setOpen(false)}>
-            <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={190} height={84} className="h-auto w-[104px] shrink-0 object-contain sm:w-[190px]" priority />
+            <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={160} height={71} className="h-auto w-[88px] shrink-0 object-contain sm:w-[160px]" priority />
           </Link>
 
           {/* Desktop nav — the worlds of King Sparkon */}
@@ -90,7 +90,7 @@ export function PremiumHeader() {
               aria-label={open ? "Close menu" : "Open menu"}
               aria-expanded={open}
               onClick={() => setOpen((v) => !v)}
-              className="ml-1 grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[var(--line-strong)] bg-[#0d0d1c] text-white hover:border-[var(--premium-magenta)] hover:text-[var(--premium-gold)] xl:hidden"
+              className="ml-1 grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-[var(--line-strong)] bg-[#0d0d1c] text-white hover:border-[var(--premium-magenta)] hover:text-[var(--premium-gold)] xl:hidden"
             >
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>

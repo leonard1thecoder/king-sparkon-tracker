@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ContactForm } from "@/app/contact-form";
-import { ScanLoop } from "@/components/hero/ScanLoop";
 import { AffiliateProgramSection } from "@/components/marketing/AffiliateProgramSection";
 import { DevHubSection } from
 "@/components/marketing/DevHubSection";
@@ -32,6 +31,7 @@ import {
   CommerceChain,
   ExampleEvent,
   FlowSequence,
+  HeroStill,
   JourneyStyles,
   LandingEnding,
   MoneyFlow,
@@ -303,8 +303,8 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
         <div className="relative mx-auto max-w-5xl px-5 md:px-8">
           <div className="pointer-events-none absolute -inset-4 rounded-[3rem] bg-gradient-to-br from-[var(--premium-cyan)]/10 via-transparent to-[var(--premium-gold)]/10 blur-2xl" aria-hidden="true" />
           <div className="relative">
-            <ScanLoop />
-            <p className="mt-3 text-center font-mono text-[0.625rem] font-bold uppercase tracking-[0.2em] text-white/40">The living terminal — brand in motion</p>
+            <HeroStill />
+            <p className="mt-3 text-center font-mono text-[0.625rem] font-bold uppercase tracking-[0.2em] text-white/40">The brand, still and verified</p>
           </div>
         </div>
         <div className="relative mt-10">

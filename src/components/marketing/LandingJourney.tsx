@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
@@ -525,6 +526,59 @@ export function SignalTicker() {
       </div>
       <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-black to-transparent" aria-hidden="true" />
       <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-black to-transparent" aria-hidden="true" />
+    </div>
+  );
+}
+
+const heroStills = [
+  {
+    imageSrc:
+      "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/ChatGPT%20Image%20Jun%2029,%202026,%2001_23_49%20PM.png",
+    eyebrow: "King Sparkon brand terminal",
+    title: "Present King Sparkon Lego",
+    alt: "King Sparkon 3D Lego barcode visual",
+  },
+  {
+    imageSrc:
+      "https://veizbtzugssszhxabzrv.supabase.co/storage/v1/object/public/king-sparkon-logo/XSX.png",
+    eyebrow: "Sizolwakhe Leonard Mthimunye",
+    title: "Present King Sparkon",
+    alt: "Sizolwakhe Leonard Mthimunye King Sparkon 3D visual",
+  },
+] as const;
+
+/* Static hero visual — same brand imagery as the terminal, zero 3D and
+   zero animation. Status chips are still, honest labels. */
+export function HeroStill() {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-[var(--line-strong)] bg-black shadow-[0_24px_70px_rgba(0,0,0,0.65)]">
+      <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-2.5">
+        <span className="inline-flex items-center gap-1.5 font-mono text-[0.625rem] font-black uppercase tracking-[0.16em] text-[var(--premium-cyan)]">
+          <span className="h-1.5 w-1.5 rounded-full bg-[var(--premium-cyan)]" aria-hidden="true" /> Barcode verified
+        </span>
+        <span className="inline-flex items-center gap-1.5 font-mono text-[0.625rem] font-black uppercase tracking-[0.16em] text-[var(--premium-gold)]">
+          <span className="h-1.5 w-1.5 rounded-full bg-[var(--premium-gold)]" aria-hidden="true" /> QR ticket live
+        </span>
+      </div>
+      <div className="grid gap-px bg-white/10 sm:grid-cols-2">
+        {heroStills.map((card) => (
+          <figure key={card.title} className="relative bg-[#0a0a14]">
+            <div className="relative aspect-[4/3] w-full">
+              <Image
+                src={card.imageSrc}
+                alt={card.alt}
+                fill
+                sizes="(min-width: 1024px) 480px, 94vw"
+                className="object-contain p-4"
+              />
+            </div>
+            <figcaption className="border-t border-white/10 px-4 py-3 text-center">
+              <p className="font-mono text-[0.6rem] font-black uppercase tracking-[0.18em] text-[var(--premium-cyan)]">{card.eyebrow}</p>
+              <p className="mt-1 text-sm font-black tracking-tight text-white">{card.title}</p>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
     </div>
   );
 }
