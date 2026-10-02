@@ -64,8 +64,8 @@ export function SiteFooter({ marketingOnly = false }: SiteFooterProps) {
 
   return (
     <footer className="border-t border-[var(--line-strong)] bg-black text-[var(--ink)]">
-      <div className="mx-auto max-w-7xl px-5 py-14 md:px-8 lg:py-16">
-        <div className="grid gap-10 lg:grid-cols-[1.1fr_1.4fr]">
+      <div className="mx-auto max-w-7xl px-5 py-[30px] md:px-8">
+        <div className="grid gap-8 lg:grid-cols-[1.1fr_1.4fr]">
           <div className="max-w-xl">
             <Link href="/" aria-label="King Sparkon home" className="inline-flex items-center gap-3">
               <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={240} height={106} className="object-contain" />
@@ -83,7 +83,7 @@ export function SiteFooter({ marketingOnly = false }: SiteFooterProps) {
           </div>
         </div>
 
-        <div className="mt-10 grid gap-4 border-y border-[var(--line)] py-6 md:grid-cols-3">
+        <div className="mt-8 grid gap-4 border-y border-[var(--line)] py-5 md:grid-cols-3">
           <div className="flex gap-3"><div className="grid h-10 w-10 shrink-0 place-items-center rounded-[var(--radius-md)] border border-[var(--line)] text-[var(--signal)]"><Barcode className="h-5 w-5" /></div><div><p className="text-sm font-extrabold">Scan-first tracking</p><p className="mt-1 text-xs leading-5 text-[var(--steel)]">Barcode and QR flows for every platform role.</p></div></div>
           <div className="flex gap-3"><div className="grid h-10 w-10 shrink-0 place-items-center rounded-[var(--radius-md)] border border-[var(--line)] text-[var(--signal)]"><ShieldCheck className="h-5 w-5" /></div><div><p className="text-sm font-extrabold">Production discipline</p><p className="mt-1 text-xs leading-5 text-[var(--steel)]">Software delivery, QA, cloud maintenance and support.</p></div></div>
           <div className="flex gap-3"><div className="grid h-10 w-10 shrink-0 place-items-center rounded-[var(--radius-md)] border border-[var(--line)] text-[var(--signal)]"><Mail className="h-5 w-5" /></div><div><p className="text-sm font-extrabold">Planning a rollout?</p><Link href="/#contact" className="mt-1 inline-flex text-xs font-bold text-[var(--signal-strong)] hover:text-[var(--accent-hover)] transition-colors duration-200">Send an implementation inquiry</Link></div></div>
