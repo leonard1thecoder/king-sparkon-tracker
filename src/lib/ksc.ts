@@ -2,7 +2,9 @@ import type { KscTransaction, KscWallet } from "@/lib/types/backend";
 
 export function formatKsc(amount: number | null | undefined): string {
   const value = Number.isFinite(Number(amount)) ? Number(amount) : 0;
-  return `${new Intl.NumberFormat("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)} KSC`;
+  // KSC is a platform coin, not ZAR: period decimals keep it visually
+  // distinct from Rand formatting (en-ZA uses comma decimals).
+  return `${new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)} KSC`;
 }
 
 export function formatKscZar(amount: number | null | undefined): string {

@@ -16,7 +16,15 @@ export async function getServerConsent(): Promise<StoredConsent | null> {
     const store = await cookies();
     const raw = store.get(COOKIE_CONSENT_NAME)?.value;
     if (!raw) return null;
-    return parseStoredConsent(JSON.parse(raw) as unknown);
+    // The client persists the record with encodeURIComponent (see setConsent),
+    // so decode first; fall back to the raw value for unencoded cookies.
+    let text = raw;
+    try {
+      text = decodeURIComponent(raw);
+    } catch {
+      text = raw;
+    }
+    return parseStoredConsent(JSON.parse(text) as unknown);
   } catch {
     return null;
   }

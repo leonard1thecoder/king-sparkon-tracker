@@ -120,7 +120,7 @@ describe("deriveConsentStatus", () => {
   });
 
   it("maps necessary-only to rejected", () => {
-    expect(deriveConsentStatus(validRecord())).toBe("rejected");
+    expect(deriveConsentStatus(validRecord({ analytics: false }))).toBe("rejected");
   });
 
   it("maps mixed choices to custom", () => {

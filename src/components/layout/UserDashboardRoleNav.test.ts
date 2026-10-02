@@ -39,6 +39,7 @@ describe("user dashboard sidebar contract", () => {
       "Cart",
       "Buy Tickets",
       "Tip Worker",
+      "KSC Wallet",
     ]);
   });
 });
