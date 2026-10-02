@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight, Barcode, Mail, MapPin, ShieldCheck } from "lucide-react";
+import { Barcode, Mail, MapPin, ShieldCheck } from "lucide-react";
 import { CookieSettingsButton } from "@/components/cookie-consent/CookieSettingsButton";
 import { SocialLinks } from "@/components/social/SocialLinks";
 import { SOCIAL_LINKS } from "@/lib/config/social-links";
@@ -46,12 +46,7 @@ export function SiteFooter({ marketingOnly = false }: SiteFooterProps) {
             <Link href="/" aria-label="King Sparkon home" className="inline-flex items-center gap-3">
               <Image src="/king-sparkon-logo.svg" alt="King Sparkon logo" width={240} height={106} className="object-contain" />
             </Link>
-            <p className="mt-6 text-sm leading-7 text-[var(--steel)] md:text-base">Barcode inventory, QR tickets, jobs, affiliate marketing, Dev Hub software delivery, QA, cloud operations and audit-ready reports in one role-safe platform.</p>
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Link data-orange-hover="true" href="/dashboard/user/tickets/buy" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-md)] border border-transparent bg-gradient-to-r from-cyan-400 via-violet-500 to-pink-500 px-5 text-sm font-extrabold text-white transition-all duration-200 hover:from-yellow-300 hover:via-pink-500 hover:to-cyan-400 hover:text-black hover:shadow-[0_10px_28px_rgba(236,72,153,0.4)]">Buy tickets <ArrowRight className="h-4 w-4" /></Link>
-              <Link data-orange-hover="true" href="/register?plan=FREE_TRIAL_BUSINESS&privilege=BUSINESS_OWNER&service=FULL_BUSINESS_SUITE" className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--line-strong)] bg-[#0d0d1c] px-5 text-sm font-extrabold text-[var(--ink)] transition-all duration-200 hover:border-[var(--premium-gold)] hover:text-[var(--premium-gold)] hover:shadow-[0_8px_22px_rgba(250,204,21,0.22)]">Create business account</Link>
-            </div>
-            <div className="mt-8"><p className="mb-3 text-[0.68rem] font-extrabold uppercase tracking-[0.12em] text-[var(--steel)]">Social profiles</p><SocialLinks variant="light" /></div>
+            <div className="mt-6"><p className="mb-3 text-[0.68rem] font-extrabold uppercase tracking-[0.12em] text-[var(--steel)]">Social profiles</p><SocialLinks variant="light" /></div>
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2">
