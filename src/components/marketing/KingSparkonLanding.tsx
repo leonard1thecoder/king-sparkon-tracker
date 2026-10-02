@@ -18,7 +18,6 @@ import {
   WalletCards,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ContactForm } from "@/app/contact-form";
 import { AffiliateProgramSection } from "@/components/marketing/AffiliateProgramSection";
 import { DevHubSection } from
 "@/components/marketing/DevHubSection";
@@ -40,7 +39,7 @@ import {
   SystemChains,
   WorldMoment,
 } from "@/components/marketing/LandingJourney";
-import { Capacity3DVisual, Contact3DVisual, Engineering3DVisual, Role3DVisual, Sponsor3DVisual } from "@/components/marketing/Landing3DVisuals";
+import { Capacity3DVisual, Engineering3DVisual, Role3DVisual, Sponsor3DVisual } from "@/components/marketing/Landing3DVisuals";
 import { SubscriptionSection } from "@/components/marketing/SubscriptionSection";
 
 const navLinks = [
@@ -55,7 +54,6 @@ const navLinks = [
   ["Jobs", "#jobs"],
   ["Affiliate", "#affiliate"],
   ["Dev Hub", "#dev-hub"],
-  ["Contact", "#contact"],
 ] as const;
 
 const ORIGINAL_COMPLAINT_LINK = "https://www.facebook.com/share/1CaAzEGBJb/";
@@ -385,16 +383,6 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
       </section>
 
       <DownloadAppSection />
-
-      <section id="contact" className="scroll-mt-24 border-t border-[var(--line)] bg-white px-5 py-10 md:px-8 lg:py-14">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">
-            <div><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Contact</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-5xl">Tell us what your operation needs to prove.</h2><p className="mt-5 text-base leading-8 text-[var(--steel)]">Share the roles, products, ticket flow or transaction problem you need the platform to manage.</p><div className="mt-8 grid gap-4">{[["01", "Describe the operation"], ["02", "Identify the users and roles"], ["03", "Define the first successful outcome"]].map(([number, label]) => <div key={number} className="flex items-center gap-4 border-b border-[var(--line)] pb-4"><span className="font-black text-[var(--signal-strong)]">{number}</span><span className="font-semibold text-[var(--steel)]">{label}</span></div>)}</div></div>
-            <Contact3DVisual />
-          </div>
-          <div className="mt-10 rounded-xl border border-[var(--line-strong)] bg-white p-5 shadow-[var(--shadow-soft)] md:p-8"><ContactForm /></div>
-        </div>
-      </section>
 
       <SubscriptionSection />
       <LandingEnding />
