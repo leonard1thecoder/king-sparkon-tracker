@@ -63,6 +63,10 @@ export function getEventTotals(event: TicketEvent) {
   );
 }
 
+export function isEarlyBirdActive(event: Pick<TicketEvent, "earlyBirdEnabled" | "earlyBirdEndsAt">) {
+  return Boolean(event.earlyBirdEnabled && event.earlyBirdEndsAt && new Date(event.earlyBirdEndsAt).getTime() > Date.now());
+}
+
 export function getEventStatusLabel(status: EventStatus) {
   const labels: Record<EventStatus, string> = {
     DRAFT: "Draft",

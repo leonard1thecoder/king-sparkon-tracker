@@ -7,7 +7,7 @@ import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { TicketStatsCard } from "@/components/tickets/TicketStatsCard";
 import { TicketStatusBadge } from "@/components/tickets/TicketStatusBadge";
 import { getTicketBannerImage } from "@/components/tickets/ticketBannerImage";
-import { getEventTotals, getOwnerEvents, getOwnerTicketDashboard, updateEvent } from "@/services/ticketService";
+import { getEventTotals, getOwnerEvents, getOwnerTicketDashboard, isEarlyBirdActive, updateEvent } from "@/services/ticketService";
 import type { EventStatus, OwnerTicketDashboard, TicketEvent } from "@/types/tickets";
 
 function formatCurrency(value: number) {
@@ -106,7 +106,7 @@ export function DashboardOwnerTickets() {
                 const totals = getEventTotals(event);
                 const bannerSrc = getTicketBannerImage(event);
                 const hasImage = Boolean(bannerSrc);
-                const earlyBirdActive = Boolean(event.earlyBirdEnabled && event.earlyBirdEndsAt && new Date(event.earlyBirdEndsAt).getTime() > Date.now());
+                const earlyBirdActive = isEarlyBirdActive(event);
                 return (
                   <article key={event.id} className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)] transition hover:-translate-y-1 hover:shadow-[var(--shadow-ledger)]">
                     <div className="relative flex h-56 w-full shrink-0 items-center justify-center overflow-hidden border-b border-[var(--line)] bg-slate-950">

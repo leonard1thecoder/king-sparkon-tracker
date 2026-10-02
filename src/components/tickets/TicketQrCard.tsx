@@ -31,6 +31,11 @@ function stopStream(stream: MediaStream | null) {
   stream?.getTracks().forEach((track) => track.stop());
 }
 
+function hoursUntilEventStart(eventDate: string, eventTime?: string) {
+  const eventStart = eventTime ? new Date(`${eventDate}T${eventTime}`).getTime() : NaN;
+  return Number.isFinite(eventStart) ? (eventStart - Date.now()) / 3_600_000 : NaN;
+}
+
 export function TicketQrCard({
   ticket,
   eventName,
@@ -67,8 +72,7 @@ export function TicketQrCard({
   const coolerboxOffered = Boolean(coolerboxFree) || coolerboxPrice != null;
   const coolerboxIsAdded = Boolean(coolerboxAdded ?? ticket.coolerboxAdded);
 
-  const eventStart = eventTime ? new Date(`${eventDate}T${eventTime}`).getTime() : NaN;
-  const hoursLeft = Number.isFinite(eventStart) ? (eventStart - Date.now()) / 3_600_000 : NaN;
+  const hoursLeft = hoursUntilEventStart(eventDate, eventTime);
   const withinCutoff = Number.isFinite(hoursLeft) && hoursLeft < 48;
   const pricePaid = Number(ticket.pricePaid ?? 0);
   const refundFee = Math.round(pricePaid * 7) / 100;

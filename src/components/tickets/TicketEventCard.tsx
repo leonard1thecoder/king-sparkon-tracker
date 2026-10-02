@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, BadgePercent, Calendar, Clock, MapPin, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { TicketEvent } from "@/types/tickets";
-import { getEventTotals } from "@/services/ticketService";
+import { getEventTotals, isEarlyBirdActive } from "@/services/ticketService";
 import { TicketStatusBadge } from "./TicketStatusBadge";
 import { getTicketBannerImage } from "./ticketBannerImage";
 
@@ -44,7 +44,7 @@ export function TicketEventCard({ event, detailsHref, checkoutHref }: TicketEven
   const hasImage = Boolean(bannerSrc);
   const eventDetailsHref = detailsHref ?? `/dashboard/user/tickets/events/${event.id}`;
   const eventCheckoutHref = checkoutHref ?? `/dashboard/user/tickets/checkout/${event.id}`;
-  const earlyBirdActive = Boolean(event.earlyBirdEnabled && event.earlyBirdEndsAt && new Date(event.earlyBirdEndsAt).getTime() > Date.now());
+  const earlyBirdActive = isEarlyBirdActive(event);
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">

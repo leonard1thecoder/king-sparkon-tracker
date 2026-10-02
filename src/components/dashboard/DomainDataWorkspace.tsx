@@ -133,6 +133,10 @@ function DataState({ icon: Icon, title, message, action }: { icon: LucideIcon; t
   );
 }
 
+function createIdempotencyKey() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
 function MutationWorkspace({ contract, title }: { contract: EndpointContract; title: string }) {
   const config = mutationConfig(contract.path);
   const [busy, setBusy] = useState(false);
@@ -159,7 +163,7 @@ function MutationWorkspace({ contract, title }: { contract: EndpointContract; ti
         method: contract.method,
         url: contract.path.replace(/^\/api/, ""),
         data: payload,
-        headers: { "Idempotency-Key": `${Date.now()}-${Math.random().toString(36).slice(2)}` },
+        headers: { "Idempotency-Key": createIdempotencyKey() },
       });
       event.currentTarget.reset();
       setMessage(mutation.successMessage);

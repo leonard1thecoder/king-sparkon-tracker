@@ -89,7 +89,7 @@ export function OAuthButtons({ errorCode }: { errorCode?: string }) {
     const url = oauthAuthorizationUrl(provider);
     if (!url) return;
     setPendingProvider(provider);
-    window.location.href = url;
+    window.location.assign(url);
   }
 
   return (
