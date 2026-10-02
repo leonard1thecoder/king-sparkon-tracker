@@ -2,19 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
-  BriefcaseBusiness,
   Crown,
-  Megaphone,
   QrCode,
-  ScanLine,
   ShieldCheck,
-  ShoppingCart,
-  Ticket,
   UsersRound,
-  WalletCards,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AffiliateProgramSection } from "@/components/marketing/AffiliateProgramSection";
@@ -49,22 +42,12 @@ const navLinks = [
   ["Commerce", "#commerce"],
   ["Money", "#money"],
   ["World", "#world"],
-  ["Features", "#features"],
   ["Jobs", "#jobs"],
   ["Affiliate", "#affiliate"],
   ["Dev Hub", "#dev-hub"],
 ] as const;
 
 const ORIGINAL_COMPLAINT_LINK = "https://www.facebook.com/share/1CaAzEGBJb/";
-
-const features: Array<{ icon: LucideIcon; title: string; copy: string; tags: string[] }> = [
-  { icon: ScanLine, title: "Barcode inventory", copy: "Register products, scan units, track stock movement and preserve a clean history.", tags: ["Products", "Workers", "Audit"] },
-  { icon: Ticket, title: "QR tickets", copy: "Sell event tickets, control capacity, verify entry and keep buyer tickets visible.", tags: ["Events", "Gate scan", "Capacity"] },
-  { icon: ShoppingCart, title: "Cart and checkout", copy: "Support product browsing, carts, purchases, collections and transaction history.", tags: ["Cart", "Checkout", "Buyer"] },
-  { icon: BriefcaseBusiness, title: "Job opportunities", copy: "Businesses publish roles, users apply and owners review every application.", tags: ["Jobs", "Applications", "Roles"] },
-  { icon: WalletCards, title: "Worker tips", copy: "Workers receive QR tip flows while owners review gross, fees, net amount and payout status.", tags: ["Tips", "QR", "Payouts"] },
-  { icon: Megaphone, title: "Affiliate growth", copy: "Affiliates receive referral links, campaign assets and clear commission visibility.", tags: ["Referral", "Campaigns", "Commission"] },
-];
 
 const roleCards = [
   { icon: UsersRound, title: "User", price: "Free", href: "/register?plan=FREE_USER&privilege=USER&service=FREE_USER_ACCESS", copy: "Buy products and tickets, apply for jobs and keep purchase records." },
@@ -317,10 +300,6 @@ export function KingSparkonLanding({ hideHeader = false }: { hideHeader?: boolea
       <MoneyFlow />
       <WorldMoment />
       <ScenarioWindows />
-
-      <section id="features" className="scroll-mt-24 border-t border-[var(--line)] bg-white px-5 py-10 md:px-8 lg:py-14">
-        <div className="mx-auto max-w-7xl"><div className="max-w-3xl"><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Features</p><h2 className="mt-4 text-4xl font-black tracking-[-0.05em] md:text-6xl">Built around the work, not the dashboard decoration.</h2><p className="mt-5 text-base leading-8 text-[var(--steel)]">Each feature supports a real operational task and a clearly defined role.</p></div><div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">{features.map(({ icon: Icon, title, copy, tags }) => <article key={title} className="rounded-xl border border-[var(--line)] bg-white p-6 transition hover:border-[var(--line-strong)]"><div className="grid h-11 w-11 place-items-center rounded-lg border border-[var(--line)] text-[var(--signal)]"><Icon className="h-5 w-5" /></div><h3 className="mt-5 text-xl font-black tracking-[-0.03em]">{title}</h3><p className="mt-3 text-sm leading-7 text-[var(--steel)]">{copy}</p><div className="mt-5 flex flex-wrap gap-2">{tags.map((tag) => <span key={tag} className="rounded-md border border-[var(--line)] bg-[var(--signal-soft)] px-2.5 py-1 text-xs font-bold text-[var(--signal-strong)]">{tag}</span>)}</div></article>)}</div></div>
-      </section>
 
       <JobOpportunitiesSection />
       <AffiliateProgramSection />
