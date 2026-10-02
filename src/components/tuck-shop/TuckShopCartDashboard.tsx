@@ -6,11 +6,11 @@ import {
   CreditCard,
   Loader2,
   LockKeyhole,
+  Settings,
   ShoppingBag,
   ShoppingCart,
   Ticket,
   Trash2,
-  Wrench,
 } from "lucide-react";
 import { createPayFastCartPayment } from "@/lib/api/tuck-shop";
 import { createPayPalOrder } from "@/lib/api/payments";
@@ -240,7 +240,7 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
                     {isProductLine(line) ? (
                       <img src={productImage(line.product)} alt={line.product.name} className="h-20 w-20 rounded-[1.15rem] object-cover" />
                     ) : isServiceLine(line) ? (
-                      <div className="grid h-20 w-20 place-items-center rounded-[1.15rem] bg-[var(--ink)] text-[var(--gold)]"><Wrench className="h-8 w-8" /></div>
+                      <div className="grid h-20 w-20 place-items-center rounded-[1.15rem] bg-[var(--ink)] text-[var(--gold)]"><Settings className="h-8 w-8" /></div>
                     ) : (
                       <div className="grid h-20 w-20 place-items-center rounded-[1.15rem] bg-[var(--ink)] text-[var(--gold)]"><Ticket className="h-8 w-8" /></div>
                     )}

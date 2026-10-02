@@ -163,10 +163,6 @@ export function UserCartPurchaseHistory() {
     }
   }
 
-  function refundKey(transactionId: number | undefined, itemId: number | undefined) {
-    return `${transactionId ?? 0}:${itemId ?? 0}`;
-  }
-
   function refundsForItem(transactionId: number | undefined, itemId: number | undefined) {
     return refunds.filter((refund) => refund.transactionId === transactionId && refund.transactionItemId === itemId);
   }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { CheckCircle2, Loader2, Mic2, RefreshCw, ThumbsUp } from "lucide-react";
+import { CheckCircle2, Heart, Loader2, Mic2, RefreshCw } from "lucide-react";
 import { normalizeApiError } from "@/lib/api/client";
 import { money } from "@/lib/tuck-shop/cart";
 import {
@@ -148,7 +148,7 @@ export function ArtistSets() {
                   ) : (
                     <div>
                       <Button type="button" disabled={acting === `apply-${set.id}`} onClick={() => void apply(set.id, set.name)}>
-                        {acting === `apply-${set.id}` ? <Loader2 className="h-4 w-4 animate-spin" /> : <ThumbsUp className="h-4 w-4" />} Apply for this set
+                        {acting === `apply-${set.id}` ? <Loader2 className="h-4 w-4 animate-spin" /> : <Heart className="h-4 w-4" />} Apply for this set
                       </Button>
                     </div>
                   )}

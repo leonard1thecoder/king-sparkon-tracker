@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { CheckCircle2, Loader2, Mic2, RefreshCw, ShoppingCart, ThumbsUp, X } from "lucide-react";
+import { CheckCircle2, Heart, Loader2, Mic2, RefreshCw, ShoppingCart, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { StatusPill } from "@/components/ui/StatusPill";
@@ -226,7 +226,7 @@ export function EventSetsSection({ eventId, eventStatus }: { eventId: string; ev
                         <div key={application.id} className="flex flex-col gap-2 rounded-[1rem] border border-[var(--line)] bg-[var(--surface)] p-3 sm:flex-row sm:items-center sm:justify-between">
                           <div>
                             <p className="font-black text-[var(--ink)]">{application.artistName}</p>
-                            <p className="text-xs font-bold text-[var(--steel)]">{application.status} · <ThumbsUp className="inline h-3 w-3" /> {application.vowCount} vows</p>
+                            <p className="text-xs font-bold text-[var(--steel)]">{application.status} · <Heart className="inline h-3 w-3" /> {application.vowCount} vows</p>
                           </div>
                           {editable && application.status === "PENDING" ? (
                             <div className="flex flex-wrap items-center gap-2">
@@ -269,7 +269,7 @@ export function EventSetsSection({ eventId, eventStatus }: { eventId: string; ev
                 {editable && set.setType === "VOW" && set.status === "OPEN" ? (
                   <div>
                     <Button type="button" variant="quiet" disabled={acting === `winner-${set.id}`} onClick={() => void runAction(`winner-${set.id}`, () => bookSetWinner(set.id), "Top-vowed artist booked.")}>
-                      <ThumbsUp className="h-4 w-4" /> Book top-vowed artist{set.price != null ? ` · ${money(set.price)}` : ""}
+                      <Heart className="h-4 w-4" /> Book top-vowed artist{set.price != null ? ` · ${money(set.price)}` : ""}
                     </Button>
                   </div>
                 ) : null}

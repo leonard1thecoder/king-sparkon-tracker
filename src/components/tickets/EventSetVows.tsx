@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Loader2, Mic2, ThumbsUp } from "lucide-react";
+import { Heart, Loader2, Mic2 } from "lucide-react";
 import { normalizeApiError } from "@/lib/api/client";
 import { money } from "@/lib/tuck-shop/cart";
 import {
@@ -112,10 +112,10 @@ export function EventSetVows({ eventId, eventStatus }: { eventId: string; eventS
                     <div key={application.id} className="flex flex-col gap-2 rounded-[1rem] border border-[var(--line)] bg-[var(--surface)] p-3 sm:flex-row sm:items-center sm:justify-between">
                       <div>
                         <p className="font-black text-[var(--ink)]">{application.artistName}</p>
-                        <p className="text-xs font-bold text-[var(--steel)]"><ThumbsUp className="inline h-3 w-3" /> {application.vowCount} vows</p>
+                        <p className="text-xs font-bold text-[var(--steel)]"><Heart className="inline h-3 w-3" /> {application.vowCount} vows</p>
                       </div>
                       <Button type="button" variant="quiet" disabled={vowing === application.id} onClick={() => void vow(set.id, application.id, application.artistName)}>
-                        {vowing === application.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <ThumbsUp className="h-4 w-4" />} Vow
+                        {vowing === application.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Heart className="h-4 w-4" />} Vow
                       </Button>
                     </div>
                   ))

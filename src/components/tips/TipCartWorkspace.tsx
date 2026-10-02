@@ -160,7 +160,7 @@ export function TipCartWorkspace() {
                   <Button type="button" variant="quiet" onClick={() => setLines(clearTipTray())}>Clear cart</Button>
                   <Button type="button" disabled={saving} onClick={() => void checkout()}>
                     {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
-                    {saving ? "Securing payout..." : payWithPayPal ? `Pay ${formatMoney(displayTotal, localization.currency)} via PayPal` : `Pay ${money(total)} via PayFast`}
+                    {saving ? "Securing payout..." : payWithPayPal ? `Pay ${formatMoney(displayTotal, localization.currency)} via PayPal` : `Pay ${formatMoney(total, localization.currency)} via PayFast`}
                   </Button>
                 </div>
               </div>

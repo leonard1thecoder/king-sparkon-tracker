@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { BriefcaseBusiness, CheckCircle2, Cpu, Loader2, ShoppingCart, Wrench } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { BriefcaseBusiness, CheckCircle2, Loader2, Settings, ShoppingCart } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { normalizeApiError } from "@/lib/api/client";
@@ -29,9 +30,9 @@ type PlanCard = {
   createdDate?: string | null;
 };
 
-const TABS: Array<{ id: PlanTab; label: string; icon: typeof Wrench; blurb: string }> = [
-  { id: "basic", label: "Basic Care", icon: Wrench, blurb: "OS installs, driver refreshes and software add-ons." },
-  { id: "performance", label: "Performance Care", icon: Cpu, blurb: "CPU, RAM and GPU upgrades with session pricing." },
+const TABS: Array<{ id: PlanTab; label: string; icon: LucideIcon; blurb: string }> = [
+  { id: "basic", label: "Basic Care", icon: Settings, blurb: "OS installs, driver refreshes and software add-ons." },
+  { id: "performance", label: "Performance Care", icon: Settings, blurb: "CPU, RAM and GPU upgrades with session pricing." },
   { id: "business", label: "Business Care", icon: BriefcaseBusiness, blurb: "Bulk device servicing per business tier." },
 ];
 
@@ -233,7 +234,7 @@ export function ComputerCareTabs() {
             </div>
           ) : cards.length === 0 ? (
             <div className="rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--surface)] p-5 text-center">
-              <Wrench className="mx-auto h-7 w-7 text-[var(--signal)]" />
+              <Settings className="mx-auto h-7 w-7 text-[var(--signal)]" />
               <p className="mt-2 text-[0.9375rem] font-bold text-[var(--ink)]">No plans found</p>
               <p className="mt-1 text-[0.8125rem] text-[var(--steel)]">Try a different status filter.</p>
             </div>

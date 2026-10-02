@@ -11,12 +11,12 @@ import {
   Loader2,
   Mail,
   Power,
+  Settings,
   ShieldCheck,
   ShoppingCart,
   Ticket,
   UserRound,
   WalletCards,
-  Wrench,
 } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { FavoriteHeaderAction } from "@/components/layout/FavoriteHeaderAction";
@@ -53,13 +53,13 @@ export const userProfileShortcuts: ProfileShortcut[] = [
   { label: "Tip Cart", href: "/dashboard/user/tips/cart", icon: WalletCards },
   { label: "Applications", href: "/dashboard/user/applications", icon: FileCheck2 },
   { label: "My Carts", href: "/dashboard/user/carts", icon: ShoppingCart },
-  { label: "NM Computer Care", href: "/dashboard/user/computer-care", icon: Wrench },
+  { label: "NM Computer Care", href: "/dashboard/user/computer-care", icon: Settings },
   { label: "Dev Hub", href: "/dev-hub", icon: Code2 },
 ];
 
 export const ownerProfileShortcuts: ProfileShortcut[] = [
   { label: "Dev Hub", href: "/dashboard/owner/developer", icon: Code2 },
-  { label: "NM Computer Care", href: "/dashboard/owner/computer-care", icon: Wrench },
+  { label: "NM Computer Care", href: "/dashboard/owner/computer-care", icon: Settings },
 ];
 
 const iconButtonClass = "inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--line)] bg-white text-[var(--ink)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--gold)] hover:bg-[var(--surface)]";
