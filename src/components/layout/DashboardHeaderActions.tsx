@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { FavoriteHeaderAction } from "@/components/layout/FavoriteHeaderAction";
+import { NotificationBellAction } from "@/components/layout/NotificationBellAction";
 import { apiGet } from "@/lib/api/client";
 import { getOwnerWallet } from "@/lib/api/owner-finance";
 import { useLocalization } from "@/lib/localization";
@@ -411,6 +412,7 @@ export function DashboardHeaderActions({ role }: { role: string }) {
           <OwnerCartHeaderAction />
         </>
       ) : null}
+      <NotificationBellAction />
       <ProfileDropdown role={role} />
       <div className={headerActionColumnClass}>
         <LogoutButton className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--danger)] bg-white text-[var(--danger)] shadow-[var(--shadow-soft)] hover:bg-[var(--danger)] hover:text-white disabled:opacity-60" ariaLabel="Sign out">
