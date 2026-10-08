@@ -83,6 +83,10 @@ function FloatingChatbotGate() {
   if (pathname?.startsWith("/dashboard")) {
     return null;
   }
+  // Keep the sign-in and registration screens focused on the form.
+  if (pathname === "/login" || pathname === "/register") {
+    return null;
+  }
   return <FloatingChatbotPanel />;
 }
 

@@ -59,6 +59,62 @@ body:has(.ks-public) {
   color: var(--ks-ink);
 }
 
+/* Compact button for mobile headers, so the primary call to action stays readable and tappable. */
+.ks-btn-sm {
+  padding: 0.5rem 0.95rem;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+/* Light form control for public-scope forms. Specificity beats the input reset above. */
+.ks-public .ks-input {
+  display: block;
+  width: 100%;
+  height: 3rem;
+  padding: 0 1rem;
+  border-radius: 14px;
+  border: 1px solid #cfd9d2;
+  background-color: var(--ks-white);
+  color: var(--ks-ink);
+  font-size: 0.95rem;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+  appearance: none;
+}
+
+.ks-public .ks-input:focus {
+  border-color: var(--ks-green);
+  box-shadow: 0 0 0 4px rgba(118, 200, 147, 0.25);
+}
+
+.ks-public .ks-input::placeholder {
+  color: var(--ks-muted);
+}
+
+/* Multi-line control for public-scope forms. */
+.ks-public .ks-textarea {
+  display: block;
+  width: 100%;
+  min-height: 8.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  border: 1px solid #cfd9d2;
+  background-color: var(--ks-white);
+  color: var(--ks-ink);
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.6;
+  resize: vertical;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.ks-public .ks-textarea:focus {
+  border-color: var(--ks-green);
+  box-shadow: 0 0 0 4px rgba(118, 200, 147, 0.25);
+}
+
 /* Surface for light panels. Do not use Tailwind bg-white in public markup:
    globals.css force-darkens elements whose class is bg-white (or bg-slate-50,
    bg-gray-50 and similar) with !important. This class is not on that list. */
@@ -71,7 +127,6 @@ body:has(.ks-public) {
 .ks-public input {
   background-color: transparent;
   color: var(--ks-ink);
-  border-color: transparent;
   box-shadow: none;
 }
 
@@ -179,15 +234,14 @@ body:has(.ks-public) {
   position: sticky;
   top: 0;
   z-index: 40;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  /* Solid white: global fixed layers sit behind the header and would tint a translucent background grey. */
+  background: var(--ks-white);
   border-bottom: 1px solid var(--ks-line);
   transition: box-shadow 250ms, background-color 250ms;
 }
 
 .ks-header[data-scrolled="true"] {
-  background: rgba(255, 255, 255, 0.94);
+  background: var(--ks-white);
   box-shadow: 0 6px 20px -16px rgba(23, 35, 29, 0.45);
 }
 

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { PublicHeader } from "@/components/public/PublicHeader";
 import { Reveal } from "@/components/public/InView";
 import { FaqList, type FaqItem } from "@/components/public/FaqList";
+import { ContactForm } from "@/components/public/ContactForm";
 import {
   AudienceMap,
   ConvergeScene,
@@ -199,6 +200,23 @@ export default function HomePage() {
             <div className="mt-10">
               <FaqList items={faqItems} />
             </div>
+          </div>
+        </section>
+
+        <section id="contact" className="ks-section scroll-mt-24 border-t border-[var(--ks-line)]">
+          <div className="ks-wrap grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+            <Reveal>
+              <p className="ks-eyebrow">Contact</p>
+              <h2 className="ks-h2 mt-3">Tell us what your operation needs to manage.</h2>
+              <p className="ks-lead mt-4">
+                Share the roles, products, ticket flow or payments you need King Sparkon to handle. We reply by email.
+              </p>
+            </Reveal>
+            <Reveal>
+              <div className="ks-surface rounded-[18px] border border-[var(--ks-line)] p-6 md:p-8">
+                <ContactForm />
+              </div>
+            </Reveal>
           </div>
         </section>
 
