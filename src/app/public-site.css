@@ -92,6 +92,29 @@ body:has(.ks-public) {
   color: var(--ks-muted);
 }
 
+/* Multi-line control for public-scope forms. */
+.ks-public .ks-textarea {
+  display: block;
+  width: 100%;
+  min-height: 8.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  border: 1px solid #cfd9d2;
+  background-color: var(--ks-white);
+  color: var(--ks-ink);
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.6;
+  resize: vertical;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.ks-public .ks-textarea:focus {
+  border-color: var(--ks-green);
+  box-shadow: 0 0 0 4px rgba(118, 200, 147, 0.25);
+}
+
 /* Surface for light panels. Do not use Tailwind bg-white in public markup:
    globals.css force-darkens elements whose class is bg-white (or bg-slate-50,
    bg-gray-50 and similar) with !important. This class is not on that list. */
