@@ -148,8 +148,8 @@ export function RegisterForm({ initialRole }: { initialRole: string }) {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold tracking-tight">Create your account</h1>
-      <p className="mt-2 text-sm font-semibold text-[var(--muted)]">Join King Sparkon</p>
+      <h1 className="mt-2 text-[2rem] font-extrabold leading-tight tracking-tight text-[var(--ks-ink)]">Create your account</h1>
+      <p className="mt-2 text-sm font-semibold text-[var(--ks-muted)]">Join King Sparkon</p>
 
       <form onSubmit={onSubmit} noValidate className="mt-8 grid gap-5">
         {baseFields.map((field) => renderField(field, role))}
@@ -182,11 +182,11 @@ export function RegisterForm({ initialRole }: { initialRole: string }) {
         <input type="hidden" name="localizationCountry" value="SOUTH_AFRICA" />
         {showAddress ? <input type="hidden" name="addressCountry" value="South Africa" /> : null}
 
-        <label className="flex items-start gap-3 text-sm text-[var(--steel)]">
-          <input type="checkbox" name="terms" className="mt-0.5 h-4 w-4 accent-[var(--signal)]" />
+        <label className="flex items-start gap-3 text-sm text-[var(--ks-ink)]">
+          <input type="checkbox" name="terms" className="mt-0.5 h-4 w-4 accent-[var(--ks-ink)]" />
           <span>
             I agree to the{" "}
-            <Link href="/terms" className="font-semibold text-[var(--ink)] underline-offset-4 hover:underline">
+            <Link href="/terms" className="font-bold text-[var(--ks-ink)] underline-offset-4 hover:underline">
               Terms
             </Link>
           </span>
@@ -199,9 +199,9 @@ export function RegisterForm({ initialRole }: { initialRole: string }) {
         </button>
       </form>
 
-      <p className="mt-8 text-center text-sm text-[var(--muted)]">
+      <p className="mt-8 text-center text-sm text-[var(--ks-muted)]">
         Already have an account?{" "}
-        <Link href="/login" className="font-semibold text-[var(--ink)] hover:text-[var(--signal)]">
+        <Link href="/login" className="font-bold text-[var(--ks-ink)] underline-offset-4 hover:underline">
           Sign in
         </Link>
       </p>

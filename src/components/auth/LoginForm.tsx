@@ -45,8 +45,8 @@ export function LoginForm({ oauthErrorCode }: { oauthErrorCode?: string }) {
 
   return (
     <div>
-      <p className="text-sm font-semibold text-[var(--muted)]">Welcome back</p>
-      <h1 className="mt-2 text-2xl font-bold tracking-tight">Sign in to King Sparkon</h1>
+      <p className="text-sm font-semibold text-[var(--ks-muted)]">Welcome back</p>
+      <h1 className="mt-2 text-[2rem] font-extrabold leading-tight tracking-tight text-[var(--ks-ink)]">Sign in to King Sparkon</h1>
 
       <form onSubmit={onSubmit} noValidate className="mt-8 grid gap-5">
         <TextField name="username" label="Email or username" autoComplete="username" />
@@ -60,18 +60,18 @@ export function LoginForm({ oauthErrorCode }: { oauthErrorCode?: string }) {
       </form>
 
       <p className="mt-4 text-center text-sm">
-        <Link href="/forgot-password" className="font-medium text-[var(--signal)] hover:text-[var(--signal-strong)]">
+        <Link href="/forgot-password" className="font-semibold text-[var(--ks-ink)] underline-offset-4 hover:underline">
           Forgot password?
         </Link>
       </p>
 
       <div className="mt-8">
-        <OAuthButtons errorCode={oauthErrorCode} />
+        <OAuthButtons errorCode={oauthErrorCode} tone="light" />
       </div>
 
-      <p className="mt-8 text-center text-sm text-[var(--muted)]">
+      <p className="mt-8 text-center text-sm text-[var(--ks-muted)]">
         Don&apos;t have an account?{" "}
-        <Link href="/register" className="font-semibold text-[var(--ink)] hover:text-[var(--signal)]">
+        <Link href="/register" className="font-bold text-[var(--ks-ink)] underline-offset-4 hover:underline">
           Register
         </Link>
       </p>

@@ -34,9 +34,8 @@ export function PublicHeader() {
   return (
     <header className="ks-public ks-header" data-scrolled={scrolled}>
       <div className="ks-wrap flex items-center justify-between gap-6 py-3">
-        <Link href="/" className="flex items-center gap-2 text-sm font-extrabold tracking-[0.12em] text-[var(--ks-ink)]" aria-label="King Sparkon home">
-          <img src="/king-sparkon-logo.svg" alt="" width={26} height={26} />
-          <span>KING SPARKON</span>
+        <Link href="/" className="flex shrink-0 items-center" aria-label="King Sparkon home">
+          <img src="/king-sparkon-logo.svg" alt="King Sparkon" className="h-11 w-auto" />
         </Link>
 
         <nav aria-label="Primary" className="hidden items-center gap-7 md:flex">
@@ -52,14 +51,16 @@ export function PublicHeader() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
-          <Link href="/login" className="ks-btn ks-btn-secondary">Sign in</Link>
-          <Link href="/register" className="ks-btn ks-btn-primary">Register</Link>
+        <div className="flex items-center gap-2 md:gap-3">
+          <div className="hidden md:block">
+            <Link href="/login" className="ks-btn ks-btn-secondary ks-btn-sm">Sign in</Link>
+          </div>
+          <Link href="/register" className="ks-btn ks-btn-primary ks-btn-sm md:px-5 md:py-3 md:text-[0.95rem]">Get Started</Link>
         </div>
 
         <button
           type="button"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--ks-line)] ks-surface md:hidden"
+          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--ks-line)] ks-surface md:hidden"
           aria-expanded={menuOpen}
           aria-controls="ks-mobile-nav"
           onClick={() => setMenuOpen((open) => !open)}
@@ -83,7 +84,7 @@ export function PublicHeader() {
           ))}
           <div className="mt-3 grid grid-cols-2 gap-3 pb-2">
             <Link href="/login" className="ks-btn ks-btn-secondary justify-center">Sign in</Link>
-            <Link href="/register" className="ks-btn ks-btn-primary justify-center">Register</Link>
+            <Link href="/register" className="ks-btn ks-btn-primary justify-center">Get Started</Link>
           </div>
         </nav>
       </div>

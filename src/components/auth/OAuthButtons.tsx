@@ -52,7 +52,8 @@ const providerIcons: Record<OAuthProviderId, () => JSX.Element> = {
   tiktok: TikTokIcon,
 };
 
-export function OAuthButtons({ errorCode }: { errorCode?: string }) {
+export function OAuthButtons({ errorCode, tone = "dark" }: { errorCode?: string; tone?: "dark" | "light" }) {
+  const light = tone === "light";
   const [providers, setProviders] = useState<OAuthProviderStatus[] | null>(null);
   const [pendingProvider, setPendingProvider] = useState<OAuthProviderId | null>(null);
   const friendlyError = oauthErrorMessage(errorCode);
@@ -95,13 +96,13 @@ export function OAuthButtons({ errorCode }: { errorCode?: string }) {
   return (
     <div className="grid gap-3">
       <div className="flex items-center gap-3" aria-hidden="true">
-        <span className="h-px flex-1 bg-[var(--line)]" />
-        <span className="font-mono text-[0.68rem] font-black uppercase tracking-[0.16em] text-[var(--muted)]">OR</span>
-        <span className="h-px flex-1 bg-[var(--line)]" />
+        <span className={`h-px flex-1 ${light ? "bg-[#dfe7e1]" : "bg-[var(--line)]"}`} />
+        <span className={`font-mono text-[0.68rem] font-black uppercase tracking-[0.16em] ${light ? "text-[var(--ks-muted)]" : "text-[var(--muted)]"}`}>OR</span>
+        <span className={`h-px flex-1 ${light ? "bg-[#dfe7e1]" : "bg-[var(--line)]"}`} />
       </div>
 
       {friendlyError ? (
-        <div aria-live="polite" role="alert" className="flex gap-3 rounded-[var(--radius-xl)] border border-[var(--danger)] bg-[var(--danger)]/10 px-4 py-3 text-sm font-semibold leading-6 text-[var(--danger)]">
+        <div aria-live="polite" role="alert" className={light ? "flex gap-3 rounded-[14px] border border-[#f3b8b2] bg-[#fdf0ee] px-4 py-3 text-sm font-semibold leading-6 text-[#b42318]" : "flex gap-3 rounded-[var(--radius-xl)] border border-[var(--danger)] bg-[var(--danger)]/10 px-4 py-3 text-sm font-semibold leading-6 text-[var(--danger)]"}>
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
           <span>{friendlyError}</span>
         </div>
@@ -116,7 +117,7 @@ export function OAuthButtons({ errorCode }: { errorCode?: string }) {
             type="button"
             onClick={() => startOAuth(provider.id)}
             disabled={pendingProvider !== null}
-            className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-[var(--radius-lg)] border border-[var(--line)] bg-white px-4 text-[0.8125rem] font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--signal)] disabled:cursor-wait disabled:opacity-60"
+            className={light ? "inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-[#cfd9d2] ks-surface px-4 text-sm font-semibold text-[var(--ks-ink)] transition-colors duration-150 hover:bg-[var(--ks-light-green)] disabled:cursor-not-allowed disabled:opacity-50" : "inline-flex h-10 w-full items-center justify-center gap-2 rounded-[var(--radius-lg)] border border-[var(--line)] bg-white px-4 text-[0.8125rem] font-bold text-[var(--ink)] shadow-[var(--shadow-soft)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-[var(--signal)] disabled:cursor-wait disabled:opacity-60"}
           >
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Icon />}
             {pending ? "Redirecting..." : `Continue with ${provider.displayName}`}

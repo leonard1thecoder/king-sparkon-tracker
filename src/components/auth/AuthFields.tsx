@@ -5,13 +5,10 @@ import { Eye, EyeOff } from "lucide-react";
 
 export type SelectOption = { label: string; value: string };
 
-const controlClass =
-  "h-12 w-full rounded-[var(--radius-md)] border border-[var(--line-strong)] bg-transparent px-4 text-sm font-medium text-[var(--ink)] outline-none transition-colors duration-150 placeholder:text-[var(--muted)] focus:border-[var(--signal)] focus:ring-2 focus:ring-[var(--signal-soft)]";
-
 function Label({ htmlFor, text, action }: { htmlFor: string; text: string; action?: ReactNode }) {
   return (
     <span className="flex items-center justify-between gap-3">
-      <label htmlFor={htmlFor} className="text-sm font-semibold text-[var(--steel)]">
+      <label htmlFor={htmlFor} className="text-sm font-semibold text-[var(--ks-ink)]">
         {text}
       </label>
       {action}
@@ -33,16 +30,7 @@ export function TextField({ name, label, type = "text", autoComplete, inputMode,
   return (
     <div className="grid gap-2">
       <Label htmlFor={name} text={label} action={action} />
-      <input
-        id={name}
-        name={name}
-        type={type}
-        autoComplete={autoComplete}
-        inputMode={inputMode}
-        min={min}
-        required
-        className={controlClass}
-      />
+      <input id={name} name={name} type={type} autoComplete={autoComplete} inputMode={inputMode} min={min} required className="ks-input" />
     </div>
   );
 }
@@ -53,20 +41,13 @@ export function PasswordField({ name, label, autoComplete, action }: { name: str
     <div className="grid gap-2">
       <Label htmlFor={name} text={label} action={action} />
       <div className="relative">
-        <input
-          id={name}
-          name={name}
-          type={visible ? "text" : "password"}
-          autoComplete={autoComplete}
-          required
-          className={`${controlClass} pr-12`}
-        />
+        <input id={name} name={name} type={visible ? "text" : "password"} autoComplete={autoComplete} required className="ks-input pr-12" />
         <button
           type="button"
           onClick={() => setVisible((current) => !current)}
           aria-label={visible ? "Hide password" : "Show password"}
           aria-pressed={visible}
-          className="absolute right-1.5 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full text-[var(--muted)] transition-colors hover:text-[var(--ink)]"
+          className="absolute right-1.5 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full text-[var(--ks-muted)] transition-colors hover:bg-[var(--ks-light-green)] hover:text-[var(--ks-ink)]"
         >
           {visible ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
         </button>
@@ -79,14 +60,7 @@ export function SelectField({ name, label, options, value, onChange }: { name: s
   return (
     <div className="grid gap-2">
       <Label htmlFor={name} text={label} />
-      <select
-        id={name}
-        name={name}
-        required
-        value={value}
-        onChange={(event) => onChange?.(event.target.value)}
-        className={`${controlClass} appearance-none`}
-      >
+      <select id={name} name={name} required value={value} onChange={(event) => onChange?.(event.target.value)} className="ks-input">
         <option value="">Select</option>
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -100,15 +74,13 @@ export function SelectField({ name, label, options, value, onChange }: { name: s
 
 export function StatusNote({ tone, message }: { tone: "error" | "success"; message: string }) {
   const palette =
-    tone === "error"
-      ? "border-[var(--danger)]/40 bg-[var(--danger)]/10 text-[var(--danger)]"
-      : "border-[var(--confirm)]/40 bg-[var(--confirm)]/10 text-[var(--confirm)]";
+    tone === "error" ? "border-[#f3b8b2] bg-[#fdf0ee] text-[#b42318]" : "border-[#bfe8c7] bg-[#eef9f1] text-[#17623b]";
   return (
-    <div role={tone === "error" ? "alert" : "status"} aria-live="polite" className={`rounded-[var(--radius-md)] border px-4 py-3 text-sm font-semibold leading-6 ${palette}`}>
+    <div role={tone === "error" ? "alert" : "status"} aria-live="polite" className={`rounded-[14px] border px-4 py-3 text-sm font-semibold leading-6 ${palette}`}>
       {message}
     </div>
   );
 }
 
-export const primaryButtonClass =
-  "inline-flex h-12 w-full items-center justify-center rounded-[var(--radius-md)] bg-[var(--signal)] px-6 text-sm font-bold text-[#04121a] transition-all duration-150 hover:bg-[var(--signal-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--signal)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] disabled:cursor-not-allowed disabled:opacity-50";
+// Primary call to action, in the marketing style (ink pill, white text).
+export const primaryButtonClass = "ks-btn ks-btn-primary w-full justify-center disabled:cursor-not-allowed disabled:opacity-50";
