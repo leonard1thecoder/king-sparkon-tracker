@@ -14,6 +14,7 @@ declare module "lucide-react" {
   export const Banknote: LucideIcon;
   export const BarChart3: LucideIcon;
   export const Barcode: LucideIcon;
+  export const Bell: LucideIcon;
   export const Bot: LucideIcon;
   export const Boxes: LucideIcon;
   export const Briefcase: LucideIcon;
@@ -24,6 +25,7 @@ declare module "lucide-react" {
   export const Calculator: LucideIcon;
   export const Camera: LucideIcon;
   export const Check: LucideIcon;
+  export const CheckCheck: LucideIcon;
   export const CheckCircle2: LucideIcon;
   export const ChevronDown: LucideIcon;
   export const ChevronLeft: LucideIcon;

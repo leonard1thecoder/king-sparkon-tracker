@@ -7,6 +7,8 @@ import { MapPin } from "lucide-react";
 import { CookieSettingsButton } from "@/components/cookie-consent/CookieSettingsButton";
 import { SocialLinks } from "@/components/social/SocialLinks";
 import { SOCIAL_LINKS } from "@/lib/config/social-links";
+import { PublicFooter } from "@/components/public/PublicFooter";
+import { isPublicSitePath } from "@/lib/motion/motion-route";
 
 type SiteFooterProps = { marketingOnly?: boolean };
 
@@ -34,6 +36,7 @@ const footerGroups = [
 export function SiteFooter({ marketingOnly = false }: SiteFooterProps) {
   const pathname = usePathname();
   if (pathname?.startsWith("/dashboard")) return null;
+  if (isPublicSitePath(pathname)) return <PublicFooter />;
   if (pathname?.startsWith("/login") || pathname?.startsWith("/register") || pathname?.startsWith("/forgot-password") || pathname?.startsWith("/reset-password") || pathname?.startsWith("/verify-email") || pathname?.startsWith("/resend-verification")) return null;
   if (marketingOnly && pathname !== "/") return null;
   const year = new Date().getFullYear();

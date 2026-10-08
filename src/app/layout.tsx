@@ -15,6 +15,7 @@ import { getServerConsent } from "@/lib/cookies/consent-server";
 import "./globals.css";
 import "./brand-polish.css";
 import "./motion.css";
+import "./public-site.css";
 import "./landing-motion-stability.css";
 
 const inter = Inter({

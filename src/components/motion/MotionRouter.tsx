@@ -9,5 +9,6 @@ export function MotionRouter() {
   const pathname = usePathname();
   const controller = motionControllerForPath(pathname);
 
+  if (controller === "none") return null;
   return controller === "landing" ? <LandingDirectionalMotion /> : <MotionDirector />;
 }

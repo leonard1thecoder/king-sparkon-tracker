@@ -1,0 +1,400 @@
+/* Public site (white-led). All tokens are scoped to .ks-public so the
+   authenticated dashboards keep the instrument palette in globals.css. */
+
+.ks-public {
+  --ks-white: #ffffff;
+  --ks-light-green: #bfe8c7;
+  --ks-green: #76c893;
+  --ks-yellow: #f8e16c;
+  --ks-gold: #e6b84a;
+  --ks-sky: #a9ddf5;
+  --ks-ink: #17231d;
+  --ks-muted: #647168;
+  --ks-line: #e6ece7;
+  --ks-radius: 18px;
+  background: var(--ks-white);
+  color: var(--ks-ink);
+}
+
+.ks-public h1,
+.ks-public h2,
+.ks-public h3 {
+  letter-spacing: -0.02em;
+}
+
+/* Only on pages that render the public site: html and body go white, so the
+   global black canvas never shows below short pages. */
+html:has(.ks-public),
+body:has(.ks-public) {
+  background-color: var(--ks-white);
+  background-image: none;
+}
+
+/* The global stylesheet (globals.css) paints every <section> black and sets
+   dark-theme text on sections, articles and asides. Unlayered global rules beat
+   Tailwind utilities, so the public scope resets them here with higher
+   specificity. The header keeps its own background (see .ks-header below). */
+.ks-public main {
+  background-color: var(--ks-white);
+  color: var(--ks-ink);
+}
+
+.ks-public section,
+.ks-public article,
+.ks-public aside {
+  background-color: transparent;
+  color: var(--ks-ink);
+  border-color: var(--ks-line);
+}
+
+.ks-public footer {
+  background-color: var(--ks-white);
+  color: var(--ks-ink);
+}
+
+.ks-public h1,
+.ks-public h2,
+.ks-public h3,
+.ks-public h4 {
+  color: var(--ks-ink);
+}
+
+/* Surface for light panels. Do not use Tailwind bg-white in public markup:
+   globals.css force-darkens elements whose class is bg-white (or bg-slate-50,
+   bg-gray-50 and similar) with !important. This class is not on that list. */
+.ks-public .ks-surface {
+  background-color: var(--ks-white);
+}
+
+/* Global form and button rules add magenta and cyan glow. Public controls use
+   the calm treatment from this file instead. */
+.ks-public input {
+  background-color: transparent;
+  color: var(--ks-ink);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.ks-public input:hover,
+.ks-public input:focus {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.ks-public button:not(:disabled):hover {
+  box-shadow: none;
+  filter: none;
+  border-color: inherit;
+}
+
+/* Layout helpers */
+.ks-wrap {
+  width: min(1200px, 100% - 2.5rem);
+  margin-inline: auto;
+}
+
+.ks-section {
+  padding-block: clamp(3.5rem, 8vw, 6.5rem);
+  position: relative;
+}
+
+.ks-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ks-muted);
+}
+
+.ks-h1 {
+  font-size: clamp(2.1rem, 5vw, 3.9rem);
+  line-height: 1.04;
+  font-weight: 800;
+}
+
+.ks-h2 {
+  font-size: clamp(1.75rem, 3.6vw, 2.9rem);
+  line-height: 1.1;
+  font-weight: 800;
+}
+
+.ks-lead {
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
+  line-height: 1.6;
+  color: var(--ks-muted);
+  max-width: 36rem;
+}
+
+/* Buttons */
+.ks-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  padding: 0.75rem 1.25rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: 1px solid transparent;
+  text-decoration: none;
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1), background-color 200ms, box-shadow 200ms;
+}
+
+.ks-btn:hover {
+  transform: translateY(-2px);
+}
+
+.ks-btn:active {
+  transform: scale(0.97);
+}
+
+.ks-btn-primary {
+  background: var(--ks-ink);
+  color: var(--ks-white);
+}
+
+.ks-btn-primary:hover {
+  box-shadow: 0 8px 22px -12px rgba(23, 35, 29, 0.55);
+}
+
+.ks-btn-secondary {
+  background: var(--ks-white);
+  color: var(--ks-ink);
+  border-color: var(--ks-line);
+}
+
+.ks-btn-secondary:hover {
+  background: var(--ks-light-green);
+}
+
+.ks-btn:focus-visible,
+.ks-nav-link:focus-visible,
+.ks-card:focus-visible,
+.ks-faq summary:focus-visible {
+  outline: 3px solid var(--ks-gold);
+  outline-offset: 3px;
+}
+
+/* Header */
+.ks-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--ks-line);
+  transition: box-shadow 250ms, background-color 250ms;
+}
+
+.ks-header[data-scrolled="true"] {
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 6px 20px -16px rgba(23, 35, 29, 0.45);
+}
+
+.ks-nav-link {
+  position: relative;
+  padding: 0.4rem 0.2rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--ks-ink);
+  text-decoration: none;
+  transition: transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.ks-nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  background: var(--ks-gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.ks-nav-link:hover {
+  transform: translateY(-1px);
+}
+
+.ks-nav-link:hover::after,
+.ks-nav-link[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+
+/* Cards */
+.ks-card {
+  background: var(--ks-white);
+  border: 1px solid var(--ks-line);
+  border-radius: var(--ks-radius);
+  padding: 1.25rem;
+  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 260ms, border-color 260ms;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.ks-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--ks-green);
+  box-shadow: 0 16px 30px -24px rgba(23, 35, 29, 0.5);
+}
+
+/* Reveal on scroll. data-state is set only after mount (see InView.tsx), so
+   content is never hidden on the server render or without JavaScript. */
+.ks-reveal[data-state="hidden"] {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.ks-reveal[data-state="shown"] {
+  opacity: 1;
+  transform: none;
+  transition: opacity 700ms ease, transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Scene motion. Each keyframe is tied to a specific story, not decoration. */
+@keyframes ks-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -10px, 0); }
+}
+
+@keyframes ks-orbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ks-counter-orbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+
+@keyframes ks-dash {
+  to { stroke-dashoffset: -120; }
+}
+
+@keyframes ks-travel {
+  0% { offset-distance: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+
+@keyframes ks-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+
+@keyframes ks-step-in {
+  from { opacity: 0.25; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.ks-float { animation: ks-float 6s ease-in-out infinite; }
+.ks-orbit { transform-origin: 50% 50%; animation: ks-orbit 60s linear infinite; }
+.ks-counter-orbit { transform-origin: 50% 50%; animation: ks-counter-orbit 60s linear infinite; }
+.ks-dash-flow { stroke-dasharray: 6 10; animation: ks-dash 2.4s linear infinite; }
+.ks-pulse { transform-origin: 50% 50%; animation: ks-pulse 3.2s ease-in-out infinite; }
+
+/* Scenes: steps wait in a dimmed state until the scene enters the viewport,
+   then light up in sequence. Converging labels slide into the core mark. */
+.ks-scene[data-state="hidden"] .ks-step {
+  opacity: 0.25;
+}
+
+.ks-scene[data-state="shown"] .ks-step {
+  animation: ks-step-in 500ms ease forwards;
+}
+
+.ks-scene[data-state="shown"] .ks-step:nth-child(2) { animation-delay: 200ms; }
+.ks-scene[data-state="shown"] .ks-step:nth-child(3) { animation-delay: 400ms; }
+.ks-scene[data-state="shown"] .ks-step:nth-child(4) { animation-delay: 600ms; }
+.ks-scene[data-state="shown"] .ks-step:nth-child(5) { animation-delay: 800ms; }
+.ks-scene[data-state="shown"] .ks-step:nth-child(6) { animation-delay: 1000ms; }
+
+.ks-converge {
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+}
+
+.ks-scene[data-state="hidden"] .ks-converge {
+  transform: translate(var(--fx), var(--fy));
+  opacity: 0.4;
+}
+
+.ks-scene[data-state="shown"] .ks-converge {
+  transform: none;
+  opacity: 1;
+  transition: transform 1100ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 800ms ease;
+}
+
+/* Accordion */
+.ks-faq details {
+  border-bottom: 1px solid var(--ks-line);
+  padding-block: 1rem;
+}
+
+.ks-faq summary {
+  cursor: pointer;
+  font-weight: 700;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ks-faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.ks-faq summary::after {
+  content: "+";
+  color: var(--ks-gold);
+  font-size: 1.35rem;
+  line-height: 1;
+  transition: transform 200ms;
+}
+
+.ks-faq details[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.ks-faq details p {
+  margin-top: 0.6rem;
+  color: var(--ks-muted);
+  line-height: 1.6;
+}
+
+/* Reduced motion: keep everything readable, remove movement that carries no meaning */
+@media (prefers-reduced-motion: reduce) {
+  .ks-public *,
+  .ks-public *::before,
+  .ks-public *::after {
+    animation: none !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .ks-public .ks-travel {
+    display: none;
+  }
+
+  .ks-reveal[data-state="hidden"],
+  .ks-scene[data-state="hidden"] .ks-step {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ks-scene[data-state="hidden"] .ks-converge {
+    transform: none;
+    opacity: 1;
+  }
+
+  .ks-btn:hover,
+  .ks-card:hover,
+  .ks-nav-link:hover {
+    transform: none;
+  }
+}

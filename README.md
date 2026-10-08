@@ -49,7 +49,35 @@ src/
 
 ## Design rule
 
-No AI-slop UI. No purple SaaS gradients, blob backgrounds, generic crypto grids, random 3D icons, fake glass panels, or fake data where backend data exists. The design tokens are:
+The product has two visual systems. Each one is scoped so the other is never affected.
+
+### 1. Public site (white-led, playful, motion-driven)
+
+Applies to `/`, `/events`, `/events/[slug]`, `/mall`, `/mall/products/[slug]`, `/jobs`, and `/jobs/unemployment-insurance-fund`. Tokens live in `src/app/public-site.css` and are only active inside the `.ks-public` wrapper.
+
+```css
+.ks-public {
+  --ks-white: #FFFFFF;
+  --ks-light-green: #BFE8C7;
+  --ks-green: #76C893;
+  --ks-yellow: #F8E16C;
+  --ks-gold: #E6B84A;
+  --ks-sky: #A9DDF5;
+  --ks-ink: #17231D;
+  --ks-muted: #647168;
+}
+```
+
+- The canvas is predominantly white. Accents are punctuation: roughly 10–15% light green, 5–8% sky blue, 3–5% yellow, and 1–3% gold for selected states and micro-details.
+- Every animated section must explain what it represents. Decorative motion is not allowed.
+- Motion uses SVG and CSS transforms. Three.js and Blender assets are deferred and must be lazy-loaded when added.
+- Everything respects `prefers-reduced-motion`. Content stays visible and readable with motion off.
+- Global dark rules: `globals.css` force-darkens any element with a Tailwind `bg-white` (or `bg-slate-50`, `bg-gray-50`, and similar) class with `!important`, and paints every `<section>` black. Public markup must use the `ks-surface` class instead of `bg-white`. Public scope resets live at the top of `src/app/public-site.css`. Do not remove them.
+- Never invent data. Testimonials, counts, logos, ratings, and revenue render only when verified backend data exists. Otherwise the page shows a designed empty state.
+
+### 2. Authenticated application (instrument palette)
+
+Applies to `/dashboard/*`, login, register, and account flows. These keep the palette below:
 
 ```css
 :root {
@@ -62,7 +90,11 @@ No AI-slop UI. No purple SaaS gradients, blob backgrounds, generic crypto grids,
 }
 ```
 
-Use `--signal` only for scan/action accents and `--confirm` for verified, paid, approved, and success states.
+Use `--signal` only for scan and action accents, and `--confirm` for verified, paid, approved, and success states.
+
+### Still banned everywhere
+
+No purple SaaS gradients, generic crypto grids, stock 3D icons, fake glass panels, or fake data where backend data exists.
 
 ## Environment
 
