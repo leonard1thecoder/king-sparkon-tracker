@@ -23,14 +23,16 @@ type TextFieldProps = {
   autoComplete?: string;
   inputMode?: "text" | "numeric" | "tel" | "email" | "url";
   min?: number;
+  required?: boolean;
+  defaultValue?: string;
   action?: ReactNode;
 };
 
-export function TextField({ name, label, type = "text", autoComplete, inputMode, min, action }: TextFieldProps) {
+export function TextField({ name, label, type = "text", autoComplete, inputMode, min, required = true, defaultValue, action }: TextFieldProps) {
   return (
     <div className="grid gap-2">
       <Label htmlFor={name} text={label} action={action} />
-      <input id={name} name={name} type={type} autoComplete={autoComplete} inputMode={inputMode} min={min} required className="ks-input" />
+      <input id={name} name={name} type={type} autoComplete={autoComplete} inputMode={inputMode} min={min} required={required} defaultValue={defaultValue} className="ks-input" />
     </div>
   );
 }
@@ -56,12 +58,35 @@ export function PasswordField({ name, label, autoComplete, action }: { name: str
   );
 }
 
-export function SelectField({ name, label, options, value, onChange }: { name: string; label: string; options: SelectOption[]; value?: string; onChange?: (value: string) => void }) {
+export function SelectField({
+  name,
+  label,
+  options,
+  value,
+  defaultValue,
+  required = true,
+  onChange,
+}: {
+  name: string;
+  label: string;
+  options: SelectOption[];
+  value?: string;
+  defaultValue?: string;
+  required?: boolean;
+  onChange?: (value: string) => void;
+}) {
   return (
     <div className="grid gap-2">
       <Label htmlFor={name} text={label} />
-      <select id={name} name={name} required value={value} onChange={(event) => onChange?.(event.target.value)} className="ks-input">
-        <option value="">Select</option>
+      <select
+        id={name}
+        name={name}
+        required={required}
+        {...(value !== undefined ? { value } : { defaultValue })}
+        onChange={(event) => onChange?.(event.target.value)}
+        className="ks-input"
+      >
+        {defaultValue === undefined ? <option value="">Select</option> : null}
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}

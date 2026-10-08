@@ -1,110 +1,29 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { InteractiveRegisterShell } from "@/components/auth/InteractiveRegisterShell";
+import { AuthFrame } from "@/components/auth/AuthFrame";
+import { RegisterForm } from "@/components/auth/RegisterForm";
 import { SignedInRegisterNotice } from "@/components/auth/SignedInRegisterNotice";
 import { ACCESS_COOKIE_NAME, dashboardPathForSession, decodeJwtPayload } from "@/lib/auth/session";
-import { registrationPrivilegeOptions } from "@/lib/auth/registration";
 
 export const metadata: Metadata = {
-  title: "Register Business, User, Affiliate or Artist Account",
-  description:
-    "Create a King Sparkon account as a free user, free affiliate, business owner or artist for barcode inventory, QR tickets, cart checkout, job opportunities, worker tips, promotions, bookings and reports.",
-  keywords: [
-    "King Sparkon register",
-    "free user account",
-    "free affiliate account",
-    "artist booking platform",
-    "barcode inventory software registration",
-    "QR ticket signup",
-    "job opportunities platform",
-    "business inventory dashboard",
-    "South Africa barcode scanner software",
-  ],
+  title: "Create account",
+  description: "Create a King Sparkon account.",
   alternates: { canonical: "/register" },
-  openGraph: {
-    title: "Register a Business, User, Affiliate or Artist Account",
-    description:
-      "Register as a free user, free affiliate, business owner or artist for barcode inventory, tickets, jobs, tips, affiliates, cart checkout, bookings and reporting.",
-    type: "website",
-    siteName: "King Sparkon",
-    images: [{ url: "/king-sparkon-logo.png", width: 2720, height: 1200, alt: "King Sparkon register page" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Register Business, User, Affiliate or Artist | King Sparkon",
-    description: "Choose User, Affiliate, Business Owner or Artist and see only the fields that role needs.",
-    images: ["/king-sparkon-logo.png"],
-  },
   robots: { index: false, follow: true },
 };
 
-const PAYPAL_HELP = "Need a payment link? Create or find your PayPal.me link here: https://www.paypal.com/paypalme";
-
-const planNotes: Record<string, string> = {
-  FREE_USER: "Selected plan: Free User at R0. Best for tickets, job applications, cart checkout, profile, and purchase QR flows.",
-  FREE_AFFILIATE: `Selected plan: Free Affiliate at R0. Add your physical address and PayPal.me link for earnings setup. ${PAYPAL_HELP}`,
-  FREE_TRIAL_BUSINESS: `Selected plan: Free Trial Business for 14 days. Business owner payment link is optional during registration. ${PAYPAL_HELP}`,
-  FREE_TRIAL: `Selected plan: Free Trial Business for 14 days. Business owner payment link is optional during registration. ${PAYPAL_HELP}`,
-  PLUS: `Selected plan: Plus at R880 per month. Register as Business owner first, then complete billing from the dashboard. ${PAYPAL_HELP}`,
-  PRO: `Selected plan: Pro at R2,300 per month. Register as Business owner for unlimited workers, tips, reports, capacity visibility, and full platform control. ${PAYPAL_HELP}`,
-};
-
-const privilegeNotes: Record<string, string> = {
-  BUSINESS_OWNER:
-    "Privilege selected: Business owner. The backend creates an Owner account, business workspace, and business QR code.",
-  USER:
-    "Privilege selected: User. The backend creates a free User account for tickets, jobs, cart checkout, profile, and purchase QR flows. Gender is required; physical address and reference code are not needed.",
-  AFFILIATE:
-    "Privilege selected: Affiliate. Complete the required physical address. The backend creates a free Affiliate account with referral code, promotion link, and QR code.",
-  ARTIST:
-    "Privilege selected: Artist. The backend creates an Artist account for bookings, performances, schedule and fee management. Choose DJ, Musician or MCEE.",
-};
-
-const serviceNotes: Record<string, string> = {
-  FULL_BUSINESS_SUITE:
-    "Service selected: Full Business Suite for inventory, QR tickets, cart checkout, worker tips, jobs, promotions, affiliates, payments, and reports.",
-  FREE_USER_ACCESS:
-    "Service selected: Free User Access for tickets, job applications, cart checkout, profile, and purchase QR flows.",
-  FREE_AFFILIATE_ACCESS:
-    "Service selected: Free Affiliate Access for referral links, QR promotion assets, and commission visibility.",
-  ARTIST_ACCESS:
-    "Service selected: Artist Access for performance bookings, drafted events, schedule and fee management.",
-  BARCODE_INVENTORY:
-    "Service selected: Barcode Inventory for products, stock movement, scanning, branches, and audit reports.",
-  QR_TICKET_EVENTS:
-    "Service selected: QR Ticket Events for event setup, ticket sales, capacity tracking, buyer QR codes, and gate verification.",
-  WORKER_TIPS_PAYOUTS:
-    "Service selected: Worker Tips & Review for worker QR codes, payment links, owner review, service fees, and status.",
-  AFFILIATE_PROMOTIONS:
-    "Service selected: Affiliate Promotions for referral links, QR campaigns, commission visibility, and promoter performance.",
-};
-
-function defaultPrivilege(plan?: string, privilege?: string) {
+// Plan and privilege query parameters only choose the initially selected role.
+function initialRoleFrom(plan?: string, privilege?: string) {
   const normalizedPrivilege = privilege?.toUpperCase();
-  if (normalizedPrivilege && privilegeNotes[normalizedPrivilege]) return normalizedPrivilege;
-
+  if (normalizedPrivilege === "USER" || normalizedPrivilege === "AFFILIATE" || normalizedPrivilege === "ARTIST" || normalizedPrivilege === "BUSINESS_OWNER") {
+    return normalizedPrivilege;
+  }
   const normalizedPlan = plan?.toUpperCase();
   if (normalizedPlan === "FREE_AFFILIATE") return "AFFILIATE";
-  if (
-    normalizedPlan === "FREE_TRIAL_BUSINESS" ||
-    normalizedPlan === "FREE_TRIAL" ||
-    normalizedPlan === "PLUS" ||
-    normalizedPlan === "PRO"
-  ) {
+  if (normalizedPlan === "FREE_TRIAL_BUSINESS" || normalizedPlan === "FREE_TRIAL" || normalizedPlan === "PLUS" || normalizedPlan === "PRO") {
     return "BUSINESS_OWNER";
   }
   return "USER";
-}
-
-function defaultService(plan: string | undefined, service: string | undefined, privilege: string) {
-  const normalizedService = service?.toUpperCase();
-  if (normalizedService && serviceNotes[normalizedService]) return normalizedService;
-
-  const normalizedPlan = plan?.toUpperCase();
-  if (privilege === "USER" || normalizedPlan === "FREE_USER") return "FREE_USER_ACCESS";
-  if (privilege === "AFFILIATE" || normalizedPlan === "FREE_AFFILIATE") return "FREE_AFFILIATE_ACCESS";
-  if (privilege === "ARTIST") return "ARTIST_ACCESS";
-  return "FULL_BUSINESS_SUITE";
 }
 
 export default async function RegisterPage({
@@ -120,237 +39,11 @@ export default async function RegisterPage({
     return <SignedInRegisterNotice dashboardPath={dashboardPath} />;
   }
 
-  const { plan, service, privilege } = await searchParams;
-  const normalizedPlan = plan?.toUpperCase();
-  const selectedPrivilege = defaultPrivilege(plan, privilege);
-  const selectedService = defaultService(plan, service, selectedPrivilege);
-  const selectedPlanNote = normalizedPlan ? planNotes[normalizedPlan] : undefined;
+  const { plan, privilege } = await searchParams;
 
   return (
-    <InteractiveRegisterShell
-      endpoint="/api/auth/register"
-      title="Register your King Sparkon access"
-      description="Choose User, Business owner, Affiliate or Artist. The guidance and form fields update immediately for the selected role."
-      roleNotes={privilegeNotes}
-      initialRoleNote={selectedPlanNote}
-      fields={[
-        {
-          name: "serviceRegisteringFor",
-          label: "Choose role",
-          type: "select",
-          placeholder: "Choose User, Business owner, Affiliate or Artist",
-          autoComplete: "off",
-          defaultValue: selectedPrivilege,
-          helper: "Start here. The form and privilege guidance change with this role.",
-          options: registrationPrivilegeOptions.map((option) => ({ label: option.label, value: option.value })),
-        },
-        {
-          name: "serviceRegistrationType",
-          label: "Service registering for",
-          type: "hidden",
-          placeholder: selectedService,
-          autoComplete: "off",
-          defaultValue: selectedService,
-        },
-        {
-          name: "businessName",
-          label: "Business name",
-          type: "text",
-          placeholder: "Example: Sparkon Retail Store",
-          autoComplete: "organization",
-          visibleForPrivileges: ["BUSINESS_OWNER"],
-          helper: "Required for Business owner.",
-        },
-        {
-          name: "username",
-          label: "Username",
-          type: "text",
-          placeholder: "Example: sparkon_user",
-          autoComplete: "username",
-          helper: "Required. This becomes your login username.",
-        },
-        {
-          name: "emailAddress",
-          label: "Email address",
-          type: "email",
-          placeholder: "Example: owner@sparkonstore.co.za",
-          autoComplete: "email",
-          helper: "Required. Verification and account messages are sent here.",
-        },
-        {
-          name: "cellphoneNumber",
-          label: "Cellphone number",
-          type: "tel",
-          placeholder: "Example: +27821234567",
-          autoComplete: "tel",
-          visibleForPrivileges: ["USER", "BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
-          helper: "Required. Use international format for WhatsApp and account contact.",
-        },
-        {
-          name: "gender",
-          label: "Gender",
-          type: "select",
-          placeholder: "Select gender",
-          autoComplete: "sex",
-          visibleForPrivileges: ["USER"],
-          helper: "Required for User. Select your gender.",
-          options: [
-            { label: "Male", value: "MALE" },
-            { label: "Female", value: "FEMALE" },
-            { label: "Other", value: "OTHER" },
-            { label: "Prefer not to say", value: "PREFER_NOT_TO_SAY" },
-          ],
-        },
-        {
-          name: "artistType",
-          label: "Artist Type",
-          type: "select",
-          placeholder: "Select DJ, Musician or MCEE",
-          autoComplete: "off",
-          visibleForPrivileges: ["ARTIST"],
-          helper: "Required for Artist. Choose your performance category.",
-          options: [
-            { label: "DJ", value: "DJ" },
-            { label: "Musician", value: "MUSICIAN" },
-            { label: "MCEE", value: "MCEE" },
-          ],
-        },
-        {
-          name: "performancesPerDay",
-          label: "Performances per day",
-          type: "number",
-          placeholder: "2",
-          autoComplete: "off",
-          visibleForPrivileges: ["ARTIST"],
-          helper: "Required. How many performances you can do per day.",
-        },
-        {
-          name: "minimumBookingFee",
-          label: "Minimum booking fee",
-          type: "text",
-          placeholder: "R 2,500",
-          autoComplete: "off",
-          visibleForPrivileges: ["ARTIST"],
-          helper: "Required. South African Rand — e.g. R 2,500",
-        },
-        {
-          name: "businessPaypalLink",
-          label: "Business PayPal payment link",
-          type: "url",
-          placeholder: "Example: https://paypal.me/kingsparkonstore",
-          autoComplete: "url",
-          required: false,
-          visibleForPrivileges: ["BUSINESS_OWNER"],
-          helper: `Optional for Business owner payments during registration. ${PAYPAL_HELP}`,
-        },
-        {
-          name: "paypalLink",
-          label: "Affiliate PayPal link",
-          type: "url",
-          placeholder: "Example: https://paypal.me/kingaffiliate",
-          autoComplete: "url",
-          visibleForPrivileges: ["AFFILIATE"],
-          helper: `Required for Affiliate. Used for affiliate earnings setup. ${PAYPAL_HELP}`,
-        },
-        {
-          name: "password",
-          label: "Create password",
-          type: "password",
-          placeholder: "Minimum 8 characters with letters and numbers",
-          autoComplete: "new-password",
-          helper: "Required. Use a strong password for this account.",
-        },
-        {
-          name: "addressStreet",
-          label: "Street address",
-          type: "text",
-          placeholder: "Example: 12 Main Road",
-          autoComplete: "street-address",
-          visibleForPrivileges: ["BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
-          section: "address",
-          helper: "Required for Business owner, Affiliate and Artist.",
-        },
-        {
-          name: "addressLine2",
-          label: "Unit, building, complex",
-          type: "text",
-          placeholder: "Example: Unit 4, Sparkon Heights",
-          autoComplete: "address-line2",
-          required: false,
-          visibleForPrivileges: ["BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
-          section: "address",
-        },
-        {
-          name: "addressSuburb",
-          label: "Suburb or township",
-          type: "text",
-          placeholder: "Example: Sandton",
-          autoComplete: "address-level3",
-          visibleForPrivileges: ["BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
-          section: "address",
-        },
-        {
-          name: "addressCity",
-          label: "City",
-          type: "text",
-          placeholder: "Example: Johannesburg",
-          autoComplete: "address-level2",
-          visibleForPrivileges: ["BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
-          section: "address",
-        },
-        {
-          name: "addressProvince",
-          label: "Province",
-          type: "text",
-          placeholder: "Example: Gauteng",
-          autoComplete: "address-level1",
-          visibleForPrivileges: ["BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
-          section: "address",
-        },
-        {
-          name: "addressPostalCode",
-          label: "Postal code",
-          type: "text",
-          placeholder: "Example: 2196",
-          autoComplete: "postal-code",
-          visibleForPrivileges: ["BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
-          section: "address",
-        },
-        {
-          name: "addressCountry",
-          label: "Country",
-          type: "text",
-          placeholder: "South Africa",
-          autoComplete: "country-name",
-          defaultValue: "South Africa",
-          visibleForPrivileges: ["BUSINESS_OWNER", "AFFILIATE", "ARTIST"],
-          section: "address",
-        },
-        {
-          name: "affiliateCode",
-          label: "Who referred you? Promo code",
-          type: "text",
-          placeholder: "Example: KING-PROMO-2026",
-          autoComplete: "off",
-          required: false,
-          visibleForPrivileges: ["BUSINESS_OWNER"],
-          section: "referral",
-          helper: "Optional. Do not use this for User or Affiliate registration.",
-        },
-        {
-          name: "localizationCountry",
-          label: "Localization country",
-          type: "select",
-          placeholder: "SOUTH_AFRICA",
-          autoComplete: "country-name",
-          defaultValue: "SOUTH_AFRICA",
-          helper: "Required. Choose South Africa for local pricing, phone, and payment copy.",
-          options: [
-            { label: "South Africa", value: "SOUTH_AFRICA" },
-            { label: "Rest of the world", value: "REST_OF_WORLD" },
-          ],
-        },
-      ]}
-    />
+    <AuthFrame width="wide">
+      <RegisterForm initialRole={initialRoleFrom(plan, privilege)} />
+    </AuthFrame>
   );
 }
