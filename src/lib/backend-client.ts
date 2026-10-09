@@ -1,3 +1,5 @@
+import { plainTextMessage } from "@/lib/utils/errors";
+
 export class BackendApiError extends Error {
   status: number;
   details: unknown;
@@ -35,9 +37,9 @@ export async function backendRequest<T>(path: string, init: RequestInit = {}): P
     : await response.text().catch(() => "");
 
   if (!response.ok) {
-    const errorBody = body as ErrorBody;
+    const errorBody = (typeof body === "string" ? { message: body } : body) as ErrorBody;
     throw new BackendApiError(
-      errorBody.message ?? errorBody.error ?? errorBody.detail ?? errorBody.title ?? "The backend rejected this request.",
+      plainTextMessage(errorBody.message ?? errorBody.error ?? errorBody.detail ?? errorBody.title ?? "The backend rejected this request."),
       response.status,
       body,
     );

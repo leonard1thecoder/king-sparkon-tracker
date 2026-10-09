@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME } from "@/lib/auth/session";
+import { plainTextMessage } from "@/lib/utils/errors";
 
 const DEFAULT_BACKEND_URL = "http://localhost:8080";
 
@@ -40,7 +41,7 @@ export function responseBodyFromText(text: string) {
   try {
     return JSON.parse(text) as Record<string, unknown>;
   } catch {
-    return { message: text };
+    return { message: plainTextMessage(text) };
   }
 }
 

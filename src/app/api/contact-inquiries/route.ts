@@ -1,4 +1,5 @@
 import { backendBaseUrl } from "@/lib/backend-auth";
+import { plainTextMessage } from "@/lib/utils/errors";
 
 function responseBodyFromText(text: string) {
   if (!text) {
@@ -8,7 +9,7 @@ function responseBodyFromText(text: string) {
   try {
     return JSON.parse(text);
   } catch {
-    return { message: text };
+    return { message: plainTextMessage(text) };
   }
 }
 
