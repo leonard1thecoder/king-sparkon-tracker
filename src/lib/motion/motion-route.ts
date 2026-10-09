@@ -3,7 +3,7 @@ export type MotionController = "landing" | "director" | "none";
 // Public-site routes carry their own motion inside each scene component. The
 // global director manipulates arbitrary DOM (main > section, header, clicks),
 // which would fight those scenes, so it is switched off on these routes only.
-const PUBLIC_SITE_PREFIXES = ["/events", "/mall", "/jobs"] as const;
+const PUBLIC_SITE_PREFIXES = ["/events", "/mall", "/jobs", "/uif"] as const;
 
 export function isPublicSitePath(pathname: string | null | undefined) {
   if (!pathname) return false;
