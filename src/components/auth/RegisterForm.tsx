@@ -172,41 +172,41 @@ export function RegisterForm({ initialRole }: { initialRole: string }) {
       </fieldset>
 
       <div className="grid gap-5 sm:grid-cols-2">
-        {role === "BUSINESS_OWNER" ? <div className="sm:col-span-2"><TextField name="businessName" label="Business name" autoComplete="organization" /></div> : null}
+        {role === "BUSINESS_OWNER" ? <div className="sm:col-span-2"><TextField name="businessName" label="Business name" autoComplete="organization" placeholder="Sparkon Retail Store" /></div> : null}
         <div className="sm:col-span-2 sm:max-w-none">
-          <TextField name="username" label="Username" autoComplete="username" />
+          <TextField name="username" label="Username" autoComplete="username" placeholder="Choose a username" />
         </div>
-        <TextField name="emailAddress" label="Email address" type="email" autoComplete="email" />
-        {CONTACT_ROLES.includes(role) ? <TextField name="cellphoneNumber" label="Cellphone number" type="tel" inputMode="tel" autoComplete="tel" /> : null}
+        <TextField name="emailAddress" label="Email address" type="email" autoComplete="email" placeholder="you@example.com" />
+        {CONTACT_ROLES.includes(role) ? <TextField name="cellphoneNumber" label="Cellphone number" type="tel" inputMode="tel" autoComplete="tel" placeholder="+27 82 123 4567" /> : null}
         {role === "USER" ? <SelectField name="gender" label="Gender" options={genderOptions} defaultValue="MALE" /> : null}
         {role === "ARTIST" ? (
           <>
             <SelectField name="artistType" label="Artist type" options={artistOptions} />
-            <TextField name="performancesPerDay" label="Performances per day" type="number" inputMode="numeric" min={1} />
-            <TextField name="minimumBookingFee" label="Minimum booking fee" />
+            <TextField name="performancesPerDay" label="Performances per day" type="number" inputMode="numeric" min={1} placeholder="2" />
+            <TextField name="minimumBookingFee" label="Minimum booking fee" placeholder="500" />
           </>
         ) : null}
-        {role === "BUSINESS_OWNER" ? <TextField name="businessPaypalLink" label="Business PayPal payment link" type="url" required={false} /> : null}
-        {role === "AFFILIATE" ? <TextField name="paypalLink" label="Affiliate PayPal link" type="url" /> : null}
-        <PasswordField name="password" label="Create password" autoComplete="new-password" />
+        {role === "BUSINESS_OWNER" ? <TextField name="businessPaypalLink" label="Business PayPal payment link" type="url" required={false} placeholder="https://paypal.me/yourname" /> : null}
+        {role === "AFFILIATE" ? <TextField name="paypalLink" label="Affiliate PayPal link" type="url" placeholder="https://paypal.me/yourname" /> : null}
+        <PasswordField name="password" label="Create password" autoComplete="new-password" placeholder="Create a password" />
         <SelectField name="localizationCountry" label="Localization country" options={localizationOptions} defaultValue="SOUTH_AFRICA" />
       </div>
 
       {showAddress ? (
         <div className="grid gap-5 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <TextField name="addressStreet" label="Street address" autoComplete="street-address" />
+            <TextField name="addressStreet" label="Street address" autoComplete="street-address" placeholder="12 Main Road" />
           </div>
-          <TextField name="addressLine2" label="Unit, building, complex" required={false} />
-          <TextField name="addressSuburb" label="Suburb or township" autoComplete="address-level3" />
-          <TextField name="addressCity" label="City" autoComplete="address-level2" />
-          <TextField name="addressProvince" label="Province" autoComplete="address-level1" />
-          <TextField name="addressPostalCode" label="Postal code" autoComplete="postal-code" />
+          <TextField name="addressLine2" label="Unit, building, complex" required={false} placeholder="Unit 4, Sunset Complex" />
+          <TextField name="addressSuburb" label="Suburb or township" autoComplete="address-level3" placeholder="Sandton" />
+          <TextField name="addressCity" label="City" autoComplete="address-level2" placeholder="Johannesburg" />
+          <TextField name="addressProvince" label="Province" autoComplete="address-level1" placeholder="Gauteng" />
+          <TextField name="addressPostalCode" label="Postal code" autoComplete="postal-code" placeholder="2000" />
           <TextField name="addressCountry" label="Country" autoComplete="country-name" defaultValue="South Africa" />
         </div>
       ) : null}
 
-      {role === "BUSINESS_OWNER" ? <TextField name="affiliateCode" label="Referral promo code (optional)" required={false} /> : null}
+      {role === "BUSINESS_OWNER" ? <TextField name="affiliateCode" label="Referral promo code (optional)" required={false} placeholder="SPARKON10" /> : null}
 
       <label className="flex items-start gap-3 text-sm leading-6 text-[var(--ks-ink)]">
         <input type="checkbox" name="terms" className="mt-1 h-4 w-4 accent-[var(--ks-ink)]" />

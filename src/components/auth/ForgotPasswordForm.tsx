@@ -51,7 +51,7 @@ export function ForgotPasswordForm() {
       </p>
 
       <form onSubmit={onSubmit} noValidate className="mt-8 grid gap-5">
-        <TextField name="emailAddress" label="Email address" type="email" autoComplete="email" />
+        <TextField name="emailAddress" label="Email address" type="email" autoComplete="email" placeholder="you@example.com" />
 
         {status ? <StatusNote tone={status.tone} message={status.message} /> : null}
 

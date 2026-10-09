@@ -48,7 +48,7 @@ export function ResendVerificationForm() {
       <p className="mt-3 text-sm leading-6 text-[var(--ks-muted)]">Use the same email address you registered with.</p>
 
       <form onSubmit={onSubmit} noValidate className="mt-8 grid gap-5">
-        <TextField name="emailAddress" label="Email address" type="email" autoComplete="email" />
+        <TextField name="emailAddress" label="Email address" type="email" autoComplete="email" placeholder="you@example.com" />
 
         {status ? <StatusNote tone={status.tone} message={status.message} /> : null}
 
