@@ -495,3 +495,60 @@ body:has(.ks-public) {
     transform: none;
   }
 }
+
+/* Long-form legal text (Prose). The typography plugin is not installed, so the
+   prose-* utility classes do nothing; these rules give the body its structure. */
+.ks-public .prose {
+  max-width: 72ch;
+  color: var(--ks-muted);
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.ks-public .prose h2 {
+  margin: 2.5rem 0 0.75rem;
+  color: var(--ks-ink);
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.ks-public .prose h2:first-child {
+  margin-top: 0;
+}
+
+.ks-public .prose p {
+  margin: 0 0 1rem;
+}
+
+.ks-public .prose strong {
+  color: var(--ks-ink);
+  font-weight: 800;
+}
+
+.ks-public .prose ul {
+  margin: 0 0 1rem;
+  padding-left: 1.3rem;
+  list-style: disc;
+}
+
+.ks-public .prose li {
+  margin: 0.35rem 0;
+}
+
+.ks-public .prose a {
+  color: var(--ks-ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.ks-public .prose code {
+  padding: 0.1rem 0.35rem;
+  border: 1px solid var(--ks-line);
+  border-radius: 6px;
+  background: #f4f7f5;
+  color: var(--ks-ink);
+  font-size: 0.85em;
+}

@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Breadcrumbs } from "@/components/content/Breadcrumbs";
 import { Prose } from "@/components/content/Prose";
-import { GlassCard } from "@/components/ui/GlassCard";
-import { PremiumHeader } from "@/components/marketing/PremiumHeader";
+import { PublicHeader } from "@/components/public/PublicHeader";
+import { PublicBreadcrumb } from "@/components/public/Breadcrumb";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -15,19 +14,18 @@ export const metadata: Metadata = pageMetadata({
 export default function PrivacyPage() {
   return (
     <>
-      <PremiumHeader />
-      <main className="bg-white text-[var(--ink)]">
-        <div className="mx-auto max-w-7xl px-5 py-6 md:px-8"><Breadcrumbs items={[{ label: "Privacy policy" }]} /></div>
-        <section className="relative overflow-hidden border-y border-[var(--line)]">
-          <div className="absolute inset-0 bg-gradient-to-br from-[var(--surface)] via-[var(--signal-soft)] to-[var(--surface)]" aria-hidden="true" />
-          <div className="relative mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-12">
-            <p className="inline-flex rounded-full border border-[var(--signal)]/20 bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Legal</p>
-            <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-[-0.05em] md:text-5xl">Privacy policy</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--steel)]">Last updated: 12 February 2026 • Owner: Sizolwakhe Leonard Mthimunye, King Sparkon™ • This page explains what we collect, why, and how you can control it.</p>
+      <PublicHeader />
+      <main className="ks-public">
+        <PublicBreadcrumb items={[{ label: "Home", href: "/" }, { label: "Privacy policy" }]} />
+        <section className="ks-section pt-4 pb-0">
+          <div className="ks-wrap">
+            <p className="ks-eyebrow">Legal</p>
+            <h1 className="ks-h1 mt-3">Privacy policy</h1>
+            <p className="ks-lead mt-5">Last updated: 12 February 2026 • Owner: Sizolwakhe Leonard Mthimunye, King Sparkon™ • This page explains what we collect, why, and how you can control it.</p>
           </div>
         </section>
 
-        <div className="mx-auto grid max-w-7xl gap-8 px-5 py-10 md:px-8 lg:grid-cols-[1.7fr_0.8fr]">
+        <div className="ks-wrap grid gap-10 py-12 pb-24 lg:grid-cols-[1.7fr_0.8fr]">
           <Prose>
             <h2>1. What we collect</h2>
             <p><strong>Account data:</strong> username, emailAddress, cellphone number, business name (for Owners), physical address (for User/Business Owner/Affiliate as required by registration — addressStreet, suburb, city, province, postal code, country), PayPal link where provided for affiliate or business payouts, and role/privilege.</p>
@@ -70,18 +68,18 @@ export default function PrivacyPage() {
           </Prose>
 
           <div className="space-y-5">
-            <GlassCard variant="subtle">
+            <div className="ks-card p-6">
               <p className="text-sm font-black">Not a legal template copy</p>
               <p className="mt-2 text-sm leading-6 text-[var(--steel)]">This policy describes the actual routes and storage used in this codebase — httpOnly cookies, proxy-based auth, and public contact/subscriber endpoints — not a generic template. It avoids claims about certifications or partnerships that do not exist.</p>
-            </GlassCard>
-            <GlassCard>
+            </div>
+            <div className="ks-card p-6">
               <p className="text-sm font-black">Related pages</p>
               <ul className="mt-3 space-y-2 text-sm font-semibold">
-                <li><Link href="/terms" className="text-[var(--signal-strong)] hover:text-[var(--accent-hover)]">Terms of service →</Link></li>
-                <li><Link href="/about" className="text-[var(--signal-strong)] hover:text-[var(--accent-hover)]">About the platform →</Link></li>
-                <li><Link href="/faq" className="text-[var(--signal-strong)] hover:text-[var(--accent-hover)]">FAQ →</Link></li>
+                <li><Link href="/terms" className="text-[var(--ks-ink)] underline underline-offset-4">Terms of service →</Link></li>
+                <li><Link href="/about" className="text-[var(--ks-ink)] underline underline-offset-4">About the platform →</Link></li>
+                <li><Link href="/faq" className="text-[var(--ks-ink)] underline underline-offset-4">FAQ →</Link></li>
               </ul>
-            </GlassCard>
+            </div>
           </div>
         </div>
       </main>
