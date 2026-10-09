@@ -49,8 +49,8 @@ export function LoginForm({ oauthErrorCode }: { oauthErrorCode?: string }) {
       <h1 className="mt-2 text-[2rem] font-extrabold leading-tight tracking-tight text-[var(--ks-ink)]">Sign in to King Sparkon</h1>
 
       <form onSubmit={onSubmit} noValidate className="mt-8 grid gap-5">
-        <TextField name="username" label="Email or username" autoComplete="username" />
-        <PasswordField name="password" label="Password" autoComplete="current-password" />
+        <TextField name="username" label="Email or username" autoComplete="username" placeholder="you@example.com" />
+        <PasswordField name="password" label="Password" autoComplete="current-password" placeholder="Enter your password" />
 
         {status ? <StatusNote tone={status.tone} message={status.message} /> : null}
 
@@ -62,6 +62,10 @@ export function LoginForm({ oauthErrorCode }: { oauthErrorCode?: string }) {
       <p className="mt-4 text-center text-sm">
         <Link href="/forgot-password" className="font-semibold text-[var(--ks-ink)] underline-offset-4 hover:underline">
           Forgot password?
+        </Link>
+        <span className="mx-2 text-[var(--ks-muted)]" aria-hidden="true">·</span>
+        <Link href="/resend-verification" className="font-semibold text-[var(--ks-ink)] underline-offset-4 hover:underline">
+          Resend verification
         </Link>
       </p>
 

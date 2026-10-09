@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Breadcrumbs } from "@/components/content/Breadcrumbs";
 import { Prose } from "@/components/content/Prose";
-import { GlassCard } from "@/components/ui/GlassCard";
-import { PremiumHeader } from "@/components/marketing/PremiumHeader";
+import { PublicHeader } from "@/components/public/PublicHeader";
+import { PublicBreadcrumb } from "@/components/public/Breadcrumb";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -15,19 +14,18 @@ export const metadata: Metadata = pageMetadata({
 export default function TermsPage() {
   return (
     <>
-      <PremiumHeader />
-      <main className="bg-white text-[var(--ink)]">
-        <div className="mx-auto max-w-7xl px-5 py-6 md:px-8"><Breadcrumbs items={[{ label: "Terms of service" }]} /></div>
-        <section className="relative overflow-hidden border-y border-[var(--line)]">
-          <div className="absolute inset-0 bg-gradient-to-br from-[var(--surface)] via-[var(--signal-soft)] to-[var(--surface)]" aria-hidden="true" />
-          <div className="relative mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-12">
-            <p className="inline-flex rounded-full border border-[var(--signal)]/20 bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Legal</p>
-            <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-[-0.05em] md:text-5xl">Terms of service</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--steel)]">Last updated: 12 February 2026 • By registering or using King Sparkon™ you agree to these terms as offered by Sizolwakhe Leonard Mthimunye.</p>
+      <PublicHeader />
+      <main className="ks-public">
+        <PublicBreadcrumb items={[{ label: "Home", href: "/" }, { label: "Terms of service" }]} />
+        <section className="ks-section pt-4 pb-0">
+          <div className="ks-wrap">
+            <p className="ks-eyebrow">Legal</p>
+            <h1 className="ks-h1 mt-3">Terms of service</h1>
+            <p className="ks-lead mt-5">Last updated: 12 February 2026 • By registering or using King Sparkon™ you agree to these terms as offered by Sizolwakhe Leonard Mthimunye.</p>
           </div>
         </section>
 
-        <div className="mx-auto grid max-w-7xl gap-8 px-5 py-10 md:px-8 lg:grid-cols-[1.7fr_0.8fr]">
+        <div className="ks-wrap grid gap-10 py-12 pb-24 lg:grid-cols-[1.7fr_0.8fr]">
           <Prose>
             <h2>1. Eligibility & accounts</h2>
             <p>You must be able to form a binding contract and provide accurate registration information. Business Owner accounts must provide a valid business name and business address. Affiliate accounts require a valid physical address and PayPal link. You are responsible for the confidentiality of your username and password and for all activity under your account.</p>
@@ -51,17 +49,17 @@ export default function TermsPage() {
             <p>Questions about these terms: use the <Link href="/contact">contact page</Link> and include your account email. This is not a law-firm template; it describes the actual roles, endpoints and fee mechanics in the codebase.</p>
           </Prose>
           <div className="space-y-5">
-            <GlassCard variant="subtle">
+            <div className="ks-card p-6">
               <p className="text-sm font-black">No fake statistics</p>
               <p className="mt-2 text-sm leading-6 text-[var(--steel)]">We do not publish invented user counts, revenue figures, certifications or partnerships. Capabilities, limits and fees are stated exactly as the backend enforces them.</p>
-            </GlassCard>
-            <GlassCard>
+            </div>
+            <div className="ks-card p-6">
               <p className="text-sm font-black">Related</p>
               <ul className="mt-3 space-y-2 text-sm font-semibold">
-                <li><Link href="/privacy" className="text-[var(--signal-strong)] hover:text-[var(--accent-hover)]">Privacy policy →</Link></li>
-                <li><Link href="/how-it-works" className="text-[var(--signal-strong)] hover:text-[var(--accent-hover)]">How it works →</Link></li>
+                <li><Link href="/privacy" className="text-[var(--ks-ink)] underline underline-offset-4">Privacy policy →</Link></li>
+                <li><Link href="/how-it-works" className="text-[var(--ks-ink)] underline underline-offset-4">How it works →</Link></li>
               </ul>
-            </GlassCard>
+            </div>
           </div>
         </div>
       </main>

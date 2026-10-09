@@ -25,25 +25,26 @@ type TextFieldProps = {
   min?: number;
   required?: boolean;
   defaultValue?: string;
+  placeholder?: string;
   action?: ReactNode;
 };
 
-export function TextField({ name, label, type = "text", autoComplete, inputMode, min, required = true, defaultValue, action }: TextFieldProps) {
+export function TextField({ name, label, type = "text", autoComplete, inputMode, min, required = true, defaultValue, placeholder, action }: TextFieldProps) {
   return (
     <div className="grid gap-2">
       <Label htmlFor={name} text={label} action={action} />
-      <input id={name} name={name} type={type} autoComplete={autoComplete} inputMode={inputMode} min={min} required={required} defaultValue={defaultValue} className="ks-input" />
+      <input id={name} name={name} type={type} autoComplete={autoComplete} inputMode={inputMode} min={min} required={required} defaultValue={defaultValue} placeholder={placeholder} className="ks-input" />
     </div>
   );
 }
 
-export function PasswordField({ name, label, autoComplete, action }: { name: string; label: string; autoComplete: string; action?: ReactNode }) {
+export function PasswordField({ name, label, autoComplete, placeholder, action }: { name: string; label: string; autoComplete: string; placeholder?: string; action?: ReactNode }) {
   const [visible, setVisible] = useState(false);
   return (
     <div className="grid gap-2">
       <Label htmlFor={name} text={label} action={action} />
       <div className="relative">
-        <input id={name} name={name} type={visible ? "text" : "password"} autoComplete={autoComplete} required className="ks-input pr-12" />
+        <input id={name} name={name} type={visible ? "text" : "password"} autoComplete={autoComplete} placeholder={placeholder} required className="ks-input pr-12" />
         <button
           type="button"
           onClick={() => setVisible((current) => !current)}

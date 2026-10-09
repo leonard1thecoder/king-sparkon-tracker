@@ -86,24 +86,24 @@ export function ContactForm() {
       <div className="grid gap-5 sm:grid-cols-2">
         <label className={labelClass}>
           Contact name
-          <input name="contactName" autoComplete="name" className="ks-input" />
+          <input name="contactName" autoComplete="name" placeholder="Sizolwakhe Nkosi" className="ks-input" />
         </label>
         <label className={labelClass}>
           Phone number
-          <input name="phoneNumber" type="tel" autoComplete="tel" className="ks-input" />
+          <input name="phoneNumber" type="tel" autoComplete="tel" placeholder="+27 82 123 4567" className="ks-input" />
         </label>
       </div>
       <label className={labelClass}>
         Business name
-        <input name="businessName" autoComplete="organization" required className="ks-input" />
+        <input name="businessName" autoComplete="organization" required placeholder="Sparkon Retail Store" className="ks-input" />
       </label>
       <label className={labelClass}>
         Email address
-        <input name="emailAddress" type="email" autoComplete="email" required className="ks-input" />
+        <input name="emailAddress" type="email" autoComplete="email" required placeholder="owner@sparkonstore.co.za" className="ks-input" />
       </label>
       <label className={labelClass}>
         What do you need to manage?
-        <textarea name="message" required maxLength={2000} className="ks-textarea" />
+        <textarea name="message" required maxLength={2000} placeholder="Describe the roles, products or ticket flow you need to manage" className="ks-textarea" />
       </label>
 
       {status ? <StatusNote tone={status.tone === "success" ? "success" : "error"} message={status.message} /> : null}

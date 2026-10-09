@@ -30,6 +30,49 @@ body:has(.ks-public) {
   background-image: none;
 }
 
+/* Shared dashboard components (for example the UIF calculator steps) read
+   theme tokens such as --ink, --surface and --signal. Those tokens hold dark
+   dashboard values. Remap them inside .ks-public only, so those components
+   render in the public palette here while dashboards keep their own values. */
+.ks-public {
+  --ink: #17231d;
+  --steel: #647168;
+  --muted: #647168;
+  --line: #e6ece7;
+  --line-strong: #cfd9d2;
+  --surface: #f6f9f7;
+  --signal: #17231d;
+  --signal-strong: #0b1510;
+  --signal-soft: #e7f6ec;
+  --danger: #b42318;
+  --confirm: #17623b;
+  --warning: #8a5a00;
+  --shadow-soft: 0 8px 24px -18px rgba(23, 35, 29, 0.35);
+}
+
+/* Legacy globals force every bg-white element to near-black with !important.
+   Inside the public scope, white stays white. Dashboards are not affected. */
+.ks-public .bg-white {
+  background-color: var(--ks-white) !important;
+}
+
+/* Legacy globals set dark color-scheme on inputs, which darkens the native date picker. */
+.ks-public input,
+.ks-public select,
+.ks-public textarea {
+  color-scheme: light;
+}
+
+/* Panel change in the UIF tools. Disabled by the reduced-motion block below. */
+@keyframes ks-panel-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.ks-panel:not([hidden]) {
+  animation: ks-panel-in 300ms ease both;
+}
+
 /* The global stylesheet (globals.css) paints every <section> black and sets
    dark-theme text on sections, articles and asides. Unlayered global rules beat
    Tailwind utilities, so the public scope resets them here with higher
@@ -451,4 +494,61 @@ body:has(.ks-public) {
   .ks-nav-link:hover {
     transform: none;
   }
+}
+
+/* Long-form legal text (Prose). The typography plugin is not installed, so the
+   prose-* utility classes do nothing; these rules give the body its structure. */
+.ks-public .prose {
+  max-width: 72ch;
+  color: var(--ks-muted);
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.ks-public .prose h2 {
+  margin: 2.5rem 0 0.75rem;
+  color: var(--ks-ink);
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.ks-public .prose h2:first-child {
+  margin-top: 0;
+}
+
+.ks-public .prose p {
+  margin: 0 0 1rem;
+}
+
+.ks-public .prose strong {
+  color: var(--ks-ink);
+  font-weight: 800;
+}
+
+.ks-public .prose ul {
+  margin: 0 0 1rem;
+  padding-left: 1.3rem;
+  list-style: disc;
+}
+
+.ks-public .prose li {
+  margin: 0.35rem 0;
+}
+
+.ks-public .prose a {
+  color: var(--ks-ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.ks-public .prose code {
+  padding: 0.1rem 0.35rem;
+  border: 1px solid var(--ks-line);
+  border-radius: 6px;
+  background: #f4f7f5;
+  color: var(--ks-ink);
+  font-size: 0.85em;
 }
