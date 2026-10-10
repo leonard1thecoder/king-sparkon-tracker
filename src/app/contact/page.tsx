@@ -66,7 +66,7 @@ export default function ContactPage() {
         </section>
 
         <section className="ks-section pt-0 pb-24">
-          <div className="ks-wrap grid gap-5 md:grid-cols-3">
+          <div className="ks-wrap grid gap-5 md:grid-cols-2">
             <div className="ks-card p-6">
               <h3 className="font-black text-[var(--ks-ink)]">What to include</h3>
               <p className="mt-2 text-sm leading-6 text-[var(--ks-muted)]">Operation type (retail, events, tuck-shop), number of workers, whether you need tickets, tips or affiliates.</p>
@@ -74,14 +74,6 @@ export default function ContactPage() {
             <div className="ks-card p-6">
               <h3 className="font-black text-[var(--ks-ink)]">Response</h3>
               <p className="mt-2 text-sm leading-6 text-[var(--ks-muted)]">A role map, recommended first guides, and whether Free Trial, Plus or Pro fits your worker count.</p>
-            </div>
-            <div className="ks-card p-6">
-              <h3 className="font-black text-[var(--ks-ink)]">Links</h3>
-              <p className="mt-2 text-sm leading-6 text-[var(--ks-muted)]">About the founder, how the workflow runs, and the full feature map are all public — no account needed.</p>
-              <div className="mt-3 flex flex-wrap gap-3 text-xs font-bold">
-                <Link href="/about" className="text-[var(--ks-ink)] hover:underline">About →</Link>
-                <Link href="/features" className="text-[var(--ks-ink)] hover:underline">Features →</Link>
-              </div>
             </div>
           </div>
         </section>
