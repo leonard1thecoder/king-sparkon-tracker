@@ -170,7 +170,7 @@ export default function HomePage() {
                 <div className="ks-card h-full p-6 md:p-8">
                   <h3 className="text-lg font-black text-[var(--ks-ink)]">Getting paid as a business</h3>
                   <ul className="mt-4 grid gap-3 text-sm leading-6 text-[var(--ks-muted)]">
-                    <li>Businesses outside South Africa withdraw cash to their bank account.</li>
+                    <li>Businesses outside South Africa withdraw cash to their bank account, which arrives within 14 days.</li>
                     <li><strong className="font-extrabold text-[var(--ks-ink)]">South Africa:</strong> withdrawals arrive in your bank account within 24 hours.</li>
                   </ul>
                 </div>
