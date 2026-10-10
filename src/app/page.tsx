@@ -160,6 +160,10 @@ export default function HomePage() {
                     <li><strong className="font-extrabold text-[var(--ks-ink)]">South Africa:</strong> payments are processed with PayFast.</li>
                     <li><strong className="font-extrabold text-[var(--ks-ink)]">Rest of the world:</strong> payments are processed with Stripe.</li>
                   </ul>
+                  <div className="mt-6 flex flex-wrap items-center gap-3" role="list" aria-label="Payment providers">
+                    <span role="listitem" className="inline-flex h-10 items-center rounded-lg border border-[var(--ks-line)] bg-[var(--ks-white)] px-4 text-base font-black tracking-[-0.02em] text-[#635BFF]">stripe</span>
+                    <span role="listitem" className="inline-flex h-10 items-center rounded-lg border border-[var(--ks-line)] bg-[var(--ks-white)] px-4 text-base font-black tracking-[-0.02em] text-[var(--ks-ink)]">PayFast</span>
+                  </div>
                 </div>
               </Reveal>
               <Reveal>
