@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CookieSettingsButton } from "@/components/cookie-consent/CookieSettingsButton";
+import { SocialLinks } from "@/components/social/SocialLinks";
 
 const groups = [
   {
@@ -38,6 +39,7 @@ export function PublicFooter() {
           <p className="mt-3 max-w-xs text-sm leading-6 text-[var(--ks-muted)]">
             Events, commerce and opportunities connected in one platform.
           </p>
+          <SocialLinks variant="public" className="mt-5" />
         </div>
         {groups.map((group) => (
           <nav key={group.title} aria-label={group.title}>
