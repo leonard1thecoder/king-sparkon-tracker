@@ -143,6 +143,38 @@ export default function HomePage() {
           </div>
         </section>
 
+        <section id="payments" className="ks-section border-t border-[var(--ks-line)]">
+          <div className="ks-wrap">
+            <Reveal>
+              <SectionHead
+                eyebrow="Payments"
+                title="Pay with PayFast or Stripe. Withdraw to your bank."
+                text="Each payment is processed by the provider for your region. Businesses receive their money in a bank account."
+              />
+            </Reveal>
+            <div className="mt-14 grid gap-6 md:grid-cols-2">
+              <Reveal>
+                <div className="ks-card h-full p-6 md:p-8">
+                  <h3 className="text-lg font-black text-[var(--ks-ink)]">Paying for tickets and products</h3>
+                  <ul className="mt-4 grid gap-3 text-sm leading-6 text-[var(--ks-muted)]">
+                    <li><strong className="font-extrabold text-[var(--ks-ink)]">South Africa:</strong> payments are processed with PayFast.</li>
+                    <li><strong className="font-extrabold text-[var(--ks-ink)]">Rest of the world:</strong> payments are processed with Stripe.</li>
+                  </ul>
+                </div>
+              </Reveal>
+              <Reveal>
+                <div className="ks-card h-full p-6 md:p-8">
+                  <h3 className="text-lg font-black text-[var(--ks-ink)]">Getting paid as a business</h3>
+                  <ul className="mt-4 grid gap-3 text-sm leading-6 text-[var(--ks-muted)]">
+                    <li>Businesses outside South Africa withdraw cash to their bank account.</li>
+                    <li><strong className="font-extrabold text-[var(--ks-ink)]">South Africa:</strong> withdrawals arrive in your bank account within 24 hours.</li>
+                  </ul>
+                </div>
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
         <section id="jobs" className="ks-section border-t border-[var(--ks-line)]">
           <div className="ks-wrap">
             <Reveal>
