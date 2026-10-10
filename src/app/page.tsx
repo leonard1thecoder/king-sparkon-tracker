@@ -143,6 +143,42 @@ export default function HomePage() {
           </div>
         </section>
 
+        <section id="payments" className="ks-section border-t border-[var(--ks-line)]">
+          <div className="ks-wrap">
+            <Reveal>
+              <SectionHead
+                eyebrow="Payments"
+                title="Pay with PayFast or Stripe. Withdraw to your bank."
+                text="Each payment is processed by the provider for your region. Businesses receive their money in a bank account."
+              />
+            </Reveal>
+            <div className="mt-14 grid gap-6 md:grid-cols-2">
+              <Reveal>
+                <div className="ks-card h-full p-6 md:p-8">
+                  <h3 className="text-lg font-black text-[var(--ks-ink)]">Paying for tickets and products</h3>
+                  <ul className="mt-4 grid gap-3 text-sm leading-6 text-[var(--ks-muted)]">
+                    <li><strong className="font-extrabold text-[var(--ks-ink)]">South Africa:</strong> payments are processed with PayFast.</li>
+                    <li><strong className="font-extrabold text-[var(--ks-ink)]">Rest of the world:</strong> payments are processed with Stripe.</li>
+                  </ul>
+                  <div className="mt-6 flex flex-wrap items-center gap-3" role="list" aria-label="Payment providers">
+                    <span role="listitem" className="inline-flex h-10 items-center rounded-lg border border-[var(--ks-line)] bg-[var(--ks-white)] px-4 text-base font-black tracking-[-0.02em] text-[#635BFF]">stripe</span>
+                    <span role="listitem" className="inline-flex h-10 items-center rounded-lg border border-[var(--ks-line)] bg-[var(--ks-white)] px-4 text-base font-black tracking-[-0.02em] text-[var(--ks-ink)]">PayFast</span>
+                  </div>
+                </div>
+              </Reveal>
+              <Reveal>
+                <div className="ks-card h-full p-6 md:p-8">
+                  <h3 className="text-lg font-black text-[var(--ks-ink)]">Getting paid as a business</h3>
+                  <ul className="mt-4 grid gap-3 text-sm leading-6 text-[var(--ks-muted)]">
+                    <li>Businesses outside South Africa withdraw cash to their bank account, which arrives within 14 days.</li>
+                    <li><strong className="font-extrabold text-[var(--ks-ink)]">South Africa:</strong> withdrawals arrive in your bank account within 24 hours.</li>
+                  </ul>
+                </div>
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
         <section id="jobs" className="ks-section border-t border-[var(--ks-line)]">
           <div className="ks-wrap">
             <Reveal>

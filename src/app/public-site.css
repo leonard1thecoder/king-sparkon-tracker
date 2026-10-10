@@ -552,3 +552,11 @@ body:has(.ks-public) {
   color: var(--ks-ink);
   font-size: 0.85em;
 }
+
+/* The dark theme sets select options to a near-black background. Open dropdowns on public
+   and auth pages use the light surface and ink text instead. */
+.ks-public select option,
+.ks-public select optgroup {
+  background-color: var(--ks-white);
+  color: var(--ks-ink);
+}

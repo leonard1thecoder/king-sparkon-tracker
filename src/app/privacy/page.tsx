@@ -77,7 +77,6 @@ export default function PrivacyPage() {
               <ul className="mt-3 space-y-2 text-sm font-semibold">
                 <li><Link href="/terms" className="text-[var(--ks-ink)] underline underline-offset-4">Terms of service →</Link></li>
                 <li><Link href="/about" className="text-[var(--ks-ink)] underline underline-offset-4">About the platform →</Link></li>
-                <li><Link href="/faq" className="text-[var(--ks-ink)] underline underline-offset-4">FAQ →</Link></li>
               </ul>
             </div>
           </div>
