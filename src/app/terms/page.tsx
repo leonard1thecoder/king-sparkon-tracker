@@ -57,7 +57,6 @@ export default function TermsPage() {
               <p className="text-sm font-black">Related</p>
               <ul className="mt-3 space-y-2 text-sm font-semibold">
                 <li><Link href="/privacy" className="text-[var(--ks-ink)] underline underline-offset-4">Privacy policy →</Link></li>
-                <li><Link href="/how-it-works" className="text-[var(--ks-ink)] underline underline-offset-4">How it works →</Link></li>
               </ul>
             </div>
           </div>
