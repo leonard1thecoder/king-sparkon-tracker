@@ -24,6 +24,7 @@ import {
   listOwnerProducts,
   listProductBarcodeConfigurations,
   updateOwnerProductQuantity,
+  updateProductFulfilment,
   uploadProductImage,
   type ProductBarcodeConfiguration,
   type ProductBarcodeMode,
@@ -53,6 +54,10 @@ const emptyProductForm = {
   returnablePrice: "",
   nightShiftEnabled: false,
   nightShiftPrice: "",
+  pickupEnabled: true,
+  deliveryEnabled: false,
+  deliveryFee: "",
+  deliveryLeadTimeMinutes: "",
 };
 
 const acceptedImageTypes = "image/jpeg,image/png,image/webp,image/gif";
@@ -105,6 +110,8 @@ export function OwnerTuckShopProductManager() {
   const [imageFiles, setImageFiles] = useState<Record<number, File | undefined>>({});
   const [imagePreviews, setImagePreviews] = useState<Record<number, string>>({});
   const [quantityDrafts, setQuantityDrafts] = useState<Record<number, string>>({});
+  const [fulfilmentDrafts, setFulfilmentDrafts] = useState<Record<number, { pickup: boolean; delivery: boolean; fee: string; leadTime: string }>>({});
+  const [fulfilmentSavingId, setFulfilmentSavingId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -207,6 +214,17 @@ export function OwnerTuckShopProductManager() {
     }
 
     try {
+      if (!form.pickupEnabled && !form.deliveryEnabled) {
+        throw new Error("Choose pickup, delivery, or both for this product.");
+      }
+      const deliveryFee = form.deliveryEnabled && form.deliveryFee ? Number(form.deliveryFee) : 0;
+      if (form.deliveryEnabled && (!Number.isFinite(deliveryFee) || deliveryFee < 0)) {
+        throw new Error("Enter a valid delivery fee of zero or more.");
+      }
+      const leadTime = form.deliveryEnabled && form.deliveryLeadTimeMinutes ? Number(form.deliveryLeadTimeMinutes) : null;
+      if (leadTime !== null && (!Number.isInteger(leadTime) || leadTime < 0)) {
+        throw new Error("Delivery lead time must be a whole number of minutes from zero upward.");
+      }
       const created = await createOwnerProduct({
         name: form.name.trim(),
         productBarcode: null,
@@ -220,6 +238,10 @@ export function OwnerTuckShopProductManager() {
         nightShiftPrice: form.nightShiftEnabled && form.nightShiftPrice ? Number(form.nightShiftPrice) : null,
         nightShiftStartTime: null,
         nightShiftEndTime: null,
+        pickupEnabled: form.pickupEnabled,
+        deliveryEnabled: form.deliveryEnabled,
+        deliveryFee,
+        deliveryLeadTimeMinutes: leadTime,
       });
       await configureProductBarcodeMode(created.id, {
         barcodeMode: form.barcodeMode,
@@ -278,8 +300,53 @@ export function OwnerTuckShopProductManager() {
     }
   }
 
-  function openDiscountModal(product: Product) {
-    setDiscountProduct(product);
+  function fulfilmentDraft(product: Product) {
+    return (
+      fulfilmentDrafts[product.id] ?? {
+        pickup: product.pickupEnabled ?? true,
+        delivery: product.deliveryEnabled ?? false,
+        fee: product.deliveryFee != null ? String(product.deliveryFee) : "",
+        leadTime: product.deliveryLeadTimeMinutes != null ? String(product.deliveryLeadTimeMinutes) : "",
+      }
+    );
+  }
+
+  async function saveFulfilment(product: Product) {
+    const draft = fulfilmentDraft(product);
+    if (!draft.pickup && !draft.delivery) {
+      setError("Choose pickup, delivery, or both for this product.");
+      return;
+    }
+    const fee = draft.fee.trim() === "" ? 0 : Number(draft.fee);
+    if (!Number.isFinite(fee) || fee < 0) {
+      setError("Delivery fee must be zero or more.");
+      return;
+    }
+    const leadTime = draft.leadTime.trim() === "" ? null : Number(draft.leadTime);
+    if (leadTime !== null && (!Number.isInteger(leadTime) || leadTime < 0)) {
+      setError("Delivery lead time must be a whole number of minutes from zero upward.");
+      return;
+    }
+    setFulfilmentSavingId(product.id);
+    setError(null);
+    setSuccess(null);
+    try {
+      await updateProductFulfilment(product.id, {
+        pickupEnabled: draft.pickup,
+        deliveryEnabled: draft.delivery,
+        deliveryFee: fee,
+        deliveryLeadTimeMinutes: leadTime,
+      });
+      setSuccess(`${product.name} fulfilment saved (${[draft.pickup ? "pickup" : null, draft.delivery ? "delivery" : null].filter(Boolean).join(" + ")}).`);
+      await loadProducts();
+    } catch (exception) {
+      setError(normalizeApiError(exception).message);
+    } finally {
+      setFulfilmentSavingId(null);
+    }
+  }
+
+  function openDiscountModal(product: Product) {    setDiscountProduct(product);
     setDiscountPercentDraft("");
     const today = new Date().toISOString().slice(0, 16);
     const nextWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16);
@@ -373,6 +440,19 @@ export function OwnerTuckShopProductManager() {
               <label className="flex items-center gap-3 rounded-[1.2rem] border border-[var(--line)] bg-[var(--surface)] p-4 font-black"><input type="checkbox" checked={form.returnableEnabled} onChange={(event) => setForm((current) => ({ ...current, returnableEnabled: event.target.checked }))} className="h-5 w-5 accent-[var(--signal)]" /> Returnable item <input value={form.returnablePrice} onChange={(event) => setForm((current) => ({ ...current, returnablePrice: event.target.value }))} disabled={!form.returnableEnabled} inputMode="decimal" placeholder="Return value" className={`${fieldClass()} ml-auto max-w-40`} /></label>
               <label className="flex items-center gap-3 rounded-[1.2rem] border border-[var(--line)] bg-[var(--surface)] p-4 font-black"><input type="checkbox" checked={form.nightShiftEnabled} onChange={(event) => setForm((current) => ({ ...current, nightShiftEnabled: event.target.checked }))} className="h-5 w-5 accent-[var(--signal)]" /> Night price <input value={form.nightShiftPrice} onChange={(event) => setForm((current) => ({ ...current, nightShiftPrice: event.target.value }))} disabled={!form.nightShiftEnabled} inputMode="decimal" placeholder="Night price" className={`${fieldClass()} ml-auto max-w-40`} /></label>
             </div>
+            <div className="grid gap-4 rounded-[1.35rem] border border-[var(--signal)]/40 bg-[var(--signal-soft)]/40 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.1em] text-[var(--steel)]">Fulfilment — pickup, delivery, or both</p>
+              <div className="grid gap-4 lg:grid-cols-2">
+                <label className="flex items-center gap-3 rounded-[1.2rem] border border-[var(--line)] bg-white p-4 font-black"><input type="checkbox" checked={form.pickupEnabled} onChange={(event) => setForm((current) => ({ ...current, pickupEnabled: event.target.checked }))} className="h-5 w-5 accent-[var(--signal)]" /> Picked up<span className="ml-auto text-xs font-semibold text-[var(--muted)]">Counter / collection</span></label>
+                <label className="flex items-center gap-3 rounded-[1.2rem] border border-[var(--line)] bg-white p-4 font-black"><input type="checkbox" checked={form.deliveryEnabled} onChange={(event) => setForm((current) => ({ ...current, deliveryEnabled: event.target.checked }))} className="h-5 w-5 accent-[var(--danger)]" /> Delivered<span className="ml-auto text-xs font-semibold text-[var(--muted)]">Needs address + fee</span></label>
+              </div>
+              {form.deliveryEnabled ? (
+                <div className="grid gap-4 md:grid-cols-2">
+                  <FieldLabel label="Delivery fee" hint="ZAR per unit"><input value={form.deliveryFee} onChange={(event) => setForm((current) => ({ ...current, deliveryFee: event.target.value }))} inputMode="decimal" placeholder="e.g. 15.00 (0 = free)" className={fieldClass()} /></FieldLabel>
+                  <FieldLabel label="Delivery takes" hint="minutes"><input value={form.deliveryLeadTimeMinutes} onChange={(event) => setForm((current) => ({ ...current, deliveryLeadTimeMinutes: event.target.value.replace(/\D/g, "") }))} inputMode="numeric" placeholder="e.g. 45" className={fieldClass()} /></FieldLabel>
+                </div>
+              ) : null}
+            </div>
             <div className="flex justify-end border-t border-[var(--line)] pt-5"><Button type="submit" disabled={saving}>{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <PackagePlus className="h-4 w-4" />} Create product</Button></div>
           </form>
         </CardContent>
@@ -401,7 +481,7 @@ export function OwnerTuckShopProductManager() {
                   <article key={product.id} className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)]">
                     <div className="relative aspect-[16/10] overflow-hidden bg-[var(--surface)]">
                       <img src={imagePreviews[product.id] || productImage(product)} alt={product.name} className="h-full w-full object-cover" />
-                      <div className="absolute left-3 top-3 flex flex-wrap gap-2"><StatusPill label={mode === "BRANDED" ? "BARCODED BRAND" : "AUTO GENERATED"} tone={mode === "BRANDED" ? "signal" : "confirm"} />{promotion ? <StatusPill label={promotion.discountPercent ? `SALE -${Number(promotion.discountPercent).toFixed(0)}%` : "PROMOTED"} tone="signal" /> : null}{product.salePrice != null && product.salePrice < product.price ? <StatusPill label="SALE" tone="signal" /> : null}</div>
+                      <div className="absolute left-3 top-3 flex flex-wrap gap-2"><StatusPill label={mode === "BRANDED" ? "BARCODED BRAND" : "AUTO GENERATED"} tone={mode === "BRANDED" ? "signal" : "confirm"} />{promotion ? <StatusPill label={promotion.discountPercent ? `SALE -${Number(promotion.discountPercent).toFixed(0)}%` : "PROMOTED"} tone="signal" /> : null}{product.salePrice != null && product.salePrice < product.price ? <StatusPill label="SALE" tone="signal" /> : null}{(product.pickupEnabled ?? true) ? <StatusPill label="PICKUP" tone="neutral" /> : null}{(product.deliveryEnabled ?? false) ? <StatusPill label={`DELIVERY${Number(product.deliveryFee ?? 0) > 0 ? ` R${Number(product.deliveryFee).toFixed(2)}` : ""}`} tone="warning" /> : null}</div>
                     </div>
                     <div className="grid gap-3 p-4">
                       <div><p className="font-mono text-[0.625rem] font-bold uppercase tracking-[0.1em] text-[var(--muted)]">Product #{product.id} · {product.category}</p><h2 className="mt-0.5 text-[1.125rem] font-bold tracking-[-0.015em] text-[var(--ink)]">{product.name}</h2>{product.salePrice != null && product.salePrice < product.price ? <><p className="money mt-1.5 text-[1.25rem] font-bold text-[var(--signal)]">{money(product.salePrice)}</p><p className="money text-[0.8125rem] font-semibold text-[var(--muted)] line-through">{money(product.price)}</p></> : <p className="money mt-1.5 text-[1.25rem] font-bold text-[var(--signal)]">{money(product.salePrice ?? product.price)}</p>}{promotion ? <p className="mt-1 text-[0.6875rem] font-bold text-[var(--signal)]">{promotion.discountPercent ? `${Number(promotion.discountPercent).toFixed(0)}% off` : "Promoted"} {promotion.startsAt ? `from ${date(promotion.startsAt)}` : ""} until {date(promotion.endsAt)}</p> : null}</div>
@@ -414,6 +494,26 @@ export function OwnerTuckShopProductManager() {
                         <div className="grid gap-2 sm:grid-cols-[1fr_auto]"><input value={quantityDrafts[product.id] ?? String(product.stockQuantity)} onChange={(event) => setQuantityDrafts((current) => ({ ...current, [product.id]: event.target.value.replace(/\D/g, "") }))} inputMode="numeric" aria-label={`New stock quantity for ${product.name}`} className={fieldClass()} /><Button type="button" disabled={updating} onClick={() => void updateQuantity(product)}>{updating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Boxes className="h-4 w-4" />} Update quantity</Button></div>
                       )}
                       <div className="grid gap-2"><input type="file" accept={acceptedImageTypes} onChange={(event) => selectExistingProductImage(product.id, event.target.files?.[0] ?? null)} className={fileInputClass()} /><Button type="button" variant="quiet" disabled={uploading || !imageFiles[product.id]} onClick={() => void saveImage(product.id)}>{uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Update photo</Button></div>
+                      {(() => {
+                        const draft = fulfilmentDraft(product);
+                        const savingFulfilment = fulfilmentSavingId === product.id;
+                        return (
+                          <div className="grid gap-2 rounded-[1rem] border border-[var(--line)] bg-[var(--surface)] p-3">
+                            <p className="text-[0.625rem] font-bold uppercase tracking-[0.08em] text-[var(--muted)]">Fulfilment — pickup, delivery or both</p>
+                            <div className="flex flex-wrap gap-3">
+                              <label className="inline-flex items-center gap-2 text-xs font-black text-[var(--ink)]"><input type="checkbox" checked={draft.pickup} onChange={(event) => setFulfilmentDrafts((current) => ({ ...current, [product.id]: { ...draft, pickup: event.target.checked } }))} className="h-4 w-4 accent-[var(--signal)]" /> Pickup</label>
+                              <label className="inline-flex items-center gap-2 text-xs font-black text-[var(--ink)]"><input type="checkbox" checked={draft.delivery} onChange={(event) => setFulfilmentDrafts((current) => ({ ...current, [product.id]: { ...draft, delivery: event.target.checked } }))} className="h-4 w-4 accent-[var(--danger)]" /> Delivery</label>
+                            </div>
+                            {draft.delivery ? (
+                              <div className="grid grid-cols-2 gap-2">
+                                <input value={draft.fee} onChange={(event) => setFulfilmentDrafts((current) => ({ ...current, [product.id]: { ...draft, fee: event.target.value } }))} inputMode="decimal" placeholder="Fee /unit" aria-label={`Delivery fee for ${product.name}`} className={fieldClass()} />
+                                <input value={draft.leadTime} onChange={(event) => setFulfilmentDrafts((current) => ({ ...current, [product.id]: { ...draft, leadTime: event.target.value.replace(/\D/g, "") } }))} inputMode="numeric" placeholder="Minutes" aria-label={`Delivery lead time for ${product.name}`} className={fieldClass()} />
+                              </div>
+                            ) : null}
+                            <Button type="button" variant="quiet" disabled={savingFulfilment} onClick={() => void saveFulfilment(product)}>{savingFulfilment ? <Loader2 className="h-4 w-4 animate-spin" /> : <Boxes className="h-4 w-4" />} Save fulfilment</Button>
+                          </div>
+                        );
+                      })()}
                       <Button type="button" disabled={promoting || product.stockQuantity <= 0} onClick={() => openDiscountModal(product)} className="border-[var(--gold)] bg-[var(--gold)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--gold)]">{promoting ? <Loader2 className="h-4 w-4 animate-spin" /> : <BadgePercent className="h-4 w-4" />} {promotion ? "Update discount sale" : "Discount sale"}</Button>
                       <Button type="button" variant="quiet" onClick={() => setTransactionProduct(product)} className="border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--signal)] hover:text-[var(--signal)]"><Boxes className="h-4 w-4" /> View transactions per product</Button>
                       <Button type="button" variant="quiet" disabled={deleting} onClick={() => void removeProduct(product)} className="border-[var(--danger)]/35 text-[var(--danger)] hover:bg-[var(--danger)] hover:text-white">{deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />} Delete product</Button>

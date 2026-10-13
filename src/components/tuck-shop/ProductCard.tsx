@@ -108,6 +108,16 @@ export function ProductCard({
               Returnable
             </span>
           )}
+          {(product.pickupEnabled ?? true) && (
+            <span className="inline-flex items-center rounded-full border border-[var(--line-strong)]/60 bg-white/90 px-2 py-0.5 text-[0.6rem] font-black uppercase tracking-[0.12em] text-[var(--steel)] backdrop-blur-sm">
+              Pickup
+            </span>
+          )}
+          {(product.deliveryEnabled ?? false) && (
+            <span className="inline-flex items-center rounded-full border border-[var(--danger)]/40 bg-[var(--danger)]/10 px-2 py-0.5 text-[0.6rem] font-black uppercase tracking-[0.12em] text-[var(--danger)] backdrop-blur-sm">
+              Delivery{Number(product.deliveryFee ?? 0) > 0 ? ` R${Number(product.deliveryFee).toFixed(2)}` : " free"}{product.deliveryLeadTimeMinutes != null ? ` ~${product.deliveryLeadTimeMinutes}m` : ""}
+            </span>
+          )}
         </div>
 
         {/* Quick-view overlay on hover */}

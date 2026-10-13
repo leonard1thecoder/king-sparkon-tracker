@@ -76,6 +76,11 @@ export type Product = {
   returnablePrice?: number;
   nightShiftEnabled?: boolean;
   nightShiftPrice?: number;
+  pickupEnabled?: boolean;
+  deliveryEnabled?: boolean;
+  deliveryFee?: number | null;
+  localizedDeliveryFee?: MoneyResponse | null;
+  deliveryLeadTimeMinutes?: number | null;
 };
 
 export type MoneyResponse = {
@@ -96,6 +101,10 @@ export type CreateProductPayload = {
   nightShiftEndTime?: string | null;
   stockQuantity: number;
   productImageUrl?: string | null;
+  pickupEnabled?: boolean | null;
+  deliveryEnabled?: boolean | null;
+  deliveryFee?: number | null;
+  deliveryLeadTimeMinutes?: number | null;
 };
 
 export type ProductImageUpdatePayload = {
@@ -150,6 +159,7 @@ export type TuckShopPurchaseItemPayload = {
   quantity: number;
   barcodes?: string[];
   emptiesReturned?: number;
+  fulfilment?: "PICKUP" | "DELIVERY" | null;
 };
 
 export type CreateTuckShopPurchasePayload = {
@@ -159,6 +169,7 @@ export type CreateTuckShopPurchasePayload = {
   tipAmount?: number | null;
   tipCallbackUrl?: string | null;
   items: TuckShopPurchaseItemPayload[];
+  deliveryAddress?: string | null;
 };
 
 export type TuckShopPurchaseItem = {
@@ -176,6 +187,7 @@ export type TuckShopPurchaseItem = {
   emptiesCreditTotal?: number;
   netLineTotal?: number;
   refunded?: boolean;
+  fulfilment?: "PICKUP" | "DELIVERY" | null;
 };
 
 export type RefundKind = "PRODUCT_ITEM" | "TICKET";
@@ -212,6 +224,11 @@ export type TuckShopPurchase = {
   depositTotal?: number;
   emptiesCreditTotal?: number;
   netTotal?: number;
+  deliveryFeeTotal?: number | null;
+  grandTotal?: number | null;
+  fulfilmentMode?: "PICKUP" | "DELIVERY" | null;
+  deliveryAddress?: string | null;
+  deliveryEtaMinutes?: number | null;
   paymentStatus?: string | null;
   paymentType?: PaymentType | string | null;
   paymentReference?: string | null;
@@ -245,6 +262,7 @@ export type CreateEmbeddedCartPaymentPayload = {
   tickets: EmbeddedCartTicketItem[];
   tips?: EmbeddedCartTipItem[];
   services?: EmbeddedCartServiceItem[];
+  deliveryAddress?: string | null;
 };
 
 export type EmbeddedCartTipItem = {
