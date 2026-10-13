@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { PublicHeader } from "@/components/public/PublicHeader";
 import { PublicBreadcrumb, breadcrumbJsonLd } from "@/components/public/Breadcrumb";
 import { EventCard, toEventCardData } from "@/components/public/EventCard";
-import { getPublishedEventById, getPublishedEvents } from "@/lib/public/data";
+import { getPublishedEventById, getPublishedEvents, isDemoId } from "@/lib/public/data";
+import { SampleBadge } from "@/components/public/SampleBadge";
 import { buildSlug, idFromSlug } from "@/lib/public/slug";
 import { eventStartIso, formatEventDate, formatEventTime, formatZar } from "@/lib/public/format";
 import { pageMetadata } from "@/lib/seo";
@@ -95,6 +96,7 @@ export default async function EventDetailPage({ params }: Props) {
             <div>
               <p className="ks-eyebrow">Event</p>
               <h1 className="ks-h1 mt-3">{event.name}</h1>
+              {isDemoId(event.id) ? <SampleBadge /> : null}
               <dl className="mt-8 grid gap-4 text-sm sm:grid-cols-2">
                 <div className="ks-card">
                   <dt className="ks-eyebrow">Date</dt>

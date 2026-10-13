@@ -4,7 +4,8 @@ import { PublicHeader } from "@/components/public/PublicHeader";
 import { PublicBreadcrumb } from "@/components/public/Breadcrumb";
 import { ProductCard } from "@/components/public/ProductCard";
 import { Reveal, Scene } from "@/components/public/InView";
-import { getPublicProducts } from "@/lib/public/data";
+import { getPublicProducts, isDemoProductId } from "@/lib/public/data";
+import { SampleBadge } from "@/components/public/SampleBadge";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -43,6 +44,7 @@ export default async function MallPage() {
               <p className="ks-lead mt-5">
                 Products from connected businesses, checked out online or at the counter, with stock and records kept together.
               </p>
+              {products.length > 0 && isDemoProductId(products[0].id) ? <SampleBadge /> : null}
             </div>
             <Scene className="relative h-56">
               {[
