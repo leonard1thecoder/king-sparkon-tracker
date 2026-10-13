@@ -45,6 +45,7 @@ export function demoEvents(): TicketEvent[] {
       description:
         "A full day of live music, food stalls and local crafts. Three stages, twenty artists, and a sunset headline set on the main stage.",
       location: "Johannesburg",
+      bannerUrl: "https://picsum.photos/seed/ks-summer-festival/1200/630",
       eventDate: futureDate(21),
       eventTime: "12:00",
       eventEndTime: "23:00",
@@ -65,6 +66,7 @@ export function demoEvents(): TicketEvent[] {
       description:
         "The city's finest amapiano DJs take over the warehouse floor until late. Doors open at 8pm, strictly no under 18s.",
       location: "Pretoria",
+      bannerUrl: "https://picsum.photos/seed/ks-amapiano-night/1200/630",
       eventDate: futureDate(14),
       eventTime: "20:00",
       eventEndTime: "04:00",
@@ -84,6 +86,7 @@ export function demoEvents(): TicketEvent[] {
       description:
         "Forty local vendors, craft drinks, live acoustic sets and a kids' corner. Free entry before 11am, tickets after.",
       location: "Cape Town",
+      bannerUrl: "https://picsum.photos/seed/ks-food-market/1200/630",
       eventDate: futureDate(9),
       eventTime: "09:00",
       eventEndTime: "15:00",
@@ -102,6 +105,7 @@ export function demoEvents(): TicketEvent[] {
       description:
         "Five stand-up acts plus a surprise headliner, hosted in the basement theatre. Bar opens at 6pm, show starts at 8pm sharp.",
       location: "Durban",
+      bannerUrl: "https://picsum.photos/seed/ks-comedy-friday/1200/630",
       eventDate: futureDate(5),
       eventTime: "20:00",
       eventEndTime: "23:00",

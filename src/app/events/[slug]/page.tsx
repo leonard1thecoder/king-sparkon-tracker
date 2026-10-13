@@ -92,6 +92,11 @@ export default async function EventDetailPage({ params }: Props) {
         <PublicBreadcrumb items={crumbs} />
 
         <section className="ks-section pt-4">
+          {event.bannerUrl ? (
+            <div className="ks-wrap mb-10 overflow-hidden rounded-[var(--ks-radius)] border border-[var(--ks-line)]">
+              <img src={event.bannerUrl} alt="" className="aspect-[21/9] w-full object-cover" />
+            </div>
+          ) : null}
           <div className="ks-wrap grid gap-12 lg:grid-cols-[1.2fr_0.8fr]">
             <div>
               <p className="ks-eyebrow">Event</p>
