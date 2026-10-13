@@ -1,11 +1,14 @@
 import type { Product, TuckShopPurchase } from "@/lib/types/backend";
 import type { TicketEvent, TicketType } from "@/types/tickets";
 
+export type CartFulfilment = "PICKUP" | "DELIVERY";
+
 export type TuckShopCartProductLine = {
   kind: "PRODUCT";
   product: Product;
   quantity: number;
   emptiesReturned: number;
+  fulfilment?: CartFulfilment;
 };
 
 export type TuckShopCartTicketLine = {
@@ -93,6 +96,50 @@ export function lineEmptiesCreditTotal(line: TuckShopCartProductLine) {
 
 export function lineNetTotal(line: TuckShopCartProductLine) {
   return productPrice(line.product) * line.quantity - lineEmptiesCreditTotal(line);
+}
+
+export function lineFulfilment(line: TuckShopCartProductLine): CartFulfilment {
+  return line.fulfilment === "DELIVERY" ? "DELIVERY" : "PICKUP";
+}
+
+export function clampLineFulfilment(product: Product, fulfilment: CartFulfilment | null | undefined): CartFulfilment {
+  const pickup = product.pickupEnabled ?? true;
+  const delivery = product.deliveryEnabled ?? false;
+  if (fulfilment === "DELIVERY" && delivery) return "DELIVERY";
+  if (fulfilment === "PICKUP" && pickup) return "PICKUP";
+  if (delivery) return "DELIVERY";
+  return "PICKUP";
+}
+
+export function lineDeliveryFeeTotal(line: TuckShopCartProductLine) {
+  if (lineFulfilment(line) !== "DELIVERY") return 0;
+  return Number(line.product.deliveryFee ?? 0) * line.quantity;
+}
+
+/** Whole-cart mode: DELIVERY when any product line is delivered (cart turns red). */
+export function cartDeliveryMode(cart: TuckShopCartLine[]): CartFulfilment {
+  return cart.some((line) => isProductLine(line) && lineFulfilment(line) === "DELIVERY") ? "DELIVERY" : "PICKUP";
+}
+
+export function cartDeliveryFeeTotal(cart: TuckShopCartLine[]) {
+  return cart.filter(isProductLine).reduce((total, line) => total + lineDeliveryFeeTotal(line), 0);
+}
+
+/** Longest delivery lead time across delivery lines, in minutes (null when unspecified). */
+export function cartDeliveryEtaMinutes(cart: TuckShopCartLine[]): number | null {
+  let eta: number | null = null;
+  for (const line of cart.filter(isProductLine)) {
+    if (lineFulfilment(line) !== "DELIVERY") continue;
+    const lead = line.product.deliveryLeadTimeMinutes;
+    if (typeof lead === "number" && Number.isFinite(lead) && lead >= 0 && (eta === null || lead > eta)) {
+      eta = lead;
+    }
+  }
+  return eta;
+}
+
+export function cartGrandTotal(cart: TuckShopCartLine[]) {
+  return cartNetTotal(cart) + cartDeliveryFeeTotal(cart);
 }
 
 export function cartDepositTotal(cart: TuckShopCartLine[]) {
@@ -232,11 +279,16 @@ function normalizeCartLine(line: Partial<TuckShopCartLine>): TuckShopCartLine | 
   if ((line.kind === "PRODUCT" || !line.kind) && "product" in line && line.product?.id) {
     const safeQuantity = Math.min(Math.max(Number(line.quantity ?? 0), 1), productLineMaxQuantity(line.product));
     const productLine = line as Partial<TuckShopCartProductLine>;
+    const fulfilment = clampLineFulfilment(
+      line.product,
+      (productLine.fulfilment === "DELIVERY" || productLine.fulfilment === "PICKUP" ? productLine.fulfilment : null) ?? "PICKUP",
+    );
     return {
       kind: "PRODUCT",
       product: line.product,
       quantity: safeQuantity,
       emptiesReturned: clampEmptiesReturned(line.product, safeQuantity, productLine.emptiesReturned ?? 0),
+      fulfilment,
     } as TuckShopCartProductLine;
   }
 
@@ -367,9 +419,9 @@ export function addTuckShopProductToCart(product: Product, quantity = 1) {
     ? current.map((line) => {
         if (!isProductLine(line) || line.product.id !== product.id) return line;
         const quantity = Math.min(line.quantity + safeQuantity, maxQuantity);
-        return { ...line, product, quantity, emptiesReturned: clampEmptiesReturned(product, quantity, line.emptiesReturned) };
+        return { ...line, product, quantity, emptiesReturned: clampEmptiesReturned(product, quantity, line.emptiesReturned), fulfilment: clampLineFulfilment(product, lineFulfilment(line)) };
       })
-    : [...current, { kind: "PRODUCT" as const, product, quantity: Math.min(safeQuantity, maxQuantity), emptiesReturned: 0 }];
+    : [...current, { kind: "PRODUCT" as const, product, quantity: Math.min(safeQuantity, maxQuantity), emptiesReturned: 0, fulfilment: clampLineFulfilment(product, "PICKUP") }];
 
   writeTuckShopCart(nextCart);
   return nextCart;
@@ -421,6 +473,45 @@ export function updateTuckShopCartEmpties(productId: number, empties: number) {
 
   writeTuckShopCart(nextCart);
   return nextCart;
+}
+
+export function updateTuckShopCartFulfilment(productId: number, fulfilment: CartFulfilment) {
+  const current = readTuckShopCart();
+  const nextCart = current.map((line) => {
+    if (isProductLine(line) && line.product.id === productId) {
+      return { ...line, fulfilment: clampLineFulfilment(line.product, fulfilment) };
+    }
+
+    return line;
+  });
+
+  writeTuckShopCart(nextCart);
+  return nextCart;
+}
+
+const TUCK_SHOP_DELIVERY_ADDRESS_KEY = "king-sparkon-tuck-shop-delivery-address";
+
+export function readTuckShopDeliveryAddress(): string {
+  if (typeof window === "undefined") return "";
+  try {
+    return window.localStorage.getItem(TUCK_SHOP_DELIVERY_ADDRESS_KEY) ?? "";
+  } catch {
+    return "";
+  }
+}
+
+export function writeTuckShopDeliveryAddress(address: string) {
+  if (typeof window === "undefined") return;
+  try {
+    if (address.trim()) {
+      window.localStorage.setItem(TUCK_SHOP_DELIVERY_ADDRESS_KEY, address.trim());
+    } else {
+      window.localStorage.removeItem(TUCK_SHOP_DELIVERY_ADDRESS_KEY);
+    }
+    window.dispatchEvent(new CustomEvent("king-sparkon:tuck-shop-delivery-address", { detail: { address: address.trim() } }));
+  } catch {
+    // Storage unavailable — address simply won't persist.
+  }
 }
 
 export function removeTuckShopCartLine(kind: TuckShopCartLine["kind"], id: string | number, ticketType?: TicketType) {

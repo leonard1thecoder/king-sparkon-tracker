@@ -204,6 +204,18 @@ export function getWorkerProductByBarcode(barcode: string) {
   return apiGet<Product>(`/products/barcode/${encodeURIComponent(barcode.trim())}`);
 }
 
+export function listPendingDeliveries() {
+  return apiGet<TuckShopPurchase[]>("/v1/tuck-shop/deliveries/pending");
+}
+
+export function dispatchDelivery(transactionId: number) {
+  return apiPost<TuckShopPurchase>(`/v1/tuck-shop/deliveries/${transactionId}/dispatch`);
+}
+
+export function deliverDelivery(transactionId: number) {
+  return apiPost<TuckShopPurchase>(`/v1/tuck-shop/deliveries/${transactionId}/deliver`);
+}
+
 export function listMyReturnableRefunds() {
   return apiGet<ReturnableRefund[]>("/v1/tuck-shop/returnable-refunds/me");
 }
@@ -293,6 +305,17 @@ export function addProductBarcode(productId: number, payload: AddProductBarcodeP
 
 export function updateOwnerProductQuantity(productId: number, stockQuantity: number) {
   return apiPatch<Product, { stockQuantity: number }>(`/products/${productId}/quantity`, { stockQuantity });
+}
+
+export type UpdateProductFulfilmentPayload = {
+  pickupEnabled?: boolean | null;
+  deliveryEnabled?: boolean | null;
+  deliveryFee?: number | null;
+  deliveryLeadTimeMinutes?: number | null;
+};
+
+export function updateProductFulfilment(productId: number, payload: UpdateProductFulfilmentPayload) {
+  return apiPatch<Product, UpdateProductFulfilmentPayload>(`/products/${productId}/fulfilment`, payload);
 }
 
 export function deleteOwnerProduct(productId: number) {

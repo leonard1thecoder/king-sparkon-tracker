@@ -22,9 +22,13 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import {
+  cartDeliveryEtaMinutes,
+  cartDeliveryFeeTotal,
+  cartDeliveryMode,
   cartDepositTotal,
   cartEmptiesCreditTotal,
   cartEmptiesReturnedCount,
+  cartGrandTotal,
   cartLineCount,
   cartNetTotal,
   cartReturnableUnitCount,
@@ -34,16 +38,21 @@ import {
   isTicketLine,
   lineEmptiesCreditTotal,
   lineEmptiesReturned,
+  lineFulfilment,
   money,
   productImage,
   productPrice,
   readTuckShopCart,
+  readTuckShopDeliveryAddress,
   removeTuckShopCartLine,
   returnableDeposit,
   serviceKindLabel,
+  type CartFulfilment,
   type TuckShopCartLine,
   updateTuckShopCartEmpties,
+  updateTuckShopCartFulfilment,
   updateTuckShopCartQuantity,
+  writeTuckShopDeliveryAddress,
 } from "@/lib/tuck-shop/cart";
 
 type CheckoutUser = {
@@ -73,6 +82,7 @@ function checkoutIdempotencyKey() {
 
 export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboardRole }) {
   const [cart, setCart] = useState<TuckShopCartLine[]>([]);
+  const [deliveryAddress, setDeliveryAddress] = useState("");
   const [paymentStage, setPaymentStage] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,19 +91,35 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
 
   useEffect(() => {
     setCart(readTuckShopCart());
+    setDeliveryAddress(readTuckShopDeliveryAddress());
 
     function refreshCart() {
       setCart(readTuckShopCart());
     }
 
+    function refreshAddress() {
+      setDeliveryAddress(readTuckShopDeliveryAddress());
+    }
+
     window.addEventListener("storage", refreshCart);
     window.addEventListener("king-sparkon:tuck-shop-cart", refreshCart);
+    window.addEventListener("king-sparkon:tuck-shop-delivery-address", refreshAddress);
 
     return () => {
       window.removeEventListener("storage", refreshCart);
       window.removeEventListener("king-sparkon:tuck-shop-cart", refreshCart);
+      window.removeEventListener("king-sparkon:tuck-shop-delivery-address", refreshAddress);
     };
   }, []);
+
+  const deliveryMode = cartDeliveryMode(cart);
+  const isDelivery = deliveryMode === "DELIVERY";
+  const deliveryFee = cartDeliveryFeeTotal(cart);
+  const deliveryEta = cartDeliveryEtaMinutes(cart);
+
+  function updateFulfilment(productId: number, fulfilment: CartFulfilment) {
+    setCart(updateTuckShopCartFulfilment(productId, fulfilment));
+  }
 
   function updateQuantity(line: TuckShopCartLine, quantity: number) {
     if (isProductLine(line)) {
@@ -129,6 +155,10 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
       setError("Add at least one product, ticket or service before checkout.");
       return;
     }
+    if (isDelivery && !deliveryAddress.trim()) {
+      setError("Delivery address is required — this cart has delivered products and is in red delivery mode.");
+      return;
+    }
 
     setSaving(true);
     setError(null);
@@ -144,7 +174,7 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
         idempotencyKey: checkoutIdempotencyKey(),
         buyerName: user.name,
         buyerEmail: user.emailAddress,
-        products: productLines.map((line) => ({ productId: line.product.id, quantity: line.quantity, emptiesReturned: lineEmptiesReturned(line) })),
+        products: productLines.map((line) => ({ productId: line.product.id, quantity: line.quantity, emptiesReturned: lineEmptiesReturned(line), fulfilment: lineFulfilment(line) })),
         tickets: ticketLines.map((line) => ({ eventId: line.event.id, ticketType: line.ticketType, quantity: line.quantity })),
         services: serviceLines.map((line) => ({
           kind: line.serviceKind,
@@ -152,6 +182,7 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
           label: line.label,
           amount: line.unitPrice,
         })),
+        deliveryAddress: isDelivery ? deliveryAddress.trim() : null,
       };
 
       if (payWithPayPal) {
@@ -177,8 +208,8 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
   }
 
   const displayTotal = payWithPayPal
-    ? convertZarToUsd(cartNetTotal(cart), localization.usdToZarRate)
-    : cartNetTotal(cart);
+    ? convertZarToUsd(cartGrandTotal(cart), localization.usdToZarRate)
+    : cartGrandTotal(cart);
 
   return (
     <section className="grid gap-5">
@@ -192,7 +223,13 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
         }
       />
 
-      <Card>
+      {isDelivery ? (
+        <div className="rounded-[1.4rem] border-2 border-[var(--danger)] bg-[var(--danger)]/10 p-4 text-sm font-black text-[var(--danger)]">
+          Red delivery mode — this cart has delivered products from {new Set(cart.filter(isProductLine).filter((line) => lineFulfilment(line) === "DELIVERY").map((line) => line.product.businessName ?? `Business #${line.product.businessId ?? "-"}`)).size} business{new Set(cart.filter(isProductLine).filter((line) => lineFulfilment(line) === "DELIVERY").map((line) => line.product.businessId)).size === 1 ? "" : "es"}. Delivery address is required and the R{deliveryFee.toFixed(2)} delivery fee is added at submit{deliveryEta !== null ? ` · longest delivery takes ~${deliveryEta} min` : ""}.
+        </div>
+      ) : null}
+
+      <Card className={isDelivery ? "border-2 border-[var(--danger)]" : undefined}>
         <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <CardTitle>Cart</CardTitle>
@@ -257,6 +294,17 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
                       {isProductLine(line) && lineEmptiesCreditTotal(line) > 0 ? (
                         <p className="mt-1 text-xs font-black text-[var(--confirm)]">Empties credit −{money(lineEmptiesCreditTotal(line))}</p>
                       ) : null}
+                      {isProductLine(line) ? (
+                        <FulfilmentToggle
+                          pickup={line.product.pickupEnabled ?? true}
+                          delivery={line.product.deliveryEnabled ?? false}
+                          value={lineFulfilment(line)}
+                          deliveryFee={Number(line.product.deliveryFee ?? 0)}
+                          leadTime={line.product.deliveryLeadTimeMinutes ?? null}
+                          disabled={saving}
+                          onChange={(fulfilment) => updateFulfilment(line.product.id, fulfilment)}
+                        />
+                      ) : null}
                     </div>
                     {isProductLine(line) && line.product.returnableEnabled ? (
                       <label className="grid gap-1 text-xs font-black uppercase tracking-[0.08em] text-[var(--steel)]">
@@ -295,20 +343,37 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
             )}
           </div>
 
-          <aside className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--line)] bg-white shadow-[var(--shadow-soft)] lg:sticky lg:top-5">
-            <div className="flex items-center gap-3 border-b border-[var(--line)] bg-[var(--gold)] p-5">
+          <aside className={`overflow-hidden rounded-[var(--radius-xl)] border bg-white shadow-[var(--shadow-soft)] lg:sticky lg:top-5 ${isDelivery ? "border-2 border-[var(--danger)]" : "border-[var(--line)]"}`}>
+            <div className={`flex items-center gap-3 border-b p-5 ${isDelivery ? "border-[var(--danger)]/40 bg-[var(--danger)]" : "border-[var(--line)] bg-[var(--gold)]"}`}>
               <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[1rem] bg-[var(--ink)] text-[var(--gold)]">
                 <CreditCard className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-black text-[var(--ink)]">{payWithPayPal ? "Secure PayPal payment" : "Secure PayFast payment"}</h3>
-                <p className="mt-1 text-xs leading-5 text-[var(--ink)]/65">{payWithPayPal ? "PayPal checkout in USD, capture confirmation, then receipt." : "PayFast checkout, ITN verification, then receipt."}</p>
+                <h3 className={`font-black ${isDelivery ? "text-white" : "text-[var(--ink)]"}`}>{isDelivery ? "Delivery order — pay with fee" : payWithPayPal ? "Secure PayPal payment" : "Secure PayFast payment"}</h3>
+                <p className={`mt-1 text-xs leading-5 ${isDelivery ? "text-white/85" : "text-[var(--ink)]/65"}`}>{isDelivery ? "Delivery address required. Each business delivers its own lines." : payWithPayPal ? "PayPal checkout in USD, capture confirmation, then receipt." : "PayFast checkout, ITN verification, then receipt."}</p>
               </div>
             </div>
 
             <div className="grid gap-4 p-5">
               {error ? <p className="rounded-[1rem] border border-[var(--danger)]/25 bg-[var(--danger)]/10 p-3 text-sm font-bold text-[var(--danger)]">{error}</p> : null}
               {paymentStage ? <p className="flex items-center gap-2 rounded-[1rem] border border-[var(--signal)]/25 bg-[var(--signal)]/10 p-3 text-sm font-bold text-[var(--ink)]"><Loader2 className="h-4 w-4 animate-spin text-[var(--signal)]" /> {paymentStage}</p> : null}
+
+              {isDelivery ? (
+                <label className="grid gap-1.5 text-xs font-black uppercase tracking-[0.08em] text-[var(--steel)]">
+                  Delivery address · required
+                  <textarea
+                    value={deliveryAddress}
+                    onChange={(event) => {
+                      setDeliveryAddress(event.target.value);
+                      writeTuckShopDeliveryAddress(event.target.value);
+                    }}
+                    disabled={saving}
+                    rows={2}
+                    placeholder="Street, suburb, city, postal code + contact number"
+                    className="min-h-16 w-full rounded-[1rem] border-2 border-[var(--danger)]/50 bg-white px-4 py-3 text-sm font-semibold normal-case tracking-normal text-[var(--ink)] outline-none focus:border-[var(--danger)] disabled:opacity-50"
+                  />
+                </label>
+              ) : null}
 
               <div className="flex items-start gap-2 rounded-[1rem] bg-[var(--surface)] p-3 text-xs font-semibold leading-5 text-[var(--steel)]">
                 <LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-[var(--confirm)]" />
@@ -323,6 +388,13 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
                   <span>{cartLineCount(cart)} items</span>
                 </div>
                 {cartTicketTotal(cart) > 0 ? <div className="flex justify-between gap-3 text-sm font-bold"><span>Tickets preview</span><span className="money">{money(cartTicketTotal(cart))}</span></div> : null}
+                <div className="flex justify-between gap-3 text-sm font-bold"><span>Products</span><span className="money">{money(cartNetTotal(cart))}</span></div>
+                {isDelivery ? (
+                  <>
+                    <div className="flex justify-between gap-3 text-sm font-black text-[var(--danger)]"><span>Delivery fee</span><span className="money">{money(deliveryFee)}</span></div>
+                    {deliveryEta !== null ? <div className="flex justify-between gap-3 text-sm font-bold"><span>Longest delivery</span><span>~{deliveryEta} min</span></div> : null}
+                  </>
+                ) : null}
                 {cartReturnableUnitCount(cart) > 0 ? (
                   <>
                     <div className="flex justify-between gap-3 text-sm font-bold"><span>Returnables in cart</span><span>{cartEmptiesReturnedCount(cart)} of {cartReturnableUnitCount(cart)} empties back</span></div>
@@ -343,5 +415,61 @@ export function TuckShopCartDashboard({ role = "user" }: { role?: SharedDashboar
         </CardContent>
       </Card>
     </section>
+  );
+}
+
+function FulfilmentToggle({
+  pickup,
+  delivery,
+  value,
+  deliveryFee,
+  leadTime,
+  disabled,
+  onChange,
+}: {
+  pickup: boolean;
+  delivery: boolean;
+  value: CartFulfilment;
+  deliveryFee: number;
+  leadTime: number | null;
+  disabled: boolean;
+  onChange: (fulfilment: CartFulfilment) => void;
+}) {
+  if (!pickup && delivery) {
+    return (
+      <p className="mt-1 inline-flex items-center gap-1 rounded-full border border-[var(--danger)]/40 bg-[var(--danger)]/10 px-2 py-0.5 text-[0.68rem] font-black uppercase tracking-[0.08em] text-[var(--danger)]">
+        Delivery only{deliveryFee > 0 ? ` · ${money(deliveryFee)}/unit` : " · free"}{leadTime !== null ? ` · ~${leadTime} min` : ""}
+      </p>
+    );
+  }
+  if (pickup && !delivery) return null;
+  const active = "bg-[var(--ink)] text-white border-[var(--ink)]";
+  const idle = "bg-white text-[var(--steel)] border-[var(--line)] hover:border-[var(--line-strong)]";
+  return (
+    <div className="mt-2 grid gap-1">
+      <div className="inline-flex overflow-hidden rounded-full border border-[var(--line)] text-[0.68rem] font-black uppercase tracking-[0.08em]">
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => onChange("PICKUP")}
+          className={`min-h-9 flex-1 px-3 transition ${value === "PICKUP" ? active : idle} disabled:opacity-50`}
+        >
+          Picked
+        </button>
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => onChange("DELIVERY")}
+          className={`min-h-9 flex-1 px-3 transition ${value === "DELIVERY" ? "bg-[var(--danger)] text-white border-[var(--danger)]" : idle} disabled:opacity-50`}
+        >
+          Delivered
+        </button>
+      </div>
+      {value === "DELIVERY" ? (
+        <p className="text-[0.68rem] font-black uppercase tracking-[0.08em] text-[var(--danger)]">
+          {deliveryFee > 0 ? `${money(deliveryFee)}/unit added` : "Free delivery"}{leadTime !== null ? ` · ~${leadTime} min` : ""}
+        </p>
+      ) : null}
+    </div>
   );
 }
