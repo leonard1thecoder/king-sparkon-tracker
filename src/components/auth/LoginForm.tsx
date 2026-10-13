@@ -27,8 +27,8 @@ export function LoginForm({ oauthErrorCode }: { oauthErrorCode?: string }) {
     setSubmitting(true);
     setStatus(null);
     try {
-      // Same request body as the previous login form: /api/auth/login with username and password.
-      await axios.post("/api/auth/login", { username, password }, { withCredentials: true });
+      // Backend resolves username or email address from either field.
+      await axios.post("/api/auth/login", { username, usernameOrEmail: username, password }, { withCredentials: true });
       setStatus({ tone: "success", message: "Signed in. Opening your dashboard." });
       window.setTimeout(() => {
         window.location.href = "/dashboard";
