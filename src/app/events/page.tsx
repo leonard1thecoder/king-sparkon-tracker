@@ -5,7 +5,8 @@ import { PublicBreadcrumb } from "@/components/public/Breadcrumb";
 import { EventCard, toEventCardData } from "@/components/public/EventCard";
 import { EventsExplorer } from "@/components/public/EventsExplorer";
 import { Reveal, Scene } from "@/components/public/InView";
-import { getPublishedEvents } from "@/lib/public/data";
+import { getPublishedEvents, isDemoId } from "@/lib/public/data";
+import { SampleBadge } from "@/components/public/SampleBadge";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -54,6 +55,7 @@ export default async function EventsPage() {
               <p className="ks-lead mt-5">
                 Find events, check the details and get tickets in one place. Use search and sorting to narrow the list.
               </p>
+              {events.length > 0 && isDemoId(events[0].id) ? <SampleBadge /> : null}
             </div>
             <Scene className="grid grid-cols-3 gap-3" >
               {["Tickets", "Venues", "Artists"].map((label, index) => (

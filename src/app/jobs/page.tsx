@@ -5,7 +5,8 @@ import { PublicBreadcrumb } from "@/components/public/Breadcrumb";
 import { Reveal, Scene } from "@/components/public/InView";
 import { UifScene } from "@/components/public/SceneVisuals";
 import { JobsExplorer } from "@/components/public/JobsExplorer";
-import { getPublicJobs } from "@/lib/public/data";
+import { getPublicJobs, isDemoJobId } from "@/lib/public/data";
+import { SampleBadge } from "@/components/public/SampleBadge";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -37,6 +38,7 @@ export default async function JobsPage() {
               <p className="ks-lead mt-5">
                 Discover opportunities from businesses on King Sparkon. Read each post and apply in one place.
               </p>
+              {jobs.length > 0 && isDemoJobId(jobs[0].id) ? <SampleBadge /> : null}
             </div>
             <Scene className="grid grid-cols-3 gap-3">
               {["Person", "Job card", "Business"].map((label, index) => (

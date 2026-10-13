@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { PublicHeader } from "@/components/public/PublicHeader";
 import { PublicBreadcrumb, breadcrumbJsonLd } from "@/components/public/Breadcrumb";
 import { ProductCard } from "@/components/public/ProductCard";
-import { getPublicProductById, getPublicProducts } from "@/lib/public/data";
+import { getPublicProductById, getPublicProducts, isDemoProductId } from "@/lib/public/data";
+import { SampleBadge } from "@/components/public/SampleBadge";
 import { buildSlug, idFromSlug } from "@/lib/public/slug";
 import { formatZar } from "@/lib/public/format";
 import { pageMetadata } from "@/lib/seo";
@@ -90,6 +91,7 @@ export default async function ProductPage({ params }: Props) {
             <div>
               <p className="ks-eyebrow">{product.businessName ?? product.category}</p>
               <h1 className="ks-h1 mt-3 text-[clamp(1.9rem,4vw,3rem)]">{product.name}</h1>
+              {isDemoProductId(product.id) ? <SampleBadge /> : null}
               <div className="mt-6 flex items-baseline gap-3">
                 <span className="text-3xl font-extrabold">{formatZar(currentPrice)}</span>
                 {onSale ? <span className="text-lg text-[var(--ks-muted)] line-through">{formatZar(product.price)}</span> : null}
