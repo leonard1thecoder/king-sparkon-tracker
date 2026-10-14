@@ -75,7 +75,7 @@ describe("booking opportunities", () => {
   it("returns null when no sets remain available", () => {
     expect(
       toBookingOpportunity(
-        { id: "e1", name: "Show", location: "JHB", eventDate: "2026-11-01", eventTime: "12:00", bannerUrl: null },
+        { id: "e1", name: "Show", location: "JHB", eventDate: "2026-11-01", eventTime: "12:00" },
         [set({ status: "BOOKED" })],
       ),
     ).toBeNull();
