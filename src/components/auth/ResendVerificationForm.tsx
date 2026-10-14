@@ -43,9 +43,9 @@ export function ResendVerificationForm() {
 
   return (
     <div>
-      <p className="text-sm font-semibold text-[var(--ks-muted)]">Email verification</p>
-      <h1 className="mt-2 text-[2rem] font-extrabold leading-tight tracking-tight text-[var(--ks-ink)]">Send a new verification link</h1>
-      <p className="mt-3 text-sm leading-6 text-[var(--ks-muted)]">Use the same email address you registered with.</p>
+      <p className="text-center text-sm font-semibold text-[var(--ks-muted)]">Email verification</p>
+      <h1 className="mt-2 text-center text-[2rem] font-extrabold leading-tight tracking-tight text-[var(--ks-ink)]">Send a new verification link</h1>
+      <p className="mt-3 text-center text-sm leading-6 text-[var(--ks-muted)]">Use the same email address you registered with.</p>
 
       <form onSubmit={onSubmit} noValidate className="mt-8 grid gap-5">
         <TextField name="emailAddress" label="Email address" type="email" autoComplete="email" placeholder="you@example.com" />

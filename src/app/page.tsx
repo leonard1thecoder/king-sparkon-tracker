@@ -61,10 +61,10 @@ const faqItems: FaqItem[] = [
 
 function SectionHead({ eyebrow, title, text }: { eyebrow?: string; title: string; text?: string }) {
   return (
-    <div className="max-w-2xl">
+    <div className="mx-auto max-w-2xl text-center">
       {eyebrow ? <p className="ks-eyebrow">{eyebrow}</p> : null}
       <h2 className="ks-h2 mt-3">{title}</h2>
-      {text ? <p className="ks-lead mt-4">{text}</p> : null}
+      {text ? <p className="ks-lead mx-auto mt-4">{text}</p> : null}
     </div>
   );
 }
@@ -76,16 +76,16 @@ export default function HomePage() {
       <main className="ks-public">
         <section className="ks-section overflow-hidden">
           <div className="ks-wrap grid items-center gap-12 lg:grid-cols-[1.05fr_1fr]">
-            <div>
+            <div className="text-center">
               <p className="inline-flex items-center gap-2 rounded-full border border-[var(--ks-line)] ks-surface px-3 py-1 text-xs font-bold tracking-[0.12em] text-[var(--ks-ink)]">
                 <span className="h-2 w-2 rounded-full bg-[var(--ks-gold)]" aria-hidden="true" />
                 King Sparkon · Make your move.
               </p>
               <h1 className="ks-h1 mt-6">Event Management, Ticketing &amp; Operations Platform</h1>
-              <p className="ks-lead mt-6">
+              <p className="ks-lead mx-auto mt-6">
                 Run events, move products, connect people and manage opportunities through one connected King Sparkon platform.
               </p>
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                 <Link href="/events" className="ks-btn ks-btn-primary">Explore Events</Link>
                 <Link href="/register" className="ks-btn ks-btn-secondary">Get Started</Link>
               </div>
@@ -119,7 +119,7 @@ export default function HomePage() {
             <div className="mt-14">
               <EventsScene />
             </div>
-            <div className="mt-12">
+            <div className="mt-12 flex justify-center">
               <Link href="/events" className="ks-btn ks-btn-primary">Explore Events</Link>
             </div>
           </div>
@@ -137,7 +137,7 @@ export default function HomePage() {
             <div className="mt-14">
               <MallScene />
             </div>
-            <div className="mt-12">
+            <div className="mt-12 flex justify-center">
               <Link href="/mall" className="ks-btn ks-btn-primary">Explore Mall</Link>
             </div>
           </div>
@@ -191,18 +191,22 @@ export default function HomePage() {
             <div className="mt-14">
               <JobsScene />
             </div>
-            <div className="mt-12">
+            <div className="mt-12 flex justify-center">
               <Link href="/jobs" className="ks-btn ks-btn-primary">Explore Jobs</Link>
             </div>
 
             <div className="mt-20 grid items-center gap-10 border-t border-[var(--ks-line)] pt-16 lg:grid-cols-[1fr_1.2fr]">
               <Reveal>
-                <p className="ks-eyebrow">Employment support, when you need it.</p>
-                <h3 className="mt-3 text-2xl font-extrabold md:text-3xl">Unemployment Insurance Fund</h3>
-                <p className="ks-lead mt-4">
-                  See how King Sparkon supports UIF-related records and tools, and where to find official information.
-                </p>
-                <Link href="/jobs/unemployment-insurance-fund" className="ks-btn ks-btn-secondary mt-6">Learn about UIF</Link>
+                <div className="text-center">
+                  <p className="ks-eyebrow">Employment support, when you need it.</p>
+                  <h3 className="mt-3 text-2xl font-extrabold md:text-3xl">Unemployment Insurance Fund</h3>
+                  <p className="ks-lead mx-auto mt-4">
+                    See how King Sparkon supports UIF-related records and tools, and where to find official information.
+                  </p>
+                  <div className="mt-6 flex justify-center">
+                    <Link href="/jobs/unemployment-insurance-fund" className="ks-btn ks-btn-secondary">Learn about UIF</Link>
+                  </div>
+                </div>
               </Reveal>
               <UifScene />
             </div>
@@ -242,11 +246,13 @@ export default function HomePage() {
         <section id="contact" className="ks-section scroll-mt-24 border-t border-[var(--ks-line)]">
           <div className="ks-wrap grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <Reveal>
-              <p className="ks-eyebrow">Contact</p>
-              <h2 className="ks-h2 mt-3">Tell us what your operation needs to manage.</h2>
-              <p className="ks-lead mt-4">
-                Share the roles, products, ticket flow or payments you need King Sparkon to handle. We reply by email.
-              </p>
+              <div className="text-center">
+                <p className="ks-eyebrow">Contact</p>
+                <h2 className="ks-h2 mt-3">Tell us what your operation needs to manage.</h2>
+                <p className="ks-lead mx-auto mt-4">
+                  Share the roles, products, ticket flow or payments you need King Sparkon to handle. We reply by email.
+                </p>
+              </div>
             </Reveal>
             <Reveal>
               <div className="ks-surface rounded-[18px] border border-[var(--ks-line)] p-6 md:p-8">
@@ -260,7 +266,7 @@ export default function HomePage() {
           <div className="ks-wrap text-center">
             <Reveal>
               <h2 className="ks-h2">Everything moves from here.</h2>
-              <div className="mt-6 flex flex-wrap justify-center gap-3">
+              <div className="mt-6 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                 <Link href="/events" className="ks-btn ks-btn-primary">Explore Events</Link>
                 <Link href="/register" className="ks-btn ks-btn-secondary">Get Started</Link>
               </div>

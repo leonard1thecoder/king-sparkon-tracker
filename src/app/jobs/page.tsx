@@ -32,10 +32,10 @@ export default async function JobsPage() {
 
         <section className="ks-section pt-4">
           <div className="ks-wrap grid items-center gap-12 lg:grid-cols-[1.05fr_1fr]">
-            <div>
+            <div className="text-center">
               <p className="ks-eyebrow">Job Posts</p>
               <h1 className="ks-h1 mt-3">King Sparkon Job Posts</h1>
-              <p className="ks-lead mt-5">
+              <p className="ks-lead mx-auto mt-5">
                 Discover opportunities from businesses on King Sparkon. Read each post and apply in one place.
               </p>
               {jobs.length > 0 && isDemoJobId(jobs[0].id) ? <SampleBadge /> : null}
@@ -54,7 +54,7 @@ export default async function JobsPage() {
         <section className="ks-section border-t border-[var(--ks-line)]">
           <div className="ks-wrap">
             <Reveal>
-              <h2 className="ks-h2">Latest Job Posts</h2>
+              <h2 className="ks-h2 text-center">Latest Job Posts</h2>
             </Reveal>
             <div className="mt-8">
               <JobsExplorer jobs={jobs} />
@@ -88,14 +88,16 @@ export default async function JobsPage() {
         <section className="ks-section border-t border-[var(--ks-line)]">
           <div className="ks-wrap grid items-center gap-10 lg:grid-cols-[1fr_1.1fr]">
             <Reveal>
+              <div className="text-center">
               <p className="ks-eyebrow">Employment Support</p>
               <h2 className="ks-h2 mt-3">Support when work changes.</h2>
-              <p className="ks-lead mt-4">
+              <p className="ks-lead mx-auto mt-4">
                 King Sparkon provides UIF-related tools and links to official information.
               </p>
               <Link href="/jobs/unemployment-insurance-fund" className="ks-btn ks-btn-secondary mt-6">
                 Learn about UIF
               </Link>
+              </div>
             </Reveal>
             <UifScene />
           </div>

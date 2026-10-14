@@ -20,16 +20,16 @@ export default function UifPortalPage() {
         <PublicBreadcrumb items={[{ label: "Home", href: "/" }, { label: "UIF tools" }]} />
 
         <section className="ks-section pt-4">
-          <div className="ks-wrap">
+          <div className="ks-wrap text-center">
             <p className="ks-eyebrow">Public service tools</p>
             <h1 className="ks-h1 mt-3">UIF tools</h1>
-            <p className="ks-lead mt-5">Check a claim, update your UIF Online password or estimate a benefit.</p>
+            <p className="ks-lead mx-auto mt-5">Check a claim, update your UIF Online password or estimate a benefit.</p>
 
             <div className="mt-10">
               <UifTools />
             </div>
 
-            <p className="mt-8 max-w-2xl text-xs leading-6 text-[var(--ks-muted)]">
+            <p className="mx-auto mt-8 max-w-2xl text-center text-xs leading-6 text-[var(--ks-muted)]">
               King Sparkon provides these tools. Decisions on claims and payments are made by the Department of Employment and Labour.
             </p>
           </div>

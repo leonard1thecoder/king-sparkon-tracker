@@ -18,10 +18,10 @@ export default function PrivacyPage() {
       <main className="ks-public">
         <PublicBreadcrumb items={[{ label: "Home", href: "/" }, { label: "Privacy policy" }]} />
         <section className="ks-section pt-4 pb-0">
-          <div className="ks-wrap">
+          <div className="ks-wrap text-center">
             <p className="ks-eyebrow">Legal</p>
             <h1 className="ks-h1 mt-3">Privacy policy</h1>
-            <p className="ks-lead mt-5">Last updated: 12 February 2026 • Owner: Sizolwakhe Leonard Mthimunye, King Sparkon™ • This page explains what we collect, why, and how you can control it.</p>
+            <p className="ks-lead mx-auto mt-5">Last updated: 12 February 2026 • Owner: Sizolwakhe Leonard Mthimunye, King Sparkon™ • This page explains what we collect, why, and how you can control it.</p>
           </div>
         </section>
 

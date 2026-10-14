@@ -35,10 +35,10 @@ export default function UifPage() {
 
         <section className="ks-section pt-4">
           <div className="ks-wrap grid items-center gap-12 lg:grid-cols-[1fr_1fr]">
-            <div>
+            <div className="text-center">
               <p className="ks-eyebrow">Employment support</p>
               <h1 className="ks-h1 mt-3">Unemployment Insurance Fund</h1>
-              <p className="ks-lead mt-5">
+              <p className="ks-lead mx-auto mt-5">
                 This page separates two things: the UIF-related tools King Sparkon provides, and official Unemployment Insurance Fund information. Check which one you need before you act.
               </p>
             </div>
@@ -74,12 +74,12 @@ export default function UifPage() {
         </section>
 
         <section className="ks-section border-t border-[var(--ks-line)] pb-24">
-          <div className="ks-wrap grid gap-10 md:grid-cols-[1fr_1.2fr]">
+          <div className="ks-wrap text-center">
             <Reveal>
               <h2 className="ks-h2">What this page is not</h2>
             </Reveal>
             <Reveal>
-              <p className="ks-lead">
+              <p className="ks-lead mx-auto mt-6">
                 King Sparkon is not the Unemployment Insurance Fund. Nothing on this page is legal, tax or government advice, and it does not confirm eligibility or payment. Official guidance always takes priority.
               </p>
             </Reveal>
