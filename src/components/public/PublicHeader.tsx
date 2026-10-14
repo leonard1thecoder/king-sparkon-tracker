@@ -9,6 +9,7 @@ const primaryLinks = [
   { label: "Events", href: "/events" },
   { label: "Mall", href: "/mall" },
   { label: "Job Posts", href: "/jobs" },
+  { label: "Articles", href: "/articles" },
 ] as const;
 
 function isActive(pathname: string, href: string) {
