@@ -1,7 +1,7 @@
 import { backendBaseUrl } from "@/lib/backend-auth";
 export { buildSlug, idFromSlug, slugify } from "@/lib/public/slug";
 export { demoEvents, demoJobs, demoProducts, getDemoEventById, getDemoJobById, getDemoProductById, isDemoId, isDemoJobId, isDemoProductId } from "@/lib/public/demo";
-import { demoEvents, demoJobs, demoProducts, getDemoEventById } from "@/lib/public/demo";
+import { demoEvents, demoJobs, demoProducts, getDemoEventById, isDemoId } from "@/lib/public/demo";
 import type { EventSet, TicketEvent } from "@/types/tickets";
 import type { PageResponse, Product } from "@/lib/types/backend";
 import {
@@ -99,9 +99,6 @@ export async function getBookingOpportunities(): Promise<{ opportunities: Bookin
  * used to calculate production counts or prices.
  */
 function demoBookingOpportunities(): BookingOpportunity[] {
-  if (process.env.NODE_ENV === "production" && process.env.NEXT_PUBLIC_DEMO_BOOKINGS !== "1") {
-    return [];
-  }
   const events = demoEvents().slice(0, 2);
   return [
     {
@@ -143,7 +140,13 @@ function demoBookingOpportunities(): BookingOpportunity[] {
  */
 export async function getMarketplaceHubEvents(): Promise<TicketEvent[]> {
   const events = await getPublishedEvents();
-  return events.filter((event) => event.marketplaceHubEnabled);
+  const hub = events.filter((event) => event.marketplaceHubEnabled);
+  if (hub.length > 0) return hub;
+  // Demo preview so the marketplace design is visible when no owner has
+  // enabled the hub yet; marked with a SampleBadge by the section.
+  const firstDemo = events.find((event) => isDemoId(event.id));
+  if (!firstDemo) return [];
+  return [{ ...firstDemo, marketplaceHubEnabled: true, marketplaceHubPrice: 150 }];
 }
 
 export async function getPublicProducts(size = 24): Promise<Product[]> {

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Barcode, Megaphone, QrCode, Wallet } from "lucide-react";
-import { Breadcrumbs } from "@/components/content/Breadcrumbs";
-import { GlassCard } from "@/components/ui/GlassCard";
-import { PremiumHeader } from "@/components/marketing/PremiumHeader";
+import { PublicHeader } from "@/components/public/PublicHeader";
+import { PublicBreadcrumb } from "@/components/public/Breadcrumb";
+import { Reveal, Scene } from "@/components/public/InView";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -47,40 +47,80 @@ const articles = [
 export default function ArticlesPage() {
   return (
     <>
-      <PremiumHeader />
-      <main className="bg-white text-[var(--ink)]">
-        <div className="mx-auto max-w-7xl px-5 py-6 md:px-8"><Breadcrumbs items={[{ label: "Articles" }]} /></div>
+      <PublicHeader />
+      <main className="ks-public">
+        <PublicBreadcrumb items={[{ label: "Home", href: "/" }, { label: "Articles" }]} />
 
-        <section className="relative overflow-hidden border-y border-[var(--line)]">
-          <div className="absolute inset-0 bg-gradient-to-br from-[var(--signal-soft)] via-[var(--surface)] to-[var(--surface)]" aria-hidden="true" />
-          <div className="relative mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-14">
-            <p className="inline-flex rounded-full border border-[var(--signal)]/20 bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--signal-strong)]">Articles & Resources</p>
-            <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-[-0.05em] md:text-5xl">Articles that explain how the work gets done</h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--steel)]">Browse all King Sparkon articles — barcode inventory, QR tickets, worker tips, affiliate referrals and platform explainers.</p>
+        <section className="ks-section pt-4">
+          <div className="ks-wrap grid items-end gap-10 lg:grid-cols-[1.1fr_1fr]">
+            <div className="text-center">
+              <p className="ks-eyebrow">Articles &amp; Resources</p>
+              <h1 className="ks-h1 mt-3">Articles that explain how the work gets done</h1>
+              <p className="ks-lead mx-auto mt-5">
+                Browse all King Sparkon articles — barcode inventory, QR tickets, worker tips, affiliate referrals and platform explainers.
+              </p>
+            </div>
+            <Scene className="grid grid-cols-3 gap-3">
+              {["Guides", "How-tos", "Explainers"].map((label, index) => (
+                <div key={label} className="ks-float ks-card text-center" style={{ animationDelay: `${-index * 1.4}s` }}>
+                  <span className="mx-auto block h-1.5 w-10 rounded-full bg-[var(--ks-yellow)]" aria-hidden="true" />
+                  <span className="mt-4 block text-sm font-bold">{label}</span>
+                </div>
+              ))}
+            </Scene>
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-12">
-          <div className="grid gap-6 md:grid-cols-2">
-            {articles.map((a) => (
-              <GlassCard key={a.slug} variant="interactive" className="flex flex-col p-0! overflow-hidden">
-                <Link href={`/articles/${a.slug}`} className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="grid h-11 w-11 place-items-center rounded-xl border border-[var(--line)] bg-white text-[var(--signal)]"><a.icon className="h-5 w-5" /></div>
-                    <span className="rounded-full border border-[var(--line)] bg-[var(--signal-soft)] px-3 py-1 text-xs font-extrabold text-[var(--signal-strong)]">{a.read}</span>
-                  </div>
-                  <h2 className="mt-5 text-xl font-black">{a.title}</h2>
-                  <p className="mt-3 text-sm leading-6 text-[var(--steel)]">{a.excerpt}</p>
-                  <span className="mt-5 inline-flex items-center gap-2 text-sm font-extrabold text-[var(--signal-strong)]">Read article <ArrowRight className="h-4 w-4" /></span>
-                </Link>
-              </GlassCard>
-            ))}
+        <section className="ks-section border-t border-[var(--ks-line)]">
+          <div className="ks-wrap">
+            <Reveal>
+              <h2 className="ks-h2 text-center">All articles</h2>
+            </Reveal>
+            <ul className="mt-8 grid gap-5 md:grid-cols-2">
+              {articles.map((article) => (
+                <li key={article.slug}>
+                  <Link href={`/articles/${article.slug}`} className="ks-card group flex h-full flex-col">
+                    <div className="flex items-center justify-between">
+                      <span className="grid h-11 w-11 place-items-center rounded-xl border border-[var(--ks-line)] ks-surface text-[var(--ks-ink)]">
+                        <article.icon className="h-5 w-5" aria-hidden="true" />
+                      </span>
+                      <span className="rounded-full border border-[var(--ks-line)] ks-surface px-3 py-1 text-xs font-bold">
+                        {article.read}
+                      </span>
+                    </div>
+                    <h3 className="mt-5 text-xl font-extrabold leading-tight">{article.title}</h3>
+                    <p className="mt-3 text-sm leading-6 text-[var(--ks-muted)]">{article.excerpt}</p>
+                    <span className="mt-auto inline-flex items-center gap-2 pt-6 text-sm font-bold">
+                      Read article
+                      <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
+        </section>
 
-          <GlassCard variant="subtle" className="mt-8 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <p className="text-sm font-semibold text-[var(--steel)]">New to the platform? Start with how the five-step workflow connects inventory to audit.</p>
-            <Link href="/how-it-works" className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-[var(--signal)] bg-[var(--signal)] px-5 text-sm font-extrabold text-white hover:bg-[var(--signal-strong)]">How it works <ArrowRight className="h-4 w-4" /></Link>
-          </GlassCard>
+        <section className="ks-section border-t border-[var(--ks-line)] pb-24">
+          <div className="ks-wrap">
+            <Reveal>
+              <div className="mx-auto max-w-2xl text-center">
+                <p className="ks-eyebrow">Start here</p>
+                <h2 className="ks-h2 mt-3">New to the platform?</h2>
+                <p className="ks-lead mx-auto mt-4">
+                  Start with how the five-step workflow connects inventory to audit.
+                </p>
+                <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+                  <Link href="/how-it-works" className="ks-btn ks-btn-primary">
+                    How it works <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </Link>
+                  <Link href="/register" className="ks-btn ks-btn-secondary">
+                    Get Started
+                  </Link>
+                </div>
+              </div>
+            </Reveal>
+          </div>
         </section>
       </main>
     </>
