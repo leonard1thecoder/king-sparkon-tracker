@@ -40,13 +40,13 @@ export default function AboutPage() {
 
         <section className="ks-section pt-4">
           <div className="ks-wrap grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
-            <div>
+            <div className="text-center">
               <p className="ks-eyebrow">About the platform</p>
               <h1 className="ks-h1 mt-3">A South African operations platform built for verifiable work.</h1>
-              <p className="ks-lead mt-5">
+              <p className="ks-lead mx-auto mt-5">
                 King Sparkon™ is the trademark platform of <strong className="font-extrabold text-[var(--ks-ink)]">Sizolwakhe Leonard Mthimunye</strong>, known as King Sparkon. It was created to replace spreadsheet chaos with a single auditable record for barcode inventory, QR tickets, cart checkout, jobs, affiliate referrals, worker tips and payouts.
               </p>
-              <div className="mt-7 flex flex-wrap gap-3">
+              <div className="mt-7 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                 <Link href="/how-it-works" className="ks-btn ks-btn-primary">
                   How it works <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -127,10 +127,10 @@ export default function AboutPage() {
 
         <section className="ks-section pt-0">
           <div className="ks-wrap grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-            <div>
+            <div className="text-center">
               <p className="ks-eyebrow">How we build</p>
               <h2 className="ks-h2 mt-3">Principles you can verify in the product.</h2>
-              <p className="ks-lead mt-4">No slogans without a corresponding screen, permission or log.</p>
+              <p className="ks-lead mx-auto mt-4">No slogans without a corresponding screen, permission or log.</p>
             </div>
             <div className="grid gap-4">
               {principles.map((p, i) => (

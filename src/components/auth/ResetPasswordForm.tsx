@@ -49,9 +49,9 @@ export function ResetPasswordForm({ token }: { token: string }) {
 
   return (
     <div>
-      <p className="text-sm font-semibold text-[var(--ks-muted)]">Choose new password</p>
-      <h1 className="mt-2 text-[2rem] font-extrabold leading-tight tracking-tight text-[var(--ks-ink)]">Create a fresh password</h1>
-      <p className="mt-3 text-sm leading-6 text-[var(--ks-muted)]">Use your reset code and set a new password for your King Sparkon account.</p>
+      <p className="text-center text-sm font-semibold text-[var(--ks-muted)]">Choose new password</p>
+      <h1 className="mt-2 text-center text-[2rem] font-extrabold leading-tight tracking-tight text-[var(--ks-ink)]">Create a fresh password</h1>
+      <p className="mt-3 text-center text-sm leading-6 text-[var(--ks-muted)]">Use your reset code and set a new password for your King Sparkon account.</p>
 
       <form onSubmit={onSubmit} noValidate className="mt-8 grid gap-5">
         <TextField name="token" label="Reset token" autoComplete="one-time-code" defaultValue={token} placeholder="Paste your reset token" />

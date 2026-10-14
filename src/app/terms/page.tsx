@@ -18,10 +18,10 @@ export default function TermsPage() {
       <main className="ks-public">
         <PublicBreadcrumb items={[{ label: "Home", href: "/" }, { label: "Terms of service" }]} />
         <section className="ks-section pt-4 pb-0">
-          <div className="ks-wrap">
+          <div className="ks-wrap text-center">
             <p className="ks-eyebrow">Legal</p>
             <h1 className="ks-h1 mt-3">Terms of service</h1>
-            <p className="ks-lead mt-5">Last updated: 12 February 2026 • By registering or using King Sparkon™ you agree to these terms as offered by Sizolwakhe Leonard Mthimunye.</p>
+            <p className="ks-lead mx-auto mt-5">Last updated: 12 February 2026 • By registering or using King Sparkon™ you agree to these terms as offered by Sizolwakhe Leonard Mthimunye.</p>
           </div>
         </section>
 

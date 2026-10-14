@@ -38,10 +38,10 @@ export default async function MallPage() {
 
         <section className="ks-section pt-4">
           <div className="ks-wrap grid items-center gap-12 lg:grid-cols-[1.05fr_1fr]">
-            <div>
+            <div className="text-center">
               <p className="ks-eyebrow">Mall</p>
               <h1 className="ks-h1 mt-3">King Sparkon Mall</h1>
-              <p className="ks-lead mt-5">
+              <p className="ks-lead mx-auto mt-5">
                 Products from connected businesses, checked out online or at the counter, with stock and records kept together.
               </p>
               {products.length > 0 && isDemoProductId(products[0].id) ? <SampleBadge /> : null}
@@ -80,7 +80,7 @@ export default async function MallPage() {
             <section className="ks-section border-t border-[var(--ks-line)]">
               <div className="ks-wrap">
                 <Reveal>
-                  <h2 className="ks-h2">Featured Products</h2>
+                  <h2 className="ks-h2 text-center">Featured Products</h2>
                 </Reveal>
                 <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                   {featured.map((product) => (
@@ -95,8 +95,8 @@ export default async function MallPage() {
             <section className="ks-section border-t border-[var(--ks-line)]">
               <div className="ks-wrap grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
                 <Reveal>
-                  <h2 className="ks-h2">Categories</h2>
-                  <ul className="mt-6 flex flex-wrap gap-2">
+                  <h2 className="ks-h2 text-center">Categories</h2>
+                  <ul className="mt-6 flex flex-wrap justify-center gap-2">
                     {categories.map(([name, count]) => (
                       <li key={name} className="rounded-full border border-[var(--ks-line)] ks-surface px-4 py-2 text-sm font-semibold">
                         {name} <span className="text-[var(--ks-muted)]">· {count}</span>
@@ -105,7 +105,7 @@ export default async function MallPage() {
                   </ul>
                 </Reveal>
                 <Reveal>
-                  <h2 className="ks-h2">Explore Products</h2>
+                  <h2 className="ks-h2 text-center">Explore Products</h2>
                   <ul className="mt-6 grid gap-5 sm:grid-cols-2">
                     {products.map((product) => (
                       <li key={product.id}>
@@ -120,11 +120,14 @@ export default async function MallPage() {
         )}
 
         <section className="ks-section border-t border-[var(--ks-line)] pb-24">
-          <div className="ks-wrap grid gap-10 md:grid-cols-3">
+          <div className="ks-wrap">
             <Reveal>
-              <p className="ks-eyebrow">How Mall works</p>
-              <h2 className="ks-h2 mt-3">From the shelf to the collection point.</h2>
+              <div className="mx-auto max-w-2xl text-center">
+                <p className="ks-eyebrow">How Mall works</p>
+                <h2 className="ks-h2 mt-3">From the shelf to the collection point.</h2>
+              </div>
             </Reveal>
+            <div className="mt-12 grid gap-10 text-center md:grid-cols-2">
             <Reveal>
               <p className="font-bold">Choose</p>
               <p className="mt-2 text-sm leading-6 text-[var(--ks-muted)]">Browse products and add what you need to your cart.</p>
@@ -133,6 +136,7 @@ export default async function MallPage() {
               <p className="font-bold">Pay and collect</p>
               <p className="mt-2 text-sm leading-6 text-[var(--ks-muted)]">Checkout confirms payment. Collect at the counter or at the event.</p>
             </Reveal>
+            </div>
           </div>
         </section>
       </main>

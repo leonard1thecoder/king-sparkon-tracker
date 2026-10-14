@@ -127,7 +127,7 @@ export function RegisterForm({ initialRole }: { initialRole: string }) {
 
   return (
     <form onSubmit={onSubmit} noValidate className="grid gap-8">
-      <h1 className="text-[1.875rem] font-extrabold leading-tight tracking-tight text-[var(--ks-ink)]">Create your account</h1>
+      <h1 className="text-center text-[1.875rem] font-extrabold leading-tight tracking-tight text-[var(--ks-ink)]">Create your account</h1>
 
       <fieldset className="grid gap-3">
         <legend className="mb-3 text-sm font-semibold text-[var(--ks-ink)]">Choose role</legend>

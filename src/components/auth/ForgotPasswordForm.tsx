@@ -44,9 +44,9 @@ export function ForgotPasswordForm() {
 
   return (
     <div>
-      <p className="text-sm font-semibold text-[var(--ks-muted)]">Password recovery</p>
-      <h1 className="mt-2 text-[2rem] font-extrabold leading-tight tracking-tight text-[var(--ks-ink)]">Reset your password</h1>
-      <p className="mt-3 text-sm leading-6 text-[var(--ks-muted)]">
+      <p className="text-center text-sm font-semibold text-[var(--ks-muted)]">Password recovery</p>
+      <h1 className="mt-2 text-center text-[2rem] font-extrabold leading-tight tracking-tight text-[var(--ks-ink)]">Reset your password</h1>
+      <p className="mt-3 text-center text-sm leading-6 text-[var(--ks-muted)]">
         Enter the email tied to your barcode inventory account and we will send a reset link.
       </p>
 

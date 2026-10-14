@@ -45,8 +45,8 @@ export function LoginForm({ oauthErrorCode }: { oauthErrorCode?: string }) {
 
   return (
     <div>
-      <p className="text-sm font-semibold text-[var(--ks-muted)]">Welcome back</p>
-      <h1 className="mt-2 text-[2rem] font-extrabold leading-tight tracking-tight text-[var(--ks-ink)]">Sign in to King Sparkon</h1>
+      <p className="text-center text-sm font-semibold text-[var(--ks-muted)]">Welcome back</p>
+      <h1 className="mt-2 text-center text-[2rem] font-extrabold leading-tight tracking-tight text-[var(--ks-ink)]">Sign in to King Sparkon</h1>
 
       <form onSubmit={onSubmit} noValidate className="mt-8 grid gap-5">
         <TextField name="username" label="Email or username" autoComplete="username" placeholder="you@example.com" />

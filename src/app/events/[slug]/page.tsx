@@ -161,7 +161,7 @@ export default async function EventDetailPage({ params }: Props) {
         {related.length > 0 ? (
           <section className="ks-section border-t border-[var(--ks-line)] pb-24">
             <div className="ks-wrap">
-              <h2 className="ks-h2">More events</h2>
+              <h2 className="ks-h2 text-center">More events</h2>
               <ul className="mt-8 grid gap-5 md:grid-cols-3">
                 {related.map((item) => (
                   <li key={item.id}>

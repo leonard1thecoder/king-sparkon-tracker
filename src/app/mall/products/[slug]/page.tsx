@@ -123,7 +123,7 @@ export default async function ProductPage({ params }: Props) {
         {related.length > 0 ? (
           <section className="ks-section border-t border-[var(--ks-line)] pb-24">
             <div className="ks-wrap">
-              <h2 className="ks-h2">Related products</h2>
+              <h2 className="ks-h2 text-center">Related products</h2>
               <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {related.map((item) => (
                   <li key={item.id}>

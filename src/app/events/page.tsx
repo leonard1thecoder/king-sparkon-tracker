@@ -49,10 +49,10 @@ export default async function EventsPage() {
 
         <section className="ks-section pt-4">
           <div className="ks-wrap grid items-end gap-10 lg:grid-cols-[1.1fr_1fr]">
-            <div>
+            <div className="text-center">
               <p className="ks-eyebrow">Events</p>
               <h1 className="ks-h1 mt-3">King Sparkon Events</h1>
-              <p className="ks-lead mt-5">
+              <p className="ks-lead mx-auto mt-5">
                 Find events, check the details and get tickets in one place. Use search and sorting to narrow the list.
               </p>
               {events.length > 0 && isDemoId(events[0].id) ? <SampleBadge /> : null}
@@ -79,7 +79,7 @@ export default async function EventsPage() {
             <section className="ks-section border-t border-[var(--ks-line)]">
               <div className="ks-wrap">
                 <Reveal>
-                  <h2 className="ks-h2">Featured Events</h2>
+                  <h2 className="ks-h2 text-center">Featured Events</h2>
                 </Reveal>
                 <ul className="mt-8 grid gap-5 md:grid-cols-3">
                   {featured.map((event) => (
@@ -94,7 +94,7 @@ export default async function EventsPage() {
             <section className="ks-section border-t border-[var(--ks-line)]">
               <div className="ks-wrap">
                 <Reveal>
-                  <h2 className="ks-h2">Upcoming Events</h2>
+                  <h2 className="ks-h2 text-center">Upcoming Events</h2>
                 </Reveal>
                 <div className="mt-8">
                   <EventsExplorer events={cards} />
@@ -105,11 +105,14 @@ export default async function EventsPage() {
         )}
 
         <section className="ks-section border-t border-[var(--ks-line)] pb-24">
-          <div className="ks-wrap grid gap-10 md:grid-cols-3">
+          <div className="ks-wrap">
             <Reveal>
-              <p className="ks-eyebrow">How it works</p>
-              <h2 className="ks-h2 mt-3">Events, from listing to entry.</h2>
+              <div className="mx-auto max-w-2xl text-center">
+                <p className="ks-eyebrow">How it works</p>
+                <h2 className="ks-h2 mt-3">Events, from listing to entry.</h2>
+              </div>
             </Reveal>
+            <div className="mt-12 grid gap-10 text-center md:grid-cols-2">
             <Reveal>
               <p className="font-bold">Publish</p>
               <p className="mt-2 text-sm leading-6 text-[var(--ks-muted)]">Organisers add the date, venue, lineup and ticket types.</p>
@@ -118,6 +121,7 @@ export default async function EventsPage() {
               <p className="font-bold">Attend</p>
               <p className="mt-2 text-sm leading-6 text-[var(--ks-muted)]">Tickets are issued with a QR code that is checked at the gate.</p>
             </Reveal>
+            </div>
           </div>
         </section>
       </main>

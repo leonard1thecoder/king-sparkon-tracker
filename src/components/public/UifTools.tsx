@@ -40,7 +40,7 @@ export function UifTools() {
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2" role="group" aria-label="UIF tools">
+      <div className="flex flex-wrap justify-center gap-2" role="group" aria-label="UIF tools">
         {TOOLS.map((tool) => {
           const selected = active === tool.key;
           return (
