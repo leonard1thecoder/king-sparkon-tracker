@@ -4,6 +4,8 @@ import { PublicHeader } from "@/components/public/PublicHeader";
 import { PublicBreadcrumb } from "@/components/public/Breadcrumb";
 import { EventCard, toEventCardData } from "@/components/public/EventCard";
 import { EventsExplorer } from "@/components/public/EventsExplorer";
+import { OpenForBookings } from "@/components/public/OpenForBookings";
+import { EventMarketplace } from "@/components/public/EventMarketplace";
 import { Reveal, Scene } from "@/components/public/InView";
 import { getPublishedEvents, isDemoId } from "@/lib/public/data";
 import { SampleBadge } from "@/components/public/SampleBadge";
@@ -101,6 +103,10 @@ export default async function EventsPage() {
                 </div>
               </div>
             </section>
+
+            <OpenForBookings />
+
+            <EventMarketplace />
           </>
         )}
 
