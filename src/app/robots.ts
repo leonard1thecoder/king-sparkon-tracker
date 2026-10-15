@@ -23,6 +23,8 @@ export default function robots(): MetadataRoute.Robots {
           "/mall",
           "/mall/",
           "/dev-hub",
+          "/services",
+          "/pricing",
           "/barcode-ai",
           "/contact",
           "/faq",
